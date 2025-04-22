@@ -1,0 +1,164 @@
+<form class="form-search form-horizontal" method="get" action="/timing/store-focus-by-model/store-focus-by-model" onsubmit="return validateSearch()">
+    <div class="row">
+        
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="oppo_product_id" class="span2">OPPO</label>
+                <select id="oppo_product_id" name="oppo_product_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->oppo_product_list) :
+                        foreach ($this->oppo_product_list as $oppo_product_list):
+                            ?>
+                            <option value="<?php echo $oppo_product_list['id'];?>" <?php if (isset($this->params['oppo_product_id']) and ( (is_array($this->params['oppo_product_id']) && in_array($oppo_product_list['id'], $this->params['oppo_product_id']) || $oppo_product_list['id']==$this->params['oppo_product_id'])) ):?>selected<?php endif;?>><?php echo $oppo_product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="huawei_product_id" class="span2">Huawei</label>
+                <select id="huawei_product_id" name="huawei_product_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->huawei_product_list) :
+                        foreach ($this->huawei_product_list as $huawei_product_list):
+                            ?>
+                            <option value="<?php echo $huawei_product_list['id'];?>" <?php if (isset($this->params['huawei_product_id']) and ( (is_array($this->params['huawei_product_id']) && in_array($huawei_product_list['id'], $this->params['huawei_product_id']) || $huawei_product_list['id']==$this->params['huawei_product_id'])) ):?>selected<?php endif;?>><?php echo $huawei_product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="vivo_product_id" class="span2">VIVO</label>
+                <select id="vivo_product_id" name="vivo_product_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->vivo_product_list) :
+                        foreach ($this->vivo_product_list as $vivo_product_list):
+                            ?>
+                            <option value="<?php echo $vivo_product_list['id'];?>" <?php if (isset($this->params['vivo_product_id']) and ( (is_array($this->params['vivo_product_id']) && in_array($vivo_product_list['id'], $this->params['vivo_product_id']) || $vivo_product_list['id']==$this->params['vivo_product_id'])) ):?>selected<?php endif;?>><?php echo $vivo_product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="samsung_product_id" class="span2 cnt_product">Samsung</label>
+                <select id="samsung_product_id" name="samsung_product_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->samsung_product_list) :
+                        foreach ($this->samsung_product_list as $samsung_product_list):
+                            ?>
+                            <option value="<?php echo $samsung_product_list['id'];?>" <?php if (isset($this->params['samsung_product_id']) and ( (is_array($this->params['samsung_product_id']) && in_array($samsung_product_list['id'], $this->params['samsung_product_id']) || $samsung_product_list['id']==$this->params['samsung_product_id'])) ):?>selected<?php endif;?>><?php echo $samsung_product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>" required>
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>" required>
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <!-- <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button> -->
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        // end - start returns difference in milliseconds 
+        var diff = new Date(date_02 - date_01);
+
+        // get days
+        var days = (diff/1000/60/60/24) + 1;
+
+        if (days > 14) {
+            alert("Date Range Not Allow more than 14 Days [Selected Date Range is " + days + " Days!]");
+            return false;
+        }
+
+        // Check Number of Model 
+        var sum_model = $('#oppo_product_id').val() + "," + $('#huawei_product_id').val() + "," + $('#vivo_product_id').val() + "," + $('#samsung_product_id').val();
+
+        var model_temp = JSON.parse("[" + sum_model + "]");
+        var arr_model = model_temp.filter(Boolean);
+
+        if (arr_model.length == 0) {
+            alert("Please Select Model at least 1 Model!");
+            return false;
+        } else {
+            if (arr_model.length > 8) {
+                alert("Selected Model Not Allow more than 8 Models [Selected Model is " + arr_model.length + " Models!]");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    
+    });
+</script>

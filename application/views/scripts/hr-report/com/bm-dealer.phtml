@@ -1,0 +1,221 @@
+<?php 
+	// print_r($this->params);
+
+	$com_month = date('F Y', strtotime($this->params['from']) );
+?>
+
+<style type="text/css">
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 10px;
+	font-family: Arial;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:1122px;">
+	<tr style="height:30px;">
+		<th>Possefy Group CO.,LTD.</th>
+	</tr>
+	<tr style="height:30px;">
+		<th>COMMISSION BRAND SHOP BY DEALER FOR <?php echo $com_month;  ?></th>
+	</tr>
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" style="width:1122px;">
+				<tr align="center" class="header_color">
+					<td>NO.</td>
+					<td>Area</td>
+					<td>Store ID</td>
+					<td>Store Name</td>
+					<td>Staff ID</td>
+					<td>Name</td>
+					<td>Target</td>
+					<td>Sellout</td>
+					<td>Achieve</td>
+					<td>Price [EX VAT]</td>
+					<td>% Achieve</td>
+					<td>Com. Unit</td>
+					<td>Com. Achieve</td>
+					<td>Total Com.</td>
+				</tr>
+
+				<?php 
+
+					$sum_bm_com = $sum_pc_com = $sum_total_bm_com = 0;
+
+					$QGoodKpi = new Application_Model_GoodKpiLog();
+
+					$bm_exception = $QGoodKpi->get_bm_exception();
+					$bm_exception = array_column($bm_exception, 'staff_id');
+					// echo "<pre>"; print_r($bm_exception);
+
+					$data = $this->log;
+
+					for ($i=0;$i<count($data);$i++) {
+
+						$price = $achieve = $bm_rate = $bm_com = $pc_com = $total_bm_com = 0;
+
+						if ( isset($data[$i]['price']) && $data[$i]['price'] ) { $price = $data[$i]['price']; } 
+
+						$price_ex_vat = round(($data[$i]['price'] * 100 ) / 107, 2);
+
+						if ( isset($data[$i]['st_target']) && $data[$i]['st_target'] != 0 ) { 
+
+							$achieve = round(( $data[$i]['sellout'] / $data[$i]['st_target'] ) * 100, 2); 
+
+							$bm_rate = $QGoodKpi->com_bm_rate($achieve);
+
+							$bm_com = round(($price_ex_vat * $bm_rate) / 100, 2);
+
+						} else {
+							$data[$i]['st_target'] = '-';
+						}
+
+						// No PC Commission for BM 15K
+						if ( isset($data[$i]['bm_id']) && $data[$i]['bm_id']) {
+							if ( !in_array($data[$i]['bm_id'], $bm_exception) ) {
+
+								$this->params['bm_flag'] = 1;
+								$this->params['staff_code'] = $data[$i]['bm_code'];
+
+								$result = $QGoodKpi->report_kpiPC(null,$this->params);
+
+								// echo "<pre>"; print_r($result);
+
+								$pc_com = $result[0]['com_pc'];
+							} 
+						} else { $pc_com = $bm_com = 0; }
+
+						// Exceptoin for Mar 2019
+						if ( $data[$i]['bm_code'] == '6202168' && $com_month == 'March 2019' ) { $data[$i]['sellout'] = $price_ex_vat = $bm_com = 0; }
+						if ( in_array($data[$i]['bm_code'], array('6104168','6100403') ) && $com_month == 'March 2019' ) { $pc_com = $bm_com = 0; }
+						if ( $data[$i]['bm_code'] == '6000730' && $com_month == 'March 2019' ) { $bm_com = 0; }
+						if ( $data[$i]['bm_code'] == '5901881' && $com_month == 'March 2019' ) { 
+							$bm_com = round(($price_ex_vat * 0.6) / 100, 2);
+						}
+
+						// Exception for Apr 2019
+						if ( $data[$i]['bm_code'] == '6202501' && $com_month == 'April 2019' ) { $bm_com = 0; }
+						if ( $data[$i]['bm_code'] == '6201052' && $com_month == 'April 2019' ) { 
+							$bm_com = round(($price_ex_vat * 0.6) / 100, 2);
+						}
+
+						// Exception for May 2019
+						if ( $data[$i]['bm_code'] == '6200140' && $com_month == 'May 2019' ) { $bm_com = 3797; }
+						if ( $data[$i]['bm_code'] == '6203126' && $com_month == 'May 2019' ) { $bm_com = 2390; }
+						if ( $data[$i]['bm_code'] == '6202353' && $com_month == 'May 2019' ) { $bm_com = 2521; }
+						if ( $data[$i]['bm_code'] == '6201383' && $com_month == 'May 2019' ) { $bm_com = 2518; }
+						if ( $data[$i]['bm_code'] == '6203587' && $com_month == 'May 2019' ) { $bm_com = 0; }
+						if ( $data[$i]['bm_code'] == '6005825' && $com_month == 'May 2019' ) { $bm_com = 5648; }
+
+						// Exception for Jun 2019
+						if ( $data[$i]['bm_code'] == '6011217' && $com_month == 'June 2019' ) { $bm_com = 5556; }
+						if ( $data[$i]['bm_code'] == '6101932' && $com_month == 'June 2019' ) { $bm_com = 0; }
+
+						$cnt = $i + 1;
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt."</td>";
+						echo 	"<td align='center'>".$data[$i]['area_name']."</td>";
+						echo 	"<td align='center'>".$data[$i]['st_id']."</td>";
+						echo 	"<td align='left'>".$data[$i]['st_name']."</td>";
+
+						echo 	"<td align='center'>".$data[$i]['bm_code']."</td>";
+						echo 	"<td align='left'>".$data[$i]['bm_name']."</td>";
+
+						echo 	"<td align='right'>".$data[$i]['st_target']."</td>";
+						echo 	"<td align='right'>".$data[$i]['sellout']."</td>";
+						echo 	"<td align='right'>".number_format($achieve,2)."</td>";
+						echo 	"<td align='right'>".number_format($price_ex_vat,2)."</td>";
+						echo 	"<td align='right'>".number_format($bm_rate,2)."%</td>";
+
+						echo 	"<td align='right'>".number_format($pc_com)."</td>";
+						echo 	"<td align='right'>".number_format($bm_com)."</td>";
+
+						// Total BM Commission
+						$total_bm_com = $bm_com + $pc_com;
+
+						// Exceptoin for Dec 2019
+						if ( $data[$i]['bm_code'] == '6200140' && $com_month == 'December 2018' ) { $total_bm_com = 0; }
+						// Exceptoin for Mar 2019
+						if ( in_array($data[$i]['bm_code'], array('6201928') ) && $com_month == 'March 2019' ) { $total_bm_com = 0; }
+
+						echo 	"<td align='right'>".number_format($total_bm_com)."</td>";
+
+						echo "</tr>";
+
+						$sum_bm_com = $sum_bm_com + $bm_com;
+						$sum_pc_com = $sum_pc_com + $pc_com;
+						$sum_total_bm_com = $sum_total_bm_com + $total_bm_com;
+
+					} 
+
+					echo "<tr class='header_color'>";
+					echo 	"<td align='center' colspan='11'>Total Commission on ".$com_month."</td>";
+					echo 	"<td align='right'>".number_format($sum_pc_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_bm_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_total_bm_com)."</td>";
+					echo "</tr>";
+
+				?>
+
+			</table>
+		</td>
+	</tr>
+
+</table>
+<div style="height:50px;"></div>
+
+<!-- style="visibility: hidden; -->
+
+<table border="0" style="width:1122px;">
+	<tr>
+		<td align="right" style="width:150px;">Prepared By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Checked By</td>
+		<td align="left">.................................................................</td>
+		<!-- <td align="right">Approve By</td>
+		<td align="left">.................................................................</td> -->
+	</tr>
+	<tr style="height:20px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<!-- <td align="right">Date</td>
+		<td align="left">.................................................................</td> -->
+	</tr>
+	<tr style="height:50px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:10px;"><td colspan="4"></td></tr>
+	<tr style="height:20px;">
+		<td></td>
+		<td align="left" style="padding-left:65px">Mr.Yu Zhang</td>
+		<td></td>
+		<td align="left" style="padding-left:63px">Mr.Li Gengwu</td>
+		<td></td>
+		<td align="left" style="padding-left:55px">Mr.Wang Junwei</td>
+	</tr>
+	<tr style="height:0px;"><td colspan="4"></td></tr>
+	<tr style="height:20px;">
+		<td></td>
+		<td align="left" style="padding-left:47px">( Operator Director )</td>
+		<td></td>
+		<td align="left" style="padding-left:38px">( Brand Shop Manager )</td>
+		<td></td>
+		<td align="left" style="padding-left:28">( Executive Vice President )</td>
+	</tr>
+</table>

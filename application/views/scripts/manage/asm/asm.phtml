@@ -1,0 +1,175 @@
+<div class="page-header">
+    <h1>List ASM</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<ul class="nav nav-tabs" id="myTab">
+    <li class="active"><a href="#asm">ASM</a></li>
+    <li><a href="#asmstandby">ASM Standby</a></li>
+    <li><a href="#rm">RD</a></li>
+    <li><a href="#rmstandby">RD Standby</a></li>
+    <li><a href="#salesadmin">Sales Admin</a></li>
+    <li><a href="#trainer">Trainer</a></li>
+    <li><a href="#trainerleader">Trainer Leader</a></li>
+    <li><a href="#tms">TMS</a></li>
+    <li><a href="#tmsleader">TMS Leader</a></li>
+    <li><a href="#abm">ABM</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="asm">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::ASM ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::ASM,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="asmstandby">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::ASM_STANDBY ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::ASM_STANDBY,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="rm">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::RM ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::RM,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="rmstandby">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::RM_STANDBY ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::RM_STANDBY,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="salesadmin">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::SALES_ADMIN ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::SALES_ADMIN,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="trainer">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::TRAINING ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::TRAINING,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="trainerleader">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::TRAINING_LEADER ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::TRAINING_LEADER,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="tms">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::TMS ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::TMS,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="tmsleader">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::TMS_LEADER ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::TMS_LEADER,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="abm">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->partial('manage/asm/partials/asm.phtml', 
+                                            array(
+                                                'list' => $this->list[ My_Staff_Group::ABM ],
+                                                'areas' => $this->areas,
+                                                'regions' => $this->regions,
+                                                'group' => My_Staff_Group::ABM,
+                                            )) ?>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $('#myTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
+</script>

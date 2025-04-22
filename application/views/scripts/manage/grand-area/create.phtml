@@ -1,0 +1,103 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    } 
+</style>
+<div class="page-header">
+    <h1>Create Grand Area</h1>
+</div>
+<form action="<?php echo HOST ?>manage/save-grand-area" method="post">
+<div class="row-fluid">
+    <div class="span4">
+        <?php if (isset($this->staff) && $this->staff): ?>
+            <p><?php echo My_Staff_Group::get($this->staff['group_id']) ?>: <strong><?php echo $this->staff['firstname'] . ' ' . $this->staff['lastname']; ?></strong></p>
+        <?php endif ?>
+    </div>
+    <div class="span4">
+            <div class="control-group">
+            <label id="area_anchor">Name Grand Area</label>
+                <input type="text" name="grand_name" class="form-control" value="<?=(isset($this->grand_list) && $this->grand_list)?$this->grand_list[0]['name']:''?>">
+            </div>
+          
+    </div>
+   
+    <div class="span4">
+        <div class="control-group">
+            <label id="region_anchor">Area</label>
+            <?php if (isset($this->grand_list) && $this->grand_list): ?>
+                    <?php foreach ($this->grand_list as $value): ?>
+                            <div class="area_select">
+                                <select name="area[]" class="form-control">
+                                    <option value>---</option>
+                                    <?php if (isset($this->areas) && $this->areas): ?>
+                                        <?php foreach ($this->areas as $a_id => $a_name): ?>
+                                            <option value="<?php echo $a_id ?>" <?php if($a_id == $value['area']) echo 'selected' ?>><?php echo $a_name ?></option>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <button type="button" class="btn btn-default remove_area_btn new">&times;</button>
+                            </div>
+                    <?php endforeach ?>
+                <?php endif ?>
+        </div>
+        <div class="control-group">
+            <button class="btn btn-default" id="add_area_btn" type="button">Add more</button>
+        </div>
+    </div>
+    
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="form-actions">
+        <input type="hidden" name="id" value="<?=(isset($this->grand_list) && $this->grand_list)?$this->grand_list[0]['grand_area_id']:''?>">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" onclick="window.location='<?php echo HOST ?>manage/grand-area'">Cancel</button>
+        </div>
+    </div>
+</div>
+</form>
+
+<script type="text/javascript">
+    select_area = 
+'<div class="area_select">'+
+    '<select name="area[]" class="form-control">'+
+        '<option value>---</option>'+
+        '<?php if (isset($this->areas) && $this->areas): ?>'+
+            '<?php foreach ($this->areas as $a_id => $a_name): ?>'+
+                '<option value="<?php echo $a_id ?>"><?php echo $a_name ?></option>'+
+            '<?php endforeach ?>'+
+        '<?php endif ?>'+
+    '</select>'+
+    ' <button type="button" class="btn btn-default remove_area_btn new">&times;</button>'+
+'</div>';
+
+  
+
+    $(document).ready(function() {
+        $('#add_area_btn').click(function() {
+            $('#region_anchor').parent('.control-group').append(select_area);
+            init_area_remove();
+        });
+
+       
+        init_area_remove();
+        // init_region_remove();
+    });
+
+    function init_area_remove() {
+        $('.remove_area_btn.new').click(function() {
+            $(this).parent('.area_select').remove();
+        });
+
+        $('.remove_area_btn.new').removeClass('new');
+    }
+
+    function init_region_remove() {
+        $('.remove_region_btn.new').click(function() {
+            $(this).parent('.region_select').remove();
+        });
+
+        $('.remove_region_btn.new').removeClass('new');
+    }
+</script>

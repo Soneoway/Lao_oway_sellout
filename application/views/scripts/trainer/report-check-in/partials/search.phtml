@@ -1,0 +1,187 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/report-check-in/report-check-in">
+    <div class="row">
+        <div class="span5">
+           <div class="control-group">
+                <label for="group_id" class="span2">Report for group</label>
+                <select name="group_id[]" id="group_id" class="span3 multiselect" multiple="multiple">
+                     <?php  
+
+                      $group_id=array(
+                        PGPB_ID=>'PC',
+                        SALES_ID=>'Sales', 
+                        TMS=>'TMS',
+                        PCM=>'PCM',
+                        '32'=>'ABM',
+                        BM_ID=>'BM',
+                        ASM_ID=>'ASM',
+                        '31'=>'SALE EVENT',
+                        '33'=>'RM Assistant',
+                        '34'=>'ASM Assistant',
+                      );
+
+                        foreach ($group_id as $key => $value) :?>
+                         <option value="<?php echo $key; ?>"
+                         <?php if (isset($this->params['group_id']) and ((is_array($this->params['group_id']) && in_array($key,  $this->params['group_id']) || $key== $this->params['group_id']))): ?>selected<?php endif;
+                        ?>><?php echo $value; ?></option> 
+       <!--              <option value="9" >Sales</option>
+                    <option value="5">ASM</option>
+                    <option value="30">BM</option>
+                    <option value="34">ASM Assistant</option>
+                    <option value="33">RM Assistant</option>
+                    <option value="31">SALE EVENT</option> -->
+                        <?php
+                        endforeach;
+                        ?>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="staff_code" class="span2">Staff Code</label>
+                <input id="staff_code" name="staff_code" type="text" class="input-medium search-query form-control"
+                       value="<?php isset($this->params['staff_code']) and printf($this->params['staff_code']); ?>">
+            </div>
+            <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control"
+                       value="<?php isset($this->params['staff_name']) and printf($this->params['staff_name']); ?>">
+            </div>
+            <div class="control-group">
+                <label for="off" class="span2">Working status</label>
+                <select name="off" id="off" class="span3">
+                    <option value="-1">Choose</option>
+                    <option value="1" <?php if (isset($this->params['off']) and $this->params['off']==1):?>selected<?php endif;?>>On work</option>
+                    <option value="2" <?php if (isset($this->params['off']) and $this->params['off']==2):?>selected<?php endif;?>>Off</option>
+                </select>
+            </div>
+         
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id']; ?>"
+                                    <?php if (isset($this->params['area_id']) and ((is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id'] == $this->params['area_id']))): ?>selected<?php endif;
+                            ?>><?php echo $area['name']; ?></option>
+                            <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="market_name" class="span2">Building</label>
+                <input id="market_name" name="market_name" type="text" class="input-medium search-query form-control"
+                       value="<?php isset($this->params['market_name']) and printf($this->params['market_name']); ?>">
+            </div>
+            <div class="control-group">
+                <label for="store_id" class="span2">Store ID</label>
+                <input id="store_id" name="store_id" type="text" class="input-medium search-query form-control"
+                       value="<?php isset($this->params['store_id']) and printf($this->params['store_id']); ?>">
+            </div>
+            <div class="control-group">
+                <label for="store_name" class="span2">Store Name</label>
+                <input id="store_name" name="store_name" type="text" class="input-medium search-query form-control"
+                       value="<?php isset($this->params['store_name']) and printf($this->params['store_name']); ?>">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <br>
+    <br>
+    
+    <?php
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $group_permission = array(HR_ID, ADMINISTRATOR_ID, BOARD_ID);
+    ?>
+        <div class="form-actions" style="padding-left: 20px;">
+            <div class="control-group">
+                <label for="month_year">Year-Month : </label>
+                <input name="month_year" id="month_year" class="date-picker"
+                       value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>"
+                       placeholder="2017-02">
+            </div>
+
+            <button type="submit" id="export" name="export" value="1" class="btn btn-success">Check in By Area Excel</button>
+
+
+            <?php if (in_array($userStorage->group_id, $group_permission)) { ?>
+            <button type="submit" id="export_wait" name="export_wait" value="1" class="btn btn-warning">Approve Waiting Excel</button>
+            <?php } ?>
+        </div>
+
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script>
+
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+    $('#export').click(function () {
+        if ($("#area_id option:selected").length > 0) {
+                return true;
+        } else {
+            alert('Please Select Area. !!');
+                return false;
+        }
+    });
+
+    $('#export_wait').click(function () {
+        if ($("#area_id option:selected").length > 0) {
+                return true;
+        } else {
+            alert('Please Select Area. !!');
+                return false;
+        }
+    });
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    $(function multi() {
+        $('.multiselect').multiselect(options);
+    });
+
+    //    function multi() {
+    //        $('.multiselect').multiselect(options);
+    //    }
+
+
+    $(document).ready(function () {
+
+        $('.form-search button:reset').click(function (e) {
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+    });
+</script>

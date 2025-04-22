@@ -1,0 +1,135 @@
+<style>
+    .div_li {
+        position: absolute;
+        left: 30px;
+        top: 5px;
+        font-size: 20px;
+    }
+</style>
+
+<?php
+$staff_list = $this->staff_list;
+$choice_answer = $this->choice_answer;
+
+//echo '<pre>';
+//print_r($choice_answer);
+//echo '</pre>';
+
+?>
+<div class="page-header">
+    <h1>E-Test Answer
+        <span style="float: right; color: #333333;">Score : <?php echo isset($staff_list['score']) ? ($staff_list['score']*1)." / ".$staff_list['score_total'] : "-"; ?></span>
+    </h1>
+</div>
+<form role="form" action="<?php echo HOST.'trainer/pc-first-training-save';?>" method="post">
+
+    <div class="row">
+
+        <div class="span6">
+            <p><span><strong>- E-Test Answer -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Topic E-Test</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['topic']) ? $staff_list['topic'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Created At</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['created_at']) ? $staff_list['created_at'] : "-"; ?></td>
+                </tr>
+<!--                <tr>-->
+<!--                    <td width="120px">Score</td>-->
+<!--                    <td style="padding-left: 5px;">: --><?php //echo isset($staff_list['score']) ? ($staff_list['score']*10)." / 100" : "-"; ?><!--</td>-->
+<!--                </tr>-->
+            </table>
+        </div>
+        
+        <div class="span6">
+
+            <p><span><strong>- Personal Info -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Area Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['area_name']) ? $staff_list['area_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Code</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_code']) ? $staff_list['staff_code'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_name']) ? $staff_list['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Group</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['group_name']) ? $staff_list['group_name'] : "-"; ?></td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+
+    <br/>
+    <div class="row">
+        <div class="span12">
+        <div class="widget-content">
+            <ul class="messages_layout">
+                <?php
+                foreach ($this->questions as $k => $questions) {
+                    ?>
+                    <li class="by_myself" style="width: 97.5%;">
+                        <div class="message_wrap" style="width: 100%;">
+                            <div><strong><?php echo $k+1 ?>)</strong> <?php echo $questions['questions']; ?></div>
+                        </div>
+                    </li>
+                    <?php
+                    foreach ($this->choice[$questions['id']] as $j => $choice) {
+                        ?>
+                        <li class="from_user left" style="width: 91%;">
+                            <div class="div_li">
+                                <?php
+                                if ($choice['correct'] == "Y") {
+                                    echo '<i class="icon-ok" style="color: #00aa00;"></i>';
+                                } else {
+                                    echo '<i class="icon-remove" style="color: red;"></i>';
+                                }
+                                $bg_color = '';
+                                $answer = $choice_answer[$choice['id']]['id'];
+                                if (isset($answer) && $choice['correct'] == "Y" && $choice_answer[$choice['id']]['created_at'] == $choice_answer[$choice['id']]['updated_at']) {
+                                    $bg_color= "#c2f5cb";
+                                } else if ($choice['correct'] == "Y" && $choice_answer[$choice['id']]['created_at'] != $choice_answer[$choice['id']]['updated_at']){
+                                    $bg_color= "#fccd88";
+                                } else {
+                                    $bg_color= "#f5c2c2";
+                                }
+                                ?>
+                            </div>
+                            <div class="message_wrap" style="width: 100%; background: <?php echo isset($answer) ? $bg_color : ''; ?>;">
+                                <div><strong><?php echo $choice['choice']; ?>)</strong> <?php echo $choice['answer']; ?></div>
+                            </div>
+                        </li>
+                <?php
+                    }
+                }
+                ?>
+            </ul>
+        </div>
+    </div>
+    </div>
+    <br/>
+
+    <input type="hidden" name="pft_id" id="pft_id" value="<?php echo $staff_list['pft_id']; ?>">
+    <input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

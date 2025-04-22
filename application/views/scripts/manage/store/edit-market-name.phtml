@@ -1,0 +1,39 @@
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div id="modal_market_name">
+	<div class="modal-header" align="center">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel">Market Type</h3>
+	</div>
+
+	<div class="modal-body">
+
+	    <div class="row">
+			<div class="span5">
+	            <div class="control-group">
+	            	<input id="modal_mn_id" type="hidden" value="<?php isset($this->market_name_id) and printf($this->market_name_id);?>">
+	            	<input id="modal_mt_id" type="hidden" value="<?php isset($this->market_type_id) and printf($this->market_type_id);?>">
+
+	                <label for="modal_mn_name" class="span2">Market Name</label>
+	                <input id="modal_mn_name" name="modal_mn_name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->market_name) and printf($this->market_name);?>">
+	            </div>
+			</div>
+		</div>
+
+
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-info" data-dismiss="modal" id="btn_save_market_name" aria-hidden="true" onclick="saveMarketName()" >Save</button>
+	  	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	</div>
+</div>

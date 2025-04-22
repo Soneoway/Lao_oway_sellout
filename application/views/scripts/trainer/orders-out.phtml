@@ -1,0 +1,130 @@
+<div class="page-header">
+    <h2>
+        List Orders Out
+    </h2>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="page-header pull-right">
+            <a href="/trainer/create-output"><button class="btn btn-primary">Create New</button></a>
+        </div>
+    </div>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('trainer/partials/search_orders_out.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    'SN',
+                    'Created At',
+                    'Created By',
+                    'Updated At',
+                    'Updated By',
+                    'Confirmed At',
+                    'Confirmed By',
+                    'Status',
+                    'Action'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <?php
+        $count =0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k=>$item):
+                ?>
+
+                <tr>
+                    <td><?php echo $item['sn'];?></td>
+                    <td><?php echo $item['created_at'];?></td>
+                    <td><?php echo isset($this->staffs_cached[$item['created_by']]) ? $this->staffs_cached[$item['created_by']]  : '';?></td>
+                    <td><?php echo $item['updated_at'];?></td>
+                    <td><?php echo isset($this->staffs_cached[$item['updated_by']]) ? $this->staffs_cached[$item['updated_by']]  : '';?></td>
+                    <td><?php echo $item['confirmed_at'];?></td>
+                    <td><?php echo isset($this->staffs_cached[$item['confirmed_by']]) ? $this->staffs_cached[$item['confirmed_by']]  : '';?></td>
+                    <td><?php $status_order = unserialize(ORDER_STATUS_TRAINING); echo isset($status_order[$item['status']]) ? $status_order[$item['status']]  : '';?></td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                Action
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php if(!isset($item['confirmed_at']) and !$item['confirmed_at'] ) :?>
+                                    <?php if ($this->access('trainer', 'confirm-order-out')):?>
+                                    <li>
+                                        <a class="confirmLink" href="/trainer/confirm-order-out?id=<?php echo $item['id'];?>">Confirm</a>
+                                    </li>
+                                    <?php endif;?>
+                                    <?php if ($this->access('trainer', 'create-output')):?>
+                                    <li>
+                                        <a  href="/trainer/create-output?id=<?php echo $item['id'];?>">Edit</a>
+                                    </li>
+                                    <?php endif;?>
+                                    <?php if ($this->access('trainer', 'del-order-out')):?>
+                                    <li>
+                                        <a class="confirmLink" href="/trainer/del-order-out?id=<?php echo $item['id'];?>">Delete</a>
+                                    </li>
+                                    <?php endif;?>
+                                <?php endif; ?>
+                                <?php if ($this->access('trainer', 'view-order-out')):?>
+                                <li>
+                                    <a  href="/trainer/view-order-out?id=<?php echo $item['id'];?>">View</a>
+                                </li>
+                                <?php endif;?>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+
+    <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+    <?php echo $this->confirm();?>
+
+</div>

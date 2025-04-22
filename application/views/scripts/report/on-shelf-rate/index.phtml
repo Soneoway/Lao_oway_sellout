@@ -1,0 +1,24 @@
+<div class="page-header">
+    <h1> On-Shelf Availability Rate  </h1>
+    <small> ອັດຕາສ່ວນສິນຄ້າທີ່ມີຈຳໜາຍ ( Distributor )</small>
+</div>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a id="search_bar" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('report/on-shelf-rate/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <?php echo $this->render('report/on-shelf-rate/partials/list.phtml'); ?>
+</div>

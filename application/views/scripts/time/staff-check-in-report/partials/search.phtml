@@ -1,0 +1,179 @@
+<?php 
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+    $current_month = date('F Y');
+    if ( date('Y-m-d') > date('Y-m-20') ) { $current_month = date('F Y', strtotime("+1 Month", strtotime(date('Y-m-d')))); }
+?>
+
+<form class="form-search form-horizontal" method="get" action="/time/staff-check-in-report/staff-check-in-report">
+    <div class="row">
+
+        <div class="span5">
+            
+
+            <div class="control-group">
+                <label for="staff_code" class="span2">Staff Code</label>
+                <input id="staff_code" name="staff_code" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_code']) and printf($this->params['staff_code']);?>">
+            </div>
+            <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_name']) and printf($this->params['staff_name']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="work_status" class="span2">Working Status</label>
+                <input type="checkbox" name="work_status[]" value="0" <?php if (isset($this->params['work_status']) and ( (is_array($this->params['work_status']) && in_array(0, $this->params['work_status']) )) ):?>checked<?php endif;?> > Active 
+                <input type="checkbox" name="work_status[]" value="1" <?php if (isset($this->params['work_status']) and ( (is_array($this->params['work_status']) && in_array(1, $this->params['work_status']) )) ):?>checked<?php endif;?> > Off
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="staff_group" class="span2">Staff Group</label>
+                <select id="staff_group" name="staff_group[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->staff_groups) :
+                        foreach ($this->staff_groups as $staff_group):
+                            ?>
+                            <option value="<?php echo $staff_group->id;?>" <?php if (isset($this->params['staff_group']) and ( (is_array($this->params['staff_group']) && in_array($staff_group['id'], $this->params['staff_group']) || $staff_group['id']==$this->params['staff_group'])) ):?>selected<?php endif;?>><?php echo $staff_group->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="leave_type" class="span2">Leave Type (Only Export)</label>
+                <select id="leave_type" name="leave_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->leave_type) :
+                        foreach ($this->leave_type as $key => $value):
+                            ?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['leave_type']) and ( (is_array($this->params['leave_type']) && in_array($key, $this->params['leave_type']) || $key==$this->params['leave_type'])) ):?>selected<?php endif;?>><?php echo $value;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="late_type" class="span2">Late Time (Only Export)</label>
+                <select id="late_type" name="late_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->late_type) :
+                        foreach ($this->late_type as $key => $value):
+                            ?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['late_type']) and ( (is_array($this->params['late_type']) && in_array($key, $this->params['late_type']) || $key==$this->params['late_type'])) ):?>selected<?php endif;?>><?php echo $value;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="span2" for="year_month">Month - Year (Only Export)</label>
+                <input name="month_year" id="month_year" class="input-medium search-query date-picker ui-datepicker-calendar" value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : $current_month ?>" required="required" />
+            </div>
+
+        </div>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Check In</button>
+
+    <?php if ($userStorage->group_id == ADMINISTRATOR_ID) { 
+
+            // $to_time = strtotime("2008-12-13 11:00:00");
+            // $from_time = strtotime("2008-12-15 18:00:00");
+
+            // echo ($to_time - $from_time) / (60*60*24);
+            // echo "<br/>";
+            // echo ($to_time - $from_time) / (60*60);
+
+    ?>
+        
+    <?php } ?>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style> .ui-datepicker-calendar { display: none; } </style>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+
+        // Calendar Year-Month
+        $('.date-picker').datepicker({
+
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+
+            onClose: function() {
+                var iMonth = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var iYear = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+
+                $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+            },
+
+            beforeShow: function() {
+                if ((selDate = $(this).val()).length > 0) {
+                    iYear = selDate.substring(selDate.length - 4, selDate.length);
+                    iMonth = jQuery.inArray(selDate.substring(0, selDate.length - 5),
+                    $(this).datepicker('option', 'monthNames'));
+                    $(this).datepicker('option', 'defaultDate', new Date(iYear, iMonth, 1));
+                    $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+                }
+            }
+        });
+        
+    });
+</script>

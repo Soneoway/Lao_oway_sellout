@@ -1,0 +1,108 @@
+<?php define("TEXT_LEN", 150) ?>
+<?php foreach ($this->dashboards as $key => $dashboard): ?>
+<?php if( $dashboard['id'] == LOG_DASHBOARD ) continue; ?>
+    <?php if( $dashboard['table'] == 'staff_transfer' ) : ?>
+
+        <div class="row-fluid dashboard">
+            <div class="span12">
+                <div class="well">
+                    <h2><?php echo $dashboard['name'] ?></h2>
+                    <p><?php echo substr($dashboard['description'], 0, TEXT_LEN) . (strlen($dashboard['description']) > TEXT_LEN ? '...' : '')  ?>
+                        <?php if (strlen($dashboard['description']) > TEXT_LEN): ?>
+                            <span title="<?php echo $dashboard['description'] ?>" class="dashboard_decs icon-comment"></span>
+                        <?php endif ?>
+                    </p>
+                    <div id="data_print_transfer">
+                        <!-- ajax load print transfer -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <?php else: ?>
+	<div class="row-fluid dashboard">
+		<div class="span12">
+			<div class="well">
+				<h2><?php echo $dashboard['name'] ?></h2>
+				<p><?php echo substr($dashboard['description'], 0, TEXT_LEN) . (strlen($dashboard['description']) > TEXT_LEN ? '...' : '')  ?>
+					<?php if (strlen($dashboard['description']) > TEXT_LEN): ?>
+						<span title="<?php echo $dashboard['description'] ?>" class="dashboard_decs icon-comment"></span>
+					<?php endif ?>
+				</p>
+				<ol>
+					<?php foreach ($this->regions[ $dashboard['id'] ] as $k => $staff): ?>
+						<?php if ( ! ( isset( $this->dismiss[ $dashboard['id'] ] ) && in_array( $staff['id'] , $this->dismiss[ $dashboard['id'] ] ) ) ): ?>
+							
+							<li class="staff"
+								title="<?php echo ( isset( $this->team[ $staff['title'] ] ) ? ( $this->team[ $staff['title'] ] ) : '' )
+									. ( isset( $this->team[ $staff['department'] ] ) ?  ( ' - ' . $this->team[ $staff['department'] ] ) : '' )
+									. ( !empty( $staff['phone_number'] ) ?  ( ' - ' . $staff['phone_number'] ) : '' )
+								?>"
+								data-department="<?php if(isset($staff['department']) && $staff['department']) echo $staff['department'] ?>"
+								data-area="<?php if(isset($this->regionalMarket[ $staff['regional_market'] ]) 
+												&& $this->regionalMarket[ $staff['regional_market'] ]['area_id']) 
+											echo $this->regionalMarket[ $staff['regional_market'] ]['area_id'] ?>"
+								data-regional-market="<?php if(isset($staff['regional_market']) && $staff['regional_market']) echo $staff['regional_market'] ?>"
+								data-email="<?php if(!empty( $staff['email'] )) echo $staff['email'] ?>">
+								
+								<?php if ($dashboard['editable'] == 1): ?>
+									<a href="#" class="label label-warning note_label" 
+										title="Click to edit" 
+										data-id="<?php if(isset($staff['id']) && $staff['id']) echo $staff['id'] ?>"
+										data-name="<?php echo $staff['code'] . ' - ' . $staff['firstname'] . ' ' . $staff['lastname'] ?>">
+										Edit
+									</a>
+								<?php endif ?>
+
+								<?php if ($dashboard['add_email'] == 1): ?>
+									<a href="#" class="label label-inverse add_email_label" 
+										id="staff_email_label_<?php echo $staff['id'] ?>"
+										title="Click to add Email" 
+										data-id="<?php if(isset($staff['id']) && $staff['id']) echo $staff['id'] ?>"
+										data-name="<?php echo $staff['code'] . ' - ' . $staff['firstname'] . ' ' . $staff['lastname'] ?>">
+										Email
+									</a>
+								<?php endif ?>
+
+								<?php echo $staff['code'] 
+									. ' - <strong>' . $staff['firstname'] . ' ' . $staff['lastname'] .'</strong>'
+									. ( !empty( $staff['email'] ) ?  ( ' - ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email']) . '@' ) : '' )
+									. ( ( !empty( $staff['old_email'] ) && !empty( $staff['off_date'] ) ) ?  ( ' - ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['old_email']) . '@' ) : '' )
+									. ( !empty($staff['regional_market']) && !empty( $this->regionalMarket[ $staff['regional_market'] ]['name'] )  && intval($staff['regional_market']) > 0  ? ( ' - ' .  $this->regionalMarket[ $staff['regional_market'] ]['name'] )  : '' )
+									. ( isset($staff['regional_market']) && isset($this->regionalMarket[ $staff['regional_market'] ]) && isset($this->area[ $this->regionalMarket[ $staff['regional_market'] ]['area_id'] ] )  ? ( ' - ' .  $this->area[ $this->regionalMarket[ $staff['regional_market'] ]['area_id'] ] )  : '' )
+								?>
+
+								<div class="btn-group pull-right">
+									<a class="label label-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="icon-chevron-down"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href="#" class="dismiss" 
+											data-staff-id="<?php echo $staff['id'] ?>" 
+											data-dashboard-id="<?php echo $dashboard['id'] ?>" 
+											data-staff-name="<?php echo $staff['firstname'] . ' ' . $staff['lastname'] ?>"
+											data-dashboard-name="<?php echo $dashboard['name'] ?>">Dismiss...</a></li>
+									</ul>
+								</div>
+
+								<?php if ($dashboard['add_note'] == 1): ?>
+									<div class="pull-right">
+										<a href="#" id="staff_note_<?php echo $staff['id'] ?>"
+											class="label staff_note <?php if( isset($staff['note']) && strlen(trim( $staff['note'] )) > 0 ) echo 'label-important' ?>" 
+											title="Click to view" 
+											data-id="<?php if(isset($staff['id']) && $staff['id']) echo $staff['id'] ?>"
+											data-name="<?php echo $staff['code'] . ' - ' . $staff['firstname'] . ' ' . $staff['lastname'] ?>">
+											Note
+										</a>
+									</div>
+								<?php endif ?>
+							</li>
+						<?php endif ?>
+					<?php endforeach ?>
+				</ol>
+				
+			</div>
+		</div>
+	</div>
+        <?php endif; ?>
+<?php endforeach ?>

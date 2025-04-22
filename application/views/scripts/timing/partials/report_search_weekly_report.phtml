@@ -1,0 +1,80 @@
+<form class="form-search form-horizontal" method="get" action="/timing/analytics-weekly-report">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From Date</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To Date</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+        </div>
+<!--         <div class="span5">
+            
+            <div class="control-group">
+                <label for="ach_target" class="span2">Achieve Target <br/><font color="red">*Only Achieve Report<font></label>
+                <input id="ach_target" name="ach_target" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['ach_target']) and printf($this->params['ach_target']);?>">
+            </div>
+
+        </div> -->
+    </div>
+
+<?php if ( isset($this->params['am']) && $this->params['am'] ) { ?>
+    
+    <button type="submit" name="export" value="15" class="btn btn-inverse">Opr Stock</button>
+
+<?php } else { ?>
+
+<!--
+    <br/> <br/>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Area Coverage Report</button> 
+    <br/> <br/>
+    <button type="submit" name="export" value="2" class="btn btn-primary">Export Inventory Sellout</button>
+    <button type="submit" name="export" value="3" class="btn btn-primary">Export Inventory Remain</button>
+    <button type="submit" name="export" value="4" class="btn btn-primary">Export Inventory Distributor Chain</button>
+    <br/> <br/> 
+    <button type="submit" name="export" value="5" class="btn btn-primary">Sale Performance</button>
+-->
+
+    <button type="submit" class="btn btn-primary">Search</button>
+
+<?php 
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $group_id = $userStorage->group_id;
+        ?>
+<?php 
+        $permission_list = array(ADMINISTRATOR_ID);
+        if (in_array($group_id, $permission_list)) { 
+            ?>
+    <button type="reset" class="btn btn-warning">Reset</button> 
+    <button type="submit" name="export" value="6" class="btn btn-primary">Monday Report</button>
+    <button type="submit" name="export" value="7" class="btn btn-primary">Friday Report</button>
+    <button type="submit" name="export" value="16" class="btn btn-primary">Achieve Report</button>
+    <!-- <button type="submit" name="export" value="8" class="btn btn-primary">T3 Report</button> -->
+    <button type="submit" name="export" value="11" class="btn btn-inverse">PC By Model</button>
+
+    <!-- khuan -->
+    <button type="submit" name="export" value="17" class="btn btn-success">Achieve Remark</button>
+<!-- 
+    <button type="submit" name="export" value="12" class="btn btn-primary">Sale F5</button>
+    <button type="submit" name="export" value="13" class="btn btn-success">ASM F5</button>
+    <button type="submit" name="export" value="14" class="btn btn-success">Hero Product Performance</button>
+-->
+    <button type="submit" name="export" value="15" class="btn btn-inverse">Opr Stock</button>
+    <button type="submit" name="export" value="9" class="btn btn-primary">Area GFK</button>
+
+    <?php } ?>
+
+    <br><br><br>
+    <b style="padding-left: 500px;"><button style="font-size: 20px;" type="submit" name="export" value="10" class="btn btn-success">RD GFK</button></b>
+
+    <!-- <br/> <br/>
+    <div><font color="red">*ตัวกรองไม่มีผลกับปุ่ม Export Inventory Remain และ Export Inventory Distributor Chain</font></div> -->
+
+<?php } ?>
+
+</form>

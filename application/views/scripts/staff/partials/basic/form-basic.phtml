@@ -1,0 +1,94 @@
+<form role="form" id="form" action="<?php
+    if (isset($this->approve) and $this->approve)
+        echo HOST.'staff/approve-basic';
+    else
+        echo HOST.'staff/save-basic';
+;?>" class="form-horizontal" method="post" enctype="multipart/form-data">
+    <div class="row-fluid">
+        <div class="span12">
+            <?php if (isset($this->currentStaff) and $this->currentStaff): ?>
+                <legend>
+                    <?php if (isset($this->currentStaff['firstname'])) echo $this->currentStaff['firstname'] ?> <?php if (isset($this->currentStaff['lastname'])) echo $this->currentStaff['lastname'] ?>
+                    -
+                    <small>
+                        <?php $info = array(); ?>
+                        <?php if (isset($this->currentStaff['code'])) $info[] = $this->currentStaff['code'] ?>
+                        <?php if (isset($this->currentStaff['gender']) && $this->currentStaff['gender']) $info[] = "Male"; else $info[] = "Female"; ?>
+                        <?php if (isset($this->currentStaff['email'])) $info[] = $this->currentStaff['email'] ?>
+                        <?php echo implode(' - ', $info) ?>
+                    </small>
+
+                    <?php
+                        $stt = '';
+                        switch ($this->currentStaff['status']) {
+                            case My_Staff_Status::On:
+                                $stt = 'success';
+                                break;
+                            case My_Staff_Status::Off:
+                                $stt = 'important';
+                                break;
+                            case My_Staff_Status::Temporary_Off:
+                                $stt = 'warning';
+                                break;
+                            default:
+                                $stt = 'default';
+                                break;
+                        }
+                    ?>
+                    <span class="label label-<?php echo $stt ?>"><?php echo My_Staff_Status::get($this->currentStaff['status']) ?></span>
+                </legend>
+
+            <?php endif ?>
+
+            <?php if (isset($this->staffTemp) and $this->staffTemp){ ?>
+            <legend>
+                <p>Created At: <?php echo $this->staffTemp['created_at'];?> By: <?php echo (isset($this->staffsCached[$this->staffTemp['created_by']]) and $this->staffsCached[$this->staffTemp['created_by']]) ? $this->staffsCached[$this->staffTemp['created_by']] : '';?></p>
+                <?php if ($this->staffTemp['updated_by']) {?>
+                    <p>Updated At: <?php echo $this->staffTemp['updated_at'];?> By: <?php echo (isset($this->staffsCached[$this->staffTemp['updated_by']]) and $this->staffsCached[$this->staffTemp['updated_by']]) ? $this->staffsCached[$this->staffTemp['updated_by']] : '';?></p>
+                <?php } ?>
+            </legend>
+            <?php }?>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <p class="pull-right">
+                <input type="hidden" name="id" id="id" value="<?php isset($this->staffTemp['id']) and $this->staffTemp['id'] and printf($this->staffTemp['id']);?>">
+                <input type="hidden" name="staff_id" id="staff_id" value="<?php echo ((isset($this->currentStaff['id']) and $this->currentStaff['id']) ? $this->currentStaff['id'] : '') ;?>">
+                <input type="hidden" name="reject" id="reject" value="0">
+
+                <?php if (isset($this->approve) and $this->approve){?>
+                    <button id="approve" type="submit" class="btn btn-primary">Approve</button>
+                    <button id="rejectBtn" type="submit" onclick="javascript:$('#group').removeAttr('required');$('#reject').val(1);" class="btn btn-warning">Reject</button>
+                <?php } elseif (isset($this->isView) and $this->isView) {?>
+                <?php } else {?>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                <?php } ?>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <a href="<?php echo ((isset($this->back_url) and $this->back_url) ? $this->back_url : '/staff/list-basic') ?>" class="btn btn-danger go-back">Go back</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="alert" style="display:none;" class="alert alert-error"></div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_basic_info" data-toggle="tab">Basic Info</a></li>
+                <li><a href="#tab_personal_info" data-toggle="tab">Personal Info</a></li>
+                <li><a href="#tab_edu_exp" data-toggle="tab">Education &amp; Expericences</a></li>
+                <li><a href="#tab_relative_person" data-toggle="tab">Relative Persons</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_basic_info"><?php echo $this->render( 'staff/partials/basic/form-basic-info.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_personal_info"><?php echo $this->render( 'staff/partials/basic/form-personal-info.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_edu_exp"><?php echo $this->render( 'staff/partials/basic/form-edu-exp.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_relative_person"><?php echo $this->render( 'staff/partials/basic/form-relative-person.phtml' ) ?></div>
+            </div>
+        </div>
+    </div>
+</form>

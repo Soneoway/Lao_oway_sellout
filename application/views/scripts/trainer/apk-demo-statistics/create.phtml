@@ -1,0 +1,49 @@
+<?php
+    $params = $this->params;
+?>
+<div class="page-header">
+    <h1>IMEI : <?php echo $this->detail['imei']; ?> <br> System Model : <?php echo $this->detail['system_model']; ?></h1>
+</div>
+<div class="row">
+    <div class="span12 table-responsive">
+        <table class="table table-bordered" width="100%">
+            <thead>
+            <tr>
+                <th style="text-align: center; width: 5%;">No.</th>
+                <th>Runing Time</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <?php foreach ($this->data as $k => $item) { ?>
+                <tr>
+                    <td style="text-align: center;"><?php echo($k + 1); ?></td>
+                    <td><?php echo $item['run_time']; ?></td>
+                    <td><?php echo date('d/m/y H:i:s', strtotime($item['start_time'])); ?></td>
+                    <td><?php echo date('d/m/y H:i:s', strtotime($item['end_time'])); ?></td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<br/>
+<br/>
+
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+<button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+<br/>
+<br/>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function (e) {
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

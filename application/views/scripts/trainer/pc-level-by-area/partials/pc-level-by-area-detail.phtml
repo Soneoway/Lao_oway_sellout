@@ -1,0 +1,33 @@
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">PC List</h3>
+</div>
+<div class="modal-body">
+<table border=1 width="100%">
+  <tr>
+    <th align="center" width="10%">Area</th>
+    <th align="center" width="5%">Code</th>
+    <th align="center" width="30%">Staff Name</th>
+    <th align="center" width="10%">Stand By</th>
+    <th align="center" width="10%">Level</th>
+  </tr>
+  <?php 
+    $data = $this->pc_list;
+    for ($i=0;$i<count($data);$i++) {
+
+      echo "<tr >";
+      echo    "<td align=\"center\">".$data[$i]['area_name']."</td>";
+      echo    "<td align=\"center\">".$data[$i]['staff_code']."</td>";
+      echo    "<td style=\"padding-left:10px;\"><a title=\"View\" target=\"_blank\" href=\"".HOST."trainer/pc-level-detail?staff_id=".$data[$i]['staff_id']."\">".$data[$i]['staff_name']."</a></td>";
+      echo    "<td align=\"center\">".$data[$i]['pc_stand_by']."</td>";
+      echo    "<td align=\"center\">".$data[$i]['level_status']."</td>";
+      echo "</tr>";
+
+    } 
+  ?>
+</table>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

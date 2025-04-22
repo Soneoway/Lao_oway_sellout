@@ -1,0 +1,139 @@
+<form class="form-search form-horizontal" method="get" action="/timing/factory-report-by-week/factory-report-by-week" onsubmit="return validateSearch()">
+    <div class="row">
+        
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="product_id_01" class="span2">Product #01</label>
+                <select id="product_id_01" name="product_id_01[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->product_list) :
+                        foreach ($this->product_list as $product_list):
+                            ?>
+                            <option value="<?php echo $product_list['id'];?>" <?php if (isset($this->params['product_id_01']) and ( (is_array($this->params['product_id_01']) && in_array($product_list['id'], $this->params['product_id_01']) || $product_list['id']==$this->params['product_id_01'])) ):?>selected<?php endif;?>><?php echo $product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="product_id_02" class="span2">Product #02</label>
+                <select id="product_id_02" name="product_id_02[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->product_list) :
+                        foreach ($this->product_list as $product_list):
+                            ?>
+                            <option value="<?php echo $product_list['id'];?>" <?php if (isset($this->params['product_id_02']) and ( (is_array($this->params['product_id_02']) && in_array($product_list['id'], $this->params['product_id_02']) || $product_list['id']==$this->params['product_id_02'])) ):?>selected<?php endif;?>><?php echo $product_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From #01</label>
+                <input type="text" class="form-control search-query date span2" id="from_01" name="from_01" value="<?php isset($this->params['from_01']) and printf($this->params['from_01']);?>" required>
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">From #02</label>
+                <input type="text" class="form-control search-query date span2" id="from_02" name="from_02" value="<?php isset($this->params['from_02']) and printf($this->params['from_02']);?>" required>
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">Week Number</label>
+                <input type="number" style="text-align:center; width:50px;" min=1 id="week_no" name="week_no" value="<?php isset($this->params['week_no']) and printf($this->params['week_no']);?>" required />
+            </div>
+
+            
+            
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export By Store Type</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+/*
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        // end - start returns difference in milliseconds 
+        var diff = new Date(date_02 - date_01);
+
+        // get days
+        var days = (diff/1000/60/60/24) + 1;
+
+        if (days > 14) {
+            alert("Date Range Not Allow more than 14 Days [Selected Date Range is " + days + " Days!]");
+            return false;
+        }
+
+        // Check Number of Model 
+        var sum_model = $('#oppo_product_id').val() + "," + $('#huawei_product_id').val() + "," + $('#vivo_product_id').val() + "," + $('#samsung_product_id').val();
+
+        var model_temp = JSON.parse("[" + sum_model + "]");
+        var arr_model = model_temp.filter(Boolean);
+
+        if (arr_model.length == 0) {
+            alert("Please Select Model at least 1 Model!");
+            return false;
+        } else {
+            if (arr_model.length > 8) {
+                alert("Selected Model Not Allow more than 8 Models [Selected Model is " + arr_model.length + " Models!]");
+                return false;
+            }
+        }
+*/
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    
+    });
+</script>

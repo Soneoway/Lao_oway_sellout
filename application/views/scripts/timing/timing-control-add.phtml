@@ -1,0 +1,30 @@
+<div class="page-header">
+    <h1>Timing Control Add</h1>
+    <small>ເພິ່ມການຄວບຄຸມການລາຍງານຍອດ</small>
+</div>
+
+<form role="form" id="form" method="post" enctype="multipart/form-data" class="form-inline" action="<?php echo HOST.'timing/timing-control-save';?>">
+    <?php
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+        if (isset($this->messages) and $this->messages)
+            foreach ($this->messages as $message):
+                echo '<div class="alert alert-error">'.$message.'</div>';
+            endforeach;
+            ?>
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="control-group">
+                        <textarea cols="15" rows="20" name="imei"></textarea>
+                    </div>
+                    <div class="control-group">
+                        <button type="reset" class="btn btn-">Reset</button>
+                        <button type="submit" class="btn btn-success" name="save" value="1">Allow to verify</button>
+                        <button type="submit" class="btn btn-success" name="save" value="2">Not Allow to verify</button>
+                    </div>
+                </div>
+            </div>
+        </form>

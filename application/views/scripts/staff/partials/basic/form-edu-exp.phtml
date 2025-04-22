@@ -1,0 +1,285 @@
+
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-info add_education_btn"><i class="icon-plus"></i> Add Education...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <?php if (isset($this->currentEducation) && $this->currentEducation->count()){ ?>
+            <table class="table borderd education_list table_list">
+                <caption>Current Education</caption>
+                <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Level</th>
+                    <th>School</th>
+                    <th>Field of Study</th>
+                    <th>Graduated Year</th>
+                    <th>Grade</th>
+                    <th>Mode of Study</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (isset($this->currentEducation) && $this->currentEducation): ?>
+                    <?php foreach ($this->currentEducation as $key => $value): ?>
+                        <tr class="item edu-row">
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <?php echo $value['level'] ?>
+                            </td>
+                            <td>
+                                <?php echo $value['school'] ?>
+                            </td>
+                            <td>
+                                <?php echo $value['field_of_study'] ?>
+                            </td>
+                            <td>
+                                <?php echo $value['graduated_year'] ?>
+                            </td>
+                            <td>
+                                <?php echo $value['grade'] ?>
+                            </td>
+                            <td>
+                                <?php echo $value['mode_of_study'] ?>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+                </tbody>
+            </table>
+        <?php } ?>
+
+        <table class="table borderd education_list table_list">
+            <caption>Education</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Level</th>
+                    <th>School</th>
+                    <th>Field of Study</th>
+                    <th>Graduated Year</th>
+                    <th>Grade</th>
+                    <th>Mode of Study</th>
+                    <th>Default level</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody class="edu-tbody">
+                <?php
+                $educationList = null;
+                if (isset($this->staffTemp) and $this->staffTemp)
+                    $educationList = $this->tempEducation;
+                elseif (isset($this->currentStaff) and $this->currentStaff)
+                    $educationList = $this->currentEducation;
+
+                if ($educationList):
+                    foreach ($educationList as $key => $value): ?>
+                        <tr class="item edu-row">
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <input type="text" required="required" class="input-small level" name="level[]" value="<?php echo $value['level'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" class="input-medium school" name="school[]" value="<?php echo $value['school'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" class="input-medium field_of_study" name="field_of_study[]" value="<?php echo $value['field_of_study'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" class="input-mini graduated_year" name="graduated_year[]" value="<?php echo $value['graduated_year'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" class="input-mini grade" name="grade[]" value="<?php echo $value['grade'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" class="input-small mode_of_study" name="mode_of_study[]" value="<?php echo $value['mode_of_study'] ?>">
+                            </td>
+                            <td>
+                                <select name="default_level[]" class="default_level" style="width: 100px">
+                                    <option value="0">NONE</option>
+                                    <option value="1" <?php if(isset($value['default_level']) AND $value['default_level'] == 1) echo 'selected=selected';?>>DEFAULT
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-mini btn-danger edu-remove"><i class="icon-remove"></i> Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var education_div = '<tr class="item edu-row">\
+        <td>\
+    &nbsp;\
+        </td>\
+        <td>\
+    <input type="text" class="input-small level" required="required" name="level[]" value="">\
+        </td>\
+        <td>\
+    <input type="text" class="input-medium school" name="school[]" value="">\
+        </td>\
+        <td>\
+    <input type="text" class="input-medium field_of_study" name="field_of_study[]" value="">\
+        </td>\
+        <td>\
+    <input type="text" class="input-mini graduated_year" name="graduated_year[]" value="">\
+        </td>\
+        <td>\
+    <input type="text" class="input-mini grade" name="grade[]" value="">\
+        </td>\
+        <td>\
+    <input type="text" class="input-small mode_of_study" name="mode_of_study[]" value="">\
+        </td>\
+        <td>\
+                <select name="default_level[]" style="width: 100px" class="default_level">\
+                    <option value="0">NONE</option>\
+                    <option value="1">DEFAULT</option>\
+                </select>\
+        </td>\
+        <td>\
+    <button type="button" class="btn btn-mini btn-danger edu-remove"><i class="icon-remove"></i> Delete</button>\
+    </td>\
+    </tr>';
+</script>
+
+<!--  -->
+
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-warning add_experience_btn"><i class="icon-plus"></i> Add Experience...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <?php if (isset($this->currentExperience) && $this->currentExperience->count()){ ?>
+        <table class="table borderd experience_list table_list">
+            <caption>Current Experience</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Company Name</th>
+                    <th>Job Position</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Reason for Leaving</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($this->currentExperience as $key => $value): ?>
+                <tr class="item">
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        <?php echo $value['company_name'] ?>
+                    </td>
+                    <td>
+                        <?php echo $value['job_position'] ?>
+                    </td>
+                    <td>
+                        <?php echo ($value['from_date'] != NULL AND $value['from_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['from_date'])) : ''; ?>
+                    </td>
+                    <td>
+                        <?php echo ($value['to_date'] != NULL AND $value['to_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['to_date'])) : ''; ?>
+                    </td>
+                    <td>
+                        <?php echo $value['reason_for_leaving'] ?>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+            </tbody>
+        </table>
+        <?php } ?>
+
+        <table class="table borderd experience_list table_list">
+            <caption>Experience</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Company Name</th>
+                    <th>Job Position</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Reason for Leaving</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody class="exp-tbody">
+                <?php
+                $experienceList = null;
+                if (isset($this->staffTemp) and $this->staffTemp)
+                    $experienceList = $this->tempExperience;
+                elseif (isset($this->currentStaff) and $this->currentStaff)
+                    $experienceList = $this->currentExperience;
+                if ($experienceList):
+                    foreach ($experienceList as $key => $value): ?>
+                        <tr class="item">
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <input type="text" class="input-medium company_name" name="company_name[]" value="<?php echo $value['company_name'] ?>" required="required">
+                            </td>
+                            <td>
+                                <input type="text" name="job_position[]" class="input-medium job_position" value="<?php echo $value['job_position'] ?>" required="required">
+                            </td>
+                            <td>
+                                <input type="text" name="from_date[]" class="input-small from_date date" value="<?php echo  ($value['from_date'] != NULL AND $value['from_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['from_date'])) : ''; ?>" required="required">
+                            </td>
+                            <td>
+                                <input type="text" name="to_date[]" class="input-small to_date date" value="<?php echo ($value['to_date'] != NULL AND $value['to_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['to_date'])) : '';  ?>" required="required">
+                            </td>
+                            <td>
+                                <input type="text" name="reason_for_leaving[]" class="input-small reason_for_leaving" value="<?php echo $value['reason_for_leaving'] ?>">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-mini btn-danger exp-remove"><i class="icon-remove"></i> Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    experience_div = '<tr class="item">\
+        <td>\
+        &nbsp;\
+    </td>\
+        <td>\
+    <input type="text" class="input-medium company_name" name="company_name[]" required="required">\
+        </td>\
+        <td>\
+    <input type="text" name="job_position[]" class="input-medium job_position" required="required">\
+        </td>\
+        <td>\
+    <input type="text" name="from_date[]" class="input-small from_date date" required="required">\
+        </td>\
+        <td>\
+    <input type="text" name="to_date[]" class="input-small to_date date" required="required">\
+        </td>\
+        <td>\
+    <input type="text" name="reason_for_leaving[]" class="input-small reason_for_leaving" >\
+        </td>\
+        <td>\
+    <button type="button" class="btn btn-mini btn-danger exp-remove"><i class="icon-remove"></i> Delete</button>\
+    </td>\
+    </tr>'
+        ;
+
+
+</script>

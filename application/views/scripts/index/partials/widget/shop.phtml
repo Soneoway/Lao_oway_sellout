@@ -1,0 +1,294 @@
+<div class="table-responsive">
+
+<?php 
+  $now = date('Y-m-01');
+
+  $month = date('M-Y', strtotime($now));
+  $next_month = date('M-Y', strtotime("+1 Month", strtotime($now)));
+
+  // print_r($this->params2);
+
+?>
+
+<?php if (isset($this->store_list[0]['sale_target']) || isset($this->store_list[0]['sale_target_hero'])) { ?>
+<div class="row">
+    <div class="span12" align="center" style="padding: 10px 10px 10px 10px;">
+
+      <?php foreach ($this->sale_target as $value) : ?>
+
+        <h3 style="color: blue;">
+          Sale Area : <b style="color: red;"><?php echo $value['sub_area_name'] ?> </b> || 
+          Sale Target : <b style="color: red;"><?php echo $value['target'] ?></b> || 
+          Hero Target : <b style="color: red;"><?php echo $value['hero_target'] ?></b> || 
+          Hero Product : <b style="color: teal;"><?php echo $this->hero['hero_product_name'] ?></b>  
+        </h3>
+
+      <?php endforeach; ?>
+
+      <!-- <span style="font-family:'Noto Sans Lao'; color: blue; font-size:120%">
+          ເປົ້າລວມເດືອນກ່ອນ : <b style="color: red;"><?php echo $this->store_list[0]['last_sale_target'] ?></b> <b style="color: black;"> || </b> 
+          ເປົ້າ Hero ເດືອນກ່ອນ  : <b style="color: red;"><?php echo $this->store_list[0]['last_sale_target_hero'] ?></b><br>
+      </span> -->
+
+      <span style="font-family:'Noto Sans Lao'; color: blue; font-size:130%">
+          ເປົ້າລວມເດືອນນີ້ : <b style="color: red;"><?php echo $this->store_list[0]['sale_target'] ?></b> <b style="color: black;"> || </b> 
+          ເປົ້າ Hero ເດືອນນີ້ : <b style="color: red;"><?php echo $this->store_list[0]['sale_target_hero'] ?></b>
+      </span><br>
+
+      <h4>Hero Product : <b style="color: teal;"><?php echo $this->hero['hero_product_name'] ?></b></h4>
+
+    </div>
+</div>
+<?php } ?>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">#</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Store Code</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Store Name</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">[Code] Distributor Name</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">PC</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">PCDB</div></th>
+      <th colspan="2"><div align="center"><?php echo $month." ( ".$this->store_list[0]['sale_target']." )"; ?></div></th>
+      <!-- <th colspan="2"><div align="center"><?php echo $next_month." ( ".$this->store_list[0]['sale_target_next']." )"; ?></div></th> -->
+    </tr>
+    <tr>
+      <th><div align="center">Store Target</div></th>
+      <!-- <th><div align="center">Store Sale OUT</div></th> 
+      <th><div align="center">PC Target</div></th>-->
+      <th><div align="center">Store Hero Target</div></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <?php 
+      $db = Zend_Registry::get('db');
+      $StoreStaff = new Application_Model_StoreStaff();
+
+      $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+      $i = 1;
+      $sum_target = 0;
+      if(isset($this->store_list) and $this->store_list) :
+        foreach($this->store_list as $k => $v) :
+    ?> 
+    <tr>
+      <td><div align="center"><?php echo $i++; ?></div></td>
+      <!-- <td><div align="center"><?php if(isset($v['store_id'])) echo $v['store_id']; ?></div></td> -->
+      <td><?php if(isset($v['store_code'])) echo $v['store_code']; ?></td>
+      <td><?php if(isset($v['store_name'])) echo $v['store_name']; ?></td>
+      <td><?php if(isset($v['d_id'])) echo "[".$v['d_code']."] ".$v['d_name']; ?></td>
+      <?php 
+        $cnt_pc = 0;
+        $cnt_pcdb = 0;
+        $result1 = array();
+        $result = array();
+
+        //get number of pc
+        $where = $StoreStaff->getAdapter()->quoteInto('store_id = ? AND is_leader = 0', $v['store_id']);
+        $result = $StoreStaff->fetchAll($where);
+        $cnt_pc = count($result);
+
+        //get number of pcdb
+        $where2 = $StoreStaff->getAdapter()->quoteInto('store_id = ? AND  is_leader = 7', $v['store_id']);
+        $result1 = $StoreStaff->fetchAll($where2);
+        $cnt_pcdb = count($result1);
+
+        $Sum_cnt_pc = $Sum_cnt_pc + $cnt_pc;
+        $Sum_cnt_pcdb = $Sum_cnt_pcdb + $cnt_pcdb;
+
+      ?>
+      <td><div align="center"><?php if(isset($cnt_pc)) echo $cnt_pc; ?></div></td>
+      <td><div align="center"><?php if(isset($cnt_pcdb)) echo $cnt_pcdb; ?></div>
+      <td><div align="center"><?php 
+
+        if(isset($v['pc_target'])) { 
+
+            if ($userStorage->group_id == PGPB_ID) {
+              if ($cnt_pc == 0) { 
+                echo $v['pc_target'];  
+                $sum_target = $sum_target + $v['pc_target']; 
+              } else { 
+
+                $tmp = $v['pc_target'] / $cnt_pc; 
+                if ($tmp < 30) { $tmp = 30; }
+
+                echo number_format($tmp);
+                $sum_target = $sum_target + $tmp; 
+              }
+
+            } else {
+              echo $v['pc_target']; 
+              $sum_target = $sum_target + $v['pc_target']; 
+            }
+
+        } else {  
+          //if ($cnt_pc != 0) { echo "<font color='red'>Not Assign!</font>"; }
+          echo "<font color='red'>Not Assign!</font>";
+        }
+        
+      ?></div></td> 
+
+      <td><div align="center"><?php 
+
+        if(isset($v['pc_target_hero'])) { 
+
+            if ($userStorage->group_id == PGPB_ID) {
+              if ($cnt_pc == 0) { 
+                echo $v['pc_target_hero'];  
+                $sum_target_hero = $sum_target_hero + $v['pc_target_hero']; 
+              } else { 
+
+                $tmp = $v['pc_target_hero'] / $cnt_pc; 
+                if ($tmp < 15) { $tmp = 15; }
+
+                echo number_format($tmp);
+                $sum_target_hero = $sum_target_hero + $tmp; 
+              }
+
+            } else {
+              echo $v['pc_target_hero']; 
+              $sum_target_hero = $sum_target_hero + $v['pc_target_hero']; 
+            }
+
+        } else {  
+          //if ($cnt_pc != 0) { echo "<font color='red'>Not Assign!</font>"; }
+          echo "<font color='red'>Not Assign!</font>";
+        }
+        
+      ?></div></td> 
+
+      <!-- <td><div align="center"><?php 
+
+        if(isset($v['pc_target_next'])) { 
+
+            if ($userStorage->group_id == PGPB_ID) {
+              if ($cnt_pc == 0) { 
+                echo $v['pc_target_next'];  
+                $sum_target_next = $sum_target_next + $v['pc_target_next']; 
+              } else { 
+
+                $tmp = $v['pc_target_next'] / $cnt_pc; 
+                if ($tmp < 30) { $tmp = 30; }
+
+                echo number_format($tmp);
+                $sum_target_next = $sum_target_next + $tmp; 
+              }
+
+            } else {
+              echo $v['pc_target_next']; 
+              $sum_target_next = $sum_target_next + $v['pc_target_next']; 
+            }
+
+        } else {  
+          //if ($cnt_pc != 0) { echo "<font color='red'>Not Assign!</font>"; }
+          echo "<font color='red'>Not Assign!</font>";
+        }
+        
+      ?></div></td> --> 
+
+      <!-- <td><div align="center"><?php 
+
+        if(isset($v['pc_target_hero_next'])) { 
+
+            if ($userStorage->group_id == PGPB_ID) {
+              if ($cnt_pc == 0) { 
+                echo $v['pc_target_hero_next'];  
+                $sum_target_hero_next = $sum_target_hero_next + $v['pc_target_hero_next']; 
+              } else { 
+
+                $tmp = $v['pc_target_hero_next'] / $cnt_pc; 
+                if ($tmp < 15) { $tmp = 15; }
+
+                echo number_format($tmp);
+                $sum_target_hero_next = $sum_target_hero_next + $tmp; 
+              }
+
+            } else {
+              echo $v['pc_target_hero_next']; 
+              $sum_target_hero_next = $sum_target_hero_next + $v['pc_target_hero_next']; 
+            }
+
+        } else {  
+          //if ($cnt_pc != 0) { echo "<font color='red'>Not Assign!</font>"; }
+          echo "<font color='red'>Not Assign!</font>";
+        }
+        
+      ?></div></td> --> 
+
+    </tr>
+    <?php endforeach ; endif ?>
+
+    <?php 
+
+      // Normal Target
+      if (isset($this->store_list[0]['sale_target']) || isset($this->store_list[0]['sale_target_next'])) { 
+
+        if ($sum_target >= $this->store_list[0]['sale_target']) { $font_color = "green"; }
+        else { $font_color = "red"; }
+        if ($sum_target_next >= $this->store_list[0]['sale_target_next']) { $font_color_next = "green"; }
+        else { $font_color_next = "red"; }
+
+        echo "<tr>";
+      echo "<td colspan='4'><div align='center'>Total</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$Sum_cnt_pc."</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$Sum_cnt_pcdb."</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$sum_target."</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$sum_target_hero."</div></td>";
+       echo "</tr>";
+
+      // echo "<tr>";
+
+      //   if (isset($this->store_list[0]['sale_target'])) {
+      //     echo "<td colspan='7'><div align='right'> Total Store Target : <font color='".$font_color."'>".$sum_target."</font> of ".$this->store_list[0]['sale_target'],"</div></td>";
+      //   } else { echo "<td colspan='7'></td>"; }
+
+      //   // if (isset($this->store_list[0]['sale_target_next'])) {
+      //   //   echo "<td colspan='2'><div align='right'> Assign Target : <font color='".$font_color_next."'>".$sum_target_next."</font> of ".$this->store_list[0]['sale_target_next']."</div></td>";
+      //   // } else { echo "<td colspan='2'></td>"; }
+
+      //   echo "</tr>";
+      }
+
+      // Hero Target
+      if (isset($this->store_list[0]['sale_target_hero']) || isset($this->store_list[0]['sale_target_hero_next'])) {
+
+        if ($sum_target_hero >= $this->store_list[0]['sale_target_hero']) { $font_color = "green"; }
+        else { $font_color = "red"; }
+        // if ($sum_target_hero_next >= $this->store_list[0]['sale_target_hero_next']) { $font_color_next = "green"; }
+        // else { $font_color_next = "red"; }
+
+        // echo "<tr>"; 
+
+        // if (isset($this->store_list[0]['sale_target_hero'])) {
+        //   echo "<td colspan='7'><div align='right'> Assign Hero Target : <font color='".$font_color."'>".$sum_target_hero."</font> of ".$this->store_list[0]['sale_target_hero']."</div></td>";
+        // } else { echo "<td colspan='7'></td>"; }
+
+        // // if (isset($this->store_list[0]['sale_target_hero_next'])) {
+        // //   echo "<td colspan='2'><div align='right'> Assign Hero Target : <font color='".$font_color_next."'>".$sum_target_hero_next."</font> of ".$this->store_list[0]['sale_target_hero_next']."</div></td>";
+        // // } else { echo "<td colspan='2'></td>"; }
+
+        // echo "</tr>";
+      }
+
+      if ($userStorage->group_id == SALES_ID) {
+        $QGoodKpiLog = new Application_Model_GoodKpiLog();
+        $sale_com = $QGoodKpiLog->com_sale_bkk_2017($this->params2);
+        //print_r($sale_com);
+
+        echo "<tr>";
+        echo "<td colspan='3'><div align='center'>Total Activated Unitt : ".number_format($sale_com[0]['total_unit'])." Unit</div></td>";
+        echo "<td><div align='center'>Total Sale Amount : ".number_format($sale_com[0]['total_price'])." Kip</div></td>";
+        if (isset($this->store_list[0]['sale_target'])) {
+          echo "<td colspan='5'><div align='right'> Total Store Target : <font color='".$font_color."'>".$sum_target."</font> of ".$this->store_list[0]['sale_target'],"</div></td>";
+        } else { echo "<td colspan='5'></td>"; }
+        // - ;Sellout Commissionn : ".number_format($sale_com[0]['com_rate']). Kip" 
+        echo "</tr>";
+      }
+
+    ?>
+    
+  </tbody>
+</table>
+</div>

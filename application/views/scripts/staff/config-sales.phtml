@@ -1,0 +1,62 @@
+<div class="page-header">
+    <h1>Configure Sales salary by Province</h1>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-advance table-hover">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',                    
+                    'Province',
+                    'Total salary',
+                    'Base salary',
+                    'Food salary',
+                    'Fuel salary',
+                    'Phone salary',
+                    'Probation salary',
+                    'Action'
+                    
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if (isset($this->provinces) and $this->provinces)
+            foreach ($this->provinces as $k=>$item): ?>
+                <tr>
+                    <td>
+                        <?php
+                        $inc = $this->offset + $k + 1;
+                        echo $inc;
+                        ?>
+                    </td>
+                    <td><?php echo $item['name'];?></td>
+                    <td><?php echo $item['bonus_salary'];?></td>
+                    <td><?php echo $item['base_salary'];?></td>
+                    <td><?php echo $item['allowance_1'];?></td>
+                    <td><?php echo $item['allowance_2'];?></td>
+                    <td><?php echo $item['allowance_3'];?></td>
+                    <td><?php echo $item['probation_salary'];?></td>
+                    <td class="">
+                        <a title="Edit" href="<?php echo HOST;?>staff/config-sales-edit?province_id=<?php echo $item['id'];?>"> <i class="icon-edit"></i></a>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+
+</div>

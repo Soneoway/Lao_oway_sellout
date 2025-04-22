@@ -1,0 +1,617 @@
+<?php 
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+$ka_falg_01 = $ka_falg_02 = "";
+
+if ( !is_null($this->store->store_id) && $this->store->store_id != '') { $ka_falg_01 = "readonly"; }
+if ( !is_null($this->store->store_code) && $this->store->store_code != '' ) { $ka_falg_02 = "readonly"; }
+
+$store_type_flag = "disabled";
+$store_level_flag = "disabled";
+
+if ( !isset($this->store) ) { $store_type_flag = ""; }
+if ($userStorage->group_id == ADMINISTRATOR_ID) { $store_type_flag = ""; $store_level_flag = ""; }
+
+?>
+
+<?php
+if($this->store->start_cooperation){
+
+    $temp = explode('-' , $this->store->start_cooperation);
+    $temp = $temp[2] . '/' . $temp[1] . '/' . $temp[0];
+    $date = trim($temp);
+
+}
+?>
+
+<style type="text/css">
+    .control-label {
+        float: left;
+        width: 80px;
+        padding-top: 5px;
+    }
+
+    #laocolor{
+        color: blue;
+        font-style: bold;
+        font-size: 16PX;
+    }
+
+    label {
+        font-size: 16px;
+    }
+
+    h3 {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .control-group {
+        padding-bottom: 10px;
+    }
+
+</style>
+
+<div class="row-fluid" style="padding: 20px;">
+    <div class="span4">
+        <div class="control-group">
+            <label> Store Name : <span style="color: red">*</span></label>
+            <input type="text" name="name" class="span3" value="<?php if (isset($this->store)): echo $this->store->name; endif;?>" />
+        </div>
+
+        <div class="control-group">
+            <label>Market Type : <span style="color: red">*</span></label>
+            <select id="market_type" name="market_type" class="span3" required="required">
+                <option value="">Choose</option>
+                <?php
+                if ($this->market_type) :
+                    foreach ($this->market_type as $market_type):?>
+                        <option value="<?php echo $market_type->id;?>" <?php if (isset($this->market_info['market_type_id']) and $this->market_info['market_type_id'] == $market_type->id):?>selected<?php endif;?>><?php echo $market_type->name;?></option>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="span4">
+        <div class="control-group">
+            <label>Store Type : <span style="color: red">*</span></label>
+            <select id="org" name="org" class="span3" required="required" onChange="checkStoreNameFromStoreType();" <?php echo $store_type_flag; ?> > 
+                <option value="">Choose</option>
+                <?php
+                if ($this->org) :
+                    foreach ($this->org as $org):?>
+                        <option value="<?php echo $org->org_id;?>" <?php if (isset($this->store->org_dealer) and $this->store->org_dealer == $org->org_id):?>selected<?php endif;?>><?php echo $org->org_name;?></option>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Market Name : <span style="color: red">*</span></label>
+            <select id="market_name" name="market_name" class="span3 js-example-basic-single" required="required">
+                <option value=''>Select</option>
+                <?php
+                if ($this->market_name) :
+                    foreach ($this->market_name as $market_name):
+                        ?>
+                        <option value="<?php echo $market_name->id;?>" <?php if (isset($this->market_info['market_name_id']) and $this->market_info['market_name_id'] == $market_name->id):?>selected<?php endif;?>><?php echo $market_name->name;?>
+                    </option>
+                    <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div>
+</div>
+
+<div class="span4">
+    <div class="control-group">
+        <label>Custom Information : </label>
+        <input type="text" name="cus_info" class="span3" />
+    </div>
+
+    <div class="control-group">
+        <label> Store Level : <span style="color: red">*</span></label>
+        <select id="store_level" name="store_level" class="span3" required="required"> class="form-control span6" <?php echo $store_level_flag; ?> >
+            <option value="">Choose</option>
+            <?php 
+            if ($this->store_level_list) :
+                foreach ($this->store_level_list as $store_level_list):?>
+                    <option value="<?php echo $store_level_list['id'];?>" <?php if (isset($this->store->store_grade) and $this->store->store_grade == $store_level_list['id']):?>selected<?php endif;?>><?php echo $store_level_list['name'];?></option>
+                    <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div>
+</div>
+</div>
+
+<div class="row-fluid" style="border-style: solid; padding: 20px; border-color: lavender; margin-top: 20px;">
+    <h3 style="padding-bottom: 10px"> Basic Info </h3>
+    <hr />
+
+    <div class="row" style="margin-top : 20px">
+        <div class="span4">
+            <div class="control-group">
+                <label>Affiliated Distributor : <span style="color: red">*</span></label>
+                <select id="dis_id" name="dis_id" class="span3" required>
+                    <option value=""> Choose </option>
+                    <?php if(isset($this->distributor) && $this->distributor) : ?>
+                        <?php foreach ($this->distributor as $key => $value) : ?>
+                            <option value="<?php echo $value['id'] ?>" <?php if(isset($this->store->d_id) and $this->store->d_id == $value['id']) : ?> selected <?php endif; ?> id><?php echo $value['title'] ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Sales Type : <span style="color: red">*</span></label>
+                <select id="sale_type" name="sale_type" class="span3" required>
+                    <option value=""> Choose </option>
+                    <option value="1" <?php if(isset($this->store->sale_type) and $this->store->sale_type == 1) : ?> selected <?php endif; ?>> Physical Store </option>
+                    <option value="2" <?php if(isset($this->store->sale_type) and $this->store->sale_type == 2) : ?> selected <?php endif; ?>> Virtual Store </option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Tag : </label>
+                <input type="text" name="tag" class="span3" readonly />
+            </div>
+        </div>
+
+        <div class="span4">
+            <div class="control-group">
+                <label>Affiliated Agency : <span style="color: red">*</span></label>
+                <select id="agency" name="agency" class="span3" required>
+                    <option value=""> Choose </option>
+                    <?php if(isset($this->subarea) && $this->subarea) : ?>
+                        <?php foreach($this->subarea as $key => $value) : ?>
+                            <option value="<?php echo $key ?>" <?php if(isset($this->store->agency) and $this->store->agency == $key) : ?> selected <?php endif; ?>><?php echo $value?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Cooperation Starting Date : <span style="color: red">*</span></label>
+                <input type="text" name="start_cooperation" class="span3 date " required value="<?php if(isset($this->store->start_cooperation) and $this->store->start_cooperation ): echo $date; endif; ?>" />
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="control-group">
+                <label>Administrative Attribute : <span style="color: red">*</span></label>
+                <select id="attribute" name="attribute" class="span3" required>
+                    <option value=""> Choose </option>
+                    <option value="1" <?php if(isset($this->store->attribute) and $this->store->attribute == 1): ?> selected <?php endif; ?> > Downtown </option>
+                    <option value="2" <?php if(isset($this->store->attribute) and $this->store->attribute == 2): ?> selected <?php endif; ?> > County </option>
+                    <option value="3" <?php if(isset($this->store->attribute) and $this->store->attribute == 3): ?> selected <?php endif; ?> > Township </option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>External Serial Number : </label>
+                <input type="text" name="serial_number" class="span3" value="<?php if(isset($this->store->external_serial) and $this->store->external_serial): echo $this->store->external_serial; endif; ?>" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="border-style: none; padding: 30px; " >
+
+        <h3 style="padding-bottom: 10px">Address Info</h3>
+        <hr />
+
+        <div class="span4">
+            <div class="control-group">
+                <label>Country : </label>
+                <select id="area_id" name="area_id" class="span3" required="required">
+                    <option value=""> Choose </option>
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $_key => $_name): ?>
+                            <option value="<?php echo $_key;?>" <?php if (isset($this->store->area_id) && $this->store->area_id == $_key):?>selected<?php endif;?>><?php echo $_name;?></option>
+                            <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="span4">
+            <div class="control-group">
+                <label>Region : </label>
+                <select id="regional_market" name="regional_market" class="span3" required="required" 
+                <?php if(!$this->regional_markets) { echo "disabled"; } ?> >
+                <option value=""> Choose </option>
+                <?php
+                if ($this->regional_markets) :
+                    foreach ($this->regional_markets as $regional_market):?>
+                        <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->store->province_id) and $this->store->province_id == $regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="control-group">
+            <label>Address : </label>
+            <input type="text" name="address" class="span3" required value="<?php if(isset($this->store->company_address) and $this->store->company_address): echo $this->store->company_address; endif; ?>" />
+        </div>
+    </div>
+
+</div>
+
+<div class="row" style="border-style: none; padding: 30px;">
+    <h3 style="padding-left: 30px">Store Delivery Address</h3>
+    <hr />
+
+    <div class="span4">
+        <div class="control-group">
+            <label>Receiver : </label>
+            <input type="text" name="receiver" class="span3" required  value="<?php if(isset($this->store->leader) and $this->store->leader): echo $this->store->leader; endif; ?>" />
+        </div>
+    </div>
+
+    <div class="span4">
+        <div class="control-group">
+            <label>Receiver Tel. : </label>
+            <input type="text" name="tel" class="span3" required value="<?php if(isset($this->store->phone_number) and $this->store->phone_number): echo $this->store->phone_number; endif; ?>" />
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="control-group">
+            <label>Warehouse Address : </label>
+            <textarea class="span3" cols="2" rows="2" required name="warehouse_address"><?php if(isset($this->store->shipping_address) and $this->store->shipping_address): echo $this->store->shipping_address; endif; ?></textarea>
+        </div>
+    </div>
+
+</div>
+
+<div class="row" style="border-style: none; padding: 30px">
+    <h3>Finance Info</h3>
+    <hr />
+
+    <div class="span4">
+        <div class="control-group">
+            <label>Finance Client : </label>
+            <input type="text" name="finance_client" class="span3" />
+        </div>
+
+        <div class="control-group">
+            <label>Unified Social Credit Code : </label>
+            <input type="text" name="credit_code" class="span3" />
+        </div>
+    </div>
+
+    <div class="span4">
+        <div class="control-group">
+            <label>Business License : </label>
+            <input type="text" name="business_lic" class="span3" />
+        </div>
+
+        <div class="control-group">
+            <label>Print Price : </label>
+            <input type="text" name="print_p" class="span3" />
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="control-group">
+            <label>Opertator Attribute : </label>
+            <input type="text" class="span3" name="o_attribute" />
+        </div>
+    </div>
+
+</div>
+
+<div class="row-fluid">
+    <div class="span12" style="padding: 50px">
+        <?php echo $this->render('manage/store/partials/store-staff.phtml'); ?>
+    </div>
+</div>
+
+
+<div class="row-fluid">
+    <input type="hidden" name="id" id="id" value="<?php if(isset($this->store) and $this->store) echo $this->store->id;?>">
+    <button type="button" id="submit_btn" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</div>
+
+
+</div>
+
+
+<div class="row-fluid">
+   <!--  <div class="control-group">
+        <label for="name"x id="laocolor"> <span> Store Name </span> | ຊື່ຮ້ານ</label>
+        <input type="text" placeholder="Provience - Store name" class="form-control span6" id="name" name="name" required="required" value="<?php if (isset($this->store)): echo $this->store->name; endif;?>">
+    </div> -->
+
+    <!-- <div class="control-group">
+        <div id="store_name_check">
+            
+        </div>
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="oppo_id"  id="laocolor"> ລະຫັດຮ້ານຄ້າໃນລະບົບ OPPO</label>
+        <input type="text" placeholder="LAXXXXX" class="form-control span6" id="oppo_id" name="oppo_id" value="<?php if(isset($this->store)): echo $this->store->oppo_id; endif; ?>" />
+    </div> -->
+
+
+    <!-- <div class="control-group">
+        <label for="area_id" id="laocolor"> Area | ເຂດ </label>
+        <select id="area_id" name="area_id" class="form-control span6" required="required">
+            <option value="">ເລືອກເຂດ</option>
+            <?php
+            if ($this->areas) :
+                foreach ($this->areas as $_key => $_name): ?>
+                    <option value="<?php echo $_key;?>" <?php if (isset($this->store_area) && $this->store_area == $_key):?>selected<?php endif;?>><?php echo $_name;?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="regional_market" id="laocolor"> Province | ແຂວງ </label>
+        <select id="regional_market" placeholder="ເລືອກແຂວງ" name="regional_market" class="form-control span6" required="required" 
+            <?php if(!$this->regional_markets) { echo "disabled"; } ?> >
+            <option value="">Choose</option>
+            <?php
+            if ($this->regional_markets) :
+                foreach ($this->regional_markets as $regional_market):?>
+                    <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->store_province) and $this->store_province == $regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="district" id="laocolor"> District | ເມືອງ </label>
+        <select id="district" name="district" class="form-control span6" required="required" 
+            <?php if(!$this->districts) { echo "disabled"; } ?> >
+            <option value="">Choose</option>
+            <?php
+            if ($this->districts) :
+                foreach ($this->districts as $regional_market):?>
+                    <option value="<?php echo $regional_market['id'];?>" <?php if (isset($this->store) and $this->store['district']==$regional_market['id']):?>selected<?php endif;?>><?php echo $regional_market['name'];?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="sub_district" id="laocolor"> Sub District | ບ້ານ </label>
+        <select id="sub_district" name="sub_district" class="form-control span6" 
+            <?php 
+                /*
+                $bkk_list = array(73,74,75,76,77,78,79,80);
+
+                if ( in_array($this->store_area, $bkk_list) ) { echo "disabled"; }
+                else {
+                    if( ($this->store['sub_district']) || is_null($this->store['sub_district']) ) {  } 
+                    else { echo "disabled"; } 
+                }*/
+
+                if( !$this->store['sub_district'] ) { echo "disabled"; } 
+
+            ?> >
+            <option value="">Choose</option>
+            <?php
+            if ($this->sub_districts) :
+                foreach ($this->sub_districts as $sub_districts):?>
+                    <option value="<?php echo $sub_districts['id'];?>" <?php if (isset($this->store) and $this->store['sub_district']==$sub_districts['id']):?>selected<?php endif;?>><?php echo $sub_districts['name'];?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="th_province">TH Province 2222</label>
+        <select id="th_province" name="th_province" class="form-control span6" required="required">
+            <option value="">Choose</option>
+            <?php
+          //  if ($this->th_province) :
+           //     foreach ($this->th_province as $_key => $_name): ?>
+                  <option value="<?php //echo $_key;?>" <?php// if (isset($this->store_th_province) && $this->store_th_province == $_key):?>selected<?php// endif;?>><?php// echo $_name;?></option>
+            //    <?php
+             //   endforeach;
+            //endif;
+            ?>
+        </select>
+    </div> -->
+
+   <!--  <div class="control-group">
+        <label for="th_amphure">TH Amphure</label>
+        <select id="th_amphure" name="th_amphure" class="form-control span6" required="required" 
+            <?php //if(!$this->th_amphure) { echo "disabled"; } ?> >
+            <option value="">Choose</option>
+            <?php
+            //if ($this->th_amphure) :
+                //foreach ($this->th_amphure as $th_amphure):?>
+                    <option value="<?php //echo $th_amphure['id'];?>" <?php //if (isset($this->store_th_amphure) and $this->store_th_amphure == $th_amphure['id']):?>selected<?php //endif;?>><?php //echo $th_amphure['name_th'];?></option>
+                <?php
+                //endforeach;
+            //endif;
+            ?>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label for="th_district">TH District</label>
+        <select id="th_district" name="th_district" class="form-control span6" required="required" 
+            <?php// if(!$this->th_district) { echo "disabled"; } ?> >
+            <option value="">Choose</option>
+            <?php
+            //if ($this->th_district) :
+                //foreach ($this->th_district as $th_district):?>
+                    <option value="<?php //echo $th_district['id'];?>" <?php //if (isset($this->store) and $this->store['th_district']==$th_district['id']):?>selected<?php //endif;?>><?php //echo $th_district['name_th'];?></option>
+                <?php
+               // endforeach;
+           // endif;
+            ?>
+        </select>
+    </div> -->
+
+
+	<!-- <div class="control-group">
+        <label for="org" id="laocolor">ປະເພດຮ້ານຄ້າ | Store Type (ORG / Dealer / BrandShop)</label>
+        <select id="org" name="org" class="form-control span6" required="required" onChange="checkStoreNameFromStoreType();" <?php echo $store_type_flag; ?> > 
+            <option value="">Choose</option>
+            <?php
+            if ($this->org) :
+                foreach ($this->org as $org):?>
+                    <option value="<?php echo $org->org_id;?>" <?php if (isset($this->store->org_dealer) and $this->store->org_dealer == $org->org_id):?>selected<?php endif;?>><?php echo $org->org_name;?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label for="market_type" id="laocolor">ປະເພດຕະຫຼາດ | Market Type</label>
+        <select id="market_type" name="market_type" class="form-control span6" required="required">
+            <option value="">Choose</option>
+            <?php
+            if ($this->market_type) :
+                foreach ($this->market_type as $market_type):?>
+                    <option value="<?php echo $market_type->id;?>" <?php if (isset($this->market_info['market_type_id']) and $this->market_info['market_type_id'] == $market_type->id):?>selected<?php endif;?>><?php echo $market_type->name;?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label for="market_name" class="" id="laocolor">Market Name</label>
+        <select id="market_name" name="market_name" class="span6 js-example-basic-single" required="required">
+            <option value=''>Select</option>
+                <?php
+                    if ($this->market_name) :
+                        foreach ($this->market_name as $market_name):
+                ?>
+                            <option value="<?php echo $market_name->id;?>" <?php if (isset($this->market_info['market_name_id']) and $this->market_info['market_name_id'] == $market_name->id):?>selected<?php endif;?>><?php echo $market_name->name;?>
+                            </option>
+                <?php
+                        endforeach;
+                    endif;
+                ?>
+            </select> -->
+            &nbsp;&nbsp;
+        <!-- 
+        <a href="#" id="mn_edit" class="badge badge-success" title="Click to Edit" 
+            data-id="<?php if(isset($this->market_info['market_name_id']) && $this->market_info['market_name_id']) echo $this->market_info['market_name_id']; ?>"
+            data-name="<?php if(isset($this->market_info['market_name']) && $this->market_info['market_name']) echo $this->market_info['market_name']; ?>"
+            data-mt="<?php if(isset($this->market_info['market_type_id']) && $this->market_info['market_type_id']) echo $this->market_info['market_type_id']; ?>"
+        >Edit</a>
+        <a href="#" id="mn_add" class="badge badge-info" title="Click to Add" 
+            data-mt="<?php if(isset($this->market_info['market_type_id']) && $this->market_info['market_type_id']) echo $this->market_info['market_type_id']; ?>"
+        >Add</a>
+    -->
+</div>
+
+    <!-- <div class="control-group">
+        <label for="it_junction" class="control-label">IT Junction</label>
+        <div>
+            <input type="checkbox" name="it_junction" id="it_junction" value="1" <?php if (isset($this->store) and $this->store->it_junction==1):?> checked="checked" <?php endif;?> />
+        </div>
+    </div> -->
+
+
+    <!-- <div class="control-group">
+        <label for="store_level" id="laocolor">ລະດັບຂອງຮ້ານຄ້າ | Store Level</label>
+        <select id="store_level" name="store_level" class="span6" required="required"> class="form-control span6" <?php echo $store_level_flag; ?> >
+            <option value="">Choose</option>
+            <?php 
+            if ($this->store_level_list) :
+                foreach ($this->store_level_list as $store_level_list):?>
+                    <option value="<?php echo $store_level_list['id'];?>" <?php if (isset($this->store->store_grade) and $this->store->store_grade == $store_level_list['id']):?>selected<?php endif;?>><?php echo $store_level_list['name'];?></option>
+                <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+    </div> -->
+
+<!--     <div class="control-group">
+        <label for="store_id">Shop ID</label>
+        <input type="text" class="form-control span6" id="store_id" name="store_id" value="<?php if (isset($this->store)): echo $this->store->store_id; endif;?>" <?php echo $ka_falg_01; ?> >
+    </div>
+
+    <div class="control-group">
+        <label for="store_code">Shop Code</label>
+        <input type="text" class="form-control span6" id="store_code" name="store_code" value="<?php if (isset($this->store)): echo $this->store->store_code; endif;?>" <?php echo $ka_falg_02; ?>>
+    </div> -->
+
+ <!--    <div class="control-group">
+        <label for="company_name" id="laocolor">Company Name/ຊື່ບໍລິສັດ</label>
+        <input type="text" class="form-control span6" id="company_name" name="company_name" value="<?php if (isset($this->store)): echo $this->store->company_name; endif;?>" >
+    </div>
+-->
+<!--     <div class="control-group">
+        <label for="company_address" id="laocolor">Company Address/ທີ່ຢູ່ຂອງບໍລິສັດ</label>
+        <input type="text" class="form-control span6" id="company_address" name="company_address" value="<?php if (isset($this->store)): echo $this->store->company_address; endif;?>" >
+    </div> -->
+
+    <!-- <div class="control-group">
+        <label for="shipping_address" id="laocolor">Store Address | ທີ່ຢູ່ຂອງຮ້ານ</label>
+        <input type="text" class="form-control span6" id="shipping_address" name="shipping_address" readonly style="font-family: 'Noto Sans Lao', sans-serif;" value="<?php if (isset($this->store)): echo $this->store->shipping_address; endif;?>" >
+    </div>
+
+    <div class="control-group">
+        <label for="agency_name" id="laocolor">Owner Name | ຊື່ເຈົ້າຂອງຮ້ານ</label>
+        <input type="text" class="form-control span6" id="agency_name" name="agency_name" readonly style="font-family: 'Noto Sans Lao', sans-serif;" value="<?php if (isset($this->store)): echo $this->store->agency_name; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="phone_number" id="laocolor">Phone number | ເບີໂທຂອງຮ້ານ</label>
+        <input type="tel" class="form-control span6" id="phone_number" name="phone_number" readonly style="font-family: 'Noto Sans Lao', sans-serif;" value="<?php if (isset($this->store)): echo $this->store->phone_number; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="contact_email" id="laocolor">Contact Email | ອິເມລຂອງຮ້ານ</label>
+        <input type="email" class="form-control span6" id="contact_email" name="contact_email" readonly style="font-family: 'Noto Sans Lao', sans-serif;" value="<?php if (isset($this->store)): echo $this->store->contact_email; endif;?>">
+    </div> -->
+
+<!--     <div class="control-group">
+        <label for="contact_point">Contact Point</label>
+        <input type="text" class="form-control span6" id="contact_point" name="contact_point" value="<?php if (isset($this->store)): echo $this->store->contact_point; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="contact_phone">Contact Phone</label>
+        <input type="text" class="form-control span6" id="contact_phone" name="contact_phone" value="<?php if (isset($this->store)): echo $this->store->contact_phone; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="mst">MST</label>
+        <input type="text" class="form-control span6" id="mst" name="mst" value="<?php if (isset($this->store)): echo $this->store->mst; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="rank">Rank</label>
+        <input type="number" class="form-control span6" id="rank" name="rank" min="0" max="4" value="<?php if (isset($this->store)): echo $this->store->rank; endif;?>">
+    </div> -->
+</div>

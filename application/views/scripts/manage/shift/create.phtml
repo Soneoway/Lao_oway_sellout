@@ -1,0 +1,87 @@
+<div class="page-header">
+    <?php if (isset($this->product) and $this->product):?>
+        <h1>Edit Shift</h1>
+    <?php else:?>
+        <h1>Create Shift</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'manage/shift-save';?>" method="post">
+
+    <div class="control-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control span2" id="name" name="name" required="required" value="<?php if (isset($this->shift)): echo $this->shift->name; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="timepicker_start">Start time</label>
+        <input placeholder="HH:mm" type="text" class="form-control span2" id="timepicker_start" name="timepicker_start" required="required" value="<?php if (isset($this->shift['start'])): echo $this->shift['start']; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="timepicker_end">End time</label>
+        <input placeholder="HH:mm" type="text" class="form-control span2" id="timepicker_end" name="timepicker_end" required="required" value="<?php if (isset($this->shift['end'])): echo $this->shift['end']; endif;?>">
+    </div>
+
+    <div class="control-group">
+        <label for="status">In Use</label>
+        <input type="checkbox" class="form-control" name="status" id="status" <?php if($this->shift['status'] && $this->shift['status'] == 1) echo 'checked="checked' ?> value="1" />
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php isset($this->shift) and $this->shift and printf($this->shift->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        $('#timepicker_start').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpStartSelect
+        });
+        $('#timepicker_end').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpEndSelect
+        });
+
+    });
+
+    // when start time change, update minimum for end timepicker
+    function tpStartSelect( time, endTimePickerInst ) {
+        $('#timepicker_end').timepicker('option', {
+            minTime: {
+                hour: endTimePickerInst.hours,
+                minute: endTimePickerInst.minutes
+            }
+        });
+    }
+
+    // when end time change, update maximum for start timepicker
+    function tpEndSelect( time, startTimePickerInst ) {
+        $('#timepicker_start').timepicker('option', {
+            maxTime: {
+                hour: startTimePickerInst.hours,
+                minute: startTimePickerInst.minutes
+            }
+        });
+    }
+</script>

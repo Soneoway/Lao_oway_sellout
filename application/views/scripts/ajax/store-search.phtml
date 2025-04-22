@@ -1,0 +1,10 @@
+<select name="store_result" id="store_result" multiple="multiple" size="8" class="span6">
+	<?php if (isset($this->stores) && $this->stores): ?>
+		<?php foreach ($this->stores as $key => $store): ?>
+			<option value="<?php echo $store['id'] ?>"
+				title="<?php echo $store['name']?>"><?php 
+				echo $store['name']
+			 ?></option>
+		<?php endforeach ?>
+	<?php endif ?>
+</select>

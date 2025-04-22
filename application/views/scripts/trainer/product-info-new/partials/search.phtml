@@ -1,0 +1,18 @@
+<form id="search_form" class="form-search form-horizontal" method="get"
+      action="/trainer/sales-product-info-new/product-info-new">
+    <div class="row" style="padding-top: 20px;">
+        <div class="span5">
+            <div class="control-group">
+                <label for="topic" class="span2">Topic</label>
+                <input id="topic" name="topic" type="text" class="search-query form-control span2"
+                       value="<?php isset($this->params['topic']) and printf($this->params['topic']); ?>">
+            </div>
+        </div>
+
+        <div class="span5">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+</form>

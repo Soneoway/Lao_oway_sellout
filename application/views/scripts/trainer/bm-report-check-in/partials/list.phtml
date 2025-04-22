@@ -1,0 +1,58 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Staff Code</th>
+        <th>Staff Name</th>
+        <th>Area</th>
+        <th>Building</th>
+        <th>Store Name</th>
+        <th>Actoin</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $db = Zend_Registry::get('db');
+    $QBmCheckInLog = new Application_Model_BmCheckInLog();
+
+    if (isset($this->pc_check_in) and $this->pc_check_in)
+        foreach ($this->pc_check_in as $k=>$pc_check_in):
+            $market_name = $QBmCheckInLog->getMarketName($pc_check_in['staff_id']);
+            $store_name = $QBmCheckInLog->getStoreName($pc_check_in['staff_id']); ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $pc_check_in['staff_code'];?></td>
+                <td><?php echo $pc_check_in['staff_name'];?></td>
+                <td><?php echo $pc_check_in['area_name'];?></td>
+                <td><?php echo empty($market_name) ? "-" : implode($market_name); ?></td>
+                <td><?php echo empty($store_name) ? "-" : implode($store_name); ?></td>
+                <td>
+                    <a title="View" href="/trainer/bm-report-check-in-edit?id=<?php echo $pc_check_in['staff_id'];?>&month_year=<?php echo date('Y-m'); ?>"> <i class="icon-eye-open"></i></a>
+                    <a title="Report Web" href="/trainer/bm-report-check-in-web?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-print"></i></a>
+                    <a title="Report Excel" href="/trainer/bm-report-check-in-excel?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-list-alt"></i></a>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<?php //echo $this->load();?>

@@ -1,0 +1,97 @@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css ">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<div class="page-header">
+    <form action="/manage/menu-create" method="get">
+        <h1>List Menu Management</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('manage/menu/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="dataTables">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Main</th>
+            <th>URL</th>
+            <th>Position</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->menus) and $this->menus)
+                foreach ($this->menus as $k=>$menu): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td>
+                    <a title="Edit" href="/manage/menu-create?id=<?php echo $menu['id'];?>"><?php echo $menu['title'];?></a>
+                </td>
+                <td><?php echo $menu['main_menu'] ?></td>
+                <td><?php echo $menu['url'];?></td>
+                <td><?php echo $menu['position'];?></td>
+                <td>
+                    <a title="Delete" class="confirmLink" href="/manage/menu-delete?id=<?php echo $menu['id'];?>"> <i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>
+<script type="text/javascript">
+    $('#dataTables').DataTable({
+      "aLengthMenu": [[20, 50, 100, 200, -1], [20, 50, 100, 200, "All"]],
+      "pageLength": 20,
+      "language":{
+        "sLengthMenu": "ສະແດງ _MENU_ ຈຳນວນ",
+        "info": "ຢູ່ໜ້າທີ _PAGE_ ຫາ _PAGES_",
+        "infoEmpty":      "ສະແດງໃຫ້ເຫັນ 0 ຫາ 0 ຂອງ 0 ລາຍການ",
+        "infoFiltered":   "( ຈາກ _MAX_ ລາຍການທັງໝົດ )",
+        "search": "<b>ຄົ້ນຫາ</b>",
+        "zeroRecords": "ບໍ່ມີຂໍ້ມູນ",
+        "searchPlaceholder": "ໃສ່ຂໍ້ມູນ",
+        "paginate": {
+          previous: 'ກັບຄືນ',
+          next:     'ຕໍ່ໄປ'
+        }
+      }
+    });
+
+</script>

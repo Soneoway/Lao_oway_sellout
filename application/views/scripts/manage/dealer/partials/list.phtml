@@ -1,0 +1,43 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'title'    => 'Dealer',
+                'unames'   => 'Company Name',
+                'name'     => 'Contact',
+                'area'     => 'Area',
+                'province' => 'Province',
+                'district' => 'District',
+                'total'    => 'Number of Stores',
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->distributors) and $this->distributors)
+        $inc = $this->offset + 1;
+        foreach ($this->distributors as $k=>$d): ?>
+            <tr>
+                <td>
+                    <?php
+                    
+                    echo $inc++;
+                    ?>
+                </td>
+                <td><a href="<?php echo HOST ?>manage/dealer-edit?id=<?php echo $d['id'];?>"><?php echo $d['title'];?></a></td>
+                <td><?php echo $d['unames'];?></td>
+                <td><?php echo $d['name'];?></td>
+                <td><?php echo $d['area_name'];?></td>
+                <td><?php echo $d['province_name'];?></td>
+                <td><?php echo $d['district_name'];?></td>
+                <td><?php echo $d['total'];?></td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

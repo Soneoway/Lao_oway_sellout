@@ -1,0 +1,24 @@
+<span>Imei Timing Success : <?php echo $this->cnt_imei."/".$this->all_imei; ?></span>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th width="20">No.</th>
+            <th width="150">IMEI</th>
+            <th>Error Message</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php $no = 1 ?>
+        <?php foreach ($this->result as $imei => $r): ?>
+            <tr>
+                <td><?php echo $no++; ?></td>
+                <td><?php echo $imei ?></td>
+                <td>
+                    <?php if( isset( $r['result']['info'] ) ) echo $r['result']['info']; else echo 'n/a'; ?> 
+                </td>
+
+                
+            </tr>
+        <?php endforeach ?>
+    </tbody>
+</table>

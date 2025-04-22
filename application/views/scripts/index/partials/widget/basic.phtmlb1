@@ -1,0 +1,111 @@
+  <?php
+  
+    $staff= $this->staff;
+  
+   if(isset($this->staff) and $this->staff) : ?>     
+   <h6 class="bigstats">Basic information of Employee </h6>   
+   <div class="container">
+    <div class="row">
+        <div class="span6">
+             <label class="control-group span2">Staff Code</label>
+             <label class="control-group span2"><?php if(isset($staff['code'])) echo $staff['code']; ?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Staff Name</label>
+             <label class="control-group span2"><?php echo $staff['firstname'].' '.$staff['lastname'];?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Email</label>
+             <label class="control-group span2"><?php echo $staff['email'];?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Phone</label>
+             <label class="control-group span2"><?php echo $staff['phone_number'];?></label>
+        </div>
+        
+    </div>
+    
+     <div class="row">
+        <div class="span6">
+             <label class="control-group span2">Area</label>
+             <label class="control-group span2"><?php if(isset($this->area['name']) and $this->area['name']) echo $this->area['name']; ?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Province</label>
+             <label class="control-group span2"><?php if(isset($this->regional_market['name']) and $this->regional_market['name'])  echo $this->regional_market['name'];?></label>
+        </div>
+        
+         <div class="span6">
+             <label class="control-group span2">Contract Term</label>
+             <label class="control-group span2"><?php if(isset($staff['contract_tem']) and $staff['contract_tem']) echo $this->contract_term[$staff['contract_term']];?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Contract Signed At</label>
+             <label class="control-group span2"><?php if(isset($staff['contract_signed_at']) and $staff['contract_signed_at'])  echo ($staff['contract_signed_at'] ? date('d/m/Y', strtotime($staff['contract_signed_at'])) : '');?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Contract Expired At</label>
+             <label class="control-group span2"><?php if(isset($staff['contract_expired_at']) and $staff['contract_expired_at']) echo ($staff['contract_expired_at'] ? date('d/m/Y', strtotime($staff['contract_expired_at'])) : '');?></label>
+        </div>
+        
+    </div>
+   </div>
+   
+   <h6 class="bigstats">Working Day information</h6>   
+   <div class="container">
+    <div class="row">
+    
+         <div class="span6">
+             <label class="control-group span2">Total Timing</label>
+             <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['total']; else echo 0; ?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Timing Approved</label>
+             <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['day_approve']; else echo 0; ?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Timing not Approved</label>
+             <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['day_not_approve']; else echo 0; ?></label>
+        </div>
+        
+        <div class="span6">
+             <label class="control-group span2">Sabbatical</label>
+             <label class="control-group span2"><?php if(isset($this->sabbatical) and $this->sabbatical) echo $this->sabbatical; else echo 0; ?></label>
+        </div>
+        
+    </div>
+    </div>
+      <?php if(isset($this->off) and $this->off) : ?>  
+    <h6 class="bigstats">Off List in Month</h6>   
+   <div class="container">
+    <div class="row">
+    <?php foreach($this->off as $k=>$v): ?>
+        
+        <div class="span6">
+            <label>Off Date</label>
+            <label class="control-group span2"><?php if(isset($v['date']) and $v['date']) echo date('d/m/Y', strtotime($v['date']));  ?></label>
+        </div>
+        
+        <div class="span6">
+            <label>Reason</label>
+            <label class="control-group span2"><?php if(isset($v['reason']) and $v['reason']) echo $v['reason'];  ?></label>
+        </div>
+            
+        
+    <?php endforeach; ?>    
+    </div>
+    </div>
+    <?php endif ?>
+    
+    
+   
+    
+<?php endif; ?>

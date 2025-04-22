@@ -1,0 +1,71 @@
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+	#map { height: 400px; width: 100%; }
+</style>
+
+
+<h2>ระบบเช็กอิน</h2>
+<div id="map"></div>
+<button id="checkin-btn">เช็กอิน</button>
+<p id="status"></p>
+
+<script>
+
+	navigator.geolocation.getCurrentPosition(function (position) {
+        // Concatenate latitude and longitude
+    	const lat = position.coords.latitude;
+    	const long = position.coords.longitude;
+
+        console.log(lat);
+        console.log(long);
+    });
+
+    let map = L.map('map').setView([13.7563, 100.5018], 13); // Bangkok
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    	attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker;
+    let userId = "user123"; // สมมติว่าใช้ ID ผู้ใช้
+
+    function getLocation() {
+    	if (navigator.geolocation) {
+    		navigator.geolocation.getCurrentPosition(showPosition, showError);
+
+    	} else {
+    		alert("เบราว์เซอร์ของคุณไม่รองรับ GPS");
+    	}
+    }
+
+    function showPosition(position) {
+    	let lat = position.coords.latitude;
+    	let lng = position.coords.longitude;
+
+    	if (marker) map.removeLayer(marker);
+    	marker = L.marker([lat, lng]).addTo(map).bindPopup("ตำแหน่งของคุณ").openPopup();
+    	map.setView([lat, lng], 15);
+
+    	checkIn(lat, lng);
+
+    }
+
+    function checkIn(lat, lng) {
+    	$.post("checkin.php", { user_id: userId, lat: lat, lng: lng }, function(response) {
+    		$("#status").text(response.message);
+    	}, "json");
+    }
+
+    function showError(error) {
+    	alert("ไม่สามารถดึงตำแหน่งได้");
+    }
+
+    $("#checkin-btn").click(function() {
+    	getLocation();
+    });
+</script>
+
+</body>
+</html>

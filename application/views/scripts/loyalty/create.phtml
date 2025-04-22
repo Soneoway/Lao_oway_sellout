@@ -1,0 +1,221 @@
+<div class="page-header">
+    <h1>Edit Diamond Plan</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" method="post">
+
+    <div class="row-fluid">
+        <div class="span12">
+            <?php if (isset($this->distributor)): ?>
+                <legend>
+                    <?php if (isset($this->distributor['title'])) echo $this->staff['title'] ?>
+                </legend>
+            <?php endif ?>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label for="loyalty_plan_id" class="control-label">Level</label>
+                <div class="controls">
+                    <select name="loyalty_plan_id" id="loyalty_plan_id" required="required">
+                        <option value="">Choose</option>
+                        <?php
+                            foreach ($this->loyaltyPlanCached as $id => $item){
+                        ?>
+                            <option value="<?php echo $id;?>" <?php if (isset($this->distributorLoyalty['loyalty_plan_id']) and $this->distributorLoyalty['loyalty_plan_id'] == $id){?> selected<?php } ?>><?php echo $item;?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="control-group">
+                <label for="loyalty_plan_id" class="control-label">Period</label>
+                <div class="controls">
+                    <input type="text" class="form-control datetimepicker"
+                           value="<?php if( isset( $this->distributorLoyalty['from_date'] ) && $this->distributorLoyalty['from_date'] ) echo $this->distributorLoyalty['from_date'] ?>"
+                           name="from_date" id="from_date" />
+                    <span>-</span>
+                    <input type="text" class="form-control datetimepicker"
+                           value="<?php if( isset( $this->distributorLoyalty['to_date'] ) && $this->distributorLoyalty['to_date'] ) echo $this->distributorLoyalty['to_date'] ?>"
+                           name="to_date" id="to_date"  />
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <legend>
+            HISTORY
+        </legend>
+        <div class="span3">
+            <div class="control-group">
+                <ul>
+                    <?php if (isset($this->distributorLoyaltyHistory) and $this->distributorLoyaltyHistory){
+                        foreach ($this->distributorLoyaltyHistory as $row){
+                        ?>
+                            <li><a href="/loyalty/create?id=<?php echo $row['id']?>"><?php echo $row['from_date'] . ' - ' . $row['to_date'];?></a></li>
+                    <?php }
+                    }?>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <legend>
+            CONDITION
+        </legend>
+
+        <div class="span3">
+
+            <div class="control-group">
+                <label for="sales" class="control-label">Sales</label>
+                <div class="controls">
+                    <!--<select name="sales_comparison" id="sales_comparison" required="required">
+                        <option value="">Choose</option>
+                        <?php
+/*                        $arrLoyaltyComparisons = array(
+                            1 => '>=',
+                            2 => '<=',
+                        );
+                        foreach ($arrLoyaltyComparisons as $id => $item){
+                            */?>
+                            <option value="<?php /*echo $id;*/?>" <?php /*if (isset($this->distributorLoyalty['sales_comparison']) and $this->distributorLoyalty['sales_comparison'] == $id){*/?> selected<?php /*} */?>><?php /*echo $item;*/?></option>
+                        <?php /*} */?>
+                    </select>-->
+                    <input type="text" id="sales" required name="sales" value="<?php if (isset($this->distributorLoyalty['sales'])) echo $this->distributorLoyalty['sales'];?>">
+                    <!--<span>per</span>
+                    <select name="sales_per_unit" id="sales_per_unit" required="required">
+                        <option value="">Choose</option>
+                        <?php
+/*                        $arrLoyaltyPer = array(
+                            1 => 'Month',
+                            2 => 'Year',
+                        );
+                        foreach ($arrLoyaltyPer as $id => $item){
+                            */?>
+                            <option value="<?php /*echo $id;*/?>" <?php /*if (isset($this->distributorLoyalty['sales_per_unit']) and $this->distributorLoyalty['sales_per_unit'] == $id){*/?> selected<?php /*} */?>><?php /*echo $item;*/?></option>
+                        <?php /*} */?>
+                    </select>-->
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span3">
+
+            <div class="control-group">
+                <label for="sales_share" class="control-label">Sales Share</label>
+                <div class="controls">
+
+                    <input type="text" id="sales_share" required name="sales_share" value="<?php if (isset($this->distributorLoyalty['sales_share'])) echo $this->distributorLoyalty['sales_share'];?>">
+                    <!--<span>%</span>-->
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span3">
+
+            <div class="control-group">
+                <label for="pictures_share" class="control-label">Pictures Share</label>
+                <div class="controls">
+
+                    <input type="text" id="pictures_share" required name="pictures_share" value="<?php if (isset($this->distributorLoyalty['sales_share'])) echo $this->distributorLoyalty['pictures_share'];?>">
+                    <!--<span>%</span>-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="row-fluid">
+        <legend>
+            INFORMATION
+        </legend>
+
+        <div class="span3">
+            <div class="control-group">
+                <label for="memorandum" class="control-label">Memorandum</label>
+                <div class="controls">
+                    <input type="text" name="memorandum" required="required" id="memorandum" value="<?php if (isset($this->distributorLoyalty['memorandum'])){ echo $this->distributorLoyalty['memorandum']; }?>" />
+                    <!--<input type="checkbox" name="memorandum" id="memorandum" <?php /*if (isset($this->distributorLoyalty['memorandum']) and $this->distributorLoyalty['memorandum']){*/?> checked="checked"<?php /*}*/?> />-->
+                </div>
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="control-group">
+                <label for="guarantee_money" class="control-label">Guarantee Money</label>
+                <div class="controls">
+                    <input type="text" name="guarantee_money" required="required" id="guarantee_money" value="<?php if (isset($this->distributorLoyalty['guarantee_money'])){ echo $this->distributorLoyalty['guarantee_money']; }?>" />
+                </div>
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="control-group">
+                <label for="note" class="control-label">Note</label>
+                <div class="controls">
+                    <textarea name="note"><?php echo ( isset($this->distributorLoyalty['note']) ? $this->distributorLoyalty['note'] : '' );?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <input type="hidden" name="dealer_id" id="dealer_id" value="<?php isset($this->distributor) and $this->distributor and printf($this->distributor->id);?>">
+    <input type="hidden" name="id" id="id" value="<?php isset($this->distributorLoyalty) and $this->distributorLoyalty and printf($this->distributorLoyalty->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="<?php if (isset($this->back_url) and $this->back_url){ echo $this->back_url; } else {echo '/loyalty/list';} ?>" class="btn btn-danger go-back">Go back</a>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/jquery.daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/daterangepicker.css" />
+
+<script type="text/javascript">
+    function initDateRange(){
+        $('.datetimepicker').dateRangePicker({
+            separator : ' to ',
+            getValue: function()
+            {
+                if ($('#from_date').val() && $('#to_date').val() )
+                    return $('#from_date').val() + ' to ' + $('#to_date').val();
+                else
+                    return '';
+            },
+            setValue: function(s,s1,s2)
+            {
+                $('#from_date').val(s1);
+                $('#to_date').val(s2);
+            },
+            shortcuts :
+            {
+                'prev-days': [7],
+                'prev': ['week','month'],
+                'next-days':null,
+                'next':null
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        initDateRange();
+
+    });
+</script>

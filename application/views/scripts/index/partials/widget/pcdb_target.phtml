@@ -1,0 +1,166 @@
+<div class="table-responsive">
+
+<?php 
+  $now = date('Y-m-01');
+
+  $month = date('M-Y', strtotime($now));
+  // $next_month = date('M-Y', strtotime("+1 Month", strtotime($now)));
+
+  // print_r($this->params2);
+
+?>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">#</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Staff Code</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Staff Nameee</div></th>
+      <!-- <th rowspan="2" style="vertical-align: middle;"><div align="center">PC Stand By</div></th> -->
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Store List</div></th>
+      <th colspan="4"><div align="center"><?php echo $month; ?></div></th>
+    </tr>
+    <tr>
+      <th><div align="center">PC Target</div></th>
+      <th><div align="center">PC Hero Target</div></th>
+      <!-- <th><div align="center">PC Sellout</div></th>
+      <th><div align="center">Achieve</div></th> -->
+    </tr>
+  </thead>
+
+  <tbody>
+    <?php 
+
+      $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+      $QStoreStaff = new Application_Model_StoreStaff();
+
+      $i = 1;
+      $sum_target = $sum_target_hero = 0;
+      $achieve = $sum_achieve = 0;
+      $sum_sellout = 0;
+
+      // print_r($this->pc_list);
+
+      if(isset($this->pcdb_list) and $this->pcdb_list) :
+        foreach($this->pcdb_list as $k => $v) :
+
+          $params2['staff_id'] = $v['staff_id'];
+          $params2['group_id'] = PCDB_ID;
+          $params2['from'] = $this->params['from'];
+          $params2['to'] = $this->params['to'];
+
+          $store_list = $QStoreStaff->getStoreList($params2);
+
+          $achieve = ( $v['sellout'] / $v['pc_target'] ) * 100;
+          $sum_sellout = $sum_sellout + $v['sellout'];
+    ?> 
+    <tr>
+      <td><div align="center"><?php echo $i++; ?></div></td>
+      <td><div align="center"><?php if(isset($v['staff_code'])) echo $v['staff_code']; ?></div></td>
+      <td><div align="left"><?php if(isset($v['staff_name'])) echo $v['staff_name']; ?></div></td>
+      <!-- <td><div align="center"><?php if(isset($v['pc_stand_by'])) echo $v['pc_stand_by']; ?></div></td> -->
+      <td>
+        <table width="100%">
+          <?php 
+            for ($j=0;$j<count($store_list);$j++) {
+
+              echo "<tr>
+                      <td width='40'><div align='center'>".$store_list[$j]['store_code']."</div></td>   
+                      <td width='300'>".$store_list[$j]['store_name']."</td>
+                      <td width='40'><div align='center'>".$store_list[$j]['pc_target']."/".$store_list[$j]['pc_target_hero']."</div></td>
+                  </tr>";
+
+            }
+          ?>
+        </table>
+      </td>
+
+      <td><div align="center"><?php 
+
+        // if(isset($v['pc_target'])) { 
+
+        //   echo $v['pc_target']; 
+          // $sum_target = $sum_target + $v['pc_target'];
+
+         if(isset($v['pcdb_target'])) {
+
+          $pc = $v['pc'];
+          switch ($pc) {
+            case 1:
+              $target_pc = $v['pcdb_target'];
+              break;
+            
+            case 2:
+              $target_pc = $v['pcdb_target'] / 2;
+              break;
+            case 3:
+              $target_pc = $v['pcdb_target'] / 3;
+              break;
+          }
+
+          echo number_format($target_pc,0) ; 
+
+        } else {  
+          echo "<font color='red'>Not Assign!</font>";
+        }
+
+        $sum_pc_target = $sum_pc_target + $target_pc;
+        
+      ?></div></td> 
+
+      <td><div align="center"><?php 
+
+        // if(isset($v['pc_target_hero'])) { 
+
+        //   echo $v['pc_target_hero']; 
+          // $sum_target_hero = $sum_target_hero + $v['pc_target_hero']; 
+
+       if(isset($v['pc_target_hero'])) {
+
+        $pc = $v['pc'];
+        switch ($pc) {
+           case 1:
+             $target_hero = $v['pcdb_target_hero'];
+             break;
+           
+           case 2:
+              $target_hero = $v['pcdb_target_hero'] / 2 ;
+             break;
+
+            case 3:
+              $target_hero = $v['pcdb_target_hero'] / 3 ;
+         } 
+
+         echo number_format($target_hero,0);
+
+        } else {  
+          echo "<font color='red'>Not Assign!</font>";
+        }
+
+        $sum_pc_target_hero = $sum_pc_target_hero + $target_hero;
+        
+      ?></div></td>
+
+     <!--  <td><div align="center"><?php if(isset($v['sellout'])) echo $v['sellout']; ?></div></td>
+      <td><div align="center"><?php echo number_format($achieve,2); ?>%</div></td> -->
+
+    </tr>
+    <?php endforeach ; endif ?>
+
+    <?php 
+
+      // $sum_achieve = ( $sum_sellout / $sum_target ) * 100;
+
+      echo "<tr>";
+      echo "<td colspan='4'><div align='center'>Total</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$sum_pc_target."</div></td>";
+      echo "<td><div align='center' style='color:blue;'>".$sum_pc_target_hero."</div></td>";
+      // echo "<td><div align='center'>".$sum_sellout."</div></td>";
+      // echo "<td><div align='center'>".number_format($sum_achieve,2)."%</div></td>";
+      echo "</tr>";
+
+    ?>
+    
+  </tbody>
+</table>
+</div>

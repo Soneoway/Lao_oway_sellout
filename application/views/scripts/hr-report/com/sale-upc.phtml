@@ -1,0 +1,394 @@
+<?php 
+	// print_r($this->params);
+	// echo "<br/>";
+	// print_r($this->log);
+
+	 $area_id = $this->log[0]['area_id'];
+	 $area_name = $this->log[0]['area_name'];
+?>
+
+<style type="text/css">
+* {
+	font-size: 10px;
+	font-family: Arial;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:1122px;">
+	<tr style="height:30px;">
+		<th>THAI OPPO CO.,LTD</th>
+	</tr>
+	<tr style="height:20px;">
+		<th>
+			<table cellspacing="0" border="0">
+				<tr>
+					<td>COMMISSION FOR <?php echo $this->params['from_date']." - ".$this->params['to_date'];  ?></td>
+				</tr>
+			</table>
+		</th>
+	</tr>
+	<tr>
+		<th>
+			<table cellspacing="0" border="1">
+				<tr>
+					<td align="center" style="width:50px;">ZONE : </td>
+					<td align="center" style="width:150px;"><?php echo $area_name; ?></td>
+				</tr>
+			</table>
+		</th>
+	</tr>
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" style="width:1122px;">
+				<tr align="center">
+					<td style="width:50px;">ITEM</td>
+					<td>ID Staff</td>
+					<td>NAME</td>
+					<td>Position</td>
+					<td>ZONE</td>
+					<td>Target</td>
+					<td>Unit</td>
+					<td>Ratio</td>
+					<td>Sale Amount</td>
+					<!-- <td>หัก Margin 20%</td> -->
+					<td>Commission</td>
+					<td>Remark</td>
+				</tr>
+
+				<?php 
+				
+					$data = $this->log;
+
+					$QGoodKpi = new Application_Model_GoodKpiLog();
+
+					$area_leader = array(ASM_ID, ASMSTANDBY_ID);
+
+					$cnt_data = count($data);
+					$cnt = 0;
+					$sum_com = 0;
+					
+					for ($i=0;$i<$cnt_data;$i++) {
+
+						$remark = "";
+						// Case No Sale in Store
+						if (is_null($data[$i]['staff_id'])) { 
+							$data[$i]['staff_id'] = 0; 
+							$data[$i]['staff_code'] = "N/A"; 
+							$data[$i]['staff_name'] = "N/A"; 
+							$data[$i]['group_name'] = "N/A"; 
+							$data[$i]['com_rate'] = 0;
+							$remark = "ຍອດຂາຍຂອງຮ້ານທີ່ບໍ່ມີ Sale ຮັບຜິດຊອບ";
+						}
+
+						$sale_target = $QGoodKpi->get_sale_com_target($area_id,$data[$i]['staff_id'],$this->params['from'], $this->params['to']);
+
+						if ($data[$i]['group_id'] <> SALES_ID && $data[$i]['staff_id'] != 0) { 
+							$com_rate = 0; 
+							$remark = "ບໍ່ແມ່ນຕຳແໜ່ງ Sale ບໍ່ໄດ້ຮັບຄ່າຄອມ"; 
+						}
+						else { $com_rate = $data[$i]['com_rate']; }
+
+						if (!$sale_target && $data[$i]['staff_id'] != 0) { 
+							$sale_target = 0;
+							$com_rate = 0;
+							$remark = "ບໍ່ມີ Sale Target ບໍ່ໄດ້ຮັບຄ່າຄອມ"; 
+						} 
+
+						if ($data[$i]['group_id'] == RM_ID) { $remark = "5 ຮ້ານຄ້າທີ່ RM ຮັບຜິດຊອບ ບໍ່ໄດ້ຮັບຄ່າຄອມ"; }
+						if ($data[$i]['group_id'] == ASM_ID) { $remark = "5 ຮ້ານຄ້າທີ່ ASM ຮັບຜິດຊອບ ບໍ່ໄດ້ຮັບຄ່າຄອມ"; }
+						if ($data[$i]['group_id'] == ASMSTANDBY_ID) { $remark = "5 ຮ້ານຄ້າທີ່ ASM ຮັບຜິດຊອບ ບໍ່ໄດ້ຮັບຄ່າຄອມ"; }
+
+						$ratio = ( $data[$i]['total_unit'] / $sale_target ) * 100; 
+
+						//if ($data[$i]['group_id'] <> AM_ID) {
+
+							$cnt = $cnt + 1;
+
+							echo "<tr>";
+							echo 	"<td align='center'>".$cnt."</td>";
+							echo 	"<td align='center'>".$data[$i]['staff_code']."</td>";
+							echo 	"<td>".$data[$i]['staff_name']."</td>";
+							echo 	"<td>".$data[$i]['group_name']."</td>";
+							echo 	"<td>".$data[$i]['area_name']."</td>";
+							echo 	"<td align='right'>".number_format($sale_target)."</td>";
+							echo 	"<td align='right'>".number_format($data[$i]['total_unit'])."</td>";
+							echo 	"<td align='right'>".number_format($ratio, 2)."%</td>";
+							echo 	"<td align='right'>".number_format($data[$i]['total_price'], 2)."</td>";
+							//echo 	"<td align='right'>-</td>";
+							echo 	"<td align='right'>".number_format($com_rate)."</td>";
+							echo 	"<td>".$remark."</td>";
+							echo "</tr>";
+
+							$sum_target = $sum_target + $sale_target;
+							$sum_unit = $sum_unit + $data[$i]['total_unit'];
+							//$sum_price = $sum_price + $data[$i]['total_price'];
+
+							$sum_com = $sum_com + $com_rate;
+
+						//}
+
+					}
+
+					//$margin = $sum_price - ( $sum_price * 0.2 );
+
+					// Get Leader of Area
+					$QAsm = new Application_Model_Asm();
+					$result_asm = $QAsm->get_asm_for_com($area_id);
+					$result_asm_cnt = count($result_asm);
+					// echo "<br/>"; print_r($result_asm);
+
+					for($i=0;$i<$result_asm_cnt;$i++) {
+
+						$this->params['asm_code'] = $result_asm[$i]['staff_code'];
+
+						$leader_remark = "";
+						$leader_com_rate = 0;
+						$score_group[$i] = $result_asm[$i]['group_name'];
+
+						$cnt2 = $cnt + $i + 1;
+						$leader_ratio = ( $sum_unit / $sum_target ) * 100;
+/*
+						if ($result_asm[$i]['group_id'] == ASM_ID) {
+							$leader_com_rate = 0;
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							$leader_com_rate = ( $margin * $asm_score['gfk'] ) / 100;
+						}
+
+						if ($result_asm[$i]['group_id'] == ASMSTANDBY_ID) {
+							$leader_com_rate = 0;
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							$leader_com_rate = ( ( $margin * $asm_score['gfk'] ) / 100 ) / 2;
+							$leader_remark = "ໄດ້ຮັບຄ່າຄອມ 50% ของ ASM";
+						}
+
+						if ($result_asm[$i]['group_id'] == RM_ID) {
+							$leader_com_rate = 0;
+
+							$rm_score = $QGoodKpi->get_sale_com_rm($result_asm[$i]['staff_id'],$area_id,$this->params['from'],$this->params['to']);
+							if (!$rm_score['score']) { 
+								$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+
+								$score_group[$i] = "ASM";
+								if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							} else {
+								$asm_score = $rm_score;
+							}
+
+							$leader_com_rate = ( $margin * $asm_score['gfk'] ) / 100;
+
+						}
+
+						// Garantee Commission 2016
+						if ($result_asm[$i]['staff_code'] == '5702190') {
+							if ($leader_com_rate < 70000) { $leader_com_rate = 70000; }
+							$leader_remark = "ค่าคอมฯการันตี";
+						}
+*/
+
+						if ($result_asm[$i]['group_id'] == ASM_ID) {
+							$leader_com_rate = 0;
+
+							// Get Sellout By Area 
+							$this->params['com_leader'] = ASM_ID;
+							$result_by_area = $QGoodKpi->com_sale_bkk_2017($this->params);
+							unset($this->params['com_leader']);
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							$sum_unit = $result_by_area['total_unit'];
+							$sum_price = $result_by_area['total_price'];
+							$leader_com_rate = $result_by_area['com_rate'] * $asm_score['gfk'];
+
+						}
+
+						if ($result_asm[$i]['group_id'] == ASMSTANDBY_ID) {
+							$leader_com_rate = 0;
+
+							// Get Sellout By Area 
+							$this->params['com_leader'] = ASM_ID;
+							$result_by_area = $QGoodKpi->com_sale_bkk_2017($this->params);
+							unset($this->params['com_leader']);
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							$sum_unit = $result_by_area['total_unit'];
+							$sum_price = $result_by_area['total_price'];
+							$leader_com_rate = ($result_by_area['com_rate'] * $asm_score['gfk']) / 2;
+							$leader_remark = "ໄດ້ຮັບຄ່າຄອມ 50% ຂອງ ASM";
+						}
+
+						if ($result_asm[$i]['group_id'] == RM_ID) {
+							$leader_com_rate = 0;
+
+							// Get Sellout By Area 
+							$this->params['com_leader'] = RM_ID;
+							$result_by_area = $QGoodKpi->com_sale_bkk_2017($this->params);
+							unset($this->params['com_leader']);
+
+							$rm_score = $QGoodKpi->get_sale_com_rm($result_asm[$i]['staff_id'],$area_id,$this->params['from'],$this->params['to']);
+							if (!$rm_score['score']) { 
+								$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+
+								$score_group[$i] = "ASM";
+								if (!$asm_score['score']) { $asm_score['gfk'] = 0; } 
+
+							} else {
+								$asm_score = $rm_score;
+							}
+
+							$sum_unit = $result_by_area['total_unit'];
+							$sum_price = $result_by_area['total_price'];
+							$leader_com_rate = $result_by_area['com_rate'] * $asm_score['gfk'];
+
+						}
+
+						// Garantee Commission 2017 
+						if ($result_asm[$i]['staff_code'] == '5700053') {
+							if ($leader_com_rate < 70000) { $leader_com_rate = 70000; }
+							$leader_remark = "ຄ່າຄອມກາລັນຕີ";
+						}
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt2."</td>";
+						echo 	"<td align='center'>".$result_asm[$i]['staff_code']."</td>";
+						echo 	"<td>".$result_asm[$i]['staff_name']."</td>";
+						echo 	"<td>".$result_asm[$i]['group_name']."</td>";
+						echo 	"<td>".$result_asm[$i]['area_name']."</td>";
+						echo 	"<td align='right'>".number_format($sum_target)."</td>";
+						echo 	"<td align='right'>".number_format($sum_unit)."</td>";
+						echo 	"<td align='right'>".number_format($leader_ratio,2)."%</td>";
+						echo 	"<td align='right'>".number_format($sum_price, 2)."</td>";
+						//echo 	"<td align='right'>".number_format($margin, 2)."</td>";
+						echo 	"<td align='right'>".number_format($leader_com_rate)."</td>";
+						echo 	"<td>".$leader_remark."</td>";
+						echo "</tr>";
+
+						$sum_com = $sum_com + $leader_com_rate;
+
+					}
+
+					for($i=0;$i<$result_asm_cnt;$i++) {
+
+						if ($result_asm[$i]['group_id'] == ASM_ID) {
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['score'] = 0; $asm_score['gfk'] = 0; } 
+
+						}
+
+						if ($result_asm[$i]['group_id'] == ASMSTANDBY_ID) {
+
+							$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+							if (!$asm_score['score']) { $asm_score['score'] = 0; $asm_score['gfk'] = 0; } 
+
+						}
+
+						if ($result_asm[$i]['group_id'] == RM_ID) {
+	
+							$rm_score = $QGoodKpi->get_sale_com_rm($result_asm[$i]['staff_id'],$area_id,$this->params['from'],$this->params['to']);
+							if (!$rm_score['score']) { 
+
+								$asm_score = $QGoodKpi->get_sale_com_asm($area_id,$this->params['from'],$this->params['to']);
+								if (!$asm_score['score']) { $asm_score['score'] = 0; $asm_score['gfk'] = 0; }
+
+							} else {
+
+								$asm_score = $rm_score;
+							}
+
+						}
+
+						// GFK Row
+						if ( ($result_asm_cnt > 1) && ($i == 0) ) {
+							$row_merge = "<td colspan='5' rowspan='".$result_asm_cnt."' align='center'>TOTAL</td>";;
+						} else if (( $result_asm_cnt > 1) && ($i > 0) ) {
+							$row_merge = "";
+						} else {
+							$row_merge = "<td colspan='5' align='center'>TOTAL</td>";
+						}
+
+						echo "<tr>";
+						//echo 	"<td colspan='5' align='center'>TOTAL</td>";
+						echo 	$row_merge;
+						echo 	"<td align='center'>Score ".$score_group[$i]." = ".$asm_score['score']."</td>";
+						echo 	"<td align='center'>GFK = ".$asm_score['gfk']."%</td>";
+						echo 	"<td colspan='2'></td>";
+
+						if ( ($result_asm_cnt > 1) && ($i == 0) ) {
+							echo "<td rowspan='".$result_asm_cnt."' align='right'>".number_format($sum_com)."</td>";
+						} else if (( $result_asm_cnt > 1) && ($i > 0) ) {
+							echo "";
+						} else {
+							echo "<td align='right'>".number_format($sum_com)."</td>";
+						}
+
+						echo 	"<td></td>";
+						echo "</tr>";
+					}
+
+					if ($result_asm_cnt == 0) {
+						echo "<tr>";
+						echo 	"<td colspan='5' align='center'>TOTAL</td>";
+						echo 	"<td></td>";
+						echo 	"<td></td>";
+						echo 	"<td colspan='2'></td>";
+						echo 	"<td align='right'>".number_format($sum_com)."</td>";
+						echo 	"<td></td>";
+						echo "</tr>";
+					}
+					
+				?>
+
+			</table>
+		</td>
+	</tr>
+</table>
+
+<div style="height:50px;"></div>
+
+<table border="0" style="width:1122px;">
+	<tr>
+		<td align="right" style="width:260px;">Prepared By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">ASM/RM</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px">( HR Department )</td>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Sale Department )</td>
+	</tr>
+	<tr style="height:10px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Checked By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:20px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+</table>

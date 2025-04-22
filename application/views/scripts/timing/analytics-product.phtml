@@ -1,0 +1,263 @@
+<div class="page-header">
+    <h1>Report By Product</h1>
+    <small>ລາຍງານຍອດຂາຍຕາມລຸ້ນ</small>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/report_search_product.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-right">
+    <strong>Total Sales: <?php echo $this->total_sales;?></strong>
+</div>
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <!-- <tr>
+                <?php echo $this->sorting(array(
+                    '#',
+                        'grand_area'    => 'Grand Area',
+                        'area'          => 'Area',
+                        'province'      => 'Province',
+                        'product_name'  => 'Product',
+                        'total'         => 'Sell Out',
+                ),
+            $this->url, $this->current_col, $this->desc); ?>
+            </tr> -->
+            <th><div align="center">#</div></th>
+      <!--       <th><div align="center">Grand Area</div></th> -->
+            <th><div align="center">Area</div></th>
+            <th><div align="center">Province</div></th>
+            <th><div align="center">Product</div></th>
+            <th><div align="center">Sell Out</div></th>
+        </thead>
+        <tbody>
+            <?php
+
+            // Set Grand Area of BKK
+            $grand_e1 = array(81,82,83,110,111,112);
+            $grand_e2 = array(85,86,87,115,88,89,116,117);
+            $grand_e3 = array(90,91,92,93,113);
+            $grand_e4 = array(94,95,96);
+            $grand_e5 = array(97,109);
+            $grand_w1 = array(98,99,100,101,102,114);
+            $grand_w2 = array(103,104,105);
+            $grand_w3 = array(106,107,108);
+
+            $grand_area = "";
+
+            if (isset($this->sales) and $this->sales)
+                $inc = $this->offset + 1;
+                foreach ($this->sales as $sale): 
+
+                    if ( in_array($sale['area_id'], $grand_e1) ) { $grand_area = 'BKK East-1'; } 
+                    else if ( in_array($sale['area_id'], $grand_e2) ) { $grand_area = 'BKK East-2'; }
+                    else if ( in_array($sale['area_id'], $grand_e3) ) { $grand_area = 'BKK East-3'; }
+                    else if ( in_array($sale['area_id'], $grand_e4) ) { $grand_area = 'BKK East-4'; }
+                    else if ( in_array($sale['area_id'], $grand_e5) ) { $grand_area = 'BKK East-5'; }
+                    else if ( in_array($sale['area_id'], $grand_w1) ) { $grand_area = 'BKK West-1'; }
+                    else if ( in_array($sale['area_id'], $grand_w2) ) { $grand_area = 'BKK West-2'; }
+                    else if ( in_array($sale['area_id'], $grand_w3) ) { $grand_area = 'BKK West-3'; }
+                    else { $grand_area = $sale['area_name']; }
+            ?>
+            <tr>
+                <td>
+                    <?php
+                        echo $inc++;
+                    ?>
+                </td>
+<!--                 <td><?php echo $grand_area; ?></td> -->
+                <td><?php echo $sale['area_name'];?></td>
+                <td><?php echo $sale['province'];?></td>
+                <td><?php echo $sale['brand_name']." ".$sale['product_name']  ?></td>
+                <td style="text-align:center"><?php echo !empty($sale['total']) ? '<span style="font-size: 16px; font-weight: bold; color:blue;" data-product-id="'.$sale['product_id'].'" data-area-id="'.$sale['area_id'].'">'.$sale['total'].'</span>' : '0' ?></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $modal = $('#modal');
+        // $('.badge.badge-success').click(function(){
+        //     _self = $(this);
+        //     $('body').modalmanager('loading');
+
+        //     $.post('<?php echo HOST ?>/timing/short-report',
+        //         {
+        //             from            : $('#from').val(),
+        //             to              : $('#to').val(),
+        //             phone_number    : $('#phone_number').val(),
+        //             // name            : $('#name').val(),
+        //             area            : $('#area').val(),
+        //             regional_market : $('#regional_market').val(),
+        //             staff_id : _self.data('staff-id')
+        //         },
+        //         function(data){
+        //             $modal.html(data);
+        //             $modal.modal();
+        //             var name = _self.parents('tr').children('td:nth-child(2)').html();
+        //             $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+        //     });
+        // });
+    
+    });
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    $('button, .btn, input').prop('disabled', false);
+                    // $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#district').change(function(){
+            $('.loading').remove();
+            $('button, .btn, input').prop('disabled', true);
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var regional_market = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-sales-team",
+                {district: regional_market}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    // $('#store').multiselect("destroy").multiselect(options);
+
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                            
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }
+
+                            // $('#district,#store').multiselect("destroy").multiselect(options);
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                    }
+                });
+        });
+    });
+</script>
+<?php echo $this->load('combobox');?>

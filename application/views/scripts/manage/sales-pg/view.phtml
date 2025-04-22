@@ -1,0 +1,420 @@
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/bootstrap-datetimepicker.min.css" />
+<style>
+    .numbering {
+    counter-reset: rowNumber;
+    }
+
+    .numbering tbody tr {
+        counter-increment: rowNumber;
+    }
+
+    .numbering tbody tr td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+
+    .input-append .date {
+        width: 50%;
+    }
+
+    .edit_date {
+        min-width: 180px;
+    }
+
+    .edit_date input {
+        min-width: 70px;
+    }
+
+    .edit_lbl {
+        cursor: pointer;
+    }
+
+    .modified {
+        background: #fed !important;
+    }
+
+    .table td:nth-child(2) {
+        width: 8%;
+    }
+
+    .table td:nth-child(3) {
+        width: 20%;
+    }
+
+    .table td:nth-child(4) {
+        width: 10%;
+    }
+
+    .table td:nth-child(5) {
+        width: 10%;
+    }
+
+    .table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .table td:nth-child(7) {
+        width: 20%;
+    }
+
+    .table td:nth-child(8) {
+        width: 10%;
+    }
+
+    .table td:nth-child(9) {
+        width: 10%;
+    }
+
+
+
+    #a_storeresult {
+        width: 100%;
+    }
+
+    .input-append {
+        display: inline-block;
+        float: left;
+        margin-left: 20px !important;
+        width: 50% !important;
+    }
+
+    .input-append .form-control {
+        width: 70%;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Bind Stores to Sales/PC <small><?php echo $this->staff['firstname'] . ' ' .$this->staff['lastname'] . ' | ' . $this->email($this->staff['email']) ?></small></h1>
+</div>
+
+<?php if ($this->access('manage', 'sales-pg-save')): ?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form action="<?php echo HOST ?>manage/sales-pg-save" method="post" id="form" class="form-inline" target="ifrmSave">
+    <input type="hidden" name="store_ids" id="store_ids">
+    <input type="hidden" name="joined_dates" id="joined_dates">
+    <input type="hidden" name="id" id="id" value="<?php echo $this->staff['id'] ?>">
+    <!-- <button class="btn btn-primary" type="button" id="btn_save">Save</button> -->
+    <button class="btn btn-warning" type="button" onclick="window.location='<?php echo HOST ?>manage/sales-pg'">Go Back</button>
+</form>
+<?php endif; ?>
+<!-- 
+<div class="row-fluid">
+    <div class="span12">
+        <div class="accordion" id="search">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#search" href="#searchCollapse">
+                        <span><i class="icon-search"></i></span> Search in this list
+                    </a>
+                </div>
+                <div id="searchCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        // echo $this->render('manage/sales-pg/partials/search-this-list.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<div class="row-fluid">
+<!--
+    <?php if ($this->access('manage', 'sales-pg-save')): ?>
+    <div class="span12">
+        <div class="accordion" id="addmore">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#addmore" href="#addmoreCollapse">
+                        <span><i class="icon-plus-sign"></i></span> Add more stores
+                    </a>
+                </div>
+                <div id="addmoreCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/sales-pg/partials/search-store-to-add.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+-->
+</div>
+<table class="table table-bordered numbering">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Store Type</th>
+            <th>[ID] Store Name</th>
+            <th>Area</th>
+            <th>Province</th>
+            <th>District</th>
+            <th>[ID] Distributor Name (Chain 1)</th>
+            <th>Joined At</th>
+            <th>Released At</th>
+        </tr>
+    </thead>
+    <tbody class="store_list">
+        <?php if ($this->store_staffs):?>
+        <?php foreach ($this->store_staffs as $k => $store):  ?>
+            <tr class="store"
+                data-id="<?php echo $store['store_id'] ?>"
+                data-name="<?php echo $store['store_name'] ?>" 
+                data-area="<?php if(isset($store['district'])) echo My_Region::getValue($store['district'], My_Region::Area, My_Region::ID) ?>" 
+                data-region="<?php if(isset($store['district'])) echo My_Region::getValue($store['district'], My_Region::Province, My_Region::ID) ?>" 
+                data-district="<?php if(isset($store['district'])) echo $store['district'] ?>">
+                <td></td>
+                <td><?php echo $store['store_type'] ?></td>
+                <td><?php echo "[".$store['store_id']."] ".$store['store_name'] ?></td>
+                <td><?php if(isset($store['district'])) echo My_Region::getValue($store['district'], My_Region::Area) ?></td>
+                <td><?php if(isset($store['district'])) echo My_Region::getValue($store['district'], My_Region::Province) ?></td>
+                <td><?php if(isset($store['district'])) echo My_Region::getValue($store['district'], My_Region::District) ?></td>
+                <td><?php if(isset($store['d_id'])) echo "[".$store['d_id']."] ".$store['d_name']; ?></td>
+                <td>
+                    <p>
+                        <span class="joindate"><?php if (isset($store['joined_at']) && $store['joined_at']) echo date('Y-m-d', $store['joined_at']) ?></span>
+                        <?php if (is_null($store['released_at'])): ?>
+                            <!--
+                            <?php if ($this->access('manage', 'sales-pg-edit')): ?>
+                                <button class="btn btn-default btn-mini edit_btn" type="button"><i class="icon-edit"></i></button>
+                            <?php endif ?>
+                            -->
+                        <?php endif ?>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <?php if (is_null($store['released_at'])): ?>
+                            <!--
+                            <?php if ($this->access('manage', 'sales-pg-remove')): ?>
+                                <button class="btn btn-danger btn-mini remove_btn">Remove</button>
+                            <?php endif ?> 
+                            -->
+                        <?php else: ?>
+                            <span class="joindate"><?php echo date('Y-m-d', $store['released_at']) ?></span>
+                        <?php endif ?>
+                    </p>
+                </td>
+            </tr>
+        <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php // echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script>
+    btns = 'button, input, select';
+    old_val = '';
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('button').prop('disabled', false);
+        return;
+    }
+
+    $(document).ready(function() {
+        // search_filter();
+        // $('.edit_lbl').click(init_edit);
+
+        <?php if($this->access('manage', 'sales-pg-save')): ?>
+            $( "#a_storename" ).keypress(function( event ) {
+                if ( event.which == 13 ) {
+                    event.preventDefault();
+                    
+                    search_store(this);
+                    return false;
+                }
+            });
+
+            $('#a_storename_btn').click(function() {
+                search_store(this);
+            });
+
+            $('#btn_bind').click(function(){
+                _self = $('#a_storeresult');
+                item = _self.children('option:selected');
+
+                for (var i = 0; i < item.length; i++) {
+                    if ( ! is_exists( $(item[i]).data('id') ) ) {
+                        new_date = new Date().toJSON().slice(0,10);
+                        elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" data-name="'+$(item[i]).data('name')+'" data-area="'+$(item[i]).data('area')+'" data-region="'+$(item[i]).data('region')+'" data-district="'+$(item[i]).data('district')+'">'
+                                + '<td></td>'
+                                + '<td>'+($(item[i]).data('name')?$(item[i]).data('name'):'')+'</td>'
+                                + '<td>'+($(item[i]).data('area-name')?$(item[i]).data('area-name'):'')+'</td>'
+                                + '<td>'+($(item[i]).data('region-name')?$(item[i]).data('region-name'):'')+'</td>'
+                                + '<td>'+($(item[i]).data('district-name')?$(item[i]).data('district-name'):'')+'</td>'
+                                + '<td>\
+                                        <p>\
+                                            <span class="joindate">'+new_date+'</span>\
+                                            <span class="label label-info edit_lbl">Edit</span>\
+                                        </p>\
+                                        <div class="input-append span3 edit_date" style="display:none;">\
+                                            <input class="date" type="text"  data-store-id="'+$(item[i]).data('id')+'" value="'+new_date+'">\
+                                            <button class="btn btn-success btn_save_date" type="button"><span class="icon-ok"></span></button>\
+                                            <button class="btn btn-default btn_cancel_date" type="button"><span class="icon-remove"></span></button>\
+                                        </div>\
+                                    </td>'
+                                + '<td><button class="btn btn-warning btn-mini remove_btn new_remove_btn">Remove</button></td>\
+                                    <td></td>'
+                                + '</tr>';
+
+                        $('.store_list').append(elm);
+                    }
+                }
+
+                // $('.edit_lbl').click(init_edit);
+                // search_filter();
+                $('.new_remove_btn').click(remove_store).removeClass('new_remove_btn');
+            });
+
+            $('#btn_save').click(function(){
+                $('button').prop('disabled', true);
+
+                var store = $('.store');
+                id_str = '';
+                
+                for(var i = 0; i < store.length; i++) {
+                    id_str += $(store[i]).data('id') + ',';
+                }
+                
+                id_str = id_str.replace(/\,$/, '');
+                $('#store_ids').val(id_str);
+
+                joineddate = {};
+                $('.date').each(function(index, elm){
+                    joineddate[$(elm).data('store-id')] = $(elm).val();
+                });
+                
+                $('#joined_dates').val(JSON.stringify(joineddate));
+
+                $('#form').submit();
+            });
+
+            $('.remove_btn').click(remove_store);
+
+            function remove_store(e) {
+                _self = $(e.target);
+                _self.parents('tr').remove();
+            }
+
+            function search_store(elm) {
+                $(btns).prop('disabled', true);
+                        
+                area_id     = $('#a_area').val();
+                region_id   = $('#a_province').val();
+                district_id = $('#a_district').val();
+                store_name  = $('#a_storename').val();
+
+                $('.loading').remove();
+                var _self = $(elm);
+                var targetUrl = '<?php echo HOST."ajax/get-store-for-leader" ?>';
+
+                //get ajax content
+                var aj = $('.load-ajax');
+                if (aj.length && (area_id || region_id || district_id || store_name)){
+                    _self.parents('.control-group').append("<span class=\'loading\'></span>");
+
+                    $.post(targetUrl, {
+                        area_id : area_id,
+                        region_id : region_id,
+                        store_name : store_name,
+                    }, function(data){
+                        $('button, input, select').prop('disabled', false);
+                        aj.html(data);                            
+                        $('.loading').remove();
+                    });
+                }
+            }
+
+        <?php endif; ?>
+    });
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function search_filter() {
+        $('#btn_f_search').click(function() {
+            area      = $('#f_area').val();
+            region    = $('#f_province').val();
+            storename = $('#f_storename').val();
+            $('.store').show();
+
+            $('.store').each(function() {
+                _self = $(this);
+                if (area && _self.data('area') != area) 
+                    _self.hide();
+
+                if (region && _self.data('region') != region) 
+                    _self.hide();
+
+                var reg = new RegExp(storename, 'gi');
+                if (storename && !_self.data('name').match(reg)) 
+                    _self.hide();
+            });
+        });
+
+        $('#btn_f_reset').click(function() {
+            $('#f_area').val('');
+            $('#f_province').val('');
+            $('#f_storename').val('');
+            $('.store').show();
+        });
+    }
+
+    
+
+    // function init_edit() {
+    //     $self = $(this);
+    //     $(btns).prop('disabled', true);
+
+    //     $self.parent('p').nextAll('.edit_date').show();
+    //     old_val = $self.parent('p').nextAll('.edit_date').find('.date').val();
+    //     $self.prev('.joindate').hide();
+    //     $self.hide();
+        
+    //     $('.date').datetimepicker({
+    //         format : 'yyyy-mm-dd',
+    //         autoclose : true,
+    //         minView : 2
+    //     });
+
+    //     $('.edit_lbl').unbind('click');
+
+    //     $self.parent('p').next('.edit_date').find('.btn_save_date').click(function() {
+    //         $self = $(this);
+            
+    //         value = $self.prev('.date').val();
+    //         $self.parent('.edit_date').prev('p').find('.joindate').text(value);
+    //         $self.parent('.edit_date').prev('p').find('.joindate, .edit_lbl').show();
+
+    //         if (value != old_val)
+    //             $self.parents('td').addClass('modified');
+
+    //         $('.edit_lbl').bind('click', init_edit);
+    //         $(btns).prop('disabled', false);
+    //         $self.parent('.edit_date').hide();
+    //     });
+
+    //     $self.parent('p').next('.edit_date').find('.btn_cancel_date').click(function() {
+    //         $self = $(this);
+    //         $self.parent('.edit_date').prev('p').find('.joindate, .edit_lbl').show();
+    //         $('.edit_lbl').bind('click', init_edit);
+    //         $(btns).prop('disabled', false);
+    //         $self.parent('.edit_date').hide();
+    //     });
+    // }
+</script>

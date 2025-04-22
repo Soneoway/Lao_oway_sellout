@@ -1,0 +1,252 @@
+<style type="text/css">
+
+#message{
+        font-size: 14px;
+    line-height: 14px;
+    margin-left: 70px;
+}
+
+.valid {
+    color: green !important;
+}
+
+.valid:before {
+    position: relative;
+    left: -35px;
+    content: "✔";
+}
+
+.invalid {
+    color: red !important;
+}
+
+.invalid:before {
+    position: relative;
+    left: -35px;
+    content: "✖";
+}
+
+.btn-info.disabled, .btn-info:disabled {
+    background-color: #00925f;
+    border-color: #00925f;
+}
+
+body{
+    font-family: phetsarath ot;
+}
+
+</style>
+
+<div class="page-header">
+    <h1>ປ່ຽນລະຫັດຜ່ານ</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php
+if (isset($this->success_messages) and $this->success_messages)
+    foreach ($this->success_messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->force_change_password) && $this->force_change_password 
+            && isset($this->warning_messages)): ?>
+    <div class="alert alert-warning"><?php echo $this->warning_messages ?></div>
+<?php endif ?>
+
+<form role="form" action="<?php echo HOST.'/user/change-pass';?>" method="post">
+
+<div class="row">
+    <div class="span4">
+
+        <div class="form-group">
+            <label for="exampleInputName"></label>
+        </div>
+        <div class="form-group">
+            <label for="old_password">ລະຫັດຜ່ານເກົ່າ</label>
+            <input type="password" id="old_password" name="old_password" class="form-control input-xlarge old_password" required="required" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="v">ລະຫັດຜ່ານໃໝ່</label>
+            <input type="password" id="password" name="password" class="form-control input-xlarge" required="required" autocomplete="off" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&<>{}])[A-Za-z\d@$!%*?&<>{}]{8,}$" onchange="form.confirm-password.pattern = this.value;">
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">ໃສ່ລະຫັດຜ່ານໃໝ່ອີກຄັ້ງ</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control input-xlarge" required="required">
+        </div>
+
+    </div>
+
+    <div class="span6">
+
+        <div id="message" style="display:none;">
+            <p style="color:black; font-weight: bold;">New Password must contain the following (ລະຫັດຜ່ານໃໝ່ຕ້ອງປະກອບມີຂໍ້ມູນດັ່ງນີ້)</p>
+            <p id="letter" class="invalid">A <b>lowercase </b> letter a-z (ຕົວພິມນ້ອຍ)</p>
+            <p id="capital" class="invalid">A <b>uppercase </b> letter A-Z (ຕົວພິມໃຫຍ່)</p>
+            <p id="number" class="invalid">A <b>number</b> (ຕົວເລກ 0-9)</p>
+            <p id="length" class="invalid">Minimum <b>8 characters (ລະຫັດຕ້ອງມີຢ່າງນ້ອຍ 8 ຕົວ)</b></p>
+            <p id="sign" class="invalid">Special Character ຕ້ອງມີເຄື່ອງໝາຍພິເສດ ( @$!%*?&<>{} )</b></p>
+        </div>
+        <h3 class="matchaaa"></h3>
+    </div>
+
+</div>
+
+    <!-- <button type="submit" class="btn btn-default" disabled>ยืนยัน</button> -->
+
+    <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light " id="buttom" disabled type="submit">Change Password</button>
+</form>
+
+<?php 
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript">
+
+    var staff_id = '<?php echo $userStorage->id; ?>';
+
+    $(document).ready(function() {
+        // $('.pagination ul').addClass('pagination');  
+        // $('.buttom').prop( "disabled", true );  
+     });
+
+    $('.old_password').on('change',function (argument) {
+        var password = $(this).val();
+        
+        $.get("/user/check-pass",
+            {
+                password: password,
+                staff_id: staff_id 
+            }
+            ,function(data,status){
+
+                var obj = $.parseJSON( data );
+                // alert(data);
+
+                if ( data == 'false') { 
+                    $('#old_password').val('');
+                    alert("Old Password is incorrect ,Please try again! ລະຫັດເກົ່າບໍ່ຖືກ"); 
+                } 
+                
+            });
+    });
+
+    var myInput = document.getElementById("password");
+    var old     = document.getElementById("old_password");
+    var letter  = document.getElementById("letter");
+    var capital = document.getElementById("capital");
+    var number  = document.getElementById("number");
+    var length  = document.getElementById("length");
+    var same  = document.getElementById("same");
+    var sign    = document.getElementById("sign");
+
+    // When the user clicks on the password field, show the message box
+    myInput.onfocus = function() {
+        document.getElementById("message").style.display = "block";
+    }
+
+    // When the user clicks outside of the password field, hide the message box
+    myInput.onblur = function() {
+        document.getElementById("message").style.display = "none";
+    }
+
+
+    // When the user starts to type something inside the password field
+    myInput.onkeyup = function() {
+
+        var num = $('.num').val();
+
+        // Validate lowercase letters
+        var lowerCaseLetters = /[a-z]/g;
+            if(myInput.value.match(lowerCaseLetters)) {  
+            letter.classList.remove("invalid");
+            letter.classList.add("valid");
+            var d1 = 1;
+        } else {
+            letter.classList.remove("valid");
+            letter.classList.add("invalid");
+            var d1 = 0;
+        }
+          
+        // Validate capital letters
+        var upperCaseLetters = /[A-Z]/g;
+        if(myInput.value.match(upperCaseLetters)) {  
+            capital.classList.remove("invalid");
+            capital.classList.add("valid");
+            var d2 = 1;
+        } else {
+            capital.classList.remove("valid");
+            capital.classList.add("invalid");
+            var d2 = 0;
+        }
+
+        // Validate numbers
+        var numbers = /[0-9]/g;
+        if(myInput.value.match(numbers)) {  
+            number.classList.remove("invalid");
+            number.classList.add("valid");
+            var d3 = 1;
+        } else {
+            number.classList.remove("valid");
+            number.classList.add("invalid");
+            var d3 = 0;
+        }
+          
+        // Validate length
+        if(myInput.value.length >= 8) {
+            length.classList.remove("invalid");
+            length.classList.add("valid");
+            var d4 = 1;
+        } else {
+            length.classList.remove("valid");
+            length.classList.add("invalid");
+            var d4 = 0;
+        }
+
+        var special_character = /[@$!%*?&<>{}]/g;
+        if(myInput.value.match(special_character)) {  
+            sign.classList.remove("invalid");
+            sign.classList.add("valid");
+            var d5 = 1;
+        } else {
+            sign.classList.remove("valid");
+            sign.classList.add("invalid");
+            $('#buttom').prop( "disabled", "disabled" );
+            var d5 = 0;
+        }
+
+        if (d1 == 1 && d2 == 1 && d3 == 1 && d4 == 1 && d5 == 1) { 
+            $('#confirm_password').removeAttr( "disabled" ); 
+        } else {
+            $('#confirm_password').prop( "disabled", "disabled" );
+        }
+         
+        if (myInput.value === $('#old_password').val()) {
+        
+            alert('New passwords are not the same as old passwords ລະຫັດຜ່ານເກົ່າບໍ່ຖືກ ກະລຸນາປ້ອນໃໝ່ອີກຄັ້ງ');
+        }
+
+    }
+
+    $('#confirm_password').on('keyup',function (argument) {
+       if ($(this).val() === $('#password').val()) {
+            $('#buttom').removeAttr("disabled");
+            $('.matchaaa').css("display","none");
+        } else {
+            $('.matchaaa').css("display","block");
+            $('.matchaaa').html("<span style='color:red'>Password not Match, Please try again. ລະຫັດຜ່ານບໍ່ກົງກັນ ກະລຸນາປ້ອນໃໝ່ອີກຄັ້ງ!</span>");
+            $('#buttom').prop("disabled","disabled");
+        } 
+    });
+
+</script>

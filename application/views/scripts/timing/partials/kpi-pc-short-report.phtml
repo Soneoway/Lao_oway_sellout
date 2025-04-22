@@ -1,0 +1,119 @@
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel"></h3>
+  <br/>
+  <div align="left" style="font-size: 14px; color:blue; padding-left:8px">
+    <b style="font-size: 20px;">ໝາຍເຫດ*</b><br>
+    <b style="color:green;">Yes : ແມ່ນ Activated ແລ້ວ (ໄດ້ຄ່າ Commission)</b> <br/>
+    <b style="color:green;">Yes (1) : ແມ່ນ Activated (ໄດ້ຄ່າ Commission)</b> <br/>
+    <b style="color:#dd3333;">No (2) ເເລະ No (3) : ແມ່ນ Activated ແລ້ວ, ແຕ່ເກີນກຳນົດ 60ວັນ (ບໍ່ໄດ້ຄ່າ Commission)</b> <br/><!-- 
+    No (3) : ແມ່ນ Activated ແລ້ວ, ແຕ່ບໍ່ຢູ່ໃນເດືອນທີ່ທ່ານລາຍງານ (ໄດ້ຄ່າ Commission ແຕ່ຈະໄລ່ໃຫ້ໃນເດືອນຕໍ່ໄປ) <br/> --><br>
+    <!-- <p style="font-family: phetsarath ot; color: blue; font-size: 14px;">=> ການຄິດໄລ່ຄ່າຄອມ ແມ່ນຈະໄລ່ຈົນກ່ວາເຄື່ອງຈະ Activated </p><br> -->
+    <!-- <p style="font-family: phetsarath ot; color: blue; font-size: 16px;">***ສຳລັບເຄື່ອງທີ່ບໍ່ Activated ແມ່ນທາງ IT ຈະ Update ໃຫ້ທຸກໆວັນທີ 1-2 ຂອງເດືອນຖັດໄປ ກ່ອນທີ່ທາງ HR ຈະໄລ່ເງິນຄ່າ Commission ໃຫ້</p>  -->
+  </div>
+  <!-- <div align="left" style="padding-left:8px";>
+    Yes : ໄດ້ຄ່າ Commission <br/>
+    No (1) : ບໍ່ໄດ້ຄ່າ Commission ເນື່ອງຈາກເຄື່ອງຍັງບໍ່ທັນ Activated <br/>
+    No (2) : ບໍ່ໄດ້ຄ່າ Commission ເນື່ອງຈາກ Activated ກ່ອນວັນທີລາຍງານຍອດ <br/>
+    No (3) : ບໍ່ໄດ້ຄ່າ Commission ເນື່ອງຈາກ Activated ກ່ອນວັນທີລາຍງານຍອດ 7 ວັນ
+  </div> -->
+</div>
+<div class="modal-body">
+  <table border=1 width="100%">
+    <tr>
+      <th align="center" width="10%">No.</th>
+      <th align="center" width="20%">IMEI</th>
+      <th align="center" width="30%">Timing Date</th>
+      <th align="center" width="30%">Activated Date</th>
+      <th align="center" width="10%">COM</th>
+    </tr>
+    <?php
+    $imei_detail = $this->sales;
+    for ($i=0;$i<count($imei_detail);$i++) {
+    
+    // clear parameter
+    $scan_diff = "";
+    $act_diff = "";
+    $com_pc = "Yes (1)";
+    $bg_color = "#58FA58";
+    $date_01 = date_create(strtok($imei_detail[$i]['timing_date']," "));
+    // check diff date of timing date and actvated date
+    if ($imei_detail[$i]['activated_date']) {
+    $date_02 = date_create(strtok($imei_detail[$i]['activated_date']," "));
+    $act_diff = date_diff($date_01, $date_02)->format("%R%a");
+    } else {
+    $act_diff = "";
+    }
+    if ($act_diff !== "") {
+    if ( (strpos($act_diff, '+') !== FALSE || $act_diff == 60) && $act_diff !== "" ) { $tmp_mark = "+"; }
+    if ( strpos($act_diff, '-') !== FALSE && $act_diff !== "" ) { $tmp_mark = "-"; }
+    $tmp_act = intval(str_replace($tmp_mark, "", $act_diff));
+    if ( $tmp_mark == "+" && $tmp_act > 60   ) {
+    $com_pc = "No (3)";
+    $bg_color = "#C92D0C";
+    } else if ( $tmp_mark == "-" && $tmp_act > 60 ) {
+    $com_pc = "No (2)";
+    $bg_color = "#C92D0C";
+    } else {
+    $com_pc = "Yes";
+    $bg_color = "#58FA58";
+    }
+    }
+    $cnt = $i + 1;
+    
+    echo "<tr >";
+      echo    "<td align=\"center\">".$cnt."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['imei']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['timing_date']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['activated_date']."</td>";
+      echo    "<td align=\"center\" style=\"background-color: ".$bg_color.";\" >".$com_pc."</td>";
+    echo "</tr>";
+    }
+    ?>
+    <!--
+    <?php
+    $imei_detail = $this->sales;
+    for ($i=0;$i<count($imei_detail);$i++) {
+    
+    // clear parameter
+    $scan_diff = "";
+    $act_diff = "";
+    $com_pc = "Yes (1)";
+    $bg_color = "#58FA58";
+    $date_01 = date_create(strtok($imei_detail[$i]['timing_date']," "));
+    // check diff date of timing date and actvated date
+    if ($imei_detail[$i]['activated_date']) {
+    $date_02 = date_create(strtok($imei_detail[$i]['activated_date']," "));
+    $act_diff = date_diff($date_01, $date_02)->format("%R%a");
+    } else {
+    $act_diff = "";
+    }
+    if ($act_diff !== "") {
+    if ( (strpos($act_diff, '+') !== FALSE || $act_diff == 0) && $act_diff !== "" ) { $tmp_mark = "+"; }
+    if ( strpos($act_diff, '-') !== FALSE && $act_diff !== "" ) { $tmp_mark = "-"; }
+    $tmp_act = intval(str_replace($tmp_mark, "", $act_diff));
+    if ( $tmp_mark == "+" && $tmp_act > 7   ) {
+    $com_pc = "No (3)";
+    } else if ( $tmp_mark == "-" && $tmp_act > 0 ) {
+    $com_pc = "No (2)";
+    } else {
+    $com_pc = "Yes";
+    $bg_color = "#58FA58";
+    }
+    }
+    $cnt = $i + 1;
+    
+    echo "<tr >";
+      echo    "<td align=\"center\">".$cnt."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['imei']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['timing_date']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['activated_date']."</td>";
+      echo    "<td align=\"center\" style=\"background-color: ".$bg_color.";\" >".$com_pc."</td>";
+    echo "</tr>";
+    }
+    ?> -->
+  </table>
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

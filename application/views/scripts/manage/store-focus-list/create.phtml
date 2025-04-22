@@ -1,0 +1,239 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+    .checkbox {
+        margin-left: 10px !important; 
+    }
+</style>
+<div class="page-header">
+    <h1>Store Focus List : Add Store</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<iframe name="ifrmSave" id="ifrmSave" height="500px" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/store-focus-list-create-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span12">
+            
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="a_storename"><p><span><strong>- Search Store -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="a_storename" placeholder="Enter Store Name then press ENTER" name="a_storename" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="a_storeresult"><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <select class="span6 search_result" id="a_storeresult" name="a_storeresult" multiple="multiple" size="8"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_add_store" class="btn btn-success" type="button">Add Store</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Area</div></th>
+        <th><div align='center'>Store ID</div></th>
+        <th><div align='center'>Store Name</div></th>
+        <th><div align='center'>Store Type</div></th>
+        <th><div align='center'>Status</div></th>
+        <th><div align='center'>Action</div></th>
+    </tr>
+    </thead>
+    <tbody class="store_list">
+        <?php 
+        
+        ?>
+    </tbody>
+</table>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        multi();
+
+        $( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."ajax/get-store-for-leader?search_type=1&store_name=" ?>' + $('#a_storename').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#a_storeresult').attr("multiple", true);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_add_store').click(function(){
+
+            _self = $('#a_storeresult');
+            item = _self.children('option:selected');
+
+            for (var i = 0; i < item.length; i++) {
+                if ( ! is_exists( $(item[i]).data('id') ) ) {
+
+                    if ($(item[i]).data('del') == 1) { st_status = "<span class='label label-important'>Disable</span>"; }
+                    else { st_status = "<span class='label label-success'>Active</span>";  }
+
+                    elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" >'
+                            + '<td><div align="center">-</div></td>'
+                            + '<td><div align="center">'+$(item[i]).data('area-name')+'</div></td>'
+                            + '<td><div align="center">'+$(item[i]).data('id')+'</div></td>'
+                            + '<td>'+$(item[i]).data('name')+'</td>'
+                            + '<td>'+$(item[i]).data('type')+'</td>'
+                            + '<td><div align="center">'+st_status+'</div></td>';
+
+                    if ($(item[i]).data('sf') == '') {
+                        elm += '<td><div align="center"><button class="btn btn-warning btn-mini btn_remove">Remove</button><input type="hidden" id="store" name="store[]" value="'+$(item[i]).data('id')+'" /></div></td>'
+                                + '</tr>';
+                    } else {
+                        elm += '<td colspan=2><div align="center">Already in Store Focus</div></td>'
+                                + '</tr>';
+                    }
+
+                    $('.store_list').append(elm);
+                }
+            }
+
+            remove_store();
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+
+    });
+
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+
+            $('#btn_submit').prop("disabled", false);
+        });
+    }
+    
+
+</script>

@@ -1,0 +1,206 @@
+<?php
+$this->_helper->layout->disableLayout();
+
+$timing_sales_id = $this->getRequest()->getParam('timing_sales_id');
+$is_check = $this->getRequest()->getParam('is_check', 0);
+
+if ($is_check) {
+    $imei = trim($this->getRequest()->getParam('value', ''));
+    $imei = explode("\n", $imei);
+} else {
+    $imei = $this->getRequest()->getParam('value');
+}
+
+if (!defined("IMEI_ACTIVATION_EXPIRE"))
+    define("IMEI_ACTIVATION_EXPIRE", 3);
+
+if (is_array($imei)) { // Tool check IMEI
+
+    $imei = array_unique($imei);
+
+    $result = array();
+
+    foreach ($imei as $key => $value) {
+    	$value = trim($value);
+
+        $info = array();
+        $return = $this->checkImei($value, $timing_sales_id, $info, 1);
+
+        $result_info = "";
+
+        if ($return==1){
+        //     // nó đã chấm ở một lúc nào đó
+        //     $result[$value] = " | Bạn đã báo cáo IMEI này rồi, vào lúc [" . date('d/m/Y H:i:s', strtotime($info['date'])) . "] Tại cửa hàng [".$info['store']."]";
+
+        } else if ($return == 2) {
+        //     //not existed in list sales out
+            $result_info = "IMEI không tồn tại.";
+
+        } else if ($return == 3 || $return == 5) {
+        //     // bị thằng khác chấm trước rồi
+        //     $result[$value] = " | IMEI này đã được [" . $info['staff'].'] báo cáo ở cửa hàng ['. $info['store'].'] vào lúc ['.date('d/m/Y H:i:s', strtotime($info['date'])).']';
+
+        } elseif ($return == 4) {
+        //     // tồn tại trong list tháng 12 về trước
+            $result_info = "IMEI được active trước khi có hệ thống.";
+
+        } elseif ($return == 6) {
+        //     // trong bảng lock imei - hàng tặng đại lý
+            $result_info = "IMEI này của máy tặng khách hàng, thuộc diện không tính KPI.";
+
+        } elseif ($return == 7) {
+        //     // hàng demo
+            $result_info = "IMEI này của máy demo, thuộc diện không tính KPI.";
+
+        }  elseif ($return == 8) {
+        //     // hàng staff
+            $result_info = "IMEI này của máy xuất cho nhân viên, thuộc diện không tính KPI.";
+
+        }  elseif ($return == 9) {
+        //     // hàng mượn
+            $result_info = "IMEI này của máy mượn, thuộc diện không tính KPI.";
+
+        } else
+            $result_info = 'IMEI có thực và chưa được chấm công.';
+
+        $result[$value] = array(
+            'sales_info' => $info,
+            'result' => array(
+                'code' => $return,
+                'info' => $result_info,
+                ),
+            );
+    }
+
+    // ghi log
+    $QLog = new Application_Model_CheckImeiToolLog();
+    $QLog->log($imei);
+
+    $this->view->result = $result;
+
+} else { // Check AJAX khi chấm công
+
+    $info = array();
+    $imei = trim($imei);
+    $return = $this->checkImei($imei, $timing_sales_id, $info);
+	
+	if (intval($imei) > 0 && strlen($imei) == 15) {
+		$QCheckImeiLog = new Application_Model_CheckImeiLog();
+	    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+	    $ip = $this->getRequest()->getServer('REMOTE_ADDR');
+	    // $info .= " - IMEIs (".serialize($imeis).")";
+	    // 
+	    //todo log
+	    $QCheckImeiLog->insert( array(
+	        'result' => $return,
+	        // 'info' => '',
+	        'imei' => $imei,
+	        'user_id' => $userStorage->id,
+	        'ip_address' => $ip,
+	        'time' => date('Y-m-d H:i:s'),
+	    ) );
+	}
+
+    if ($return==1){
+        // nó đã chấm ở một lúc nào đó
+        echo json_encode(
+            array(
+                "value" => $imei,
+                "valid" => 0,
+                "message" => "Bạn đã báo cáo IMEI này rồi, vào lúc [" . date('d/m/Y H:i:s', strtotime($info['date'])) . "] Tại cửa hàng [".$info['store']."]",
+            )
+        );
+
+    } else if ($return==2){
+
+        //not existed in list sales out
+        echo json_encode(
+            array(
+                "value" => $imei,
+                "valid" => 0,
+                "message" => "IMEI không tồn tại. Vui lòng xem kỹ lại IMEI hoặc liên hệ bộ phận Kỹ thuật.",
+            )
+        );
+
+    } else if ($return==3 || $return==5){
+
+        // bị thằng khác chấm trước rồi
+        echo json_encode(
+            array(
+                "value" => $imei,
+                "valid" => 0,
+                "message" => 'IMEI '.$imei.' này đã được ['.@$info['staff'].'] báo cáo ở cửa hàng ['.$info['store'].'] vào lúc ['.date('d/m/Y H:i:s', strtotime($info['date'])).']
+	                    	<a href="#" data-timing-sales-id="'.$info['timing_sales_id'].'" data-imei="'.$imei.'"
+	                    	data-case="IMEI '.$imei.' này đã được ['.@$info['staff'].'] báo cáo ở cửa hàng ['.$info['store'].'] vào lúc ['.date('d/m/Y H:i:s', strtotime($info['date'])).']"
+	                    	data-checksum="'.sha1(md5($imei).$info['timing_sales_id']).'"
+	                    	data-staff-first="'.@$info['staff_id'].'"
+	                    	class="send_notify">Bấm vào đây</a> để gửi yêu cầu xử lý.',
+            )
+        );
+
+    } /*elseif ($return==5) {
+
+        // tồn tại trong list tháng 12 về trước
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => "IMEI này đã được bán cách đây hơn 01 tháng. Bởi [" . $info['staff'].'] ở cửa hàng ['. $info['store'].'] vào lúc ['.date('d/m/Y H:i:s', strtotime($info['date'])).']. Công ty không tính doanh số đối với các máy đã bán ra thị trường hơn 01 tháng. Vui lòng liên hệ ASM nếu có thắc mắc.',
+        ));
+
+    } */ elseif ($return == 4) {
+
+        // tồn tại trong bảng imei acti
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => 'IMEI này đã được bán cách đây hơn '.IMEI_ACTIVATION_EXPIRE.' ngày. Công ty không tính doanh số đối với các máy đã bán ra thị trường hơn '.IMEI_ACTIVATION_EXPIRE.' ngày. Vui lòng liên hệ ASM/Sales Admin nếu có thắc mắc.',
+        ));
+
+    } elseif ($return == 6) {
+
+        // tồn tại trong bảng imei acti
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => 'IMEI này của máy tặng khách hàng, thuộc diện không tính KPI. Vui lòng liên hệ ASM nếu có thắc mắc.',
+        ));
+
+    } elseif ($return == 7) {
+
+        // tồn tại trong bảng imei acti
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => 'IMEI này của máy demo, thuộc diện không tính KPI. Vui lòng liên hệ ASM nếu có thắc mắc.',
+        ));
+
+    }  elseif ($return == 8) {
+
+        // tồn tại trong bảng imei acti
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => 'IMEI này của máy xuất cho nhân viên, thuộc diện không tính KPI. Vui lòng liên hệ ASM nếu có thắc mắc.',
+        ));
+
+    } elseif ($return == 9) {
+
+        // tồn tại trong bảng imei acti
+        echo json_encode(array(
+            'value' => $imei,
+            'valid' => 0,
+            'message' => 'IMEI này của máy mượn, thuộc diện không tính KPI. Vui lòng liên hệ ASM nếu có thắc mắc.',
+        ));
+
+    } else
+        //success
+        echo json_encode(
+            array(
+                "value" => $imei,
+                "valid" => 1,
+                "message" => ""
+            )
+        );
+    
+    exit;
+}

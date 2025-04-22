@@ -1,0 +1,206 @@
+<style type="text/css">
+    .table th:nth-child(3),
+    .table th:nth-child(6) {
+        width: 20%;
+    }
+
+    .table th:nth-child(4),
+    .table th:nth-child(5) {
+        width: 10%;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn_pending {
+        cursor: default;
+    }
+</style>
+<div class="page-header">
+    <form action="/manage/store-create" method="get">
+        <h1>Assign Leader to Stores</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('manage/store/partials/search-leader.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <?php
+    echo $this->render('manage/store/partials/list-leader.phtml');
+    ?>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('.assign_btn').click(function() {
+            $('button').prop('disabled', true);
+            _self = $(this);
+            _self.after('<span class="loading"></span>');
+
+            store_id = _self.data('id');
+
+            $.post('<?php echo HOST ?>ajax/assign-leader-store', {
+                store_id : store_id
+            }, function(data) {
+                $('button').prop('disabled', false);
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.code != "undefined" && data.code == 1) {
+                        _self.text("Pending...").removeClass("btn-info").addClass("btn-default");
+                    } else {
+                        _self.text("Error!!! ["+data.code+"]").removeClass("btn-info").addClass("btn-danger");
+                    }
+                    
+                } catch(err) {
+                    _self.text("Error!!!").removeClass("btn-info").addClass("btn-danger");
+                } finally {
+                    $('.loading').remove();
+                }
+            });
+
+            return false;
+        });
+
+        $('.approve_btn').click(function() {
+            $('button').prop('disabled', true);
+            _self = $(this);
+            _self.after('<span class="loading"></span>');
+
+            store_id = _self.data('id');
+
+            $.post('<?php echo HOST ?>ajax/approve-leader-store', {
+                store_id : store_id
+            }, function(data) {
+                $('button').prop('disabled', false);
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.code != "undefined" && data.code == 1) {
+                        _self.text("Approved Successfully").removeClass("btn-primary").removeClass("approve_btn").addClass("btn-success");
+                        _self.nextAll('.reject_btn').remove();
+                        _self.unbind('click');
+
+                        setTimeout(function() {
+                            _self.after('<a href="#" class="btn btn-danger btn-mini remove_btn" data-id="'+store_id+'">Remove</a>');
+                            _self.remove();
+                        }, 1500);
+                    } else {
+                        _self.text("Error!!! ["+data.code+"]").removeClass("btn-primary").addClass("btn-danger");
+                    }
+                    
+                } catch(err) {
+                    _self.text("Error!!!").removeClass("btn-primary").addClass("btn-danger");
+                } finally {
+                    $('.loading').remove();
+                }
+            });
+
+            return false;
+        });
+
+        $('.reject_btn').click(function() {
+            $('button').prop('disabled', true);
+            _self = $(this);
+            _self.after('<span class="loading"></span>');
+
+            store_id = _self.data('id');
+
+            $.post('<?php echo HOST ?>ajax/reject-leader-store', {
+                store_id : store_id
+            }, function(data) {
+                $('button').prop('disabled', false);
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.code != "undefined" && data.code == 1) {
+                        _self.text("Rejected Successfully").removeClass("btn-inverse").removeClass("reject_btn").addClass("btn-success");
+                        _self.prevAll('.approve_btn').remove();
+                        _self.unbind('click');
+
+                        setTimeout(function() {
+                            _self.remove();
+                        }, 1500);
+                    } else {
+                        _self.text("Error!!! ["+data.code+"]").removeClass("btn-inverse").addClass("btn-danger");
+                    }
+                    
+                } catch(err) {
+                    _self.text("Error!!!").removeClass("btn-inverse").addClass("btn-danger");
+                } finally {
+                    $('.loading').remove();
+                }
+            });
+
+            return false;
+        });
+
+        $('.remove_btn').click(function() {
+            $('button').prop('disabled', true);
+            _self = $(this);
+
+            _self.after('<span class="loading"></span>');
+
+            store_id = _self.data('id');
+
+            $.post('<?php echo HOST ?>ajax/remove-leader-store', {
+                store_id : store_id
+            }, function(data) {
+                $('button').prop('disabled', false);
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.code != "undefined" && data.code == 1) {
+                        _self.text("Removed Successfully").removeClass("btn-danger").removeClass("remove_btn").addClass("btn-success");
+                        _self.unbind('click');
+
+                        setTimeout(function() {
+                            _self.remove();
+                        }, 1500);
+                    } else {
+                        _self.text("Error!!! ["+data.code+"]");
+                    }
+                    
+                } catch(err) {
+                    _self.text("Error!!!");
+                } finally {
+                    $('.loading').remove();
+                }
+            });
+
+            return false;
+        });
+
+        $('.btn_pending').click(function() {
+            return false;
+        });
+    });
+</script>

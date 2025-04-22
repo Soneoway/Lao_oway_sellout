@@ -1,0 +1,83 @@
+<div class="page-header">
+    <h1>Choose month for calculate</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<div class="container">
+<div class="span12">
+    <form role="form" id="form" action="<?php echo HOST.'time/choose-month';?>" method="post" class="form-horizontal">
+        <div class="row">
+
+            <div class="span6">
+
+                <div class="control-group">
+                    <label for="month">Month</label>
+                    <input type="text" class="form-control monthPicker" id="month" name="month" required="required" value="<?php echo date('m/Y');?>" />
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <div class="control-group">
+                    <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                    <div class="span2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-danger go-back">Go back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        $(".monthPicker").datepicker({
+            dateFormat: 'mm/yy',
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+
+            onClose: function(dateText, inst) {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).val($.datepicker.formatDate('mm/yy', new Date(year, month, 1)));
+            }
+        });
+
+        $(".monthPicker").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
+        });
+    });
+</script>

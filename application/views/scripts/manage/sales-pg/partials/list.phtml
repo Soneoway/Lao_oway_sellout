@@ -1,0 +1,47 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'code'          => 'Staff Code',
+                'name'          => 'Staff name',
+                'phone_number'  => 'Phone Number',
+                'group_id'      => 'Group',
+                'staff_off'     => 'Off Date',
+                'area_id'       => 'Area',
+                'province'      => 'Province',
+                'current_store' => 'Current Stores',
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->staffs) and $this->staffs)
+        $inc = $this->offset + 1;
+        foreach ($this->staffs as $k=>$d): ?>
+            <tr>
+                <td>
+                    <?php
+                    
+                    echo $inc++;
+                    ?>
+                </td>
+                <td><?php echo $d['staff_code']; ?></td>
+                <td><a href="<?php echo HOST ?>manage/sales-pg-view?id=<?php echo $d['staff_id'];?>"><?php echo $d['staff_name']; ?></a></td>
+                <!-- <td><?php echo str_replace(EMAIL_SUFFIX, '@', $d['email']);?></td> -->
+                <td><?php echo $d['staff_phone']; ?></td>
+                <td><?php echo $d['group_name']; ?></td>
+                <td><?php echo $d['staff_off']; ?></td>
+                <td><?php if(isset($this->areas[ $this->regions[ $d['regional_market'] ]['area_id'] ])) echo $this->areas[ $this->regions[ $d['regional_market'] ]['area_id'] ];?></td>
+                <td><?php if(isset($this->regions[ $d['regional_market'] ])) echo $this->regions[ $d['regional_market'] ]['name'];?></td>
+                <td><?php echo $d['current_store'] ?></td>
+
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

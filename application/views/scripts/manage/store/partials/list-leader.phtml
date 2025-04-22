@@ -1,0 +1,170 @@
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/bootstrap-datetimepicker.min.css" />
+<style type="text/css">
+    .label {
+        cursor: pointer;
+    }
+
+    .btn {
+        margin-bottom: 9px;
+    }
+
+    .date {
+        cursor: pointer !important;
+    }
+</style>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'leader'          => 'Leader',
+                'Area',
+                'Province',
+                'Name',
+                'Store address',
+                'Joined At',
+                'Action',
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->leaders) and $this->leaders)
+        $inc = $this->offset + 1;
+        foreach ($this->leaders as $staff_id => $stores): ?>
+            <?php $i = 0; ?>
+            <?php foreach ($stores as $store): ?>
+                <tr>
+                    <td>
+                        <?php 
+                        
+                        echo $inc++;
+                         ?>
+                    </td>
+
+                    <?php if($i == 0) : $i++ ?>
+                    <td rowspan="<?php echo count($stores) ?>">
+                        <p class="text-center">
+                            <span class="leader_name"><?php if (isset( $this->staffs[$staff_id] ) && $this->staffs[$staff_id]) 
+                                    echo $this->staffs[$staff_id]['name'] 
+                                    . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '@', $this->staffs[$staff_id]['email']) ?></span>
+                        </p>
+                    </td>
+                    <?php endif; ?>
+                    <td><?php echo $store['area_name'];?></td>
+                    <td><?php echo $store['regional_market_name'];?></td>
+                    <td><?php if (isset($store['del']) && $store['del'] == 1): ?>
+                        <del><?php echo $store['name'];?></del>
+                    <?php else: ?>
+                        <?php echo $store['name'];?>
+                    <?php endif ?></td>
+                    <td><?php echo $store['company_address'];?></td>
+
+                    <td>
+                        <p>
+                            <span class="joindate"><?php if (isset($store['joined_at']) && $store['joined_at']) echo date('Y-m-d',$store['joined_at']);?></span> 
+                            <?php if (in_array( $this->group_id, array(HR_ID, ADMINISTRATOR_ID) )): ?>
+                                <span class="label label-info edit_lbl">Edit</span>
+                            <?php endif ?>
+                        </p>
+                        <?php if (in_array( $this->group_id, array(HR_ID, ADMINISTRATOR_ID) )): ?>
+                            <p class="edit_date control-group" style="display:none;">
+                                <input type="text" class="form-control input-medium date" readonly data-id="<?php echo $store['log_id'] ?>" value="<?php echo date('Y-m-d',$store['joined_at']);?>" /> 
+                                <button class="btn btn-default btn-small btn_save" type="button"><span class="icon-ok"></span></button>
+                                <button class="btn btn-default btn-small btn_cancel" type="button"><span class="icon-remove"></span></button>
+                            </p>
+                        <?php endif ?>
+                    </td>
+
+                    <td class="">
+                        
+                        <p class="text-center">
+                            <?php if ($this->group_id == LEADER_ID): ?>
+                                <?php if (isset( $store['staff_id'] ) && $store['staff_id'] && $store['status'] == 0): ?>
+                                    <button class="btn btn-default btn-mini btn_pending">Pending...</button>
+                                <?php elseif (isset( $store['staff_id'] ) && $store['staff_id'] && $store['status'] == 1): ?>
+                                <?php else: ?>
+                                    <button class="btn btn-info btn-mini assign_btn" data-id="<?php echo $store['id'] ?>">Assign Me</button>
+                                <?php endif ?>
+                            <?php elseif(in_array( $this->group_id, array(ASM_ID, ASMSTANDBY_ID, ADMINISTRATOR_ID) )):  ?>
+                                <?php if (isset( $store['staff_id'] ) && $store['staff_id'] && $store['status'] == 0): ?>
+                                    <button class="btn btn-primary btn-mini approve_btn" data-id="<?php echo $store['id'] ?>">Approve</button>
+                                    <button class="btn btn-inverse btn-mini reject_btn" data-id="<?php echo $store['id'] ?>">Reject</button> 
+                                <?php elseif (isset( $store['staff_id'] ) && $store['staff_id'] && $store['status'] == 1): ?>
+                                    <button class="btn btn-danger btn-mini remove_btn" data-id="<?php echo $store['id'] ?>">Remove</button> 
+                                <?php endif ?>
+                                                           
+                            <?php endif ?>
+                        </p>
+                    </td>
+                    
+                </tr>
+                
+            <?php endforeach ?>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-datetimepicker.min.js"></script>
+<?php echo $this->load();?>
+
+<?php if (in_array( $this->group_id, array(HR_ID, ADMINISTRATOR_ID) )): ?>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.edit_lbl').click(init_edit);
+
+        $('.btn_save').click(function() {
+            $self = $(this);
+            $('input, button').prop('disabled', true);
+            $self.parent('.edit_date').append('<span class="loading"></span>');
+
+            value = $self.prev('.date').val();
+            id = $self.prev('.date').data('id');
+
+            $.post('<?php echo HOST ?>ajax/update-leader-store-join-time', {
+                id : id,
+                value : value
+            }, function(data) {
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.error == "undefined" && data.code == 1)
+                        $self.parent('.edit_date').prev('p').find('.joindate').text(value);
+                    else if (typeof data.error != "undefined" && data.code != 1)
+                        $self.parent('.edit_date').prev('p').find('.joindate').text(data.error);
+                } catch(err) {
+
+                } finally {
+                    $('.edit_lbl').bind('click', init_edit);
+                    $('input, button').prop('disabled', false);
+                    $self.parent('.edit_date').hide();
+                    $('.loading').remove();
+                }
+            })
+        });
+
+        $('.btn_cancel').click(function() {
+            $self = $(this);
+            $('.edit_lbl').bind('click', init_edit);
+            $self.parent('.edit_date').hide();
+        });
+    });
+
+
+    function init_edit() {
+        $self = $(this);
+        $self.parent('p').nextAll('.edit_date').show();
+        $('.date').datetimepicker({
+            format : 'yyyy-mm-dd',
+            autoclose : true,
+            minView : 2
+        });
+
+        $('.edit_lbl').unbind('click');
+    }
+</script>
+<?php endif ?>

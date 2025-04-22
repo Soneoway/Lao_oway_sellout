@@ -1,0 +1,40 @@
+<div class="page-header">
+    <?php if (isset($this->dep) and $this->dep):?>
+        <h1>Edit Department</h1>
+    <?php else:?>
+        <h1>Create Department</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'manage/department-save';?>" method="post">
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required="required" value="<?php if (isset($this->dep)): echo $this->dep->name; endif;?>">
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" name="email" value="<?php if (isset($this->dep)): echo $this->dep->email; endif;?>">
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php isset($this->dep) and $this->dep and printf($this->dep->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>

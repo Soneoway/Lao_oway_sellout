@@ -1,0 +1,290 @@
+<style>
+    body,p,input,button,label,option{
+        font-family: phetsarath ot;
+    }
+</style><div class="page-header">
+    <h1>ເບິ່ງລາຍການຂາຍ</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<div class="row-fluid">
+
+    <div class="span3">
+
+        <div class="control-group">
+            <label> ລະຫັດພະນັກງານ:
+                <?php if (isset($this->staff)): echo $this->staff->code; endif;?></label>
+        </div>
+
+        <div class="control-group">
+            <label>ຊື່:
+                <?php if (isset($this->staff)): echo $this->staff->firstname.' '.$this->staff->lastname; endif;?></label>
+        </div>
+
+
+        <div class="control-group">
+            <label for="date">ວັນທີຂາຍ</label>
+            <input type="text" class="form-control date span3" id="date" name="date" required="required" value="<?php if (isset($this->date)): echo $this->date; endif;?>">
+        </div>
+
+     
+
+        <div class="control-group">
+            <label for="store">ຮ້ານ</label>
+            <select name="store" id="store" required="required" class="span3">
+                <option value="">ເລືອກຮ້ານ</option>
+                <?php foreach ($this->stores as $store):?>
+                <option value="<?php echo $store->id;?>" <?php if (isset($this->timing) and $this->timing->store==$store->id):?> selected="selected"
+                    <?php endif;?>>
+                    <?php echo $store->name;?></option>
+                <?php endforeach;?>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="span9">
+
+        <label>Sale</label>
+        <?php if ($this->timing_sales): ?>
+        <?php foreach ($this->timing_sales as $timing_sale): ?>
+        <div class="row-fluid div-sale">
+            <!--Display only in mobile-->
+            <div class="span4">
+                <label class="label label-info">Product</label>
+                <div class="control-group">
+                    <select class="product form-control span3" required="required" name="product[]">
+                        <option value>Choose Product</option>
+                        <?php foreach ($this->goods as $good) :?>
+                        <option value="<?php echo $good->id;?>" <?php if ($timing_sale[ 'product_id']==$good->id):?> selected="selected"
+                            <?php endif;?>>
+                            <?php echo $good->name;?></option>
+                        <?php endforeach;?>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+                <div class="control-group">
+                    <select class="model form-control span3" required="required" name="model[]">
+                        <option value>Choose Color</option>
+                        <?php foreach ($timing_sale[ 'models'] as $model) :?>
+                        <option value="<?php echo $model->id;?>" <?php if ($timing_sale[ 'model_id']==$model->id):?> selected="selected"
+                            <?php endif;?>>
+                            <?php echo $model->name;?></option>
+                        <?php endforeach;?>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+                <div class="control-group">
+                    <input type="text" pattern="[0-9]{15}" name="imei[]" required="required" value="<?php echo $timing_sale['imei']; ?>" placeholder="IMEI" class="span3"  />
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+            <div class="span8">
+                <label>ລູກຄ້າ</label>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <input type="text" name="customer_name[]" required="required" value="<?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->name ); ?>" placeholder="ชื่อลูกค้า" class="span3">
+                            <p class="help-block"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="tel" pattern="[0][0-9]{7,10}" required="required" name="phone_number[]" value="<?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->phone_number ) ; ?>" placeholder="เบอร์มือถือ" class="span3">
+                            <p class="help-block"></p>
+                        </div>
+
+                        <div class="control-group">
+							<?php if(isset($timing_sale['photo']) and $timing_sale['photo']):
+										
+								$tem = explode(' ', $this->timing->from);
+								$from_date = $tem[0];
+								$from_month = substr($from_date, 0, -3);
+								
+								$old_dir = APPLICATION_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR.'timing_sales'.DIRECTORY_SEPARATOR.$timing_sale['id'].DIRECTORY_SEPARATOR.$timing_sale['photo'];
+								
+								$new_dir = APPLICATION_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR.'timing_sales_new'.DIRECTORY_SEPARATOR.$from_month.DIRECTORY_SEPARATOR.$from_date.DIRECTORY_SEPARATOR.$timing_sale['id'].DIRECTORY_SEPARATOR.$timing_sale['photo'];
+								
+								$fileurl = null;
+								
+								if (is_file($old_dir))
+									$fileurl = HOST.'photo/timing_sales/'.$timing_sale['id'].'/'.$timing_sale['photo'];
+								elseif (is_file($new_dir))
+									$fileurl = HOST.'photo/timing_sales_new/'.$from_month.'/'.$from_date.'/'.$timing_sale['id'].'/'.$timing_sale['photo'];
+								
+								if ($fileurl):
+							?>
+								<a href="#a" id="pop<?php echo $timing_sale['imei']; ?>"><img id="imageresource<?php echo $timing_sale['imei']; ?>" class="staff-photo" src="<?php echo $fileurl;?>" width="100" /></a>
+							
+								
+						<div class="modal fade" id="imagemodal<?php echo $timing_sale['imei']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  
+  
+ 
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">
+	
+		</h4>
+      </div>
+      <div class="modal-body">
+	 
+      <img src="<?php echo $fileurl;?>" id="demo-image<?php echo $timing_sale['imei']; ?>" style="width: 1000px; " >
+		
+      </div>
+      <div class="modal-footer">
+	 <center> 
+	 	
+<input type="button" class="btnRotate<?php echo $timing_sale['imei']; ?>" value="90" onClick="rotateImage<?php echo $timing_sale['imei']; ?>(this.value);" />
+<input type="button" class="btnRotate<?php echo $timing_sale['imei']; ?>" value="-90" onClick="rotateImage<?php echo $timing_sale['imei']; ?>(this.value);" />
+<input type="button" class="btnRotate<?php echo $timing_sale['imei']; ?>" value="180" onClick="rotateImage<?php echo $timing_sale['imei']; ?>(this.value);" />
+<input type="button" class="btnRotate<?php echo $timing_sale['imei']; ?>" value="360" onClick="rotateImage<?php echo $timing_sale['imei']; ?>(this.value);" />
+<br />
+	 <font size="3">
+
+	ลูกค้า: <?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->name ); ?>
+	/
+	 <?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->phone_number ) ; ?>
+	 <br />
+	 
+          เครื่อง:              <?php foreach ($this->goods as $good) :?>
+                        <?php if ($timing_sale[ 'product_id']==$good->id):?>
+                            
+                            <?php echo $good->name;?>
+							<?php endif;?>
+                        <?php endforeach;?>
+                   
+                    /
+               
+                        
+                        <?php foreach ($timing_sale[ 'models'] as $model) :?>
+                        <?php if ($timing_sale[ 'model_id']==$model->id):?>
+                           
+                            <?php echo $model->name;?>
+							 <?php endif;?>
+                        <?php endforeach;?>
+                    </select>
+	 </font>
+	 <font size="5"><b>
+	 <?php echo $timing_sale['imei']; ?>
+	 	 
+	 </b></font>  <button type="button" class="btn btn-default" data-dismiss="modal">ปิด X</button></center>
+	  
+       
+		
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$("#pop<?php echo $timing_sale['imei']; ?>").on("click", function() {
+   $('#imagepreview<?php echo $timing_sale['imei']; ?>').attr('src', $('#imageresource<?php echo $timing_sale['imei']; ?>').attr('src')); // here asign the image to the modal when the user click the enlarge link
+   $('#imagemodal<?php echo $timing_sale['imei']; ?>').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+});
+</script>	
+
+ <script>
+function rotateImage<?php echo $timing_sale['imei']; ?>(degree) {
+	$('#demo-image<?php echo $timing_sale['imei']; ?>').animate({  transform: degree }, {
+    step: function(now,fx) {
+        $(this).css({
+            '-webkit-transform':'rotate('+now+'deg)', 
+            '-moz-transform':'rotate('+now+'deg)',
+            'transform':'rotate('+now+'deg)'
+        });
+    }
+    });
+}
+</script>
+
+<style>
+#demo-image<?php echo $timing_sale['imei']; ?>{padding:25px 10px;}
+.btnRotate<?php echo $timing_sale['imei']; ?>{padding: 5px 10px;background-color: #09F;border: 0;color: #FFF;cursor: pointer;}
+</style>
+	
+					<p class="help-block"> </p>			
+								
+							<?php endif;?>
+							<?php endif;?>
+                        </div>
+
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <input type="email" name="email[]" value="<?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->email ) ; ?>" placeholder="Email" class="span3">
+                            <p class="help-block"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="text" name="address[]" value="<?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->address ) ; ?>" placeholder="ທີ່ຢູ່" class="span3">
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="customer_ids[]" value="<?php isset($timing_sale['customer']) and $timing_sale['customer'] and printf( $timing_sale['customer']->id ) ; ?>">
+            </div>
+
+
+
+
+            <!-- End display mobile -->
+        </div>
+
+        <?php endforeach;?>
+
+        <?php endif;?>
+
+            <div class="control-group">
+                <label for="note">ໝາຍເຫດ</label>
+                <textarea name="note" class="form-control span3" rows="3" id="note"><?php isset($this->timing) and $this->timing and printf($this->timing->note);?></textarea>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <input type="hidden" name="id" id="id" value="<?php if (isset($this->timing) and $this->timing) echo $this->timing->id;?>">
+        <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+        
+		<center>
+		
+		
+		<button type="button" class="btn btn-danger go-back">ຍ້ອນກັບ</button>
+		<br /><br /><br /><br />
+		
+		<?php if ($this->access('timing', 'approve')) { ?>
+                    
+                    <?php if ($this->timing['status']!='1') { ?>
+					
+
+<a href="http://center.oppo.in.th/timing/approve?id=<?php echo $_GET['id']?>" class="btn btn-primary"> Approve</a>
+
+
+                        
+                    <?php } ?>
+
+                <?php } ?>
+		</center>
+    </div>
+</div>
+
+			<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>
+
+				
+	
+				<br />
+				<br />
+				<br />

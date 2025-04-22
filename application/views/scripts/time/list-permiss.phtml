@@ -1,0 +1,70 @@
+<div class="page-header">
+    <h1>List of Permission</h1>
+</div>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'name' => 'Staff Name',
+                    'Area',
+                    'Team',
+                    'Action'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (isset($this->permission) and $this->permission)
+            foreach ($this->permission as $k => $permission): ?>
+        <tr>
+              <td>
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td><?php if(isset($this->staff) and $this->staff ) echo $this->staff[$permission['staff_id']] ?></td>
+            <td>
+            <?php if(isset($this->permiss_list) and $this->permiss_list and $this->area):
+                    foreach($this->permiss_list[$permission['staff_id']] as $k => $v ) :
+                         if(isset($this->area[$v['area_id']]))
+                         {
+                             echo $this->area[$v['area_id']];
+                             echo ' / ';
+                         }
+                           
+                            endforeach;
+                            endif;
+             ?>
+            </td>
+            <td>
+              <?php if(isset($this->permiss_list) and $this->permiss_list and $this->area):
+                    foreach($this->permiss_list[$permission['staff_id']] as $k => $v ) :
+                         if(isset($this->team[$v['team']]))
+                         {
+                             echo $this->team[$v['team']];
+                             echo ' / ';
+                         }
+                           
+                            endforeach;
+                            endif;
+             ?>
+            </td>
+            <td class="">
+                <a title="Edit" href="/time/permission?id=<?php echo $permission['staff_id'];?>"> <i class="icon-edit"></i></a>
+            </td>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>
+<?php echo $this->load('combobox');?>

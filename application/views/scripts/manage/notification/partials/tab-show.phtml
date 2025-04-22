@@ -1,0 +1,101 @@
+<div class="row-fluid">
+    <div class="span6">
+        <div class="control-group">
+            <label for="">Important Notification:</label>
+            <p>
+                <label class="checkbox"><input type="checkbox" name="pop_up" value="1" <?php if (isset($this->notification['pop_up']) && $this->notification['pop_up']) echo "checked" ?>> <strong>Pop-up</strong></label>
+            </p>
+            <p>
+                <label class="checkbox"><input type="checkbox" name="all_staff" value="1" <?php if (isset($this->all_staff) && $this->all_staff) echo "checked" ?>> <strong>All Staff</strong></label>
+            </p>
+        </div>
+
+        <div class="control-group">
+            <label for="">Notify Departments / Teams / Titles:</label>
+            <ul class="tree">
+                <?php if (isset($this->team_cache) && $this->team_cache): ?>
+                    <?php foreach ($this->team_cache as $_department_id => $_department): ?>
+                        <li>
+                            <input type="checkbox" name="departments[]" value="<?php echo $_department_id;?>" <?php if (isset($this->old_department_objects) && in_array($_department_id, $this->old_department_objects)) echo "checked" ?>> <label class="checkbox"><strong><?php echo $_department['name'];?></strong></label>
+
+                            <?php if (isset($_department['children']) && count($_department['children'])): ?>
+                                <ul>
+                                <?php foreach ($_department['children'] as $_team_id => $_team): ?>
+                                    <li>
+                                        <input type="checkbox" name="teams[]" value="<?php echo $_team_id ?>"  <?php if (isset($this->old_team_objects) && in_array($_team_id, $this->old_team_objects)) echo "checked" ?>> <label class="checkbox"><i><u><?php echo $_team['name'];?></u></i></label>
+
+                                        <?php if (isset($_team['children']) && count($_team['children'])): ?>
+                                            <ul>
+                                            <?php foreach ($_team['children'] as $_title_id => $_title): ?>
+                                                <li>
+                                                    <input type="checkbox" name="staff_titles[]" value="<?php echo $_title_id ?>"  <?php if (isset($this->old_title_objects) && in_array($_title_id, $this->old_title_objects)) echo "checked" ?>> <label class="checkbox"><?php echo $_title['name'];?></label>
+                                                </li>
+                                            <?php endforeach ?>
+                                            </ul>
+                                        <?php endif ?>
+                                    </li>
+                                <?php endforeach ?>
+                                </ul>
+                            <?php endif ?>
+                        </li>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </ul>
+            
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="control-group">
+            <label for="">Notify Areas:</label>
+            <p><label class="checkbox"><input type="checkbox" class="checkall" data-target=".area" /> <span class="label label-info">Select All</span></label></p>
+            <?php if (isset($this->area_cache) && $this->area_cache): ?>
+                <?php foreach ($this->area_cache as $key => $value): ?>
+                    <p>
+                        <label class="checkbox"><input type="checkbox" class="display-item area" data-type=".area" name="areas[]" value="<?php echo $key;?>" <?php if (isset($this->old_area_objects) && in_array($key, $this->old_area_objects)) echo "checked" ?>> <?php echo $value;?></label>
+                    </p>
+                <?php endforeach ?>
+            <?php endif ?>
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="row-fluid">
+            <label for="">Notify Staffs:</label>
+        </div>
+        <div class="row-fluid">
+            <select name="pg_name" id="pg_name" class="span12" size="15" multiple="multiple">
+                <?php if (isset($this->old_staff_objects) && $this->old_staff_objects): ?>
+                <?php foreach ($this->old_staff_objects as $k=>$staff): ?>
+                    <?php $option = $staff->firstname . ' ' . $staff->lastname. ' | '. preg_replace('/oppomobile.vn/', '', $staff['email']) .  ( isset( $this->region_cache[ $staff['regional_market'] ] ) ? (' | ' . $this->region_cache[ $staff['regional_market'] ]) : '' ) ?>
+                    <option value="<?php echo $staff->id ?>" title="<?php echo $option ?>"><?php echo $option ?></option>
+                <?php endforeach ?>
+                <?php endif ?>
+            </select>
+
+            <input id="pic" name="pic" type="hidden" value="" />
+        </div>
+        <div class="row-fluid">
+            <div class="control-group">
+                <button id="remove_pg_btn" class="btn btn-danger pull-right" type="button">Remove</button>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <legend>Search</legend>
+        </div>
+        <div class="row-fluid">
+                <label for="s_name">Staff Name</label>
+                <input type="text" class="form-control" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+        </div>
+        <div class="row-fluid">
+                <label for="">Result</label>
+                <div class="load-ajax">
+                    <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                </div>
+        </div>
+        <div class="row-fluid">
+                <button id="add_pg_btn" class="btn btn-success pull-right" type="button">Add Staff</button>
+        </div>
+    </div>
+</div>

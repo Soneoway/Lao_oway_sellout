@@ -1,0 +1,11 @@
+<?php if (isset($this->staffs) && $this->staffs): ?>
+    <?php foreach ($this->staffs as $key => $value): ?>
+        <li class="span3" data-region="<?php echo $value['regional_market'] ?>" data-name="<?php echo $value['firstname'].' '.$value['lastname'] ?>">
+            <div class="thumbnail">
+                <img src="<?php echo HOST ?>photo/staff/<?php echo $value['id'] ?>/<?php echo $value['photo'] ?>" alt="<?php echo $value['firstname'].' '.$value['lastname'] ?>">
+                <h3><?php echo $value['firstname'].' '.$value['lastname'] ?></h3>
+                <p><?php if(isset($this->regions[ $value['regional_market'] ])) echo $this->regions[ $value['regional_market'] ] ?></p>
+            </div>
+        </li>        
+    <?php endforeach ?>
+<?php endif ?>

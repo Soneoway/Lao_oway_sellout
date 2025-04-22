@@ -1,0 +1,74 @@
+<form class="form-search form-horizontal" method="get" action="/manage/penalty-charge/penalty-charge">
+    <div class="row">
+        <div class="span5">
+	       <div class="control-group">
+                <label for="store_id" class="span2">Penalty Type</label>
+                <select id="penalty_type_id" name="penalty_type_id" class="span2">
+                    <?php
+
+                    if ($this->penalty_type) :
+                        foreach ($this->penalty_type as $penalty_type):
+                            ?>
+                            <option value="<?php echo $penalty_type['id'];?>" <?php if (isset($this->params['penalty_type_id']) and ( (is_array($this->params['penalty_type_id']) && in_array($penalty_type['id'], $this->params['penalty_type_id']) || $penalty_type['id']==$this->params['penalty_type_id'])) ):?>selected<?php endif;?>><?php echo $penalty_type['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+        </div>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export By Staff</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        
+    });
+</script>

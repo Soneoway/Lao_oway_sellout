@@ -1,0 +1,28 @@
+ <div class="widget widget-nopad" data-toggle="collapse" data-target="#notification">
+                        <div class="widget-header"> <i class="icon-list-alt"></i>
+                          <h3> Recent News <i class="icon-ok-sign" rel="tooltip" title="Những thông báo mới nhất từ tổng công ty" class="tooltip"></i></h3>
+                        </div>
+                        <!-- /widget-header -->
+                        <div class="widget-content collapse in" id="notification"  >
+                          <ul class="news-items">
+                          
+                           <?php
+                            if (isset($this->notifications) and $this->notifications):
+                                  foreach ($this->notifications as $k => $inform):
+                                
+                                   $maxlenght = 100;
+                                   $newstr = mb_strimwidth($inform['content'], 0, $maxlenght, "..");
+                                         
+                       ?>
+                            <li>                 
+                              <div class="news-item-date"> <span class="news-item-day"><?php echo date('d' , strtotime($inform['created_at'])) ?></span> <span class="news-item-month"><?php echo date('F' , strtotime($inform['created_at'])); ?></span> </div>
+                              <div class="news-item-detail"> <a href="<?php echo HOST. 'user/notification-view?id='. $inform['id'] ?>" class="news-item-title" target="_blank"><?php echo $inform['title'] ?></a>
+                                <p class="news-item-preview"> <?php echo $newstr ?> </p>
+                              </div>                  
+                            </li>
+                            
+                             <?php endforeach; endif; ?>
+                          </ul>
+                        </div>
+                        <!-- /widget-content --> 
+                      </div> 

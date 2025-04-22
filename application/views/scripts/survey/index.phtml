@@ -1,0 +1,44 @@
+<div class="page-header">
+    <h1>Survey</h1>
+</div>
+<?php
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+
+switch ($userStorage->team){
+    case PGPB_TEAM:
+        $n = 't4';
+        break;
+}
+
+$s = $this->r ? $this->r : $n;
+
+echo $this->render('survey/partials/'.$s.'.phtml');
+
+?>
+
+<div class="form-group survey-iframe">
+
+</div>
+<!--onload='javascript:resizeIframe(this);'-->
+
+<input type="hidden" name="back_url" id="back_url" value="/" />
+<button type="button" class="btn btn-danger go-back">Go back</button>
+<script>
+
+    function resizeIframe(obj) {
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
+
+    $(document).ready(function(){
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>

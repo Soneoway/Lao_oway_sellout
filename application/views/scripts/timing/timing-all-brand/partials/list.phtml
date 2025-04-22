@@ -1,0 +1,57 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Timing Date</th>
+        <th>Staff Code</th>
+        <th>Staff Name</th>
+        <th>Area</th>
+        <th>Store ID</th>
+        <th>Store Name</th>
+        <th>B</th>
+        <th>S</th>
+        <th>HW</th>
+        <th>Others</th>
+        <th>Actoin</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    
+    if (isset($this->ab_timing) and $this->ab_timing)
+        foreach ($this->ab_timing as $k=>$ab_timings): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $ab_timings['timing_date']; ?></td>
+                <td><?php echo $ab_timings['staff_code'];?></td>
+                <td><?php echo $ab_timings['staff_name'];?></td>
+                <td><?php echo $ab_timings['area_name'];?></td>
+                <td><?php echo $ab_timings['st_id'];?></td>
+                <td><?php echo $ab_timings['st_name'];?></td>
+                <td><?php echo $ab_timings['sellout_b'];?></td>
+                <td><?php echo $ab_timings['sellout_s'];?></td>
+                <td><?php echo $ab_timings['sellout_hw'];?></td>
+                <td><?php echo $ab_timings['sellout_others'];?></td>
+                <td>
+                    <a title="View" href="/timing/timing-all-brand-edit?id=<?php echo $ab_timings['at_id'];?>"> <i class="icon-eye-open"></i></a>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+
+
+

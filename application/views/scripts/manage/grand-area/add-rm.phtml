@@ -1,0 +1,222 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+    .rm-name{
+        width: 50%;
+        color: green;
+        display: inline-block;
+        background: #e4e4e4;
+        line-height: 30px;
+        padding-left: 10px
+    }
+    .clear{
+        clear: both;
+        height: 20px;
+    }
+   
+    .text-area{
+            width: 250px;
+            float: left;
+    }
+    .area-list{
+            background-color: #ecebeb;
+            padding: 20px;
+    }
+</style>
+<div class="page-header">
+    <h1>Grand Area : <?PHP echo $this->grand_list[0]['name'] ?></h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/save-rm" method="post" target="ifrmSave">
+    <div class="row">
+
+    <div class="span12 area-list">
+        <h3>Area List</h3>
+        <?PHP 
+        $x = 1;
+        for ($i=0; $i < count($this->grand_list); $i++) { 
+            echo '<p class="text-area">'.$this->areas[ $this->grand_list[$i]['area'] ].'</p>';
+        } ?>
+    </div>
+    <div class="clear"></div>
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_bind_sale" class="btn btn-success" type="button">Bind ​RM</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+        <div class="span6">
+        
+            <p><span><strong>- Sale Responsible -</strong></span></p>
+            <span>
+                <?PHP if (isset($this->rm_list) and $this->rm_list) :
+                    foreach ($this->rm_list as $k => $val):?>
+                    <p><span class="rm-name"><?=$this->staff[$val['rm_id']]?></span><span><button type="button"class="btn btn-default delete-name">-</button></span> <input type="hidden"  name="staff_id[]" value="<?=$val['rm_id']?>" /></p>
+               <?PHP  endforeach; endif; ?>
+            </span>
+            <span id="staff_name">
+                
+            </span>
+          
+        </div>
+        
+       
+
+    </div>
+
+    <br />
+
+<input type="hidden" id="grand_id" name="grand_id" value="<?=$this->grand_list[0]['grand_area_id']?>" />
+
+
+</form>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        <?PHP if (isset($this->rm_list) and $this->rm_list) { ?>
+            $('form#form button').prop('disabled', false);
+        <?PHP } ?>
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&name=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#name_result').attr("multiple", false);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind_sale').click(function(){
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            
+            $('#staff_name').append('<p><span class="rm-name">' + tmp[0].trim() + '</span><span><button type="button"class="btn btn-default delete-name">-</button></span> <input type="hidden"  name="staff_id[]" value="'+staff_id+'" /></p>');
+            delete_rm();
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+        
+        $('.delete-name').click(function(){
+            $(this).parent().parent().remove();
+           
+            return false;
+        });
+    
+    });
+
+    function delete_rm(){
+        $('.delete-name').click(function(){
+            $(this).parent().parent().remove();
+           
+            return false;
+        });
+    }
+   
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

@@ -1,0 +1,33 @@
+<select class="span5 search_result" id="reg_result" name="reg_result" multiple="multiple" size="8">
+	<?php if (isset($this->regional_markets) and $this->regional_markets): ?>
+		<?php foreach ($this->regional_markets as $region): ?>
+			<option value="<?php echo $region['id'] ?>"><?php echo $region['name'] ?></option>
+		<?php endforeach ?>
+	<?php endif ?>
+</select>
+<script type="text/javascript">
+$('#reg_result').change(function(){
+	_val = $('#reg_result option:selected').val();
+	if (_val === undefined || _val == '0') {
+		return false;
+	}
+
+    $('.loading').remove();
+    var _self = $(this);
+    var targetUrl = '<?php echo HOST."staff?s_assign=1&regional_market=" ?>' + _val;
+
+    //get ajax content
+    var aj = $('.table-responsive.load-ajax');
+    if (aj.length){
+        _self.after("<span class=\'loading\'></span>");
+        $.get(targetUrl
+            ,function(data,status){
+                aj.html(data);
+                _self.next('.loading').remove();
+            });
+    }
+
+    return false;
+})
+.change();
+</script>

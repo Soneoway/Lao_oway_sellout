@@ -1,0 +1,39 @@
+<table class="table table-bordered" id="result">
+	<caption>Assign Result</caption>
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Staff Name</th>
+			<th>Team</th>
+			<th>Title</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody class="">
+		<?php if ( isset($this->staffs) and $this->staffs ): ?>
+			<?php foreach ($this->staffs as $key => $value): ?>
+				<tr>
+					<td>
+						<?php
+		                    $inc = $this->offset + $key + 1;
+		                    echo $inc;
+		                ?>
+					</td>
+					<td><?php echo $value['firstname'] . ' ' . $value['lastname'] ?></td>
+                    <td><?php echo (isset($this->teams[$value['team']]) ? $this->teams[$value['team']] : '');?></td>
+					<td><?php echo $value['title'] ?></td>
+					<td>
+                		<a title="Unassign" class="confirmLink" href="/staff/unassign?id=<?php echo $value['id'];?>"> <i class="icon-trash"></i></a>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		<?php endif ?>
+	</tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->load();?>
+<?php echo $this->confirm();?>

@@ -1,0 +1,35 @@
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th style="text-align: center;" width="5%">No.</th>
+            <th style="text-align: center;" width="10%">IMEI</th>
+            <th style="text-align: center;" width="20%">System Model</th>
+            <th style="text-align: center;" width="10%">System Version</th>
+            <th style="text-align: center;" width="10%">Total usage</th>
+            <th style="text-align: center;" width="10%">Coverage time</th>
+            <th style="text-align: center;" width="5%"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        $count = 0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k => $item):
+                $inc = $this->offset + $k + 1;?>
+                <tr>
+                    <td style="text-align: center;"><?php echo $inc; ?></td>
+                    <td style="text-align: center;"><?php echo isset($item['imei']) ? $item['imei'] : ''; ?></td>
+                    <td><?php echo isset($item['system_model']) ? $item['system_model'] : ''; ?></td>
+                    <td style="text-align: center;"><?php echo isset($item['system_version']) ? $item['system_version'] : ''; ?></td>
+                    <td style="text-align: center;"><?php echo isset($item['total_usage']) ? $item['total_usage'] : ''; ?></td>
+                    <td style="text-align: center;"><?php echo isset($item['coverage_time']) ? $item['coverage_time'] : ''; ?></td>
+                    <td style="text-align: center;"><a href='<?php echo HOST."trainer/apk-demo-statistics-create?id={$item['id']}&from={$this->params['from']}&to={$this->params['to']}"; ?>'><i class="icon-eye-open"></i></a></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>

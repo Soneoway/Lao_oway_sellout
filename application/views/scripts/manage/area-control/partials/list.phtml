@@ -1,0 +1,56 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Area</th>
+        <th>Province</th>
+        <th>District</th>
+        <th>Sub Area</th>
+        <th>Store Details</th>
+        <th>Sale Responsible</th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $QAreaControl = new Application_Model_AreaControl();
+
+            if ($this->area_control) {
+                $data = $this->area_control;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt_store = $QAreaControl->store_details($data[$i]['sub_area_id']);
+
+                    $store_list = "All Store : ".$cnt_store['cnt_store_all'];
+
+                    if ($cnt_store['cnt_store_no_sale'] != 0 ) { $store_list .= "<br/>No Sale : ".$cnt_store['cnt_store_no_sale']; }
+                    if ($cnt_store['cnt_rm'] != 0 ) { $store_list .= "<br/>RM : ".$cnt_store['cnt_rm']; }
+                    if ($cnt_store['cnt_asm'] != 0 ) { $store_list .= "<br/>ASM : ".$cnt_store['cnt_asm']; }
+                    if ($cnt_store['cnt_asm_stand_by'] != 0 ) { $store_list .= "<br/>ASM Stand By : ".$cnt_store['cnt_asm_stand_by']; }
+                    if ($cnt_store['cnt_am'] != 0 ) { $store_list .= "<br/>AM : ".$cnt_store['cnt_am']; }
+                    if ($cnt_store['cnt_sale'] != 0 ) { $store_list .= "<br/>Sale : ".$cnt_store['cnt_sale']; }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td>".$cnt."</td>";
+                    echo    "<td>".$data[$i]['area_name']."</td>";
+                    echo    "<td>".$data[$i]['province_name']."</td>";
+                    echo    "<td>".$data[$i]['district_name']."</td>";
+                    echo    "<td>
+                                <a title='Edit' href='".HOST."manage/area-control-edit?sub_area_id=".$data[$i]['sub_area_id']."'>".$data[$i]['sub_area_name']."</a>
+                            </td>";
+                    echo    "<td>".$store_list."</td>";
+                    echo    "<td> [".$data[$i]['staff_code']."] ".$data[$i]['staff_name']."</td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>

@@ -1,0 +1,49 @@
+<div class="page-header">
+    <?php if (isset($this->title) and $this->title):?>
+        <h1>Edit Job Title</h1>
+    <?php else:?>
+        <h1>Create Job Title</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'manage/title-save';?>" method="post">
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required="required" value="<?php if (isset($this->title)): echo $this->title['name']; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label for="team_id">Team</label>
+        <select name="team_id" id="team_id">
+            <option value>---</option>
+
+            <?php if (isset($this->teams) && $this->teams): ?>
+                <?php foreach ($this->teams as $key => $value): ?>
+                    <option value="<?php echo $key ?>" <?php if($key == $this->title['team_id']) echo "selected" ?>><?php echo $value ?></option>
+                <?php endforeach ?>
+            <?php endif ?>
+        </select>
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php isset($this->title) and printf($this->title['id']);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>

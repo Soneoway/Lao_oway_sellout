@@ -1,0 +1,148 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+#map {
+    height: 300px;
+    width: 95%;
+    border-width: medium;
+    border-style: groove;
+    border-color: bisque;
+}
+
+b {
+    font-size: 20px;
+    font-family: Noto sans lao;
+    text-align: center;
+    height: 50px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+input {
+    font-family: Noto sans lao;
+}
+
+span {
+    font-size: 16px;
+    font-family: Noto sans lao;
+    color: red;
+    padding-left: 3%;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+
+<div class="page-header">
+    <h1>Store Location</h1>
+</div>
+
+<div class="form-horizontal">
+    <div class="row">
+        <div class="span6">
+
+            <div id="map"></div><br>
+            <div><span>ເຂດຈຸດສີແດງອ້ອມວົງ ແມ່ນເປັນທີ່ຕັ້ງຂອງຮ້ານທີ່ໄດ້ກຳນົດໄວ້.!</span></div>
+            <input type="hidden" name="lat" id="lat" />
+            <input type="hidden" name="lng" id="lng" />
+        </div><br>
+        <div class="span6">
+            <div class="control-group">
+                <label class="control-label" for=""> Store Code : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->store_code ?>"
+                        readonly>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for=""> Store Name : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->name ?>" readonly>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for=""> Sales Area : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3"
+                        value="<?php echo $this->subarea_cache[$this->store->agency] ?>" readonly>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for=""> Address : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->shipping_address ?>"
+                        readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row" style="padding-top: 10px; padding-left:30%;">
+    <div class="span12">
+    <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+    <button type="button" class="btn btn-primary go-back"><b>ກັບຄືນ</b></button>
+    </div>
+</div>
+
+
+
+</div>
+
+<script>
+// กำหนดจุดศูนย์กลางและรัศมี (100 เมตร)
+const center = [<?php echo $this->store->lat ?>, <?php echo $this->store->lng ?>]; // ตัวอย่าง: กรุงเทพฯ
+const radius = 100; // รัศมี 100 เมตร
+
+console.log(center);
+
+// ฟังก์ชันคำนวณระยะทางระหว่างสองจุด (Haversine formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // รัศมีของโลกในหน่วยเมตร
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // ระยะทางในหน่วยเมตร
+}
+
+// ฟังก์ชันแสดงแผนที่และตำแหน่ง
+function initMap() {
+    const map = L.map('map').setView(center, 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+    }).addTo(map);
+
+    // วาดวงกลมแสดงรัศมี 100 เมตร
+    L.circle(center, {
+        color: 'red',
+        fillColor: 'red',
+        fillOpacity: 0.5,
+        radius: radius
+    }).addTo(map);
+}
+
+// เริ่มต้นแผนที่เมื่อโหลดหน้าเว็บ
+window.onload = initMap;
+
+$('.go-back').click(function(e){
+
+window.location.href = $('#back_url').val();
+
+return false;
+});
+</script>

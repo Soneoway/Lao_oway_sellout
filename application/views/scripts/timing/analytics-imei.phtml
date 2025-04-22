@@ -1,0 +1,230 @@
+<style>
+    /**
+ * Tabs
+ */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; // make sure it wraps
+}
+.tabs label {
+  order: 1; // Put the labels first
+  display: block;
+  padding: 1rem 2rem;
+  margin-right: 0.2rem;
+  cursor: pointer;
+  background: #a9a9a9;
+  font-weight: bold;
+  transition: background ease 0.2s;
+}
+.tabs .tab {
+  order: 99; // Put the tabs last
+  flex-grow: 1;
+  width: 100%;
+  display: none;
+  padding: 1rem;
+}
+.tabs input[type="radio"] {
+  display: none;
+}
+.tabs input[type="radio"]:checked + label {
+  background: #eeeb;
+}
+.tabs input[type="radio"]:checked + label + .tab {
+  display: block;
+}
+
+@media (max-width: 45em) {
+  .tabs .tab,
+  .tabs label {
+    order: initial;
+  }
+  .tabs label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+}
+
+</style>
+<div class="page-header">
+    <h1>Analytics By Activated</h1>
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/report_search_imei.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div align="right">
+    <strong style="color:#3498db; font-size: 16px;">Total Activated : <b style="color:black; font-size: 18px;"> <?php echo $this->total_sales[0]['total_unit_activated']  ?></b> &nbsp;||&nbsp;</strong>
+    <strong style="color:#28b463; font-size: 16px;"> Total Activated Timing : <b style="color:black; font-size: 18px;"> <?php echo $this->total_sales[0]['total_unit_activated_timing'] ?></b>  &nbsp;||&nbsp;</strong>
+    <strong style="color:#e74c3c; font-size: 16px;"> Total Activated Not Timing :  <b style="color:black; font-size: 18px;"> <?php echo $this->total_sales[0]['total_unit_activated_not_timing'] ?></b> &nbsp;||&nbsp;</strong><br>
+    <strong style="color: green">==========================================================================================</strong>
+</div><br>
+<div class="tabs">
+  <input type="radio" name="tabs" id="tabone" checked="checked">
+  <label for="tabone">Get Table Analytics By Activated</label>
+  <div class="tab">
+    <div class="clearfix"></div>
+      <div class="row-fluid">
+          <div class="span12">
+              <div class="table-responsive load-ajax">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <?php echo $this->sorting(array(
+                                    '#',
+                                        // 'Area',
+                                        'Warehouse',
+                                        'Total Activated',
+                                        'Timing Activated',
+                                        'Not Timing Activated'
+                                ),
+                            $this->url, $this->current_col, $this->desc); ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+
+
+                            $QStoreStaff = new Application_Model_StoreStaff();
+
+                            if (isset($this->sales) and $this->sales)
+                                $inc = $this->offset + 1;
+                                foreach ($this->sales as $sale):
+                                    $warehouse_name[] = $sale['warehouse_name'];
+                                    $activate_total[] = $sale['total'];
+                                    $activate_report[] = $sale['activate_report'];
+                                    $activated_not_report[] = $sale['activated_not_report'];
+                            ?>
+                                    <tr>
+                                        <td style="text-align: center;"><?php echo $inc++; ?></td>
+                                        <!-- <td style="text-align: center;"><?php echo $sale['area_name'] ?></td> -->
+                                        <td><?php echo $sale['warehouse_name'];?></td>
+                                        <td style="text-align: center;"><?php echo $sale['total']; ?></td>
+                                        <td style="text-align: center;"><?php echo $sale['activate_report'] ?></td>
+                                        <td style="text-align: center;"><?php echo $sale['activated_not_report'] ?></td>
+                            <?php endforeach;?>
+
+                        </tbody>
+                    </table>
+                </div>
+          </div>
+      </div>
+  </div>
+  <input type="radio" name="tabs" id="tabtwo">
+  <label for="tabtwo">Get Chart Analytics By Activated</label>
+  <div class="tab">
+    <div class="clearfix"></div>
+      <div class="row-fluid">
+          <div class="span12">
+              <canvas id="mixed-chart"></canvas>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('.view_staff').click(function() {
+            $self = $(this);
+            area_id = $self.data('id');
+            temp = $self.data('export');
+            from = $('#from').val();
+            to = $('#to').val();
+
+            loc = '<?php echo HOST ?>timing/analytics-area?tmp_area_id='+area_id+'&export='+temp+'&from='+from+'&to='+to;
+            window.open(loc, '_self');
+        });
+
+
+    });
+
+    new Chart(document.getElementById("mixed-chart"), {
+    type: 'bar',
+    data: {
+      labels: <?php echo json_encode($warehouse_name); ?>,
+      datasets: [{
+          label: "Line Bar",
+          type: "line",
+          borderColor: "#3498db ",
+          data: <?php echo json_encode($activate_total); ?>,
+          fill: false
+        }, {
+          label: "Bar",
+          type: "bar",
+          backgroundColor: "rgba(100, 149, 237,0.5)",
+          data: <?php echo json_encode($activate_total); ?>,
+        },{
+          label: "Line Bar",
+          type: "line",
+          borderColor: "#28b463",
+          data: <?php echo json_encode($activate_report); ?>,
+          fill: false
+        }, {
+          label: "Bar",
+          type: "bar",
+          backgroundColor: "rgba( 64, 234, 180 ,0.5)",
+          data: <?php echo json_encode($activate_report); ?>,
+        },{
+          label: "Line Bar",
+          type: "line",
+          borderColor: "#e74c3c ",
+          data: <?php echo json_encode($activated_not_report); ?>,
+          fill: false
+        }, {
+          label: "Bar",
+          type: "bar",
+          backgroundColor: "rgba(232, 49, 99,0.5)",
+          data: <?php echo json_encode($activated_not_report); ?>,
+        }
+      ]
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Analytics By Activated Chart.'
+      },
+      legend: { display: true }
+    }
+});
+
+</script>

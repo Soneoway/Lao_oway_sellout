@@ -1,0 +1,124 @@
+<table class="table borderd relative_list table_list" id="table_transfer">
+    <thead>
+    <tr>
+        <th>STT</th>
+        <th>Company</th>
+        <th>Area</th>
+        <th>Province</th>
+        <th>Department</th>
+        <th>Team</th>
+        <th>Group</th>
+        <th>Title</th>
+        <th>From date</th>
+        <th>Tool</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $db = Zend_Registry::get('db');
+    $intSTT = 0;
+    if( isset($this->resultStaffTransfer) AND $this->resultStaffTransfer):
+        foreach($this->resultStaffTransfer as $item):
+            $arrInfo        = explode(',',$item['info_types']);
+            $arrValue       = explode(',',$item['current_values']);
+            $arrInfoValue   = array_combine($arrInfo,$arrValue);
+            $intSTT++;
+            ?>
+            <tr class="<?php echo ($item['note'] == 'initFirstData') ? 'origin bg-success':'';?>">
+                <td></td>
+                <td>
+                    <?php
+                    if(isset($arrInfoValue[My_Staff_Info_Type::Company]) AND $arrInfoValue[My_Staff_Info_Type::Company]){
+                        $selectCompany = $db->select()
+                            ->from('company',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Company]);
+                        echo $db->fetchOne($selectCompany);
+                    }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if(isset($arrInfoValue[My_Staff_Info_Type::Area]) AND $arrInfoValue[My_Staff_Info_Type::Area]){
+                        $selectArea = $db->select()
+                            ->from('area',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Area]);
+                        echo $db->fetchOne($selectArea);
+                    }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if($arrInfoValue[My_Staff_Info_Type::Region]){
+                        $selectProvince = $db->select()
+                            ->from('regional_market',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Region]);
+                        echo $db->fetchOne($selectProvince);
+                    }
+
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if(isset($arrInfoValue[My_Staff_Info_Type::Department]) AND $arrInfoValue[My_Staff_Info_Type::Department]){
+                        $selectDepartment = $db->select()
+                            ->from('team',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Department]);
+                        echo $db->fetchOne($selectDepartment);
+                    }
+
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if( isset($arrInfoValue[My_Staff_Info_Type::Team]) AND $arrInfoValue[My_Staff_Info_Type::Team]){
+                        $selectTeam = $db->select()
+                            ->from('team',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Team]);
+                        echo $db->fetchOne($selectTeam);
+                    }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if(isset($arrInfoValue[My_Staff_Info_Type::Group]) AND $arrInfoValue[My_Staff_Info_Type::Group]):
+                        $selectGroup = $db->select()
+                            ->from('group',array('name'))
+                            ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Group]);
+                        echo $db->fetchOne($selectGroup);
+                    endif;
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if( isset($arrInfoValue[My_Staff_Info_Type::Title]) AND $arrInfoValue[My_Staff_Info_Type::Title])
+                        //echo $arrInfoValue[My_Staff_Info_Type::Title];
+                        $selectTitle = $db->select()
+                                ->from('team',array('name'))
+                                ->where('id = ?',$arrInfoValue[My_Staff_Info_Type::Title]);
+                        echo $db->fetchOne($selectTitle);        
+                    ?>
+                </td>
+                <td><?php echo date('d/m/Y',strtotime($item['from_date']))?></td>
+                <td>
+                    <?php
+                        if($intSTT == 1){
+                            //if(!$item['note'] == 'initFirstData') {
+                                ?>
+                                <button type="button" class="edit_transfer btn btn-success"
+                                        data-transfer="<?php echo $item['transfer_id'] ?>">Edit
+                                </button>
+                                <a href="<?php echo HOST . 'staff/del-transfer?transfer_id=' . $item['transfer_id'] ?>"
+                                   class="del_transfer btn btn-danger confirmLink"
+                                   data-transfer="<?php echo $item['transfer_id'] ?>">x</a>
+                            <?php
+                            //}
+                        }
+                    ?>
+                </td>
+            </tr>
+        <?php
+        endforeach;
+    endif;
+    ?>
+    </tbody>
+</table>

@@ -1,0 +1,132 @@
+<div class="page-header">
+    <h1>List Off Date by <?Php if(isset($this->staff_name) and $this->staff_name) echo $this->staff_name ?></h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="container">
+   <div class="row-fluid">
+        <div class="alert alert-success">
+            <h4>Now you have <span><?php if(isset($this->offday)) echo $this->offday; ?> (leave of absence)</h4>
+        </div>        	
+    	</div>
+    
+    <div class="row-fluid">
+                        <div class="span12">
+                            <!-- block -->
+                            <div class="block">
+                                <div class="navbar navbar-inner block-header">
+                                    <div class="muted pull-left">Off Day in Year</div>
+                                    <div class="pull-right days"><span class="badge badge-info"><?php if(isset($this->total) and $this->total) echo $this->total; else echo 0 ?> days</span>
+
+                                    </div>
+                                </div>
+                                <div class="block-content collapse in">
+                                    <table class="table table-striped">
+                                        <thead>
+                                             <?php echo $this->sorting(array(
+                                				'#', 
+                                				'name'              => 'Name',
+                                				'date' => 'Date',
+                                				'shift'    => 'Shift',
+                                                'Type' ,
+                                                'Status',
+                                				'Reason'  ,
+                                               ),
+            $this->url, $this->current_col, $this->desc); 
+            ?>
+                                        </thead>
+                                        <tbody>
+                                          <?php if(isset($this->off) and $this->off) :  ?>
+                                            <?php foreach($this->off as $k => $v) : ?>
+                                            <tr>
+                                                <td><?php
+                                                    $inc = $this->offset + $k + 1;
+                                                    echo $inc;
+                                                ?></td>
+                                                <td><?php if(isset($v) and $v['firstname'] and $v['lastname'])
+                                                    echo $v['firstname'] . ' ' . $v['lastname'];
+                                                 ?> </td>
+                                                <td><?php echo $v['date'] ?></td>
+                                                <td><?php if(isset($v['shift']) and $v['shift'] == 0) echo 'fullday' ;
+                                                                elseif ($v['shift'] == 1) echo '1/2 day'; 
+                                                 ?></td>
+                                                <td><?php echo $v['type']; ?></td>
+                                                <td><?php if($v['status'] and $v['status'] == 1)
+                                                                echo 'v'; else echo 'x';
+                                                  ?></td>
+                                                <td><?php echo $v['reason']; ?></td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                          <?php endif; ?>
+                                         
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /block -->
+                        </div>
+                        
+                    </div>
+
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script>
+options = {
+            selectAllText: 'Select All',
+            includeSelectAllOption: true,
+            includeSelectAllIfMoreThan: 3,
+            disableIfEmpty: true
+        };
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ format: "mm/dd" });
+        multi();
+        
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $modal = $('#modal');
+
+        $('#short_btn').click(function(){
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>/ajax/pg-short-report',
+                {
+					from : $('#from_date').val().trim(),
+					to : $('#to_date').val().trim()
+                },
+                function(data){
+                    $modal.html(data);
+                    $modal.modal();
+            	}
+            );
+        });
+    });
+
+    
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+</script>
+<?php echo $this->load('combobox');?>

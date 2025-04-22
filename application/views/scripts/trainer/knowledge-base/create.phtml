@@ -1,0 +1,172 @@
+<style>
+    .modal {
+        width: 1024px;
+        margin: -23% 0 0 -520px;
+    }
+    .modal-body {
+        max-height: 700px;
+    }
+</style>
+
+<div class="page-header">
+    <?php if (isset($this->info) and $this->info):
+        $title = 'Edit';
+    else:
+        $title = 'Create';
+    endif; ?>
+    <h1><?php echo $title; ?> Knowledge Base</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+// print_r($this->info);
+?>
+<div class="row">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/knowledge-base-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="knowledge_type">Knowledge Type</label>
+                        <select name="knowledge_type" id="knowledge_type" required="required" class="span4">
+                            <option value=""></option>
+                            <?php
+                            $db = Zend_Registry::get('db');
+
+                            $QKnowledge_type = $db->select()
+                                ->from(array('kt' => 'sales_knowledge_base_type'))
+                            ->where('kt.enable = ?', 'Y');
+                            $knowledge_type = $db->fetchAll($QKnowledge_type);
+
+
+                            if ($knowledge_type) :
+                                foreach ($knowledge_type as $value):
+                                    ?>
+                                    <option value="<?php echo $value['id']; ?>"
+                                            <?php if (isset($this->info->knowledge_type) and ((is_array($this->info->knowledge_type) && in_array($value['id'], $this->info->knowledge_type) || $value['id'] == $this->info->knowledge_type))): ?>selected<?php endif;
+                                    ?>><?php echo $value['name']; ?></option>
+                                    <?php
+                                endforeach;
+                            endif;
+                            ?>
+                        </select>
+                        <button type="button" class="btn btn-info" style="margin: 0 0 8px 5px;" title="Create Type"
+                                data-toggle="modal" data-target="#createType"><i class="icon-edit"></i></button>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="title">Topic</label>
+                        <input type="text" class="span6" id="title" name="title" required="required"
+                               value="<?php if (isset($this->info)): echo $this->info->title; endif; ?>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="span3">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="image">Upload Image title</label>
+                        <?php if (isset($this->info->img_title) && ($this->info->img_title != '')): ?>
+                            <a target="_blank" title="View" href="/<?php echo 'trainer/' . $this->info->img_title; ?>">
+                                <img class="staff-photo" src="<?php echo HOST . 'trainer/' . $this->info->img_title; ?>"
+                                     width="100%"></a>
+                        <?php endif; ?>
+                        <input type="file" class="span6" name="img_title"/>
+                        <input type="hidden" name="img_title_edit"
+                               value="<?php if (isset($this->info)): echo $this->info->img_title; endif; ?>"/>
+                    </div>
+                </div>
+            </div>
+            <div class="span3">
+                <?php if (isset($this->info->file_link) && ($this->info->file_link != '')): ?>
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <a class="btn btn-warning" target="_blank"
+                               href="/<?php echo 'trainer/' . $this->info->file_link; ?>"><i class="icon-eye-open"></i>
+                                View File content</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <div class="row-fluid">
+                    <div class="form-group">
+                        <label>Display</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="P" <?php if (isset($this->info) && ($this->info->enable == 'P')): echo "checked";
+                                else: echo "checked"; endif; ?>>Preview
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="Y" <?php if (isset($this->info) && ($this->info->enable == 'Y')): echo "checked"; endif; ?>>Enable
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="N" <?php if (isset($this->info) && ($this->info->enable == 'N')): echo "checked"; endif; ?>>Disable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span12">
+                <div class="control-group">
+                    <label for="content">Content</label>
+                    <textarea name="detail"
+                              id="detail"><?php if (isset($this->info)): echo $this->info->detail; endif; ?></textarea>
+                </div>
+            </div>
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->info) and $this->info and printf($this->info->id); ?>">
+            <div class="clearfix">
+                <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em">
+                    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+                    <?php if (isset($this->info) and $this->info): ?>
+                        <button id="add_btn" class="btn btn-primary" type="submit">Edit Knowledge</button>
+                    <?php else: ?>
+                        <button id="add_btn" class="btn btn-primary" type="submit">Add Knowledge</button>
+                    <?php endif; ?>
+                </div>
+                <div class="clearfix">
+        </form>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="createType" class="modal hide fade" tabindex="-1" role="dialog"
+     aria-labelledby="createTypeLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="createTypeLabel">Knowledge Base Type</h3>
+    </div>
+    <div class="modal-body">
+        <iframe src="knowledge-base-type" style="width:100%; height:530px; border:0;"></iframe>
+    </div>
+</div>
+
+<script src="<?php echo HOST ?>js/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        config = {};
+        config.skin = 'office2013';
+        config.height = 400;
+        config.extraPlugins = 'imageuploader,videoembed,pdfembed,youtube';
+        CKEDITOR.replace('detail', config);
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

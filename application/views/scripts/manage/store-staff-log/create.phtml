@@ -1,0 +1,108 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css" integrity="sha512-bYPO5jmStZ9WI2602V2zaivdAnbAhtfzmxnEGh9RwtlI00I9s8ulGe4oBa5XxiC6tCITJH/QG70jswBhbLkxPw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha512-AIOTidJAcHBH2G/oZv9viEGXRqDNmfdPVPYOYKGy3fti0xIplnlgMHUGfuNRzC6FkzIo0iIxgFnr9RikFxK+sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<div class="page-header">
+    <?php if (isset($this->sub_area) and $this->sub_area):?>
+        <h1>Edit Store Staff <small><?php echo $this->sub_area['name'] ?></small></h1>
+    <?php else:?>
+        <h1>Create Store Staff</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form action="<?php echo HOST ?>manage/store-staff-save" method="post" class="form-horizontal">
+    <div class="row">
+        <div class="span3">
+            <div class="control-group">
+                    <label id="staff_anchor" style="color: green">Staff ID</label>
+                    <textarea id="staff" name="staff" cols="15" rows="20" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                    <label id="store_anchor" style="color: green">Store ID</label>
+                    <textarea id="store" name="store" cols="15" rows="20" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                    <label id="leader_anchor" style="color: green">Is Leader</label>
+                    <textarea id="leader" name="leader" cols="15" rows="20" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <label id="joinat_anchor" style="color: green">Join At</label>
+                   <input type="text" name="joinat" class="form-control search-query" id='datetimepicker1'>
+            </div>
+        </div>
+    </div>
+<!--     <div class="row">
+            <div class="control-group controls">
+                    <button class="btn btn-default" id="add_region_btn" type="button">Add more</button>
+            </div>
+    </div> -->
+    <div class="form-actions">
+        <input type="hidden" name="id" value="<?php if(isset($this->sub_area['id']) && $this->sub_area['id']) echo$this->sub_area['id'] ?>">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button class="btn btn-danger" onclick="window.location='<?php echo HOST ?>manage/store-staff'">Go Back</button>
+    </div>
+</form>
+<script type="text/javascript">
+    $(function() {
+        $('#datetimepicker1').datetimepicker();
+    });
+</script>
+<!-- 
+<script type="text/javascript">
+
+select_staff = 
+'<div class="staff_select">'+
+    '<input type="text" name="staff[]" class="form-control">'+
+    ' <button type="button" class="btn btn-default remove_region_btn new">&times;</button>'+
+'</div><br>'
+;
+
+select_store = 
+'<div class="store_select">'+
+    '<input type="text" name="store[]" class="form-control">'+
+    ' <button type="button" class="btn btn-default remove_region_btn new">&times;</button>'+
+'</div><br>'
+;
+
+select_leader = 
+'<div class="leader_select">'+
+    '<input type="text" name="leader[]" class="form-control">'+
+    ' <button type="button" class="btn btn-default remove_region_btn new">&times;</button>'+
+'</div><br>'
+;
+
+
+    $(document).ready(function() {
+
+        $('#add_region_btn').click(function() {
+            $('#staff_anchor').parent('.control-group').append(select_staff);
+            $('#store_anchor').parent('.control-group').append(select_store);
+            $('#leader_anchor').parent('.control-group').append(select_leader);
+            init_region_remove();
+        });
+        init_region_remove();
+
+    });
+
+
+    function init_region_remove() {
+        $('.remove_region_btn.new').click(function() {
+            $(this).parent('.staff_select').remove();
+            $(this).parent('.store_select').remove();
+            $(this).parent('.leader_select').remove();
+        });
+
+        $('.remove_region_btn.new').removeClass('new');
+    }
+</script> -->

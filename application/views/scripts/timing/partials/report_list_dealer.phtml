@@ -1,0 +1,47 @@
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <?php echo $this->sorting(array(
+                    '#',
+                        'distributor_name'    => 'Name',
+                        'area_name'           => 'Area',
+                        'region_name'         => 'Province',
+                        'district_name'       => 'District',
+                        'total_store'         => 'Stores',
+                        'total_store_sellout' => 'Active Stores',
+                        'total_quantity'      => 'Sell Out',
+                ),
+            $this->url, $this->current_col, $this->desc); ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->sales) and $this->sales)
+                $inc = $this->offset + 1;
+                foreach ($this->sales as $sale): ?>
+            <tr>
+                <td>
+                    <?php
+                        echo $inc++;
+                    ?>
+                </td>
+                <td>
+                    <?php echo isset($sale['distributor_name']) ? $sale['distributor_name'] : '<em>(Unclassified)</em>';?>
+                </td>
+                <td><?php echo isset($sale['area_name']) ? $sale['area_name'] : '<em>(Unclassified)</em>';?></td>
+                <td><?php echo isset($sale['region_name']) ? $sale['region_name'] : '<em>(Unclassified)</em>';?></td>
+                <td><?php echo isset($sale['district_name']) ? $sale['district_name'] : '<em>(Unclassified)</em>';?></td>
+                <td><?php echo isset($sale['total_store']) ? $sale['total_store'] : '0' ?></td>
+                <td><?php echo isset($sale['total_store_sellout']) ? $sale['total_store_sellout'] : '0' ?></td>
+                <td><?php echo '<span class="badge badge-success view_dealer_imei" 
+                        data-id="'.(isset($sale['id']) ? $sale['id'] : 'null').'" 
+                        data-from="'.(isset($this->params['from']) && $this->params['from'] ? $this->params['from'] : '').'"
+                        data-to="'.(isset($this->params['to']) && $this->params['to'] ? $this->params['to'] : '').'">'
+                        .$sale['total_quantity'].'</span>' ?></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>    
+</div>

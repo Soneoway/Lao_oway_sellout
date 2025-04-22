@@ -1,0 +1,162 @@
+<div class="page-header">
+    <h3>List Training Report</h3>
+    <div class="row-fluid">
+        <a href="/trainer/training-report"><button class="btn btn-primary pull-right">Create Training Report</button></a>
+    </div>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+if (isset($this->message_success) and $this->message_success)
+    foreach ($this->message_success as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('trainer/partials/search_training_report.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table table-bordered">
+            <tr>
+                <thead>
+                <?php echo $this->sorting(array(
+                        '#',
+                        'type'                 =>'type',
+                        'date'                 =>'date',
+                        'area'                 =>'area',
+                        'province'             =>'province',
+                        'dealer_id'            =>'dealer',
+                        'store_id'             =>'store',
+                        'from_date'            =>'From Date',
+                        'to_date'              =>'To Date',
+                        'quantity_participant' =>'Quantity Participant',
+                        'quantity_disqualified'=>'Quantity Disqualified',
+                        'quantity_remain'      =>'Quantity Remain',
+                        'quantity trainees',
+                        'Note',
+                        'Action'
+                    ),
+                    $this->url, $this->sort, $this->desc); ?>
+                </thead>
+            </tr>
+            <tbody>
+            <?php if(isset($this->list)and $this->list):?>
+                <?php
+                $k =0;
+                foreach($this->list as $key =>$value):?>
+                    <tr>
+                        <td><?php echo $k=$k+1?></td>
+                        <td><?php $type = unserialize(TYPE_TRAINING_REPORT); echo $type[$value['type']]?></td>
+                        <td><?php echo (isset( $value['date']) and ( $value['date']))? $value['date'] :''?></td>
+                        <td><?php echo (isset( $this->cachedArea[$value['area']]) and ( $this->cachedArea[$value['area']]))? $this->cachedArea[$value['area']] :''?></td>
+                        <td><?php echo (isset( $this->cachedRegionalMarket[$value['province']]) and ( $this->cachedRegionalMarket[$value['province']]))? $this->cachedRegionalMarket[$value['province']] :''?></td>
+                        <td><?php echo (isset( $this->name_dealer[$value['dealer_id']]) and ( $this->name_dealer[$value['dealer_id']]))? $this->name_dealer[$value['dealer_id']] :''?></td>
+                        <td><?php echo (isset( $this->cachedStore[$value['store_id']]) and ( $this->cachedStore[$value['store_id']]))? $this->cachedStore[$value['store_id']] :''?></td>
+                        <td><?php echo (isset( $value['from_date']) and ( $value['from_date']))? $value['from_date'] :''?></td>
+                        <td><?php echo (isset( $value['to_date']) and ( $value['to_date']))? $value['to_date'] :''?></td>
+                        <td><?php echo (isset( $value['quantity_participant']) and ( $value['quantity_participant']))? $value['quantity_participant'] :''?></td>
+                        <td><?php echo (isset( $value['quantity_disqualified']) and ( $value['quantity_disqualified']))? $value['quantity_disqualified'] :''?></td>
+                        <td><?php echo (isset( $value['quantity_remain']) and ( $value['quantity_remain']))? $value['quantity_remain'] :''?></td>
+                        <td><?php echo (isset( $value['quantity_trainees']) and ( $value['quantity_trainees']))? $value['quantity_trainees'] :''?></td>
+                        <td><?php echo (isset( $value['note']) and ( $value['note']))? $value['note'] :''?></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                    Action
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="javascript:void(0);" rel="<?php echo $value['id']?>" class="view_training_report">View</a></li>
+                                    <li><a href="/trainer/training-report?id=<?php echo $value['id']?>" class="confirmLink">Edit</a></li>
+                                    <li><a href="/trainer/del-training-report?id=<?php echo $value['id']?>" class="confirmLink">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach;?>
+            <?php endif;?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal modal-lg fade" role="dialog" style="left: 37%; width: 900px">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">View Training Report</h4>
+            </div>
+            <div class="modal-body">
+                <div id="body_modal"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link type="text/css" rel="stylesheet" href="/public/css/featherlight.css" title="Featherlight Styles" />
+<link type="text/css" rel="stylesheet" href="/public/css/featherlight.gallery.css" title="Featherlight Styles" />
+<script src="/public/js/featherlight.js" type="text/javascript" charset="utf-8"></script>
+<?php echo $this->confirm();?>
+<script>
+    $(document).ready(function(){
+        view();
+    });
+    function view()
+    {
+        $('.view_training_report').click(function(){
+            var id = $(this).attr('rel');
+            if(id)
+            {
+                $.ajax
+                ({
+                    url : '/trainer/get-info-training-report',
+                    type : 'POST',
+                    data : {'id':id},
+                    async: false,
+                    success : function (result)
+                    {
+                       $('#body_modal').empty();
+                       $('#body_modal').append(result);
+                       $('#myModal').modal();
+                    },
+                    error : function ()
+                    {
+                        alert('Can not found Value !');
+                    }
+                });
+            }
+            else
+            {
+                alert('Can not found ID');
+            }
+
+        });
+    }
+</script>
+

@@ -1,0 +1,135 @@
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/bootstrap-datetimepicker.min.css" />
+<style type="text/css">
+    span.label {
+        cursor: pointer;
+    }
+
+    button.btn {
+        margin-bottom: 9px;
+    }
+</style>
+
+<div class="page-header">
+    <h1>View Store-Staff History</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<form class="form-search form-horizontal" method="get" action="/manage/view-store-staff">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="email" class="span2">Staff email</label>
+                <input id="email" name="email" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['email']) and printf($this->params['email']);?>">
+            </div>
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Staff',
+                    'Store',
+                    'Is Leader',
+                    'Joined At',
+                    'Released At',
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if (isset($this->histories) and $this->histories)
+            foreach ($this->histories as $k=>$item): ?>
+                <tr>
+                    <td>
+                        <?php
+                        $inc = $this->offset + $k + 1;
+                        echo $inc;
+                        ?>
+                    </td>
+                    <td><?php echo $item['email'];?></td>
+                    <td><?php isset($this->stores_cached[$item['store_id']]) and printf($this->stores_cached[$item['store_id']]);?></td>
+                    <td><?php echo ($item['is_leader']==1 ? 'Yes' : 'No');?></td>
+                    <td>
+                        <p><span class="joindate"><?php echo date('Y-m-d H:i:s',$item['joined_at']);?></span> <span class="label label-info edit_lbl">Edit</span></p>
+                        <p class="edit_date control-group" style="display:none;">
+                            <input type="text" class="form-control input-medium date" data-id="<?php echo $item['id'] ?>" value="<?php echo date('Y-m-d H:i:s',$item['joined_at']);?>" /> 
+                            <button class="btn btn-default btn-small btn_save" type="button"><span class="icon-ok"></span></button>
+                            <button class="btn btn-default btn-small btn_cancel" type="button"><span class="icon-remove"></span></button>
+                        </p>
+                    </td>
+                    <td><?php echo ( $item['released_at'] ? date('Y-m-d H:i:s',$item['released_at']) : '');?></td>
+                </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.edit_lbl').click(init_edit);
+
+        $('.btn_save').click(function() {
+            $self = $(this);
+            $('input, button').prop('disabled', true);
+            $self.parent('.edit_date').append('<span class="loading"></span>');
+
+            value = $self.prev('.date').val();
+            id = $self.prev('.date').data('id');
+
+            $.post('<?php echo HOST ?>ajax/update-store-join-time', {
+                id : id,
+                value : value
+            }, function(data) {
+                try {
+                    data = $.parseJSON(data);
+
+                    if (typeof data.error == "undefined" && data.code == 1)
+                        $self.parent('.edit_date').prev('p').find('.joindate').text(value+' 00:00:00');
+                    else if (typeof data.error != "undefined" && data.code != 1)
+                        $self.parent('.edit_date').prev('p').find('.joindate').text(data.error);
+                } catch(err) {
+
+                } finally {
+                    $('.edit_lbl').bind('click', init_edit);
+                    $('input, button').prop('disabled', false);
+                    $self.parent('.edit_date').hide();
+                    $('.loading').remove();
+                }
+            })
+        });
+
+        $('.btn_cancel').click(function() {
+            $self = $(this);
+            $('.edit_lbl').bind('click', init_edit);
+            $self.parent('.edit_date').hide();
+        });
+    });
+
+
+    function init_edit() {
+        $self = $(this);
+        $self.parent('p').nextAll('.edit_date').show();
+        $('.date').datetimepicker({
+            format : 'yyyy-mm-dd',
+            autoclose : true,
+            minView : 2
+        });
+
+        $('.edit_lbl').unbind('click');
+    }
+</script>

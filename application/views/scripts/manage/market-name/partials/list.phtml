@@ -1,0 +1,52 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Area</div></th>
+        <th><div align="center">Market Type</div></th>
+        <th><div align="center">ID</div></th>
+        <th><div align="center">Market Name</div></th>
+        <th><div align="center">Number of Store</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+
+            if ($this->market_name) {
+                $data = $this->market_name;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt = $this->offset + $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['mt_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['mn_id']."</div></td>";
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='".HOST."manage/market-name-edit?mn_id=".$data[$i]['mn_id']."'>".$data[$i]['mn_name']."</a>
+                                </div>
+                            </td>";
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='".HOST."manage/store?market_type=".$data[$i]['mt_id']."&market_name=".$data[$i]['mn_id']."'>".$data[$i]['cnt_store']."</a>
+                                </div>
+                            </td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>

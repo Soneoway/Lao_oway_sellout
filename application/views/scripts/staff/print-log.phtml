@@ -1,0 +1,156 @@
+<style>
+	ul strong {
+		color: darkblue;
+	}
+
+	li {
+		font-weight: bold;
+	}
+
+	label {
+		display: inline-block;
+		font-style: italic;
+		font-weight: normal;
+	}
+
+	label:after {
+		content: ' : ';
+	}
+   
+.span4 {
+margin-bottom: 39px;
+position: relative;
+border-bottom: 1px solid #D9D7D7;
+padding-bottom: 29px;
+z-index: 0;
+}
+</style>
+<div class="page-header">
+    <h1>Staff Print Log <small>
+    	<?php if( isset( $this->staffs[ $this->params['object'] ] ) ) 
+    		echo $this->staffs[ $this->params['object'] ] ?>
+    	<a href="<?php echo HOST."staff/create?id=".$this->params['object'] ?>" 
+    		title="Click to Edit Staff" target="_blank">
+    		<i class="icon-share"></i>
+    	</a>
+    	</small>
+	</h1>
+</div>
+
+<?php
+if (isset($this->messages_success) and $this->messages_success)
+    foreach ($this->messages_success as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-danger">'.$message.'</div>';
+    endforeach;
+?>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    'id',
+                    'Print By',
+                    'Print At',
+                    'Type',
+                    'Info',
+                    'From',
+                    'To',
+                    'Contract Type',
+                    'Base Salary',
+                    'Bonus Salary',
+                    'Allowance 1',
+                    'Allowance 2',
+                    'Allowance 3',
+                    'Probation Salary',
+                    'Regional Market',
+                    'Title',
+                    'KPI',
+                    'Action'
+                    
+                ),
+                $this->url, $this->sort, $this->desc);
+                $id = 0; ?>
+        </tr>
+    </thead>
+    <tbody>
+      	<?php if (isset($this->logs) && $this->logs): ?>
+			<?php foreach ($this->logs as $log_k => $log):
+            $id ++;
+         
+            $lines = explode("<br/>", $log['info']);
+            $line = isset($lines[0]) ? $lines[0] : "";
+            $elm = explode('=', $line);
+            $month = isset($elm[1]) ? $elm[1] : "";
+            $month = trim($month);
+            
+            
+            $elm  = explode('contract term type', $line);
+            $type = isset($elm[0]) ? $elm[0] : "";
+            $type = trim($type);
+            
+            $elm =  explode('Form :', isset($lines[2]) ? $lines[2] : "");
+            $form =  trim(isset($elm[1]) ? $elm[1] : "");
+            
+            $elm =  explode('To :', isset($lines[3]) ? $lines[3] : "");
+            $to  =  trim(isset($elm[1]) ? $elm[1] : "");
+            
+            if(empty($form) and empty($to))
+            {
+                $form = $log['from_date'];
+                $to = $log['to_date'];
+            }
+            
+             ?>
+        <tr>
+            <td><?php echo $id; ?></td>
+            <td><?php if( isset( $this->staffs[ $log['user_id'] ] ) ) echo $this->staffs[ $log['user_id'] ] ?></td>
+            <td> <?php echo date( 'd/m/Y H:i:s', strtotime($log['time']) ) ?></td>
+            <td><?php echo $type  ?></td>
+            <td><?php echo $month  ?></td>
+            <td><?php echo $form  ?></td>
+            <td><?php echo $to  ?></td>
+            <td><?php echo $log['contract_term'] ?></td>
+            <td><?php echo $log['base_salary'] ?></td>
+            <td><?php echo $log['bonus_salary'] ?></td>
+            <td><?php echo $log['allowance_1'] ?></td>
+            <td><?php echo $log['allowance_2'] ?></td>
+            <td><?php echo $log['allowance_3'] ?></td>
+            <td><?php echo $log['probation_salary'] ?></td>
+            <td><?php echo $log['regional_market'] ?></td>
+            <td><?php echo $log['title'] ?></td>
+            <td><?php echo $log['kpi'] ?></td>
+            <td>
+                <a href="<?php echo HOST.'staff/del-print-log?id='.$log['print_log_id'].'&object='.$this->object;?>" class="confirmLink" title="Delete">
+                    <i class="icon-trash"></i>
+                </a>
+            </td>
+        </tr>
+        <?php endforeach;?>
+        <?php endif;?>
+    </tbody>
+</table>
+
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<?php echo $this->confirm();?>
+<script>
+    $(document).ready(function(){
+
+        $('.confirmLink').bind("contextmenu",function(e){
+            return false;
+        });
+
+    })
+</script>

@@ -1,0 +1,28 @@
+ <div class="widget widget-nopad " data-toggle="collapse" data-target="#new">
+                        <div class="widget-header "> <i class="icon-list-alt"></i>
+                          <h3>FAQ <i class="icon-ok-sign" rel="tooltip" title="Câu hỏi thường gặp và những mẫu hợp đồng" class="tooltip"></i></h3>
+                        </div>
+                        <!-- /widget-header -->
+                        <div class="widget-content collapse in" id="new">
+                          <ul class="news-items">
+                          
+                           <?php
+                            if (isset($this->informs) and $this->informs):
+                                  foreach ($this->informs as $k => $inform):
+                                
+                                   $maxlenght = 50;
+                                   $newstr = mb_strimwidth($inform['content'], 0, $maxlenght, "..");
+                                         
+                       ?>
+                            <li>                 
+                              <div class="news-item-date"> <span class="news-item-day"><?php echo date('d' , strtotime($inform['created_at'])) ?></span> <span class="news-item-month"><?php echo date('F' , strtotime($inform['created_at'])); ?></span> </div>
+                              <div class="news-item-detail"> <a href="<?php echo HOST. 'manage/inform-view?id='. $inform['id'] ?>" class="news-item-title" target="_blank"><?php echo $inform['title'] ?></a>
+                                <p class="news-item-preview"> <?php echo $newstr ?> </p>
+                              </div>                  
+                            </li>
+                            
+                             <?php endforeach;endif; ?>
+                          </ul>
+                        </div>
+                        <!-- /widget-content --> 
+                      </div> 

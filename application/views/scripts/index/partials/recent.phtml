@@ -1,0 +1,20 @@
+<?php foreach ($this->dashboards as $key => $dashboard): ?>
+	<?php if( $dashboard['id'] != LOG_DASHBOARD ) continue; ?>
+	<h3><?php echo $dashboard['name'] ?></h3>
+	<ul class="recent_activity">
+		<?php foreach ($this->regions[ $dashboard['id'] ] as $k => $log): ?>
+			<li>
+				<p><strong><a href="<?php echo HOST . 'staff/log?object='.$log['object'] ?>" 
+					title="Click to view log details"
+					target="_blank"><?php if (isset($this->staffs[ $log['object'] ])) echo $this->staffs[ $log['object'] ] ?></a></strong></p>
+				<p><?php if ( $log['type'] == LogType::Update ): ?>
+						Edited
+					<?php elseif( $log['type'] == LogType::Insert ): ?>
+						Created
+					<?php endif ?> by: <?php if( isset( $this->staffs[ $log['user_id'] ] ) ) echo $this->staffs[ $log['user_id'] ] ?>
+				</p>
+				<p>at: <?php echo date( 'd/m/Y H:i:s', strtotime($log['time']) ) ?></p>
+			</li>
+		<?php endforeach ?>
+	</ul>
+<?php endforeach ?>

@@ -1,0 +1,67 @@
+<form id="search_form" class="form-search form-horizontal" method="get"
+      action="/trainer/manage-customer-survey/manage-customer-survey">
+    <div class="row" style="padding-top: 20px;">
+        <div class="span5">
+            <div class="control-group">
+                <label for="topic" class="span2">Topic</label>
+                <input id="topic" name="topic" type="text" class="span3 input-medium form-control" value="<?php isset($this->params['topic']) and printf($this->params['topic']);?>">
+            </div>
+        </div>
+
+        <div class="span5"></div>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data, status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+    });
+</script>

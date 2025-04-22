@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OPPO Center VN</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- <link rel="icon" type="image/ico" href="/img/favicon.ico" /> -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <!--<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600"
+          rel="stylesheet">-->
+    <link href="/css/font-awesome.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/default.css" rel="stylesheet">
+    <link href="/css/pages/dashboard.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.7.2.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/base.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/js/file-uploader/fileuploader.css"/>
+    <script src="/js/file-uploader/fileuploader.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+    <style>
+
+        .alert-msg {
+            background: #F9EEB8;
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 4px;
+            border-top: 2px solid #e55;
+            /*display: none;*/
+            margin: 0;
+            /*margin-left: -200px;*/
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .alert-msg.show {
+            display: inline-block;
+        }
+
+        .alert-msg p {
+            font-weight: bold;
+            font-size: 12px;
+            font-family: tahoma, arial;
+            margin: 0 10px;
+            line-height: 2em;
+            text-align: center;
+        }
+
+        #email_modal textarea {
+            resize: none;
+        }
+
+        .stock {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="main-inner">
+            <div class="container">
+                <div class="row-fluid">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>REGION</th>
+                                <th>SHOP</th>
+                                <th>GUEST NAME</th>
+                                <th>PHONE</th>
+                                <th>SEXUAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($this->guest){?>
+                            <tr>
+                                <td><?php echo $this->guest['region']?></td>
+                                <td><?php echo $this->guest['shop']?></td>
+                                <td><?php echo $this->guest['guest_name']?></td>
+                                <td><?php echo $this->guest['phone_number']?></td>
+                                <td><?php echo $this->guest['gender']?></td>
+                            </tr>
+                            <?php } else {?>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input id="shop" size="50"><a href="javascript:$('#shop').val('');" title="Clear" class="btn btn-danger">Clear</a></td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+
+
+                    <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+                    <form role="form" method="post" target="ifrmSave" class="row-fluid">
+                        <div class="control-group">
+                            <strong>Kích thước file ảnh phải nhỏ hơn 2MB</strong>
+
+                            <div class="file-uploader"></div>
+                            <input type="hidden" name="photo" />
+
+                        </div>
+
+                        <?php if ($this->guest) {?>
+                            <input type="hidden" name="id" id="id" value="<?php echo $this->guest['id'];?>" />
+                        <?php } ?>
+                    </form>
+                </div>
+
+
+                <script>
+                    var availableGuests = <?php echo json_encode($this->allGuests); ?>;
+                    var availableShops = <?php echo json_encode($this->shops); ?>;
+
+                    function str_replace(search, replace, str){
+                        var ra = replace instanceof Array, sa = str instanceof Array, l = (search = [].concat(search)).length, replace = [].concat(replace), i = (str = [].concat(str)).length;
+                        while(j = 0, i--)
+                            while(str[i] = str[i].split(search[j]).join(ra ? replace[j] || "" : replace[0]), ++j < l);
+                        return sa ? str : str[0];
+                    }
+
+                    function remove_vietnamese_accents(str)
+                    {
+                        accents_arr= new Array(
+                            "à","á","ạ","ả","ã","â","ầ","ấ","ậ","ẩ","ẫ","ă",
+                            "ằ","ắ","ặ","ẳ","ẵ","è","é","ẹ","ẻ","ẽ","ê","ề",
+                            "ế","ệ","ể","ễ",
+                            "ì","í","ị","ỉ","ĩ",
+                            "ò","ó","ọ","ỏ","õ","ô","ồ","ố","ộ","ổ","ỗ","ơ",
+                            "ờ","ớ","ợ","ở","ỡ",
+                            "ù","ú","ụ","ủ","ũ","ư","ừ","ứ","ự","ử","ữ",
+                            "ỳ","ý","ỵ","ỷ","ỹ",
+                            "đ",
+                            "À","Á","Ạ","Ả","Ã","Â","Ầ","Ấ","Ậ","Ẩ","Ẫ","Ă",
+                            "Ằ","Ắ","Ặ","Ẳ","Ẵ",
+                            "È","É","Ẹ","Ẻ","Ẽ","Ê","Ề","Ế","Ệ","Ể","Ễ",
+                            "Ì","Í","Ị","Ỉ","Ĩ",
+                            "Ò","Ó","Ọ","Ỏ","Õ","Ô","Ồ","Ố","Ộ","Ổ","Ỗ","Ơ",
+                            "Ờ","Ớ","Ợ","Ở","Ỡ",
+                            "Ù","Ú","Ụ","Ủ","Ũ","Ư","Ừ","Ứ","Ự","Ử","Ữ",
+                            "Ỳ","Ý","Ỵ","Ỷ","Ỹ",
+                            "Đ"
+                        );
+
+                        no_accents_arr= new Array(
+                            "a","a","a","a","a","a","a","a","a","a","a",
+                            "a","a","a","a","a","a",
+                            "e","e","e","e","e","e","e","e","e","e","e",
+                            "i","i","i","i","i",
+                            "o","o","o","o","o","o","o","o","o","o","o","o",
+                            "o","o","o","o","o",
+                            "u","u","u","u","u","u","u","u","u","u","u",
+                            "y","y","y","y","y",
+                            "d",
+                            "A","A","A","A","A","A","A","A","A","A","A","A",
+                            "A","A","A","A","A",
+                            "E","E","E","E","E","E","E","E","E","E","E",
+                            "I","I","I","I","I",
+                            "O","O","O","O","O","O","O","O","O","O","O","O",
+                            "O","O","O","O","O",
+                            "U","U","U","U","U","U","U","U","U","U","U",
+                            "Y","Y","Y","Y","Y",
+                            "D"
+                        );
+
+                        return str_replace(accents_arr,no_accents_arr,str);
+                    }
+
+                    var accentMap = {
+                        "á": "a",
+                        "ö": "o"
+                    };
+                    var normalize = function( term ) {
+                        var ret = "";
+                        for ( var i = 0; i < term.length; i++ ) {
+                            ret += remove_vietnamese_accents[ term.charAt(i) ] || term.charAt(i);
+                        }
+                        return ret;
+                    };
+
+                    $(function() {
+                        function split( val ) {
+                            return val.split( /,\s*/ );
+                        }
+                        function extractLast( term ) {
+                            return split( term ).pop();
+                        }
+
+                        $( "#shop" )
+                            // don't navigate away from the field on tab when selecting an item
+                            .bind( "keydown", function( event ) {
+                                if ( event.keyCode === $.ui.keyCode.TAB &&
+                                    $( this ).autocomplete( "instance" ).menu.active ) {
+                                    event.preventDefault();
+                                }
+                            })
+                            .autocomplete({
+                                minLength: 0,
+                                source: function( request, response ) {
+                                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                                    response( $.grep( availableShops, function( value ) {
+                                        value = value.label || value.value || value;
+                                        return matcher.test( value ) || matcher.test( remove_vietnamese_accents( value ) );
+                                    }) );
+
+                                    // delegate back to autocomplete, but extract the last term
+                                    /*response( $.ui.autocomplete.filter(
+                                        availableShops, extractLast( request.term ) ) );*/
+                                },
+                                focus: function() {
+                                    // prevent value inserted on focus
+                                    return false;
+                                },
+                                select: function( event, ui ) {
+
+                                    this.value = ui.item.value;
+                                    return false;
+                                }
+                            });
+                    });
+
+                    $(document).ready(function () {
+
+                        createUploader($('body'));
+                    });
+
+                    function createUploader(selector){
+
+                        selector.find('.file-uploader').each(function (){
+                            var _self = $(this);
+                            var uploader = new qq.FileUploader({
+                                element: _self[0],
+                                params: {
+                                    'id' : '<?php echo $this->guest['id'];?>'
+                                },
+                                action: '/test/upload-photo',
+                                multiple: false,
+                                // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+                                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                                sizeLimit: 5 * 1024 * 1024,
+                                onSubmit: function(id, fileName){
+                                    uploader.setParams({
+                                        'shop': $('#shop').val()
+                                    });
+                                },
+                                onProgress: function(id, fileName, loaded, total){
+                                    $('.fix-msg').addClass('show');
+
+                                    $(window).on('beforeunload', function() {
+                                        return 'Please wait your upload proccess complete!';
+                                    });
+                                },
+                                onComplete: function(id, fileName, responseJSON){
+
+
+                                    window.onbeforeunload = null;
+
+                                    $('.fix-msg').removeClass('show');
+                                },
+                                onCancel: function(id, fileName){},
+                                onError: function(id, fileName, xhr){}
+                            });
+                        });
+                    }
+                </script>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /main-inner -->
+    </div>
+    <!-- /main -->
+</body>
+</html>

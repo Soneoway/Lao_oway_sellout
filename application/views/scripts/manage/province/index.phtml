@@ -1,0 +1,73 @@
+<div class="page-header">
+    <form action="/manage/province-create" method="get">
+        <h1>List Province</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('manage/province/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Districts</th>
+            <th>Area</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->regional_markets) and $this->regional_markets)
+                foreach ($this->regional_markets as $k=>$regional_market): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td>
+                    <a title="Edit" href="/manage/province-create?id=<?php echo $regional_market['id'];?>"><?php echo $regional_market['name'];?></a>
+                </td>
+                <td><?php echo $regional_market['number_district'] ?></td>
+                <td><?php echo $regional_market['area_name'];?></td>
+                <td>
+                    <a title="Delete" class="confirmLink" href="/manage/province-delete?id=<?php echo $regional_market['id'];?>"> <i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>

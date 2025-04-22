@@ -1,0 +1,104 @@
+<form class="form-search form-horizontal" method="get" action="/timing/analytics-area">
+    <div class="row">
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area[]" class="js-example-basic-multiple span3" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area']) and ( (is_array($this->params['area']) && in_array($area['id'], $this->params['area']) || $id==$this->params['area'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                            <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="brand_id" class="span2"><span style="font-size: 16px; font-style: bold;">Brand | ຍີ່ຫໍ້ :</span></label>
+                <select id="brand_id" name="brand_id[]" class="js-example-basic-multiple span3" multiple="multiple">
+                    <?php foreach($this->brands as $item) : ?>
+                      <option value="<?php echo $item['id'] ?>" <?php if (isset($this->params['brand']) and ( (is_array($this->params['brand']) && in_array($item['id'], $this->params['brand']) || $item['id']==$this->params['brand'])) ):?>selected<?php endif;?>><?php echo $item['name'] ?>
+                  </option>
+              <?php endforeach ?>
+          </select>
+      </div>
+
+      <div class="control-group">
+        <label for="good" class="span2"><span style="font-size: 16px; font-style: bold;">Products | ລຸ້ນ :</span></label>
+        <select id="good" name="good[]" class="js-example-basic-multiple span3" multiple="multiple">
+         <?php
+         $data = $this->goods;
+         if ($this->goods) :
+            foreach ($this->goods as $good_list):
+                ?>
+                <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good']) and ( (is_array($this->params['good']) && in_array($good_list['id'], $this->params['good']) || $good_list['id']==$this->params['good'])) ):?>selected<?php endif;?>><?php echo $good_list['brand_name'] ?> <?php echo $good_list['name'];?></option>
+                <?php
+            endforeach;
+
+        endif;
+        ?>
+    </select>
+</div>
+</div>
+
+<div class="span5">
+    <div class="control-group">
+        <label for="date" class="span2">From Date</label>
+        <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+    </div>
+    <div class="control-group">
+        <label for="date" class="span2">To Date</label>
+        <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+    </div>
+</div>
+</div>
+
+
+<button type="submit" class="btn btn-primary"><span style="font-size: 18px; font-family:'Noto sans lao'">Search</span></button>
+<button type="reset" class="btn btn-warning">Reset</button>
+
+<?php if ($this->access('sales-report', 'area')): ?>
+    <!--<button type="submit" name="export" value="1" formaction="<?php echo HOST ?>sales-report/area" class="btn btn-info">Export</button>-->
+    <button type="submit" name="export" value="1" class="btn btn-success">Export Excel</button>
+<?php endif ?>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+    $(".js-example-basic-multiple").select2();
+
+    $(document).ready(function () {
+
+        $('#brand_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var brand_id = $(this).val();
+            $.get("/tool/get-product",
+                {brand_id: brand_id}
+                ,function(data,status){
+                    var data = $.parseJSON( data );
+                    var obj = data.brands;
+
+                    $("#good").empty();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#good').append('<option value="'+obj[i]['id']+'">'+obj[i]['brand_name']+' '+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+    })
+</script>

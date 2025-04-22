@@ -1,0 +1,43 @@
+<div class="page-header">
+    <h1>Change password</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php
+if (isset($this->success_messages) and $this->success_messages)
+    foreach ($this->success_messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->force_change_password) && $this->force_change_password 
+            && isset($this->warning_messages)): ?>
+    <div class="alert alert-warning"><?php echo $this->warning_messages ?></div>
+<?php endif ?>
+
+<form role="form" action="<?php echo HOST.'/user/change-pass';?>" method="post">
+    <div class="form-group">
+        <label for="exampleInputName"><?php echo $this->name;?></label>
+    </div>
+    <div class="form-group">
+        <label for="input03">Old Password</label>
+        <input type="password" id="input03" name="password" class="form-control input-xlarge" required="required" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+        <label for="input04">New Password</label>
+        <input type="password" id="input04" name="new-password" class="form-control input-xlarge" required="required" autocomplete="off" onchange="form.input05.pattern = this.value;">
+    </div>
+
+    <div class="form-group">
+        <label for="input05">Confirm Password</label>
+        <input type="password" id="input05" name="confirm-password" class="form-control input-xlarge" required="required" autocomplete="off">
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>

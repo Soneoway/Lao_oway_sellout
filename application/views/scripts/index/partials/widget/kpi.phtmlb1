@@ -1,0 +1,8 @@
+<?php
+    echo $this->render('timing/partials/kpi-hr-check-list.phtml');
+?>
+
+<p>
+    <a href="<?php echo HOST ?>timing/expired" class="btn btn-info">IMEI đã chấm công</a>
+    <a href="<?php echo HOST ?>timing/kpi" class="btn btn-success">IMEI được tính KPI</a>
+</p>

@@ -1,0 +1,112 @@
+<div class="page-header">
+    <form action="/manage/sub-area-create" method="get">
+        <h1>List Sub Area</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-danger">'.$message.'</div>';
+        endforeach;
+?>
+<?php
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('manage/sub-area/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th> # </th>
+            <th> Area </th>
+            <th> Province </th>
+            <th> Distric Name </th>
+            <th> Village </th>
+            <th> Sale Area Name </th>
+            <th> Staff Name </th>
+            <th> Status </th>
+            <th> Action </th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->sub_areas) and $this->sub_areas)
+                foreach ($this->sub_areas as $k=>$sub_area): ?>
+
+                    <?php 
+                        if($sub_area['sub_area_status'] == 1 ) : 
+                            $status = "Active";
+                        elseif($sub_area['sub_area_status'] == 2) :
+                            $status = "Disable";
+                        else:
+                            
+                        endif;
+                    ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $sub_area['area_name'] ?></td>
+                <td><?php echo $sub_area['province_name'] ?></td>
+                <td><?php echo $sub_area['sub_district_name'] ?></td>
+                <td><?php echo $sub_area['village_name'] ?></td>
+                <td>
+                    <a title="Edit" href="/manage/sub-area-create?id=<?php echo $sub_area['sub_area_id'];?>"><?php echo $sub_area['sub_area_name'];?></a>
+                </td>
+                <td>[ <?php echo $sub_area['staff_code'];?> ] <?php echo $sub_area['staff_name'];?></td>
+                <td><?php echo $status; ?></td>
+                <td>
+                     <a title="Edit" href="/manage/sub-area-create?id=<?php echo $sub_area['sub_area_id'];?>">Edit</a>
+                    | <a title="Delete" class="confirmLink" href="/manage/sub-area-delete?id=<?php echo $sub_area['sub_area_id'];?>" style="color: red;"> Delete </a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+
+    <div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+
+
+</div>
+
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>
+<script>
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+    });
+</script>

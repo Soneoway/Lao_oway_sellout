@@ -1,0 +1,40 @@
+<style type="text/css">
+    .status {
+        max-width: 20%;
+    }    
+</style>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>IMEI</th>
+            <th>Model</th>
+            <th>Color</th>
+            <th>Store Name</th>
+            <th>Timing Date</th>
+            <th>Activation Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isset($this->expires) && $this->expires): ?>
+            <?php foreach ($this->expires as $key => $expire): ?>
+                <tr class="item">
+                    <td><?php echo ($this->offset + $key + 1) ?></td>
+                    <td class="imei_customer" data-toggle="tooltip" title="Customer: <?php echo $expire['customer_name'] ?> / <?php echo $expire['customer_phone'] ?>"><?php echo $expire['imei'] ?></td>
+                    <td><?php if(isset($this->good_cache[ $expire['product_id'] ])) echo $this->good_cache[ $expire['product_id'] ] ?></td>
+                    <td><?php if(isset($this->color_cache[ $expire['model_id'] ])) echo $this->color_cache[ $expire['model_id'] ] ?></td>
+                    <td><?php echo $expire['name'] ?></td>
+                    <td><?php if(isset($expire['from']) && strtotime($expire['from'])) echo date('d/m/Y', strtotime($expire['from'])) ?></td>
+                    <td><?php if(isset($expire['activated_at']) && strtotime($expire['activated_at'])) echo date('d/m/Y', strtotime($expire['activated_at'])) ?></td>
+                </tr>
+            <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<?php echo $this->load(); ?>

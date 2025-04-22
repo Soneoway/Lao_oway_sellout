@@ -1,0 +1,436 @@
+<div class="page-header">
+    <h3>JOB TITLE</h3>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+if (isset($this->message_success) and $this->message_success)
+    foreach ($this->message_success as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+<div class="row-fluid span12">
+    <div class="input-prepend span4">
+        <div class="btn-group">
+            <button class="btn" tabindex="-1">Department</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a id="add_department" href="#addDepartment" data-toggle="modal">Add Department</a></li>
+                <li><a id="edit_department" href="#editDepartment" data-toggle="modal">Edit Department</a></li>
+                <li><a id="del_department" href="#delDepartment" data-toggle="modal">Delete Department</a></li>
+            </ul>
+            <select name="department" id="department" class="span2">
+                <option value=""></option>
+                <?php if (isset($this->listDepartment) and ($this->listDepartment)):?>
+                    <?php foreach ($this->listDepartment as $key=>$value):?>
+                        <option value="<?php echo $value['id']?>" rel="<?php echo $value['name']?>"><?php echo $value['name']?></option>
+                    <?php endforeach;?>
+                <?php endif;?>
+            </select>
+        </div>
+    </div>
+    <div class="input-prepend span4">
+        <div class="btn-group">
+            <button class="btn" tabindex="-1">Team</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="team" id="add_team" href="#addTeam" data-toggle="modal">Add Team</a></li>
+                <li><a class="team" id="edit_team" href="#editTeam" data-toggle="modal">Edit Team</a></li>
+                <li><a class="team" id="delete_team" href="#deleteTeam" data-toggle="modal">Delete Team </a></li>
+            </ul>
+            <select name="team" id="team" class="span2">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="input-prepend span4">
+        <div class="btn-group">
+            <button class="btn" tabindex="-1">Job Title</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a id="add_job_title" href="#addJobTitle" data-toggle="modal">Add Job Title</a></li>
+                <li><a id="edit_job_tile" href="#editJobTitle" data-toggle="modal">Edit Job Title</a></li>
+                <li><a id="delete_job_title" href="#deleteJobTitle" data-toggle="modal">Delete Job Title </a></li>
+            </ul>
+            <select name="job_title" id="job_title" class="span2">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div id="addDepartment" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Add Department</h3>
+        </div>
+        <div class="modal-body">
+                <input type="text" name="addDepartment" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<div id="editDepartment" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Edit Department</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="modal_edit_department" name="editDepartment" value=""/>
+            <input type="hidden" id="modal_id_edit_department" value="" name="idDepartment"/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+
+</div>
+<div id="delDepartment" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Del Department</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="modal_name_del_department" disabled value=""/>
+            <input type="hidden" id="modal_id_del_department" name="delDepartment" value=""/>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+
+</div>
+
+<div id="addTeam" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Add Team</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="modal_name_add_team" name="addTeam" value=""/>
+            <input type="hidden" name="idDepartment" id="modal_add_team" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<div id="editTeam" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Edit Team</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" name="editTeam" id="modal_name_edit_team" value=""/>
+            <input type="hidden" name="idTeam" id="modal_id_edit_team" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<div id="deleteTeam" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">DeleteTeam</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" name="deleteTeam" id="modal_name_delete_team" value=""/>
+            <input type="hidden" name="deleteTeam" id="modal_id_delete_team" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+
+<div id="addJobTitle" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Add Job Title</h3>
+        </div>
+        <div class="modal-body">
+            <label for="">English name</label>
+            <input type="text" id="modal_name_add_job_title" name="addJobTitle" value=""/>
+            <label for="">Vietnamese name</label>
+            <input type="text" name="addJobTitleVn" id="modal_name_add_job_title_vn" value=""/>
+            <input type="hidden" value="" name="idTeam" id="modal_add_job_tile" />
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<div id="editJobTitle" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Edit Job Title</h3>
+        </div>
+        <div class="modal-body">
+            <label for="">English name</label>
+            <input type="text" name="editJobTitle" id="modal_name_edit_job_title" value=""/>
+            <label for="">Vietnamese name</label>
+            <input type="text" name="editJobTitleVn" id="modal_name_edit_job_title_vn" value=""/>
+            <input type="hidden" name="idJobTitle" id="modal_id_edit_job_title" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<div id="deleteJobTitle" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="/staff/job-title" method="post">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Delete Job Title</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text"  id="modal_name_delete_job_title" value="" disabled/>
+            <input type="hidden" name="delJobTitle" id="modal_id_delete_job_title" value=""/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success btn_save" aria-hidden="true">Save</button>
+            <button class="btn btn_close" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </form>
+</div>
+<script>
+$(document).ready(function () {
+    editDepartment();
+    delDepartment();
+    getTeam();
+    getJobTitle();
+    addTeam();
+    editTeam();
+    deleteTeam();
+    addJobTitle();
+    editJobTitle();
+    deleteJobTitle();
+});
+function editDepartment()
+{
+    $('#edit_department').click(function(){
+        var idDepartment = $('#department').val();
+        var nameDepartment = $('#department').find('option:selected').attr('rel');
+        if(!idDepartment)
+        {
+            alert('Choose Department');
+            $('#edit_department').removeAttr('href');
+        }
+        else
+        {
+            $('#edit_department').attr('href','#editDepartment');
+            $('#modal_edit_department').val(nameDepartment);
+            $('#modal_id_edit_department').val(idDepartment);
+        }
+
+    });
+}
+function delDepartment()
+{
+    $('#del_department').click(function(){
+        var idDepartment = $('#department').val();
+        var nameDepartment = $('#department').find('option:selected').attr('rel');
+        if(!idDepartment)
+        {
+            alert('Choose Department');
+            $('#del_department').removeAttr('href');
+        }
+        else
+        {
+            $('#del_department').attr('href','#delDepartment');
+            $('#modal_name_del_department').val(nameDepartment);
+            $('#modal_id_del_department').val(idDepartment);
+        }
+
+    });
+}
+function getTeam()
+{
+    $('#department').change(function(){
+        var departmentID = $('#department').val();
+        $.ajax
+        ({
+            url : '/staff/get-team',
+            type : 'POST',
+            data : {'department_id':departmentID},
+            dataType: 'json',
+            success : function(result)
+            {
+                $('#team').find('option:not(:first)').remove();
+                $('#job_title').find('option:not(:first)').remove();
+                $.each(result, function (i, item) {
+                    $('#team').append('<option value="'+item.id+'" rel="'+item.name+'">'+item.name+'</option>');
+                });
+            },
+            error: function()
+            {
+                alert("Not Found !!!");
+            }
+
+        });
+    });
+
+
+}
+function getJobTitle()
+{
+    $('#team').change(function(){
+        var teamID = $('#team').val();
+        $.ajax
+        ({
+            url : '/staff/get-job-title',
+            type : 'POST',
+            data : {'team_id':teamID},
+            dataType: 'json',
+            success : function(result)
+            {
+                $('#job_title').find('option:not(:first)').remove();
+                $.each(result, function (i, item) {
+                    $('#job_title').append('<option value="'+item.id+'" data-namevn="'+item.name_vn+'" rel="'+item.name+'">'+item.name+'</option>');
+                });
+            },
+            error: function()
+            {
+                alert("Not Found!!!");
+            }
+
+        });
+    });
+}
+function addTeam()
+{
+    $('#add_team').click(function(){
+        var idDepartment = $('#department').val();
+        if(!idDepartment)
+        {
+            alert('Choose Department');
+            $('#add_team').removeAttr('href');
+        }
+        else
+        {
+            $('#add_team').attr('href','#addTeam');
+            $('#modal_add_team').val(idDepartment);
+        }
+
+    });
+}
+function editTeam()
+{
+    $('#edit_team').click(function(){
+        var idDepartment = $('#department').val();
+        var idTeam       = $('#team').val();
+        var nameTeam     = $('#team').find('option:selected').attr('rel');
+        if(!idDepartment){
+            alert('Choose Department');
+            $('#edit_team').removeAttr('href');
+        }
+        else if(!idTeam)
+        {
+            alert('Choose Team');
+            $('#edit_team').removeAttr('href');
+        }
+        else
+        {
+            $('#edit_team').attr('href','#editTeam');
+            $('#modal_id_edit_team').val(idTeam);
+            $('#modal_name_edit_team').val(nameTeam);
+        }
+
+    });
+}
+function deleteTeam()
+{
+    $('#delete_team').click(function(){
+
+        var idTeam       = $('#team').val();
+        var nameTeam     = $('#team').find('option:selected').attr('rel');
+        if(!idTeam)        {
+            alert('Choose Team');
+            $('#delete_team').removeAttr('href');
+        }
+        else
+        {
+            $('#delete_team').attr('href','#deleteTeam');
+            $('#modal_id_delete_team').val(idTeam);
+            $('#modal_name_delete_team').val(nameTeam);
+            $('#modal_name_delete_team').attr('disabled',true);
+
+        }
+
+    });
+}
+function addJobTitle()
+{
+    $('#add_job_title').click(function(){
+        var id_team = $('#team').find('option:selected').val();
+        if(!id_team)
+        {
+            alert('Choose Team');
+            $('#add_job_title').removeAttr('href');
+        }
+        else
+        {
+            $('#add_job_title').attr('href','#addJobTitle');
+            $('#modal_add_job_tile').val(id_team);
+        }
+
+    });
+}
+function editJobTitle()
+{
+    $('#edit_job_tile').click(function(){
+        var idJobTitle   = $('#job_title').find('option:selected').val();
+        var nameJobTitle = $('#job_title').find('option:selected').attr('rel');
+        var nameJobTitleVn = $('#job_title').find('option:selected').attr('data-namevn');
+        if(!idJobTitle)        {
+            alert('Choose Job Title');
+            $('#edit_job_tile').removeAttr('href');
+        }
+        else
+        {
+            $('#edit_job_tile').attr('href','#editJobTitle');
+            $('#modal_id_edit_job_title').val(idJobTitle);
+            $('#modal_name_edit_job_title').val(nameJobTitle);
+            $('#modal_name_edit_job_title_vn').val(nameJobTitleVn);
+        }
+
+    });
+}
+function deleteJobTitle()
+{
+    $('#delete_job_title').click(function(){
+        var idJobTitle   = $('#job_title').find('option:selected').val();
+        var nameJobTitle = $('#job_title').find('option:selected').attr('rel');
+        if(!idJobTitle)        {
+            alert('Choose Job Title');
+            $('#delete_job_title').removeAttr('href');
+        }
+        else
+        {
+            $('#delete_job_title').attr('href','#deleteJobTitle');
+            $('#modal_id_delete_job_title').val(idJobTitle);
+            $('#modal_name_delete_job_title').val(nameJobTitle);
+        }
+
+    });
+}
+</script>

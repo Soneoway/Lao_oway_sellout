@@ -1,0 +1,80 @@
+<form class="form-search form-horizontal" method="get" action="/timing/pc-working-status/pc-working-status">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="org_id" class="span2">Channel</label>
+                <select id="org_id" name="org_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->channels) :
+                        foreach ($this->channels as $channel):
+                            ?>
+                            <option value="<?php echo $channel['org_id'];?>" <?php if (isset($this->params['org_id']) and ( (is_array($this->params['org_id']) && in_array($channel['org_id'], $this->params['org_id']) || $channel==$this->params['org_id'])) ):?>selected<?php endif;?>><?php echo $channel['org_name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+<!--    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>-->
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    });
+</script>

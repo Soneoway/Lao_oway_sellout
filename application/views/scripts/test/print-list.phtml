@@ -1,0 +1,148 @@
+<style>
+    @media all {
+        .page-break { display: none; }
+    }
+
+    @media print {
+        .page-break { display: block; page-break-before: always; }
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+
+    .td-name {
+        width: 50px;
+        display: block;
+        font-size: 11px;
+    }
+
+    .td-code {
+        width: 120px;
+        display: block;
+        padding: 5px;
+        font-size: 11px;
+    }
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<?php
+
+foreach ($this->data as $region=>$regionData){
+    $listGuests = $regionData;
+    $countRowOnATable = ceil(count($listGuests)/4);
+    $countRecord = count($listGuests);
+//    echo $countRowOnATable;
+    $offset = 0;
+    echo '<h1>'.$region.'</h1>';
+    for ($i=0; $i<count($listGuests); $i++) {?>
+        <?php if ($i % $countRecord ==0){
+            $offset = $i;
+            $reset =0;
+            ?>
+        <table class="table">
+            <tbody>
+        <?php } ?>
+            <tr>
+                <?php if ($reset< $countRowOnATable) {
+
+                    $k = $reset;
+                    $half = $countRowOnATable;
+
+                    $kInvert = ($offset+$half+$reset) < count($listGuests) ? $offset+$half+$reset : null;
+                    $kInvert2 = ($offset+$half*2+$reset) < count($listGuests) ? $offset+$half*2+$reset : null;
+                    $kInvert3 = ($offset+$half*3+$reset) < count($listGuests) ? $offset+$half*3+$reset : null;
+                ?>
+                    <!--<td class="td td-region"><?php /*echo (isset($listGuests[$reset]['region']) ? ($reset+1).'-'.$listGuests[$reset]['region'] : ''); */?></td>-->
+                    <!--<td class="td td-shop"><?php /*echo (isset($listGuests[$reset]['shop']) ? $listGuests[$reset]['shop'] : ''); */?></td>-->
+                    <td class="td td-name">
+                        <p>
+                        <?php echo (isset($listGuests[$reset]['region']) ? ($reset+1).'-'.$listGuests[$reset]['region'] : ''); ?>
+                        </p>
+                        <?php echo (isset($listGuests[$reset]['guest_name']) ? $listGuests[$reset]['guest_name'] : ''); ?>
+                    </td>
+                    <td class="td td-code">
+                        <?php echo (isset($listGuests[$reset]['id']) ? "<img src='".HOST."test/generate-code?id={$listGuests[$reset]['id']}'>" : ''); ?>
+                        <?php echo (isset($listGuests[$reset]['shop']) ? $listGuests[$reset]['shop'] : ''); ?>
+                    </td>
+                    <?php if ($this->show_photo){?>
+                    <td class="td td-photo"><?php
+                        $id = isset($listGuests[$reset]['id']) ? $listGuests[$reset]['id'] : null;
+                        if ($id and isset($listGuests[$reset]['photo']) and $listGuests[$reset]['photo']){
+                            $path = HOST.'photo/guest/'.$id.'/'.$listGuests[$reset]['photo'];
+                            echo "<img width='80' height='80' src='".$path."'>" ;
+                        }
+                            ?></td>
+                    <?php } ?>
+
+                    <!--<td class="td td-region"><?php /*echo (isset($listGuests[$kInvert]['region']) ? ($kInvert+1).'-'.$listGuests[$kInvert]['region'] : ''); */?></td>-->
+                    <!--<td class="td td-shop"><?php /*echo (isset($listGuests[$kInvert]['shop']) ? $listGuests[$kInvert]['shop'] : ''); */?></td>-->
+                    <td class="td td-name">
+                        <p>
+                            <?php echo (isset($listGuests[$kInvert]['region']) ? ($kInvert+1).'-'.$listGuests[$kInvert]['region'] : ''); ?>
+                        </p>
+                        <?php echo (isset($listGuests[$kInvert]['guest_name']) ? $listGuests[$kInvert]['guest_name'] : ''); ?>
+                    </td>
+                    <td class="td td-code"><?php echo (isset($listGuests[$kInvert]['id']) ? "<img src='".HOST."test/generate-code?id={$listGuests[$kInvert]['id']}'>" : ''); ?>
+                        <?php echo (isset($listGuests[$kInvert]['shop']) ? $listGuests[$kInvert]['shop'] : ''); ?>
+                    </td>
+                    <?php if ($this->show_photo){?>
+                        <td class="td td-photo"><?php
+                            $id = isset($listGuests[$kInvert]['id']) ? $listGuests[$kInvert]['id'] : null;
+                            if ($id and isset($listGuests[$kInvert]['photo']) and $listGuests[$kInvert]['photo']){
+                                $path = HOST.'photo/guest/'.$id.'/'.$listGuests[$kInvert]['photo'];
+                                echo "<img width='80' height='80' src='".$path."'>" ;
+                            }
+                            ?></td>
+                    <?php } ?>
+
+                    <td class="td td-name">
+                        <p>
+                            <?php echo (isset($listGuests[$kInvert2]['region']) ? ($kInvert2+1).'-'.$listGuests[$kInvert2]['region'] : ''); ?>
+                        </p>
+                        <?php echo (isset($listGuests[$kInvert2]['guest_name']) ? $listGuests[$kInvert2]['guest_name'] : ''); ?>
+                    </td>
+                    <td class="td td-code"><?php echo (isset($listGuests[$kInvert2]['id']) ? "<img src='".HOST."test/generate-code?id={$listGuests[$kInvert2]['id']}'>" : ''); ?>
+                        <?php echo (isset($listGuests[$kInvert2]['shop']) ? $listGuests[$kInvert2]['shop'] : ''); ?>
+                    </td>
+                    <?php if ($this->show_photo){?>
+                        <td class="td td-photo"><?php
+                            $id = isset($listGuests[$kInvert2]['id']) ? $listGuests[$kInvert2]['id'] : null;
+                            if ($id and isset($listGuests[$kInvert2]['photo']) and $listGuests[$kInvert2]['photo']){
+                                $path = HOST.'photo/guest/'.$id.'/'.$listGuests[$kInvert2]['photo'];
+                                echo "<img width='80' height='80' src='".$path."'>" ;
+                            }
+                            ?></td>
+                    <?php } ?>
+
+                    <td class="td td-name">
+                        <p>
+                            <?php echo (isset($listGuests[$kInvert3]['region']) ? ($kInvert3+1).'-'.$listGuests[$kInvert3]['region'] : ''); ?>
+                        </p>
+                        <?php echo (isset($listGuests[$kInvert3]['guest_name']) ? $listGuests[$kInvert3]['guest_name'] : ''); ?>
+                    </td>
+                    <td class="td td-code"><?php echo (isset($listGuests[$kInvert3]['id']) ? "<img src='".HOST."test/generate-code?id={$listGuests[$kInvert3]['id']}'>" : ''); ?>
+                        <?php echo (isset($listGuests[$kInvert3]['shop']) ? $listGuests[$kInvert3]['shop'] : ''); ?>
+                    </td>
+                    <?php if ($this->show_photo){?>
+                        <td class="td td-photo"><?php
+                            $id = isset($listGuests[$kInvert3]['id']) ? $listGuests[$kInvert3]['id'] : null;
+                            if ($id and isset($listGuests[$kInvert3]['photo']) and $listGuests[$kInvert3]['photo']){
+                                $path = HOST.'photo/guest/'.$id.'/'.$listGuests[$kInvert3]['photo'];
+                                echo "<img width='80' height='80' src='".$path."'>" ;
+                            }
+                            ?></td>
+                    <?php } ?>
+
+                <?php
+                    $reset++;
+                } ?>
+
+            </tr>
+        <?php if ($i % $countRecord ==($countRecord - 1) or $i== (count($listGuests) - 1)){ ?>
+            </tbody>
+        </table>
+        <?php }
+    }
+}?>

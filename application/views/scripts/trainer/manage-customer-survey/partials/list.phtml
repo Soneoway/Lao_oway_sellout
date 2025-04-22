@@ -1,0 +1,37 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="text-align: center;" width="5%">No.</th>
+        <th style="text-align: center;" width="40%">Topic</th>
+        <th style="text-align: center;" width="30%">URL</th>
+        <th style="text-align: center;" width="20%">Created at</th>
+        <th style="text-align: center;" width="10%">Status</th>
+        <th style="text-align: center;" width="10%">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <?php
+    $count = 0;
+    if (isset($this->list) and $this->list)
+        foreach ($this->list as $k => $item):
+            ?>
+            <tr>
+                <td style="text-align: center;"><?php echo $this->offset + $k + 1; ?></td>
+                <td><?php echo isset($item['topic']) ? $item['topic'] : ''; ?></td>
+                <td><a href="<?php echo isset($item['url']) ? $item['url'] : ''; ?>" target="_blank"><?php echo isset($item['url']) ? $item['url'] : ''; ?></a></td>
+                <td style="text-align: center;"><?php echo isset($item['created_at']) ? $item['created_at'] : ''; ?></td>
+                <td style="text-align: center;"><?php echo isset($item['id']) ? EnableDisplay($item['enable']) : ''; ?></td>
+                <td title="View" style="text-align: center;">
+                    <a title="Edit" href="/trainer/manage-customer-survey-create?id=<?php echo $item['id']; ?>"
+                       style="padding-right: 0.4em;"><i class="icon-edit"></i></a>&nbsp;
+                    <a title="Delete" href="/trainer/manage-customer-survey-delete?id=<?php echo $item['id']; ?>" onclick="return confirm('Are you sure to remove?');"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

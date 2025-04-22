@@ -1,0 +1,55 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="text-align: center;">No.</th>
+        <th style="text-align: center;">Create Date</th>
+        <th>Area</th>
+        <th style="text-align: center;">Staff Code</th>
+        <th>Staff Name</th>
+        <th style="text-align: center;">Staff Group</th>
+        <th>Topic E-Test</th>
+        <th style="text-align: center;">Test score</th>
+        <th style="text-align: center;">Actoin</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    $QStaff = new Application_Model_Staff();
+//
+//    echo '<pre>';
+//    print_r($this->staff_list);
+//    echo '<pre>';
+
+    if (isset($this->staff_list) and $this->staff_list)
+        foreach ($this->staff_list as $k=>$staff_list):
+    ?>
+            <tr>
+                <td style="text-align: center;">
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td style="text-align: center;"><?php echo $staff_list['created_at']; ?></td>
+                <td><?php echo $staff_list['area_name'];?></td>
+                <td style="text-align: center;"><?php echo $staff_list['staff_code'];?></td>
+                <td><?php echo $staff_list['staff_name'];?></td>
+                <td style="text-align: center;"><?php echo $staff_list['group_name'];?></td>
+                <td><?php echo $staff_list['topic'];?></td>
+                <td style="text-align: center;"><?php echo ($staff_list['score']*1).'/'.$staff_list['score_total'];?></td>
+                <td style="text-align: center;">
+                    <a title="View" href="/trainer/report-etest-answer-edit?staff_id=<?php echo $staff_list['staff_id'];?>&topic=<?php echo $staff_list['topic_id'];?>"> <i class="icon-eye-open"></i></a>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+

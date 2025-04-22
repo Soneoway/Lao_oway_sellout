@@ -1,0 +1,47 @@
+<div class="page-header">
+    <h1>List Sales Admin</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Area</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php $i = 1;
+            if (isset($this->asm_list) and $this->asm_list)
+                foreach ($this->asm_list as $asm): ?>
+            <tr>
+                <td>
+                    <?php
+                    echo $i++;
+                    ?>
+                </td>
+                <td><?php echo $asm['firstname'] . ' ' . $asm['lastname'] ?></td>
+                <td><?php 
+                    if (isset($this->asms[$asm['id']]) && $this->asms[$asm['id']])
+                        foreach ($this->asms[$asm['id']] as $area_id)
+                            if (isset( $this->areas[ $area_id ] ) && $this->areas[ $area_id ])
+                                echo '<p>' . $this->areas[ $area_id ] . '</p>';
+                 ?></td>
+                 <td><a title="Edit" href="/manage/sales-admin-edit?id=<?php echo $asm['id'];?>"> <i class="icon-edit"></i></a></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>

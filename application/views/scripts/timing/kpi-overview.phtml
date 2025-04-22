@@ -1,0 +1,32 @@
+<div class="page-header">
+    <h1>KPI Checking</h1>
+</div>
+
+<?php if(isset($this->messages) && $this->messages):
+foreach ($this->messages as $key => $value): ?>
+<div class="alert alert-danger"><?php echo $value; ?><div>
+<?php endforeach; ?>
+<?php endif; ?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/kpi-overview-search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <?php
+        echo $this->render('timing/partials/kpi-hr-check-list.phtml');
+    ?>
+</div>

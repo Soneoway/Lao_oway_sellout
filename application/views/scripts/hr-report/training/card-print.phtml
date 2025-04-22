@@ -1,0 +1,108 @@
+<?php 
+	//print_r($this->params);
+	//print_r($this->staff_list);
+
+	$background_path = HOST."img/employee_card.png";
+?>
+
+<link href="<?php echo HOST; ?>css/MyriadPro-Regular.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+
+body{ -webkit-print-color-adjust:exact; }
+
+* {
+	font-size: 11px;
+	font-family: MyriadProRegular;
+}
+
+.bgimg {
+    background-image: url('http://catty.oppo.in.th/img/employee_card.png');
+    background-repeat:no-repeat;background-size:207px 647px;
+    border: 0p
+}
+
+.pagebreak { page-break-after: always; }
+
+</style>
+
+<?php 
+	$staff_lists = $this->staff_list;
+
+	$range_date = 5;  
+	$cnt_loop = ceil( count($staff_lists) / $range_date);
+
+	// $range_date = 5;  
+	// $cnt_loop = 1;
+
+	$QStaff = new Application_Model_Staff();
+	$cnt = 0;
+
+	if (isset($staff_lists) && $staff_lists) {
+
+	    for ($i=0;$i<$cnt_loop;$i++) { 
+
+	    	echo "<table border='0' cellpadding='0' cellspacing='0' >";
+	    	echo 	"<tr>";
+
+			for ($j=0;$j<$range_date;$j++) {
+
+				if (!isset($staff_lists[$cnt]['staff_name']))  { break; }
+
+				$where = array();
+	            $where[] = $QStaff->getAdapter()->quoteInto("public_id = ?", $staff_lists[$cnt]['public_id']);
+	            $result = $QStaff->fetchRow($where);
+
+				$date = strtotime($staff_lists[$cnt]['check_in']);
+		    	//$img_path = API_URI."images/oppo_pc_first_training/".date('Y', $date)."/".date('Y-m', $date)."/".date('Y-m-d', $date)."/".$staff_lists[$cnt]['filepic'];
+
+		    	if (strpos($staff_lists[$cnt]['filepic'], 'http://apply.oppo.in.th/') !== false) {
+			        $img_path = $staff_lists[$cnt]['filepic'];
+			    } else {
+			        $img_path = API_URI."images/oppo_pc_first_training/".date('Y', $date)."/".date('Y-m', $date)."/".date('Y-m-d', $date)."/".$staff_lists[$cnt]['filepic'];
+			    }
+
+		    	echo 		"<td class='bgimg' width='204px' height='647px'>";
+
+		    	echo 			"<table border='0' cellpadding='0' cellspacing='0' width='207px' height='647px'>";
+		    	echo 				"<tr>";
+		    	echo 					"<td width='160px' height='193px' align='center'>
+		    								<img src='".$img_path."' alt='Staff_Pic' width='162px' height='196px' >
+		    							</td>";
+		    	echo 				"</tr>";
+		    	echo 				"<tr height='100px'>";
+		    	echo 					"<td style='padding-left:15px; padding-top:15px;'>";
+		    	echo 						"<table border='0' cellpadding='0' cellspacing='0' height='75px'>";
+		    	echo 							"<tr>
+		    										<td><strong style='font-size:14px;'>".$staff_lists[$cnt]['staff_name_en']."</strong></td>
+		    									</tr>";
+				echo 							"<tr><td>PC</td></tr>";
+				echo 							"<tr><td>SALE</td></tr>";
+				echo 							"<tr><td><strong style='font-size:12px;'>".$result['code']."</strong></td></tr>";
+				echo 						"</table>";
+		    	echo 					"</td>";
+		    	echo 				"</tr>";
+		    	echo 				"<tr>";
+		    	echo 					"<td></td>";
+		    	echo 				"</tr>";
+				echo 			"</table>";
+
+		    	//echo 		"<img  src='".$background_path."' alt='Staff_Pic' width='193px' height='647px' >";
+		    	//echo 		"<img  src='".$img_path."' alt='Staff_Pic' >";
+		    	echo 		"</td>";
+
+		    	$cnt++;
+		    	
+			}
+
+			echo 	"</tr>";
+			echo "</table>";
+
+			echo "<div class='pagebreak'> </div>";
+		}
+
+		
+
+	}
+
+?>

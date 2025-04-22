@@ -1,0 +1,52 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle;"><div align="center">RGM</div></th>
+        <th style="vertical-align: middle;"><div align="center">RM</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale</div></th>
+        <th style="vertical-align: middle;"><div align="center">Store Code</div></th>
+        <th style="vertical-align: middle;"><div align="center">Store Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">Affiliated Distributor</div></th>
+        <th style="vertical-align: middle;"><div align="center">Superior Distributor</div></th>
+        <th style="vertical-align: middle;"><div align="center">Stock</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            if ($this->lists) {
+                $data = $this->lists;
+
+                for ($i=0;$i<count($data);$i++) {
+
+                    $QDistributor = new Application_Model_Distributor();
+                    $superi = $QDistributor->getSuperiorDistributor($data[$i]['warehouse_id']);
+
+                    $color = '';
+                    if ( $data[$i]['indicator'] < 0 ) { $color = "red"; } 
+
+                    $cnt = $this->offset + $i + 1;
+
+                    echo "<tr>";
+                    echo    "<td><div align='left'>".$data[$i]['area_name']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['province_name']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['sales_area']."</div></td>";
+                    echo    '<td><div align="center"><a href="/timing/stock-detail?cat_id='.$this->params['cat_id'].'&s_id='.$data[$i]['s_id'].'&status='.$this->params['status'].'&stock='.$data[$i]['stock'].'">'.$data[$i]['store_code'].'</a></div></td>';
+                    echo    "<td><div align='left'>".$data[$i]['store_name']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['distributor_name']."</div></td>";
+                    echo    "<td><div align='left'>".$superi[0]['title']."</div></td>";
+                    echo    '<td><div align="center"><a class="badge badge-success" href="/timing/stock-detail?cat_id='.$this->params['cat_id'].'&s_id='.$data[$i]['s_id'].'&status='.$this->params['status'].'&stock='.$data[$i]['stock'].'">'.number_format($data[$i]['stock']).'</a></div></td>';
+                    echo "</tr>";
+
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>

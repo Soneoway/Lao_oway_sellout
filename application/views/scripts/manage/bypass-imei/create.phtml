@@ -1,0 +1,107 @@
+<style type="text/css">
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+</style>
+<div class="page-header">
+    <h1>Bypass IMEI : Create</h1>
+</div>
+
+<?php 
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/bypass-imei-create-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span6">
+            <p><span><strong>- Bypass IMEI Info -</strong></span></p>
+
+            <div class="control-group">
+                <label for="imei_list" class="span1">IMEI</label>
+                <textarea id="imei" name="imei" class="span3" cols="20" rows="10" style="resize: none;" required></textarea>
+            </div>
+
+            <div class="control-group">
+                <label for="remark" class="span1">Remark</label>
+                <input type="text" class="span3" id="remark" name="remark" value="" required />
+            </div>
+
+        </div>
+
+        <div class="span6">
+
+        </div>
+
+    </div>
+
+    <br />
+
+    <input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+    <button type="submit" id="btn_submit" class="btn btn-primary" >Submit</button>
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+
+    <br />
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+    });
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

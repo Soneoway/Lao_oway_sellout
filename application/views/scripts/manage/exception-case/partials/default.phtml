@@ -1,0 +1,34 @@
+<form role="form" action="<?php echo HOST.'manage/exception-case-save';?>" method="post">
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required="required" value="<?php if (isset($this->exception_case)): echo $this->exception_case->name; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label for="status">Status</label>
+		<select required="required" id="status" name="status">
+			<option value="1" <?php if (isset($this->exception_case) and $this->exception_case->status==1):?> selected<?php endif;?>>Enabled</option>
+			<option value="0" <?php if (isset($this->exception_case) and $this->exception_case->status==0):?> selected<?php endif;?>>Disabled</option>
+		</select>
+    </div>
+
+    <div class="form-group">
+        <label for="value">Value</label>
+        <textarea cols="30" rows="30" name="value" id="value"><?php if (isset($this->exception_case)): echo json_decode($this->exception_case->value); endif;?></textarea>
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php isset($this->exception_case) and $this->exception_case and printf($this->exception_case->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,1357 @@
+
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">Store Name</h3>
+</div>
+<div class="modal-body">
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+
+<style>
+    .p-model .remove-model {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+    body{
+        font-family: phetsarath ot;
+    }
+</style>
+
+<?php
+    if ( isset($this->area_permission) && !empty($this->area_permission) ) {
+        $area_permission = json_encode($this->area_permission); 
+    } else {
+        $area_permission = '';
+    }
+
+$status_active = array(
+    'Y' => '<i class="icon-ok" style="color: #12aa00;"></i> Active',
+    'N' => '<i class="icon-remove" style="color: #e60400;"></i> Not Active',
+    'W' => '<i class="icon-time" style="color: #e6a208;"></i> Wait',
+);
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+?>
+
+<div class="page-header">
+    <?php if (isset($this->store) and $this->store): ?>
+        <h1>
+            Edit Store ແກ້ໄຂຮ້ານຄ້າ
+
+            <?php if ($this->store['active_status'] == "W") { ?>
+                <span style="float: right; color: #333333;"><?php echo $status_active[$this->store['active_status']]; ?></span>
+            <?php } else { ?>
+                <a href="#modal_detail" data-toggle="modal">
+                    <span style="float: right; color: #333333;"><?php echo $status_active[$this->store['active_status']]; ?></span>
+                </a>
+            <?php } ?>
+
+        </h1>
+    <?php else: ?>
+        <h1>Create Store</h1>
+    <?php endif; ?>
+</div>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<div class="row-fluid">
+    <div class="span12">
+        <iframe name="ifrmSave" id="ifrmSave" height="500" width="100%" style="display:none;"></iframe>
+        <form role="form" id="form" action="<?php echo HOST.'manage/store-save';?>" method="post" target="ifrmSave">
+            <div class="row-fluid">
+                <div class="span6">
+                    <style>
+                        .btn-style1{
+                            color: #fff;
+                            background-color: #FA8072;
+                        }
+                        .btn-style2{
+                            color: #fff;
+                            background-color: #98cb00;
+                        }
+                        .btn-style3{
+                            color: #fff;
+                            background-color: #884EA0;
+                        }
+                        .btn-style4{
+                            color: #fff;
+                            background-color: #CA6F1E;
+                        }
+                        .btn-style5{
+                            color: #fff;
+                            background-color: #eedd00;
+                        }
+                        .btn-style6{
+                            color: #fff;
+                            background-color: #33aaff;
+                        }
+                        .btn-style1:hover{
+                            color: #fff;
+                            background-color: #CD5C5C;
+                        }
+                        .btn-style2:hover{
+                            color: #fff;
+                            background-color: #56aa00;
+                        }
+                        .btn-style3:hover{
+                            color: #fff;
+                            background-color: #633974;
+                        }
+                        .btn-style4:hover{
+                            color: #fff;
+                            background-color: #935116;
+                        }
+                        .btn-style5:hover{
+                            color: #fff;
+                            background-color: #eecc00;
+                        }
+                        .btn-style6:hover{
+                            color: #fff;
+                            background-color: #33ccff;
+                        }
+                    </style>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                                <legend>RD</legend>
+                                <select name="pic_name_rd" id="pic_name_rd" class="span3" multiple="multiple">
+                                    <?php if ($this->rd): ?>
+                                    <?php foreach ($this->rd as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email'])
+                                            . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic6" name="pic6" type="hidden" value="" />
+                                <button id="remove_btn_rd" class="btn btn-warning pull-right" type="button">Remove PC</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                            <legend>ASM</legend>
+                                <select name="pic_name_asm" id="pic_name_asm" class="span3" multiple="multiple">
+                                    <?php if ($this->asm): ?>
+                                    <?php foreach ($this->asm as $k=>$staff_bm): ?>
+                                        <option value="<?php echo $staff_bm['id'] ?>"><?php echo $staff_bm['firstname'] . ' ' . $staff_bm['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_bm['email']) 
+                                            . (isset($this->regional_market_cache[$staff_bm['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff_bm['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic4" name="pic4" type="hidden" value="" />
+                                <button id="remove_btn_asm" class="btn btn-warning pull-right" type="button">Remove ASM</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                            <legend>Stock BrandShop</legend>
+                                <select name="pic_name_bm" id="pic_name_bm" class="span3" multiple="multiple">
+                                    <?php if ($this->bm): ?>
+                                    <?php foreach ($this->bm as $k=>$staff_bm): ?>
+                                        <option value="<?php echo $staff_bm['id'] ?>"><?php echo $staff_bm['firstname'] . ' ' . $staff_bm['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_bm['email']) 
+                                            . (isset($this->regional_market_cache[$staff_bm['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff_bm['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic3" name="pic3" type="hidden" value="" />
+                                <button id="remove_btn_bm" class="btn btn-warning pull-right" type="button">Remove Stock BrandShop</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                            <legend>PCM / Trainer</legend>
+                                <select name="pic_name_pcm" id="pic_name_pcm" class="span3" multiple="multiple">
+                                    <?php if ($this->pcm): ?>
+                                    <?php foreach ($this->pcm as $k=>$staff_pcm): ?>
+                                        <option value="<?php echo $staff_pcm['id'] ?>"><?php echo $staff_pcm['firstname'] . ' ' . $staff_pcm['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_pcm['email']) 
+                                            . (isset($this->regional_market_cache[$staff_pcm['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff_pcm['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic2" name="pic2" type="hidden" value="" />
+                                <button id="remove_btn_pcm" class="btn btn-warning pull-right" type="button">Remove PCM</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                                <legend>PCDB</legend>
+                                <select name="pic_name_pcdb" id="pic_name_pcdb" class="span3" multiple="multiple">
+                                    <?php if ($this->pcdb): ?>
+                                    <?php foreach ($this->pcdb as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email'])
+                                            . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic7" name="pic7" type="hidden" value="" />
+                                <button id="remove_btn_pcdb" class="btn btn-warning pull-right" type="button">Remove PC</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                            <legend>Sales</legend>
+                                <select name="pic_name_sales" id="pic_name_sales" class="span3" multiple="multiple">
+                                    <?php if ($this->leaders): ?>
+                                    <?php foreach ($this->leaders as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email']) 
+                                            . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="old_pic1" name="old_pic1" type="hidden" value="<?php echo $staff['id'] ?>" />
+                                <input id="pic1" name="pic1" type="hidden" value="" />
+                                <button id="remove_btn_sales" class="btn btn-warning pull-right" type="button">Remove Sales</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!---- Case Sales Marktting --->
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                            <legend>Sales Marketting</legend>
+                                <select name="pic_name_mkt" id="pic_name_mkt" class="span3" multiple="multiple">
+                                    <?php if ($this->mkt): ?>
+                                    <?php foreach ($this->mkt as $k=>$staff_mkt): ?>
+                                        <option value="<?php echo $staff_mkt['id'] ?>"><?php echo $staff_mkt['firstname'] . ' ' . $staff_mkt['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_mkt['email']) 
+                                            . (isset($this->regional_market_cache[$staff_mkt['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff_mkt['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic5" name="pic5" type="hidden" value="" />
+                                <button id="remove_btn_mkt" class="btn btn-warning pull-right" type="button">Remove Sale MKT</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="control-group">
+                                <legend>PC</legend>
+                                <select name="pic_name_pg" id="pic_name_pg" class="span3" multiple="multiple">
+                                    <?php if ($this->staffs): ?>
+                                    <?php foreach ($this->staffs as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email'])
+                                            . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                                ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                                :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic" name="pic" type="hidden" value="" />
+                                <button id="remove_btn_pg" class="btn btn-warning pull-right" type="button">Remove PC</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span6">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <legend>Belongs to Distributor:</legend>
+                                    <input type="hidden" id="d_id" name="d_id" value="<?php echo $this->d_chain1->id; ?>" />
+                                    <table class="table">
+                                        <?php 
+
+                                            if ($userStorage->group_id == ADMINISTRATOR_ID || !isset($this->store) ) {
+
+                                                echo "<tr>";
+                                                echo "<td>Search ID</td>";
+                                                echo "<td> : </td>";
+                                                echo "  <td style='padding-left: 10px;'>
+                                                            <div class='input-append'>
+                                                                <input type='text' id='d_id_search' name='d_id_search' />
+                                                                <button id='btn_bind_d_chain1' class='btn btn-success' type='button'>Bind</button>
+                                                            </div>
+                                                        </td>";
+                                                echo "</tr>";
+                                            } 
+
+                                        ?>
+
+                                        <tr>
+                                            <td>ID</td>
+                                            <td> : </td>
+                                            <td style="padding-left: 10px;" id="d_id_txt"><?php echo $this->d_chain1->id; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td> : </td>
+                                            <td style="padding-left: 10px;" id="d_name" ><?php echo $this->d_chain1->title; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Address</td>
+                                            <td> : </td>
+                                            <td style="padding-left: 10px;" id="d_add"><?php echo $this->d_chain1->add; ?></td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        <?php 
+                            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+                            $ka_falg_01 = $ka_falg_02 = "";
+
+                            if ( !is_null($this->store->store_id) && $this->store->store_id != '') { $ka_falg_01 = "readonly"; }
+                            if ( !is_null($this->store->store_code) && $this->store->store_code != '' ) { $ka_falg_02 = "readonly"; }
+
+                            $store_type_flag = "disabled";
+                            $store_level_flag = "disabled";
+
+                            if ( !isset($this->store) ) { $store_type_flag = ""; }
+                            if ($userStorage->group_id == ADMINISTRATOR_ID) { $store_type_flag = ""; $store_level_flag = ""; }
+
+                        ?>
+
+                        <style type="text/css">
+                        .control-label {
+                            float: left;
+                            width: 80px;
+                            padding-top: 5px;
+                        }
+                        #laocolor{
+                                font-family: phetsarath ot;
+                                color: blue;
+                                font-style: bold;
+                                font-size: 16PX;
+                            }
+
+                        </style>
+
+                        <div class="row-fluid">
+                            <div class="control-group">
+                                <label for="name"x id="laocolor">Name/ຊື່ຮ້ານ</label>
+                                <input type="text" placeholder="ໃສ່ຊື່ຮ້ານຄ້າ" class="form-control span3" id="name" name="name" required="required" value="<?php if (isset($this->store)): echo $this->store->name; endif;?>">
+                            </div>
+
+                            <div class="control-group">
+                                <div id="store_name_check">
+                                    
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="area_id" id="laocolor">Area/ເຂດ</label>
+                                <select id="area_id" name="area_id" class="form-control span3" required="required">
+                                    <option value="">ເລືອກເຂດ</option>
+                                    <?php
+                                    if ($this->areas) :
+                                        foreach ($this->areas as $_key => $_name): ?>
+                                            <option value="<?php echo $_key;?>" <?php if (isset($this->store_area) && $this->store_area == $_key):?>selected<?php endif;?>><?php echo $_name;?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="regional_market" id="laocolor">Province/ແຂວງ</label>
+                                <select id="regional_market" placeholder="ເລືອກແຂວງ" name="regional_market" class="form-control span3" required="required" 
+                                    <?php if(!$this->regional_markets) { echo "disabled"; } ?> >
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->regional_markets) :
+                                        foreach ($this->regional_markets as $regional_market):?>
+                                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->store_province) and $this->store_province == $regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="district" id="laocolor">District/ເມືອງ</label>
+                                <select id="district" name="district" class="form-control span3" required="required" 
+                                    <?php if(!$this->districts) { echo "disabled"; } ?> >
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->districts) :
+                                        foreach ($this->districts as $regional_market):?>
+                                            <option value="<?php echo $regional_market['id'];?>" <?php if (isset($this->store) and $this->store['district']==$regional_market['id']):?>selected<?php endif;?>><?php echo $regional_market['name'];?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="sub_district" id="laocolor">Sub District/ບ້ານ</label>
+                                <select id="sub_district" name="sub_district" class="form-control span3" 
+                                    <?php 
+                                        /*
+                                        $bkk_list = array(73,74,75,76,77,78,79,80);
+
+                                        if ( in_array($this->store_area, $bkk_list) ) { echo "disabled"; }
+                                        else {
+                                            if( ($this->store['sub_district']) || is_null($this->store['sub_district']) ) {  } 
+                                            else { echo "disabled"; } 
+                                        }*/
+
+                                        if( !$this->store['sub_district'] ) { echo "disabled"; } 
+
+                                    ?> >
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->sub_districts) :
+                                        foreach ($this->sub_districts as $sub_districts):?>
+                                            <option value="<?php echo $sub_districts['id'];?>" <?php if (isset($this->store) and $this->store['sub_district']==$sub_districts['id']):?>selected<?php endif;?>><?php echo $sub_districts['name'];?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+
+
+
+                            <div class="control-group">
+                                <label for="org">Store Type (ORG / Dealer / BrandShop)</label>
+                                <select id="org" name="org" class="form-control span3" required="required" onChange="checkStoreNameFromStoreType();" <?php echo $store_type_flag; ?> > 
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->org) :
+                                        foreach ($this->org as $org):?>
+                                            <option value="<?php echo $org->org_id;?>" <?php if (isset($this->store->org_dealer) and $this->store->org_dealer == $org->org_id):?>selected<?php endif;?>><?php echo $org->org_name;?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="market_type">Market Type</label>
+                                <select id="market_type" name="market_type" class="form-control span3" required="required">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->market_type) :
+                                        foreach ($this->market_type as $market_type):?>
+                                            <option value="<?php echo $market_type->id;?>" <?php if (isset($this->market_info['market_type_id']) and $this->market_info['market_type_id'] == $market_type->id):?>selected<?php endif;?>><?php echo $market_type->name;?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="market_name" class="">Market Name</label>
+                                <select id="market_name" name="market_name" class="span2 js-example-basic-single" required="required">
+                                    <option value=''>Select</option>
+                                        <?php
+                                            if ($this->market_name) :
+                                                foreach ($this->market_name as $market_name):
+                                        ?>
+                                                    <option value="<?php echo $market_name->id;?>" <?php if (isset($this->market_info['market_name_id']) and $this->market_info['market_name_id'] == $market_name->id):?>selected<?php endif;?>><?php echo $market_name->name;?>
+                                                    </option>
+                                        <?php
+                                                endforeach;
+                                            endif;
+                                        ?>
+                                </select>
+                                &nbsp;&nbsp;
+                            </div>
+                    <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="s_name">Search</label>
+                        <input type="text" class="form-control span3" id="s_name" placeholder="Type Staff Code Then Press ENTER (ຄົ້ນຫາດ້ວຍລະຫັດພະນັກງານ)" name="s_name" />
+                    </div>
+                    </div>
+                    <div class="row-fluid">
+                            <div class="control-group">
+                                <label for="">Result</label>
+                                <div class="load-ajax">
+                                    <select class="span3 search_result" id="name_result" name="s_result" <?php if (!$this->is_single): ?> multiple="multiple" <?php endif;?> size="8">
+                                    <?php if (isset($this->staffs) and $this->staffs): ?>
+                                        <?php foreach ($this->staffs as $staff): ?>
+                                            <option 
+                                                value="<?php echo $staff['id'] ?>"
+                                                >
+                                                <?php echo $staff['firstname'] . ' ' . $staff['lastname'] . ' | '. preg_replace('/oppomobile.vn/', '', $staff['email']) .  (isset($this->rm_list[$staff['regional_market']]) ? (' | ' . $this->rm_list[$staff['regional_market']] ): '') ?>
+                                            </option>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <script type="text/javascript">
+                                if ($('#staff_region').length > 0) {
+                                    $('#name_result').change(function(){
+                                        $('#staff_region').html($('#name_result option:selected').attr('title'));
+                                    });
+                                }
+                                </script>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+      
+                <div class="row-fluid">
+                    <div class="span6">
+                        <button id="add_btn_bm" class="btn btn-style1" type="button">Add Stock</button>
+                        <button id="add_btn_asm" class="btn btn-style2" type="button">Add ASM</button>
+                        <button id="add_btn_pcm" class="btn btn-style3" type="button">Add PCM</button>
+                        <button id="add_btn_sales" class="btn btn-style4" type="button">Add Sales</button>
+                    </div>
+                    <div class="span6">
+                        <button id="add_btn_rd" class="btn btn-style6" type="button">Add RD</button>
+                        <button id="add_btn_pcdb" class="btn btn-style6" type="button">Add PCDB</button>
+                        <button id="add_btn_mkt" class="btn btn-style5" type="button">AddSaleMKT</button>
+                        <button id="add_btn_pg" class="btn btn-success" type="button">Add PC</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <br>
+                <hr></hr>
+                <div class="row-fluid">
+                    <center>
+                    <input type="hidden" name="id" id="id" value="<?php if(isset($this->store) and $this->store) echo $this->store->id;?>">
+                    <button type="button" id="submit_btn" class="btn btn-primary">Submit</button>
+                    <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                    <button type="button" class="btn btn-danger go-back">Go back</button>
+                </center>
+                </div>
+            </div>
+            <button type="submit" id="check_btn" style="display:none;"></button>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var showOnlyOptionsSimilarToText = function (selectionEl, str, isCaseSensitive, callback) {
+        if (typeof isCaseSensitive == 'undefined')
+            isCaseSensitive = true;
+        if (isCaseSensitive)
+            str = str.toLowerCase();
+
+        var $el = $(selectionEl);
+
+        $el.children("option:selected").removeAttr('selected');
+        $el.val('');
+        $el.children("option").hide();
+
+        $el.children("option").filter(function () {
+            var text = $(this).text();
+            if (isCaseSensitive)
+                text = text.toLowerCase();
+
+            if (text.indexOf(str) > -1)
+                return true;
+
+            return false;
+        }).show();
+
+        if (callback)
+            eval(callback+'();');
+    };
+
+    function initSearchOption(){
+        var timeout;
+        $("#SearchBox").on("keyup", function () {
+            var userInput = $("#SearchBox").val();
+            window.clearTimeout(timeout);
+            timeout = window.setTimeout(function() {
+                showOnlyOptionsSimilarToText($("#d_id"), userInput, true);
+            }, 500);
+
+        });
+    }
+
+    function checkStoreNameFromStoreType(){
+        var storeName = $("#name").val().trim();
+        storeName = storeName.toUpperCase();
+
+        if ( storeName.indexOf('TELEWIZ') >= 0 || storeName.indexOf('เทเลวิซ') >= 0 ) { $("#org").val(41); }
+    }
+
+    function checkStoreName(e){
+        var timeout;
+        $("#name").on("keyup", function () {
+            var id = $("#id").val().trim();
+            var storeName = $("#name").val().trim();
+            window.clearTimeout(timeout);
+            timeout = window.setTimeout(function() {
+                checkStoreNameAction(id, storeName);
+            }, 500);
+
+        });
+    }
+
+    function checkStoreNameAction(id, storeName) {
+        $("#store_name_check").html('');
+        storeName = storeName.toUpperCase();
+        
+        if ( storeName.indexOf('TELEWIZ') >= 0 || storeName.indexOf('เทเลวิซ') >= 0 ) { $("#org").val(41); }
+
+        if (storeName) {
+            $.ajax({
+                    url: '<?php echo HOST ?>ajax/check-store-name',
+                    type: 'post',
+                    dataType: 'html',
+                    data: {id : id, store_name : storeName},
+                })
+                .done(function(data) {
+                    console.log("success");
+
+                    if (data) {
+                        $("#store_name_check").html(data);
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+                    
+        }
+    }
+
+    function refreshMarketName() {
+
+        var group_id = '<?php echo $userStorage->group_id; ?>';
+        var st_id = $('#id').val();
+
+        $('form').bind('submit',function(e){e.preventDefault();});
+        $('form button, form input, form select').prop('disabled', true);
+        $('.loading').remove();
+
+        $('#market_type').after('<span class="loading"></span>');
+        var _self = $('#market_type');
+        var market_type_id = $('#market_type').val();
+        var area_id = '<?php echo $area_permission; ?>';
+
+        $.get("/manage/load-market-name",
+            {
+                market_type_id: market_type_id,
+                area_id : area_id
+            }
+            ,function(data,status){
+                $('form').unbind('submit');
+                $('form button, form input, form select').prop('disabled', false);
+                if (st_id != '') {
+                    if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                } else {
+                    if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                }
+
+
+                var obj = $.parseJSON( data );
+                $('#market_name').find('option:not(:first)').remove();
+                for (var i = 0; i < obj.length; i++) {
+                    $('#market_name').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                }
+
+                $('.loading').remove();
+            });
+    }
+
+    function saveMarketName() {
+
+        var market_name_id  = $('#modal_mn_id').val();
+        var market_name     = $('#modal_mn_name').val();
+        var market_type_id  = $('#modal_mt_id').val();
+
+        $.post('<?php echo HOST ?>manage/save-market-name',
+        {
+            market_name_id  : market_name_id,
+            market_name     : market_name,
+            market_type_id  : market_type_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+        initSearchOption();
+        checkStoreName();
+
+        var group_id = '<?php echo $userStorage->group_id; ?>';
+        var st_id = $('#id').val();
+        // alert($('#id').val());
+
+        $(".js-example-basic-single").select2();
+
+        $('#market_type').change(function(){
+            $("#mn_edit").attr("data-mt", $('#market_type').val());
+            $("#mn_add").attr("data-mt", $('#market_type').val());
+            
+            refreshMarketName();
+        });
+
+        $('#market_name').change(function(){
+            $("#mn_edit").attr("data-id", $('#market_name').val());
+            $("#mn_edit").attr("data-name", $('#market_name option:selected').text());
+        });
+
+
+//////////////////////////////////////////////// 
+
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        $('#btn_bind_d_chain1').click(function(e) {
+            var d_id = $('#d_id_search').val();
+            $.get("/ajax/load-retailer-info",
+                {d_id: d_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    //alert(data);
+
+                    if (data != '[]') {
+                        $('#d_id').val(obj[0]['id']);
+                        $('#d_id_txt').html("<font color='green'>" + obj[0]['id'] + "</font>");
+                        $('#d_name').html("<font color='green'>" + obj[0]['title'] + "</font>");
+                        $('#d_add').html("<font color='green'>" + obj[0]['add'] + "</font>");
+                    } else {
+                        $('#d_id_txt').html("<font color='red'>Distributor Not Found!</font>");
+                        $('#d_name').html("<font color='red'>-</font>");
+                        $('#d_add').html("<font color='red'>-</font>");
+                    }
+                    
+                });
+        });
+
+        $('#area_id').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+                    $('#district').prop('disabled', true);
+                    $('#sub_district').prop('disabled', true);
+
+                    if (st_id != '') {
+                        if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                    } else {
+                        if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                    }
+
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option:not(:first)').remove();
+                    $('#district').find('option:not(:first)').remove();
+                    $('#sub_district').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("/ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    
+                    $('#district').find('option:not(:first)').remove();
+                    $('#sub_district').find('option:not(:first)').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                                
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }                        
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                        $('#sub_district').prop('disabled', true);
+
+                        if (st_id != '') {
+                            if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                        } else {
+                            if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                        }
+
+                    }
+                });
+        });
+
+        $('#district').change(function(){
+
+            // var bkk_list = ["73","74","75","76","77","78","79","80"];
+            // var area_id = $('#area_id').val();
+
+            //if ( bkk_list.indexOf(area_id) == "-1" ) {
+
+                $("#sub_district").prop('required', true);
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+                $('.loading').remove();
+
+                $(this).after('<span class="loading"></span>');
+                var _self = $(this);
+                var region = $(this).val();
+                $.post("/ajax/get-sub-district-cbb", {
+                        region: region
+                    }
+                    ,function(data,status){
+                        $('#sub_district').find('option:not(:first)').remove();
+                        
+                        try {
+                            if (data) {
+                                var obj = $.parseJSON( data );
+                                
+                                for (var i = 0; i < obj.length; i++) {
+                                    $('#sub_district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                                }                        
+                            }
+
+                        } catch(err) {
+
+                        } finally {
+                            $('.loading').remove();
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            if (st_id != '') {
+                                if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                            } else {
+                                if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                            }
+                            
+                        }
+                    });
+            //} else {
+                //$("#sub_district").prop('required', false);
+            //}
+
+        });
+
+        $('#th_province').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var th_province_id = $(this).val();
+            $.get("/staff/load-th-amphure",
+                {th_province_id: th_province_id}
+                ,function(data,status){
+                    
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+                    $('#th_district').prop('disabled', true);
+
+                    if (st_id != '') {
+                        if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                    } else {
+                        if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                    }
+
+                    var obj = $.parseJSON( data );
+
+                    $('#th_amphure').find('option:not(:first)').remove();
+                    $('#th_district').find('option:not(:first)').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#th_amphure').append('<option value="'+obj[i]['id']+'">'+obj[i]['name_th']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                    
+                });
+        });
+
+        $('#th_amphure').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var th_amphure_id = $(this).val();
+            $.get("/staff/load-th-district",
+                {th_amphure_id: th_amphure_id}
+                ,function(data,status){
+                    
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+
+                    if (st_id != '') {
+                        if (group_id != 1) { $('#org').prop('disabled', true); $('#store_level').prop('disabled', true); }
+                    } else {
+                        if (group_id != 1) { $('#store_level').prop('disabled', true); }
+                    }
+
+                    var obj = $.parseJSON( data );
+
+                    $('#th_district').find('option:not(:first)').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#th_district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name_th']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                    
+                });
+        });
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&code=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            /*
+                            var bkk_list = ["73","74","75","76","77","78","79","80"];
+                            var area_id = $('#area_id').val();
+
+                            if ( bkk_list.indexOf(area_id) == "-1" ) {
+
+                            } else {
+                                $("#sub_district").prop('disabled', true);
+                                $("#sub_district").prop('required', false);
+                            }*/
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#add_btn_asm').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_asm( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_asm');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+        // js for store_staff [ BM, PCM, Sale, PC ]
+        $('#add_btn_bm').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_bm( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_bm');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+        $('#add_btn_pcm').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_pcm( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_pcm');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+        $('#add_btn_pcdb').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_pcdb( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_pcdb');
+                    _des.append(item[i]);
+                }
+            }
+        })
+
+        $('#add_btn_sales').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_sales( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_sales');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+           // mkt Case
+        $('#add_btn_mkt').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_mkt( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_mkt');
+                    _des.append(item[i]);
+                }
+            }
+        })
+
+        $('#add_btn_pg').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists_pg( $(item[i]).attr('value') ) ) {
+                    _des = $('#pic_name_pg');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+        $('#remove_btn_asm').click(function(){
+            _self = $('#pic_name_asm');
+            item = _self.children('option:selected').remove();
+        });
+
+        $('#remove_btn_bm').click(function(){
+            _self = $('#pic_name_bm');
+            item = _self.children('option:selected').remove();
+        });
+
+        $('#remove_btn_pcm').click(function(){
+            _self = $('#pic_name_pcm');
+            item = _self.children('option:selected').remove();
+        });
+
+        $('#remove_btn_pcdb').click(function(){
+            _self = $('#pic_name_pcdb');
+            item = _self.children('option:selected').remove();
+        })
+
+        $('#remove_btn_sales').click(function(){
+            _self = $('#pic_name_sales');
+            item = _self.children('option:selected').remove();
+        });
+
+        $('#remove_btn_pg').click(function(){
+            _self = $('#pic_name_pg');
+            item = _self.children('option:selected').remove();
+        });
+
+          $('#remove_btn_mkt').click(function(){
+            _self = $('#pic_name_mkt');
+            item = _self.children('option:selected').remove();
+        })
+
+        $('#submit_btn').click(function(){
+            if ( ! $('#form')[0].checkValidity() ) {
+                $('#check_btn').click();
+                return false;
+            }
+
+            $('form#form button').prop('disabled', true);
+
+            // pc
+            _name = $('#pic_name_pg option');
+            id_str = '';
+            
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic').val(id_str);
+
+            // leader
+            _name = $('#pic_name_sales option');
+            id_str = '';
+            
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic1').val(id_str);
+
+
+            // asm 
+            _name = $('#pic_name_asm option');
+            id_str = '';
+            
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic4').val(id_str);
+
+             //mkt
+            _name = $('#pic_name_mkt option');
+            id_str = '';
+
+             for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic5').val(id_str);
+
+
+            // pcm 
+            _name = $('#pic_name_pcm option');
+            id_str = '';
+            
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic2').val(id_str);
+
+            // PCDB
+            _name = $('#pic_name_pcdb option');
+            id_str = '';
+
+             for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic7').val(id_str);
+
+            // bm
+            _name = $('#pic_name_bm option');
+            id_str = '';
+            
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic3').val(id_str);
+
+            $('#form').submit();
+        });
+
+    });
+
+  //mkt case
+    function is_exists_mkt(id){
+          _des = $('#pic_name_mkt');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function is_exists_asm(id) {
+        _des = $('#pic_name_asm');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function is_exists_bm(id) {
+        _des = $('#pic_name_bm');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    function is_exists_pcm(id) {
+        _des = $('#pic_name_pcm');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function is_exists_pcdb(id) {
+        _des = $('#pic_name_pcdb');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function is_exists_sales(id) {
+        _des = $('#pic_name_sales');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function is_exists_pg(id) {
+        _des = $('#pic_name_pg');
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+</script>
+
+</div>

@@ -1,0 +1,11 @@
+<select name="a_storeresult" id="a_storeresult" multiple="multiple" size="4">
+    <?php if (isset($this->regions) && $this->regions): ?>
+        <?php foreach ($this->regions as $key => $region): ?>
+            <option value="<?php echo $region['id'] ?>"
+                data-id="<?php echo $region['id'] ?>"
+                data-name="<?php echo $region['name'] ?>"><?php 
+                echo $region['name'] 
+             ?></option>
+        <?php endforeach ?>
+    <?php endif ?>
+</select>

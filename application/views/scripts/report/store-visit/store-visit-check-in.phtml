@@ -1,0 +1,292 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+#map {
+    height: 300px;
+    width: 95%;
+    border-width: medium;
+    border-style: groove;
+    border-color: bisque;
+}
+
+button {
+    font-size: 20px;
+    font-family: Noto sans lao;
+    text-align: center;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+
+<div class="page-header">
+    <h1>Store Visit</h1>
+</div>
+
+<div class="form-horizontal">
+    <div class="row">
+        <div class="span12">
+
+            <div id="map"></div><br>
+            <div id="status">ກາລຸນາລໍຖ້າ ກຳລັງດຶງຕຳແໜ່ງຂອງທ່ານ...</div>
+            <input type="hidden" name="lat" id="lat" />
+            <input type="hidden" name="lng" id="lng" />
+        </div><br>
+    </div>
+
+    <!-- Start -->
+    <div class="row-fluid">
+        <div class="span12">
+            <form role="form" id="timing_form" action="<?php echo HOST.'report/store-visit-save';?>" method="post"
+                target="ifrmSave" class="row-fluid">
+                <div class="row-fluid">
+                    <div class="span12">
+
+                        <!-- Part 1 -->
+                        <div class="row-fluid">
+                            <hr>
+                            <b style="padding-bottom: 10px"> Basic info </b>
+                            <div class="row" style="margin-top : 10px">
+                                <div class="span4">
+                                    <label> Store Code : </label>
+                                    <input type="text" class="form-control span3" name="store_code"
+                                        value="<?php echo $this->store->store_code ?>" readonly>
+                                </div>
+                                <div class="span4">
+                                    <label> Store Name : </label>
+                                    <input type="text" class="form-control span3" name="store_name"
+                                        value="<?php echo $this->store->name ?>" readonly>
+                                </div>
+                                <div class="span4">
+                                    <label> Address : </label>
+                                    <input type="text" class="form-control span3" name="store_address"
+                                        value="<?php echo $this->store->shipping_address ?>" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 2 -->
+                        <div class="row-fluid">
+                            <hr>
+                            <b style="padding-bottom: 10px"> Stock & Sales Info </b>
+                            <div class="row" style="margin-top : 10px">
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ສະຕ໋ອກ OPPO : </label>
+                                        <input type="number" min="0" max="3000" class="span3" value="0"
+                                            name="stock_oppo"></input>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ຍອດຂາຍ OPPO : </label>
+                                        <input type="number" min="0" max="3000" class="span3" value="0"
+                                            name="sales_oppo"></input>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC OPPO : </label>
+                                        <input type="number" min="0" max="3000" class="span3" value="0"
+                                            name="pc_oppo"></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 3 -->
+                        <div class="row-fluid">
+                            <hr>
+                            <b style="padding-bottom: 10px"> Store Image Info </b> <br><br>
+                            <div class="row" style="margin-top : 1px">
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ : </label>
+                                        <select name="signboard" class="span3">
+                                            <option value="OPPO">OPPO</option>
+                                            <option value="VIVO">VIVO</option>
+                                            <option value="SAMSUNG">SAMSUNG</option>
+                                            <option value="SAMSUNG">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ພາບວາຍນິວ : </label>
+                                        <select name="banner" class="span3">
+                                            <option value="OPPO">OPPO</option>
+                                            <option value="VIVO">VIVO</option>
+                                            <option value="SAMSUNG">SAMSUNG</option>
+                                            <option value="SAMSUNG">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ພາບໂຄສະນາໜ້າຮ້ານ : </label>
+                                        <select name="advertising" class="span3">
+                                            <option value="OPPO">OPPO</option>
+                                            <option value="VIVO">VIVO</option>
+                                            <option value="SAMSUNG">SAMSUNG</option>
+                                            <option value="SAMSUNG">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ແອັກສແຕນ OPPO : </label>
+                                        <select name="xstand_oppo" class="span3">
+                                            <option value="Yes"> ມີ </option>
+                                            <option value="No"> ບໍ່ມີ </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊຂອງແຖມ OPPO : </label>
+                                        <select name="table_oppo" class="span3">
+                                            <option value="Yes"> ມີ </option>
+                                            <option value="No"> ບໍ່ມີ </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ OPPO : </label>
+                                        <select name="counter_oppo" class="span3">
+                                            <option value="Yes"> ມີ </option>
+                                            <option value="No"> ບໍ່ມີ </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+<div class="row" style="padding-top: 10px;">
+    <div class="span12">
+        <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+        <input type="hidden" name="store_id" id="store_id" value="<?php echo $this->store->id; ?>">
+        <button id="checkinBtn" disabled>ຂັ້ນຕອນຕໍ່ໄປ >></button>
+        <button style="text-align: center; font-family:Noto sans lao; font-size:20px;" type="button" class="btn btn-danger go-back"><b>ກັບຄືນ</b></button>
+    </div>
+</div>
+</form>
+
+
+
+</div>
+
+<script>
+// กำหนดจุดศูนย์กลางและรัศมี (100 เมตร)
+const center = [<?php echo $this->store->lat ?>, <?php echo $this->store->lng ?>]; // ตัวอย่าง: กรุงเทพฯ
+const radius = 100; // รัศมี 100 เมตร
+
+console.log(center);
+
+// ฟังก์ชันคำนวณระยะทางระหว่างสองจุด (Haversine formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // รัศมีของโลกในหน่วยเมตร
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // ระยะทางในหน่วยเมตร
+}
+
+// ฟังก์ชันแสดงแผนที่และตำแหน่ง
+function initMap() {
+    const map = L.map('map').setView(center, 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // วาดวงกลมแสดงรัศมี 100 เมตร
+    L.circle(center, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.2,
+        radius: radius
+    }).addTo(map);
+
+    // ดึงตำแหน่งปัจจุบันของผู้ใช้
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // แสดงตำแหน่งผู้ใช้บนแผนที่
+                const userMarker = L.marker([userLat, userLng]).addTo(map);
+                userMarker.bindPopup("ທີ່ຢູ່ປັດຈຸບັນຂອງທ່ານ").openPopup();
+
+                // คำนวณระยะทางจากจุดศูนย์กลาง
+                const distance = calculateDistance(center[0], center[1], userLat, userLng);
+
+                // ตรวจสอบว่าอยู่ในรัศมีหรือไม่
+                const statusElement = document.getElementById('status');
+                const checkinBtn = document.getElementById('checkinBtn');
+
+                if (distance <= radius) {
+                    statusElement.textContent =
+                        `ທ່ານຢູ່ໃນພື້ນທີ່ລັດສະໝີ ${radius} ເມັດ (ໄລຍະທາງແມ່ນ: ${distance.toFixed(2)} ເມັດ)`;
+                    statusElement.style.color = 'green';
+                    checkinBtn.disabled = false; // เปิดปุ่มเช็กอิน
+                    checkinBtn.style.display = 'block'; // แสดงปุ่ม
+                } else {
+                    statusElement.textContent =
+                        `ບໍ່ສາມາດດຳເນີການຕໍ່ໄດ້ ເພາະທ່ານຢູ່ນອກພື້ນທີ່ລັດສະໝີ ${radius} ເມັດ (ໄລຍະທາງແມ່ນ: ${distance.toFixed(2)} ເມັດ)`;
+                    statusElement.style.color = 'red';
+                    checkinBtn.disabled = true; // ปิดปุ่มเช็กอิน
+                    checkinBtn.style.display = 'none'; // ซ่อนปุ่ม
+                }
+            },
+            (error) => {
+                alert('ບໍ່ສາມາດເຂົ້າເຖິງຕຳແໜ່ງໄດ້: ' + error.message);
+            }
+        );
+    } else {
+        alert('ບຣາວເຊີບໍ່ຮອງຮັບການເຂົ້າເຖິ່ງແຜນທີ່');
+    }
+}
+
+// ฟังก์ชันเช็กอิน
+document.getElementById('checkinBtn').onclick = function() {
+    alert('ດຳເນີນການຂັ້ນຕອນຕໍ່ໄປ!');
+    // สามารถส่งข้อมูลไปยังเซิร์ฟเวอร์ได้ที่นี่
+};
+
+// เริ่มต้นแผนที่เมื่อโหลดหน้าเว็บ
+window.onload = initMap;
+
+
+$('.go-back').click(function(e) {
+
+    window.location.href = $('#back_url').val();
+
+    return false;
+});
+
+</script>

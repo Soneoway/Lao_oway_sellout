@@ -1,0 +1,93 @@
+<style>
+    body,p,a{
+        font-family: phetsarath ot;
+    }
+    li{
+        font-size:18px;
+    }
+</style><div class="page-header">
+    <h1>ລາຍການ IMEIs ທີ່ລາຍງານຍອດ </h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="row">
+    <!-- <div class="span12">
+        <p><a href="<?php echo HOST ?>index" class="btn btn-default">ກັບຄືນສູ່ໜ້າຫຼັກ</a></p>
+    </div> -->
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/search-expired.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ul class="nav nav-tabs" id="myTab">
+    <li class="<?php if ((isset($this->type) && $this->type=='all')) echo "active" ?>"><a href="<?php echo $this->url ?>type=all">All</a></li>&nbsp;&nbsp;
+    <li class="<?php if ((isset($this->type) && $this->type=='activated')) echo "active" ?>"><a href="<?php echo $this->url ?>type=activated">Activated</a></li>&nbsp;&nbsp;
+    <li class="<?php if ((isset($this->type) && $this->type=='not_activated')) echo "active" ?>"><a href="<?php echo $this->url ?>type=not_activated">Not Activated</a></li>
+    
+</ul>
+
+<div class="table-responsive load-ajax">
+    <?php echo $this->render('timing/partials/expired.phtml'); ?>
+</div>
+
+<script type="text/javascript">
+function search() {
+    var formdata = jQuery("form").serialize();
+    var decoded = decodeURIComponent(formdata);
+    strip = decoded.replace(/[\[\]]/g, "_");
+
+    //get ajax content
+    if ($(".load-ajax").length){
+        $(this).after("<span class=\'loading\'></span>");
+        $.ajax({
+            url: '<?php echo HOST ?>timing/expired',
+            type: 'get',
+            dataType: 'html',
+            data: strip,
+        })
+        .done(function(data) {
+            console.log("success");
+            $(".load-ajax").html(data);
+            $(".loading").remove();
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+        
+    } else
+        window.location.href = strip;
+
+    return false;    
+}
+
+;(function($) {
+    $('.imei_customer').tooltip();
+})(jQuery);
+</script>

@@ -1,0 +1,88 @@
+<form id="am_com_form" class="form-search form-horizontal" method="get" action="/timing/com-am">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="am_id" class="span2">AM Name</label>
+                <select id="am_id" name="am_id" class="span2">
+                    <option value="0">None Selected</option>
+                    <?php
+
+                    if ($this->am_list) :
+                        foreach ($this->am_list as $am_list):
+                            ?>
+                            <option value="<?php echo $am_list['staff_id'];?>" <?php if (isset($this->params['am_id']) and ( (is_array($this->params['am_id']) && in_array($am_list['staff_id'], $this->params['am_id']) || $am_list['staff_id']==$this->params['am_id'])) ):?>selected<?php endif;?>><?php echo $am_list['staff_name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="date" class="span2">From Date</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To Date</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+        </div>
+    </div>
+
+    <button type="reset" class="btn btn-warning">Reset</button> 
+
+    <br /><br />
+    <legend></legend>
+    <div class="row">
+        <div class="span6">
+            <span class="label label-success">Key Account</span> <br/><br/>
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/am-com', 1);" class="btn btn-success">COM-KA-Web</button>
+            <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>hr-report/am-com" class="btn btn-success">COM-KA-Export</button>
+            <br /><br />
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/am-com-total', 3);" class="btn btn-success">COM-KA-Web-Total</button>
+            <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>hr-report/am-com-total" class="btn btn-success">COM-KA-Export-Total</button>
+        </div>
+        <div class="span5">
+            <span class="label label-success">Operator</span> <br/><br/>
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/am-com', 2);" class="btn btn-success">COM-Operator-Web</button>
+            <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>hr-report/am-com" class="btn btn-success">COM-Operator-Export</button>
+            <br /><br />
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/am-com-total', 4);" class="btn btn-success">COM-Operator-Web-Total</button>
+            <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>hr-report/am-com-total" class="btn btn-success">COM-Operator-Export-Total</button>
+        </div>
+    </div>
+
+    <input type="hidden" id="export_flag" name="export_flag" value="" />
+
+</form>
+
+<script>
+
+    function openNewWindow(path, type) {
+
+        if (type == 3 || type == 4) {
+
+            if (type == 3) { $('#export_flag').val(3); } // KA
+            if (type == 4) { $('#export_flag').val(4); } // Operator
+
+        } else {
+
+            if ( $("#am_id").val() == 0 ) { alert('กรุณาเลือกชื่อ AM ค่ะ!'); return false; }
+
+            if (type == 1) { $('#export_flag').val(1); } // KA
+            if (type == 2) { $('#export_flag').val(2); } // Operator
+
+        }
+
+        $('#am_com_form').attr('action', path);
+        $('#am_com_form').attr('target', '_blank');
+        $('#am_com_form').submit();
+
+        $('#am_com_form').attr('action', '/timing/com-am');
+        $('#am_com_form').removeAttr("target");
+
+    }
+    
+</script>

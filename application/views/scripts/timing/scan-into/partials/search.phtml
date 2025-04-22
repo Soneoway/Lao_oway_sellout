@@ -1,0 +1,125 @@
+<form class="form-search form-horizontal" method="get">
+    <div class="row">
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="befor_transfer" class="control-label" style="width: 180px; padding-right: 20px;">Before Transfer : </label>
+                <div class="controls">
+                    <select class="span3" name="befor_transfer" id="befor_transfer">
+                        <option value=""> Please Selected </option>
+
+                        <?php if(isset($this->store) && $this->store) : ?>
+                            <?php foreach ($this->store as $key => $value) : ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->params['befor_transfer']) && $this->params['befor_transfer'] == $key) : ?> selected <?php endif; ?> ><?php echo $value ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="after_transfer" class="control-label" style="width: 180px; padding-right: 20px;">After Transfer : </label>
+                <div class="controls">
+                    <select class="span3" name="after_transfer" id="after_transfer">
+                        <option value=""> Please Selected </option>
+
+                        <?php if(isset($this->store) && $this->store) : ?>
+                            <?php foreach ($this->store as $key => $value) : ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->params['after_transfer']) && $this->params['after_transfer'] == $key) : ?> selected <?php endif; ?> ><?php echo $value ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="good_id" class="control-label" style="width: 180px; padding-right: 20px;"> Item Name : </label>
+                <div class="controls">
+                    <select class="span3" name="good_id" id="good_id">
+                        <option value=""> Please Selected </option>
+
+                        <?php if(isset($this->good) && $this->good) : ?>
+                            <?php foreach($this->good as $key => $value) : ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->params['good_id']) && $this->params['good_id'] == $key) : ?> selected <?php endif; ?> ><?php echo $value ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="from" class="control-label" style="width: 180px; padding-right: 20px;">Scan time (From) : </label>
+                <div class="controls">
+                    <input type="text" class="date span3" id="from" name="from" value="<?php if(isset($this->params['from']) && printf($this->params['from'])) ?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="to" class="control-label" style="width: 180px; padding-right: 20px;">Scan time (To) : </label>
+                <div class="controls">
+                    <input type="text" class="date span3" id="to" name="to" value="<?php if(isset($this->params['to']) && printf($this->params['to'])) ?>">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="office_befor" class="control-label" style="width: 180px; padding-right: 20px;">Office(Before Transfer) : </label>
+                <div class="controls">
+                    <select class="span3" name="office_befor" id="office_befor">
+                        <option value=""> Please Selected </option>
+
+                        <?php if(isset($this->subarea) && $this->subarea) : ?>
+                            <?php foreach($this->subarea as $key => $value) : ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->params['office_befor']) && $this->params['office_befor'] == $key) : ?> selected <?php endif; ?> ><?php echo $value ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="office_after" class="control-label" style="width: 180px; padding-right: 20px;">Office(After Transfer) : </label>
+                <div class="controls">
+                    <select class="span3" name="office_after" id="office_after">
+                        <option value=""> Please Selected </option>
+
+                        <?php if(isset($this->subarea) && $this->subarea) : ?>
+                            <?php foreach($this->subarea as $key => $value) : ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->params['office_after']) && $this->params['office_after'] == $key) : ?> selected <?php endif; ?> ><?php echo $value ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="imei_sn" class="control-label" style="width: 180px; padding-right: 20px;">Imei SN : </label>
+                <div class="controls">
+                    <textarea cols="2" rows="6" class="span3" name="imei_sn" id="imei_sn"><?php if(isset($this->params['imei_sn']) && printf($this->params['imei_sn'])) ?></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span2">
+         <button type="submit" class="btn btn-primary">Submit</button>
+         <button type="reset" class="btn btn-warning">Reset</button>
+     </div>
+
+ </div>
+</form>
+
+<script>
+
+    $("#befor_transfer, #after_transfer, #good_id, #office_befor, #office_after").select2();
+
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+    });
+
+</script>

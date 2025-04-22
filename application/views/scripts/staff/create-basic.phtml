@@ -1,0 +1,522 @@
+<style>
+    #myTags {
+        margin: 0;
+        height: 7em;
+    }
+
+    .table_list {
+        counter-reset: rowNumber;
+    }
+
+    .table_list tbody tr {
+        counter-increment: rowNumber;
+    }
+
+    .table_list tbody tr td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+
+    table {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid white;
+    }
+
+    table caption {
+        font-weight: bold;
+        font-style: italic;
+        font-size: 16px;
+    }
+
+    .approval {
+        border-top: 2px solid #ccc;
+        padding: 5px;
+        height: 2em;
+        background: rgba(0, 186, 139, 0.25);
+        width: 57%;
+    }
+
+    .approval .new_value {
+        line-height: 2em;
+        height: 2em;
+        overflow: hidden;
+        display: inline-block;
+        background: none;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .text-warning {
+        color: #b94a48;
+    }
+
+    .current-data {
+        width: 100%;
+        float: left;
+        font-style: italic;
+        color: #7E7171;
+        padding: 0px 5px;
+    }
+</style>
+
+
+<div class="page-header">
+    <?php if (isset($this->staff) and $this->staff):?>
+        <h1>Edit Staff</h1>
+    <?php else:?>
+        <h1>Create Staff</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php echo $this->render('staff/partials/basic/form-basic.phtml'); ?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script src="../js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="../css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="../css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/js/jquery.qtip.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery.qtip.min.css"/>
+
+<?php echo $this->confirm();?>
+<script type="text/javascript">
+
+$.fn.extend({
+    ajax_validate : function(url, param, form) { // param: [{name:'param_name', element: form_element}, {name:'param_name', element: form_element}]
+        _self = $(this);
+        is_checking = false;
+
+        _self.blur(function(e){
+            if (is_checking || _self.val()=='') return;
+            is_checking = true;
+
+            _s = $(e.target);
+
+            var get_url = '';
+            get_url = url;
+            get_url += '?';
+
+            for (var i = 0; i < param.length; i++) {
+                get_url += param[i].name + '=' + param[i].element.val() + '&';
+            };
+
+            if (_s.next('.loading').length == 0) {
+                _s.after('<span class="loading"></span>');
+                _s.parent().removeClass('error');
+                _s.nextAll('.help-inline').remove();
+            }
+
+            $('button[type=submit]').prop('disabled', true);
+            $('form').bind('submit',function(e){e.preventDefault();});
+
+            $.get(get_url, function(data,status){
+                $('button[type=submit]').prop('disabled', false);
+                $('form').unbind('submit');
+
+                _s.nextAll('.loading').remove();
+                if (data == 1 || data == -1) {
+                    _s.parent().addClass('error');
+                    _s.after('<span class="help-inline">Invalid</span>');
+                    form.bind("submit", function(){
+                        return false;
+                    });
+                } else {
+                    form.unbind("submit");
+                }
+                is_checking = false;
+            });
+        });
+    }
+});
+
+function initTag(){
+
+    $('#myTags').tagit({
+        allowSpaces: true,
+        fieldName: 'tags[]',
+        autocomplete: {
+            delay: 0,
+            minLength: 2,
+            source: "<?php echo HOST;?>ajax/get-tags"
+        }
+    });
+
+}
+
+function initDate(){
+    $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+}
+
+function initToolTip(){
+    $('i.before-data[title]').qtip();
+}
+
+$(document).ready(function () {
+
+    initToolTip();
+    initDate();
+    initTag();
+    initAddEdu();
+    initDelEdu();
+    initAddExp();
+    initDelExp();
+    initAddRelative();
+    initDelRelative();
+    initPreview();
+
+    // check ID number
+    check_id_card_number('<?php isset($this->staffTemp) and $this->staffTemp and printf($this->staffTemp->ID_number);?>', '<?php echo ((isset($this->staff_id) and $this->staff_id) ? $this->staff_id : '') ;?>');
+
+    $('#btn-change-pass').click(function(){
+        $('#exampleInputPassword1').toggleClass('hidden');
+        if ($('#change-pass').val()==1)
+            $('#change-pass').val(0);
+        else
+            $('#change-pass').val(1);
+    });
+
+    var url = "<?php echo HOST.'staff/check' ?>";
+    var codes1 = [
+        {name: 'id', element: $('#id')},
+        {name: 'code', element: $('#code')}
+    ];
+    var codes2 = [
+        {name: 'id', element: $('#id')},
+        {name: 'email', element: $('#email')}
+    ];
+    $('#code').ajax_validate(url, codes1, $('#form'));
+    $('#email').ajax_validate(url, codes2, $('#form'));
+
+    $('#area_id,.area_id').change(function(){
+        $('button[type=submit]').prop('disabled', true);
+        $('form').bind('submit',function(e){e.preventDefault();});
+
+        $(this).after('<span class="loading"></span>');
+        var _self = $(this);
+        var area_id = $(this).val();
+
+        select_company();
+
+        $.get("/staff/load-province",
+            {area_id: area_id}
+            ,function(data,status){
+                var obj = $.parseJSON( data );
+                $('#regional_market,.regional_market').find('option:not(:first)').remove();
+                for (var i = 0; i < obj.length; i++) {
+                    $('#regional_market,.regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                }
+
+                $('button[type=submit]').prop('disabled', false);
+                $('form').unbind('submit');
+                _self.nextAll('.loading').remove();
+            }).done(function(){
+                //updateSelectedRegion();
+            });
+        //updateSelectedRegion();
+    });
+
+    $('#department,.department').change(function(){
+        $('.loading').remove();
+        $(this).after('<span class="loading"></span>');
+        var _self = $(this);
+        var department_id = $(this).val();
+        $('form').bind('submit',function(e){e.preventDefault();});
+        $('button, .btn, input, select').prop('disabled', true);
+        $.get("/ajax/load-team",
+            {department_id: [department_id]}
+            ,function(data,status){
+                var obj = $.parseJSON( data );
+                $('#team,.team').find('option:not(:first)').remove();
+                for (var i = 0; i < obj.length; i++) {
+                    $('#team,.team').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                }
+
+                $('button, .btn, input, select').prop('disabled', false);
+                $('form').unbind('submit');
+                $('.loading').remove();
+            });
+    });
+
+    $('#team,.team').change(function(){
+        $('.loading').remove();
+        $(this).after('<span class="loading"></span>');
+        var _self = $(this);
+        var team_id = $(this).val();
+        $('form').bind('submit',function(e){e.preventDefault();});
+        $('button, .btn, input, select').prop('disabled', true);
+        $.get("/ajax/load-title",
+            {team_id: [team_id]}
+            ,function(data,status){
+                var obj = $.parseJSON( data );
+                $('#title,.title').find('option:not(:first)').remove();
+                for (var i = 0; i < obj.length; i++) {
+                    $('#title,.title').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                }
+
+                $('button, .btn, input, select').prop('disabled', false);
+                $('form').unbind('submit');
+                $('.loading').remove();
+            });
+    });
+
+    $('form').bind('submit',function(e){
+        $('button[type=submit]').prop('disabled', true);
+    });
+
+    $('.province').change(load_district);
+
+    $('.copy_to_birth_btn').click(copy_to_birth);
+
+    $('#team, #is_officer').change(select_company);
+
+    $('#ID_number').on('keyup', do_check_id_card_number);
+
+});
+
+var check_id_timeout;
+
+function do_check_id_card_number(e) {
+    window.clearTimeout(check_id_timeout);
+
+    check_id_timeout = window.setTimeout(function() {
+        var id_number = $('#ID_number').val().trim();
+        var staff_id = $('#ID_number').data('id');
+        check_id_card_number(id_number, staff_id);
+    }, 500);
+}
+
+function check_id_card_number(id_number, staff_id) {
+    $('#id_card_validate').html('');
+
+    $.ajax({
+        url: '<?php echo HOST ?>ajax/check-id-number',
+        type: 'post',
+        dataType: 'html',
+        data: {id_number: id_number, id: staff_id},
+    })
+        .done(function(html) {
+            console.log("success");
+
+            if (html) $('#id_card_validate').html(html);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+
+}
+
+function load_district(e) {
+    $('.loading').remove();
+
+    _self = $(e.target);
+    province_id = _self.val();
+
+    console.log(province_id);
+
+    if (province_id) {
+        _self.after('<span class="loading"></span>');
+        $('button, input, select, textarea').prop('disabled', true);
+        $('form').bind('submit',function(e){e.preventDefault();});
+
+        $.ajax({
+            url: '<?php echo HOST ?>ajax/get-district-cbb',
+            type: 'post',
+            dataType: 'json',
+            data: {region: province_id},
+        })
+            .done(function(data) {
+                console.log("success");
+                district_cbb = _self.parents('fieldset').find('.district')
+                district_cbb.find('option:not(:first)').remove();
+
+                try {
+                    for (index in data) {
+                        district_cbb.append('<option value="'+data[index]['id']+'">'+data[index]['name']+'</option>');
+                    }
+                } catch (err) {}
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+
+                $('button, input, select, textarea').prop('disabled', false);
+                $('form').unbind('submit');
+                $('.loading').remove();
+            });
+
+    }
+}
+
+/////////////////////////////////
+
+function copy_to_birth() {
+    $('#birth_ward').val( $('#perm_ward').val() );
+    $('#birth_province').val( $('#perm_province').val() );
+    $('#birth_district').html( $('#perm_district').html() );
+    $('#birth_district').val( $('#perm_district').val() );
+}
+
+////////////////////////////////
+function select_company(e) {
+    team       = $('#team').val()*1;
+    area       = $('#area_id').val()*1;
+    is_officer = $('#is_officer').attr('checked');
+
+    if (team && area) {
+        var area_arr = [1,4,7,10,13,24,25,26,32,33,34,40,41,43];
+        var team_arr = [75,119,16];
+
+        if (area_arr.indexOf(area) > -1 && team_arr.indexOf(team) > -1 && !is_officer) {
+            $('#company_id').val(2);
+        } else {
+            $('#company_id').val(1);
+        }
+    }
+
+}
+
+function initAddEdu(){
+    $('.add_education_btn').click(function(e){
+        $('.education_list .edu-tbody').append(education_div);
+        initDelEdu();
+        initCheckDefaultLevel();
+    });
+}
+
+function initDelEdu(){
+    $('.edu-remove').click(function(e){
+        $(this).parent().parent().remove();
+    });
+}
+
+function initAddExp(){
+    $('.add_experience_btn').click(function(e){
+        $('.experience_list .exp-tbody').append(experience_div);
+        initDelExp();
+        initDate();
+    });
+}
+
+function initDelExp(){
+    $('.exp-remove').click(function(e){
+        $(this).parent().parent().remove();
+    });
+}
+
+function initAddRelative(){
+    $('.add_relative_btn').click(function(e){
+        $('.relative_list .relative-tbody').append(relative_div);
+        initDelRelative();
+    });
+}
+
+function initDelRelative(){
+    $('.relative-remove').click(function(e){
+        $(this).parent().parent().remove();
+    });
+    setRelativeGenderIndex();
+}
+
+function setRelativeGenderIndex(){
+    $('.relative-row').each(function(index){
+        $(this).find('.td-rlt_gender .rlt_gender').attr('name', 'rlt_gender['+index+']');
+    })
+}
+
+function initPreview(){
+    $('.has-preview').change(function (){
+        readURL($(this));
+    });
+}
+
+function readURL(jqueryObject) {
+    var input = $(jqueryObject).get(0);
+
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $(jqueryObject).next('.gen-img-preview').remove();
+            $(jqueryObject).after('<img class="gen-img-preview" width="150" height="150" />');
+            $(jqueryObject).next('.gen-img-preview').attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+    checkSizeIDCard();
+    function checkSizeIDCard(){
+        $("#id_photo,#id_photo_back").change(function(){
+            var _this = $(this);
+            var iSize = ($(this)[0].files[0].size / 1024);
+            if(iSize > 2048){
+                _this.replaceWith(_this = _this.clone(true));
+                iSize = (Math.round(iSize / 1024 * 100) / 100);
+                var mess = '<div><p>Image size must be less than 2MB, current file size is: '+iSize +' Mb</p></div>';
+                $(mess).dialog({
+                    title: 'Confirm',
+                    resizable: false,
+                    buttons: {
+                        'Ok':function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+            }
+        });
+    }
+    initCheckDefaultLevel();
+    function initCheckDefaultLevel(){
+        $('#form').submit(function(e){
+            
+            var num = $('.default_level').length;
+            if(num >= 1){
+                var check = 0;
+                $('.default_level').each(function(){
+                    if($(this).val() == 1){
+                        check = 1;
+                    }
+                });
+                if(check == 0){
+                    $("<div><p>Please select default level</p></div>").dialog({
+                        title: 'Confirm',
+                        resizable: false,
+                        buttons: {
+                            'Ok':function(){
+                                $(this).dialog('close');
+                                $('button[type=submit]').prop('disabled', false);
+                            }
+                        }
+                    });
+                    return false;
+                }
+            }
+            
+        });
+
+        $('.default_level').change(function(){
+            var _this = $(this);
+            if(_this.val() == 1){
+                $(".default_level").val(0);
+                _this.val(1);
+            }
+        })
+    }
+</script>
+<?php echo $this->load('combobox');?>

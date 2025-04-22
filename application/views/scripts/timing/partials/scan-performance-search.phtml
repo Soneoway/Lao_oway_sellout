@@ -1,0 +1,243 @@
+<form class="form-search form-horizontal" method="get" action="/timing/sales-scan-performance">
+    <div class="row">
+        <div class="span6">
+             <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['staff_name']) and printf($this->params['staff_name']);?>">
+            </div>
+
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select  name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            <!--
+            <div class="control-group">
+                <label for="goods" class="span2">Model</label>
+                <select id="goods" name="goods[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list->id;?>" <?php if (isset($this->params['goods']) and ( (is_array($this->params['goods']) && in_array($good_list['id'], $this->params['goods']) || $good_list['id']==$this->params['goods'])) ):?>selected<?php endif;?>><?php echo $good_list->name;?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="color_id" class="span2">Color</label>
+                <select id="color_id" name="color_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->color;
+
+                    if ($this->color) :
+                        foreach ($this->color as $k => $color_list ):
+                            ?>
+                            <option value="<?php echo $k;?>" <?php if (isset($this->params['color_id']) and ( (is_array($this->params['color_id']) && in_array($k, $this->params['color_id']) || $k==$this->params['color_id'])) ):?>selected<?php endif;?>><?php echo $color_list?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+            -->
+             <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+           <!--  <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+            <!-- <div class="control-group">
+                <label for="district" class="span2">District</label>
+                <select id="district" name="district[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->districts) :
+                        foreach ($this->districts as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['district']) and ( (is_array($this->params['district']) && in_array($regional_market['id'], $this->params['district']) || $regional_market['id']==$this->params['district'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+            <!-- <div class="control-group">
+                <label for="store" class="span2">Store</label>
+                <select id="store" name="store[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->stores) :
+                        foreach ($this->stores as $store):?>
+                            <option value="<?php echo $store->id;?>" <?php if (isset($this->params['store']) and ( (is_array($this->params['store']) && in_array($store['id'], $this->params['store']) || $store['id']==$this->params['store'])) ):?>selected<?php endif;?>><?php echo $store->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+            <!-- <div class="control-group">
+                <label for="org" class="span2">Store Type</label>
+                <select id="org" name="org[]" class="span3 multiselect" multiple="multiple">
+                    <?php if (isset($this->org) && $this->org): ?>
+
+                        <?php 
+                            $arr = $this->org;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($_GET['org']) && in_array($arr[$i]['org_id'],$_GET['org'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['org_id'] == $_GET['org']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['org_id']."' ". $sel ." >".$arr[$i]['org_name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div> -->
+
+        </div>
+        <style type="text/css">
+            .box_{border: 1px solid #ddd;padding-top: 10px}
+            .taxt_{text-align: right;}
+            .line{    border-bottom: 1px solid #ddd;width: 86%;}
+        </style>
+      
+        <div class="span5 box_"> 
+
+           <div class="span5">
+
+               <div class="span1 taxt_"><p>Store All</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['store_all'])?></p></div>
+               <div class="span1"><p>Store</p></div>
+               
+           </div>
+
+           <div class="span5">
+
+               <div class="span1 taxt_"><p>ORG</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['store_org_all'])?></p></div>
+               <div class="span1"><p>Store</p></div>
+               
+           </div>
+
+           <div class="span5">
+
+               <div class="span1 taxt_"><p>Dealer/BS</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['store_dealer_all'])?></p></div>
+               <div class="span1"><p>Store</p></div>
+               
+           </div>
+           
+           <div class="span5 line">
+               <div class="span1 taxt_"><p>Scan Shop</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['store_scan'])?></p></div>
+               <div class="span1"><p>Shop</p></div>
+           </div>
+            
+           <div class="span5">
+               <div class="span1 taxt_"><p>ASM</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['asm_all'])?></p></div>
+               <div class="span1"><p>Person</p></div>
+           </div>
+           <div class="span5 line">
+               <div class="span1 taxt_"><p>ASM Scan</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['asm_scan'])?></p></div>
+               <div class="span1"><p>Person</p></div>
+           </div>
+           <div class="span5">
+               <div class="span1 taxt_"><p>Sale</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['sale_all'])?></p></div>
+               <div class="span1"><p>Person</p></div>
+           </div>
+           <div class="span5 line">
+               <div class="span1 taxt_"><p>Sale Scan</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->report['sale_scan'])?></p></div>
+               <div class="span1"><p>Person</p></div>
+           </div>
+           <div class="span5">
+               <div class="span1 taxt_"><p>Scan IMEI</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->ScanImei['sum_total'])?></p></div>
+               <div class="span1"><p>IMEI</p></div>
+           </div>
+           <div class="span5 ">
+               <div class="span1 taxt_"><p>Sucsess</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->ScanImei['sum_success'])?></p></div>
+               <div class="span1"><p>IMEI</p></div>
+           </div>
+           <div class="span5">
+               <div class="span1 taxt_"><p>Fail</p></div>
+               <div class="span2 taxt_"><p><?=number_format($this->ScanImei['sum_total']-$this->ScanImei['sum_success'])?></p></div>
+               <div class="span1"><p>IMEI</p></div>
+           </div>
+          
+        </div>
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" class="btn btn-primary" value="1">Export</button>
+   
+    <!-- <button type="submit" name="export" value="2" class="btn btn-primary">Export Excel</button> -->
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+
+    $(document).ready(function () {
+        multi();
+
+        
+    });
+</script> 

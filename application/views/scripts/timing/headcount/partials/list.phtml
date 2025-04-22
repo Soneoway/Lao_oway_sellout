@@ -1,0 +1,346 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle;"><div align="center">No.</div></th>
+        <th style="vertical-align: middle;"><div align="center">Area</div></th>
+        <th style="vertical-align: middle;"><div align="center">RD Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">PC</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale Area</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale Event</div></th>
+        <th style="vertical-align: middle;"><div align="center">ASM</div></th>
+        <th style="vertical-align: middle;"><div align="center">RD</div></th>
+        <th style="vertical-align: middle;"><div align="center">TMS Leader</div></th>
+        <th style="vertical-align: middle;"><div align="center">TMS</div></th>
+        <th style="vertical-align: middle;"><div align="center">PCM Leader</div></th>
+        <th style="vertical-align: middle;"><div align="center">PCM</div></th>
+        <th style="vertical-align: middle;"><div align="center">Total Staff</div></th>
+
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            $sum_staff = 0;
+
+            $sum_pc = 0; 
+            $sum_sale = 0;
+            $sum_sale_event = 0;
+
+            $sum_asm = 0;
+            $sum_rd = 0;
+
+            $sum_tms_leader = 0;
+            $sum_tms = 0;
+            $sum_pcm_leader = 0;
+            $sum_pcm = 0;
+
+            $sum_total = 0;
+            
+            if ($this->lists) {
+                $data = $this->lists;
+                $data2 = $this->unique_lists;
+                $data3 = $this->target_lists;
+
+                // print_r($data);
+                // echo "<br/>";
+                // print_r($data3);
+
+                for ($i=0;$i<count($data);$i++) {
+
+                    $pc_target          = isset($data3[ $data[$i]['rd_id'] ][ PGPB_ID ]) ? $data3[ $data[$i]['rd_id'] ][ PGPB_ID ] : '-';
+                    $sale_target        = isset($data3[ $data[$i]['rd_id'] ][ SALES_ID ]) ? $data3[ $data[$i]['rd_id'] ][ SALES_ID ] : '-';
+                    $sale_event_target  = isset($data3[ $data[$i]['rd_id'] ][ 31 ]) ? $data3[ $data[$i]['rd_id'] ][ 31 ] : '-';
+
+                    $tms_leader_target  = isset($data3[ $data[$i]['rd_id'] ][ 38 ]) ? $data3[ $data[$i]['rd_id'] ][ 38 ] : '-';
+                    $tms_target         = isset($data3[ $data[$i]['rd_id'] ][ 37 ]) ? $data3[ $data[$i]['rd_id'] ][ 37 ] : '-'; 
+
+                    $pcm_leader_target  = isset($data3[ $data[$i]['rd_id'] ][ 36 ]) ? $data3[ $data[$i]['rd_id'] ][ 36 ] : '-';
+                    $pcm_target         = isset($data3[ $data[$i]['rd_id'] ][ TRAINING_TEAM_ID ]) ? $data3[ $data[$i]['rd_id'] ][ TRAINING_TEAM_ID ] : '-';
+
+                    $sum_staff = $data[$i]['cnt_pc'] + $data[$i]['cnt_sale'] + $data[$i]['cnt_sale_event'] + 
+                        $data[$i]['cnt_asm'] + $data[$i]['cnt_rd'] + $data[$i]['cnt_tms_leader'] + 
+                        $data[$i]['cnt_tms'] + $data[$i]['cnt_pcm_leader'] + $data[$i]['cnt_pcm'];
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['zone']."</div></td>";
+                    echo    "<td><div align='left'>[".$data[$i]['rd_code']."] ".$data[$i]['rd_name']."</div></td>";
+
+
+                    if ($this->params['flag'] == 1) {
+
+                        echo    "<td><div align='center'>".$data[$i]['cnt_pc']." / ".$pc_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_sale']." / ".$sale_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_sale_event']." / ".$sale_event_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_asm']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_rd']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_tms_leader']." / ".$tms_leader_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_tms']." / ".$tms_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_pcm_leader']." / ".$pcm_leader_target."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['cnt_pcm']." / ".$pcm_target."</div></td>";
+                        echo    "<td><div align='center'>".$sum_staff."</div></td>";
+
+                    } else {
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='4' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_pc']."
+                                    </span>&nbsp;/ ".$pc_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='9' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_sale']."
+                                    </span>&nbsp;/ ".$sale_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='31' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_sale_event']."
+                                    </span>&nbsp;/ ".$sale_event_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='5,16' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_asm']."
+                                    </span></div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='28,35' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_rd']."
+                                    </span></div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='38' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_tms_leader']."
+                                    </span>&nbsp;/ ".$tms_leader_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='37' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_tms']."
+                                    </span>&nbsp;/ ".$tms_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='36' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_pcm_leader']."
+                                    </span>&nbsp;/ ".$pcm_leader_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='17' 
+                                        data-export='3'
+                                    >".$data[$i]['cnt_pcm']."
+                                    </span>&nbsp;/ ".$pcm_target."</div>
+                                </td>";
+
+                        echo    "<td><div align='center'>
+                                    <span class='badge badge-default view_staff' 
+                                        data-rd_id='".$data[$i]['rd_id']."' 
+                                        data-type='0' 
+                                        data-export='3'
+                                    >".$sum_staff."
+                                    </span></div>
+                                </td>";
+                    }
+                    
+
+                    $sum_pc         = $sum_pc + $data[$i]['cnt_pc'];
+                    $sum_sale       = $sum_sale + $data[$i]['cnt_sale'];
+                    $sum_sale_event = $sum_sale_event + $data[$i]['cnt_sale_event'];
+
+                    $sum_asm        = $sum_asm + $data[$i]['cnt_asm'];
+                    $sum_rd         = $sum_rd + $data[$i]['cnt_rd'];
+
+                    $sum_tms_leader = $sum_tms_leader + $data[$i]['cnt_tms_leader'];
+                    $sum_tms        = $sum_tms + $data[$i]['cnt_tms'];
+                    $sum_pcm_leader = $sum_pcm_leader + $data[$i]['cnt_pcm_leader'];
+                    $sum_pcm        = $sum_pcm + $data[$i]['cnt_pcm'];
+
+                    $sum_total      = $sum_total + $sum_staff;
+
+                }
+
+                if ($this->params['flag'] == 1) {
+                    //Last Row
+                    echo "<tr>";
+                    echo    "<td style='background-color:#BDBDBD;' colspan='3'><div align='center'>Total</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pc)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_sale)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_sale_event)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_asm)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_rd)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_tms_leader)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_tms)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pcm_leader)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pcm)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;' colspan='3'><div align='center'>".number_format($sum_total)."</div></td>";
+                    echo "</tr>";
+                } else {
+                    // Last Row
+                    echo "<tr>";
+                    echo    "<td style='background-color:#BDBDBD;' colspan='3'><div align='center'>Total</div></td>";
+
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='4' 
+                                    data-export='3'
+                                >".number_format($sum_pc)."
+                                </span></div>
+                            </td>";
+
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='9' 
+                                    data-export='3'
+                                >".number_format($sum_sale)."
+                                </span></div>
+                            </td>";
+
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='31' 
+                                    data-export='3'
+                                >".number_format($sum_sale_event)."
+                                </span></div>
+                            </td>";
+
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='5,16' 
+                                    data-export='3'
+                                >".number_format($sum_asm)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='28,35' 
+                                    data-export='3'
+                                >".number_format($sum_rd)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='38' 
+                                    data-export='3'
+                                >".number_format($sum_tms_leader)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='37' 
+                                    data-export='3'
+                                >".number_format($sum_tms)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='36' 
+                                    data-export='3'
+                                >".number_format($sum_pcm_leader)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='17' 
+                                    data-export='3'
+                                >".number_format($sum_pcm)."
+                                </span></div>
+                            </td>";
+                    
+                    echo    "<td><div align='center'>
+                                <span class='badge badge-default view_staff' 
+                                    data-rd_id='0' 
+                                    data-type='0' 
+                                    data-export='3'
+                                >".number_format($sum_total)."
+                                </span></div>
+                            </td>";
+
+                    echo "</tr>";
+
+                }
+                
+                // Last Row [Unique]
+                echo "<tr>";
+                echo    "<td style='background-color:#BDBDBD;' colspan='3'><div align='center'>Unique Headcount</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_pc'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_sale'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_sale_event'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_asm'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_rd'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_tms_leader'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_tms'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_pcm_leader'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($data2['cnt_pcm'])."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;' colspan='3'><div align='center'>".number_format($data2['cnt_total'])."</div></td>";
+                echo "</tr>";
+            }
+        ?>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.view_staff').click(function() {
+            $self = $(this);
+            rd_id = $self.data('rd_id');
+            type = $self.data('type');
+            temp = $self.data('export');
+
+            loc = '<?php echo HOST ?>timing/headcount?export='+temp+'&rd_id='+rd_id+'&type='+type;
+            window.open(loc, '_self');
+        });
+
+
+    });
+</script>

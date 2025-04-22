@@ -1,0 +1,43 @@
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<style type="text/css">
+    body {
+        background: #f9f6f1;
+    }
+</style>
+<?php if (isset($this->errors) && $this->errors): ?>
+    <div class="alert alert-danger">
+        <p><?php echo $this->errors ?></p>
+    </div>
+<?php endif ?>
+
+<?php if (isset($this->result) && (!isset($this->error_list) || !count($this->error_list))): ?>
+    <div class="alert alert-success"><?php echo $this->result ?></div>
+
+    <script type="text/javascript">
+        setTimeout(function() {
+            parent.window.location = '<?php echo HOST ?>manage/notification';
+        }, 2000);
+    </script>
+<?php endif ?>
+
+<?php if (isset($this->error_list) && count($this->error_list)): ?>
+    <p>Error List:</p>
+    <ul>
+        <?php foreach ($this->error_list as $key => $value): ?>
+            <li>Row <?php echo $key ?>: <?php echo $value ?></li>
+        <?php endforeach ?>
+    </ul>
+<?php endif ?>
+
+<script src="/js/jquery-1.7.2.min.js"></script>
+<script>
+    ;(function($){
+        parent.$('.loading, .pre_loading').remove();
+        parent.$('form button, form input, form select').prop('readonly', false);
+        parent.window.onbeforeunload = null;
+    })(jQuery);
+
+    function clear_content() {
+        document.getElementById('content_wrapper').innerHTML = '';
+    }
+</script>

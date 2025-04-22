@@ -1,0 +1,170 @@
+<?php 
+    $data = array();
+    if (isset($this->data_list) and $this->data_list) { $data = $this->data_list; }
+?>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th width="5%"><div align="center">No.</div></th>
+        <th width="30%"><div align="center">Store Info</div></th>
+        <th width="20%"><div align="center">Staff Info</div></th>
+        <th width="45%"><div align="center">Shop Visit</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    $max_demo_pic = 6;
+
+    if ( !empty($data) ) {
+
+        foreach ($data as $key => $value) {
+
+            switch ($value['sv_status']) {
+                case 1: $sv_status = '<span class="label label-info">Waiting</span>';       break;
+                case 2: $sv_status = '<span class="label label-success">Approved</span>';   break;
+                case 3: $sv_status = '<span class="label label-important">Rejected</span>'; break;
+                default: $sv_status = ''; break;
+            }
+
+            $location_link = '-';
+            if ( isset($value['sv_location']) && $value['sv_location'] != 'null' ) {
+
+                $loc_temp = explode(',', $value['sv_location']);
+                $lat = trim($loc_temp[0]);
+                $lng = trim($loc_temp[1]);
+
+                $location_link = "<a title='Location' href='#!'><i class='icon-map-marker' style='color: #12aa00;' data-lat='".$lat."' data-lng='".$lng."' > Location</i></a>";
+            }
+
+            list($get_date, $get_time) = explode(" ", $value['sv_created_at']);
+            list($YY, $mm, $dd) = explode("-", $get_date);
+
+            $pic_path = "http://api.oppo.in.th/images/shop_visit/".$YY."/".$YY."-".$mm."/".$YY."-".$mm."-".$dd."/";
+
+            $value['sv_front_01'] != null ? $path_front_01 = $pic_path.$value['sv_front_01'] : "";
+            $value['sv_front_02'] != null ? $path_front_02 = $pic_path.$value['sv_front_02'] : "";
+            $value['sv_front_03'] != null ? $path_front_03 = $pic_path.$value['sv_front_03'] : "";
+
+            // Demo Table Image
+            $html_pic = '';
+            for ($i=1;$i<=$max_demo_pic;$i++) {
+            
+                if ( isset($value['sv_img_0'.$i]) && $value['sv_img_0'.$i] ) {
+                    $value['sv_img_0'.$i] != null ? $path_img[$i] = $pic_path.$value['sv_img_0'.$i] : "";
+                    $html_pic .= "<div style='float:left; padding-left:5px;'><a id='single_image' rel='".$value['sv_id']."' href='".$path_img[$i]."'>
+                                        <img src='".$path_img[$i]."' height='30' width='30'/></a></div>";
+                } 
+                
+            }
+
+            $inc = $this->offset + $key + 1;
+
+            echo "<tr>";
+            echo    "<td><div align='center'>".$inc."</td>";
+
+            echo    "<td><table width='100%'>
+                            <tr><td width='15%'>Area</td><td>".$value['area_name']."</td></tr>
+                            <tr><td width='15%'>ID</td><td>".$value['st_id']."</td></tr>
+                            <tr><td width='15%'>Name</td><td>".$value['st_name']."</td></tr>
+                            <tr><td width='15%'>Type</td><td>".$value['st_type']."</td></tr>
+                            <tr><td width='15%'>Market</td><td>".$value['market_name']."</td></tr>
+                        </table>
+                    </td>";
+
+            echo    "<td><table width='100%'>
+                            <tr><td width='15%'>Code</td><td>".$value['staff_code']."</td></tr>
+                            <tr><td width='15%'>Name</td><td>".$value['staff_name']."</td></tr>
+                            <tr><td width='15%'>Group</td><td>".$value['staff_group']."</td></tr>
+                        </table>
+                    </td>";
+
+            echo    "<td><table width='100%'>
+                            <tr>
+                                <td width='15%'>Date</td><td width='35%'>".date("d/m/Y H:i:s", strtotime($value['sv_created_at']))."</td>
+                                <td width='15%'>Status</td><td>".$sv_status."</td>
+                            </tr>
+                            <tr>
+                                <td width='15%'>Front</td><td width='30%'>
+                                    <div style='float:left; padding-left:5px;'>
+                                        <a id='single_image' rel='".$value['sv_id']."' href='".$path_front_01."'>
+                                            <img src='".$path_front_01."' height='30' width='30'/>
+                                        </a>
+                                    </div>
+                                    <div style='float:left; padding-left:5px;'>
+                                        <a id='single_image' rel='".$value['sv_id']."' href='".$path_front_02."'>
+                                            <img src='".$path_front_02."' height='30' width='30'/>
+                                        </a>
+                                    </div>
+                                    <div style='float:left; padding-left:5px;'>
+                                        <a id='single_image' rel='".$value['sv_id']."' href='".$path_front_03."'>
+                                            <img src='".$path_front_03."' height='30' width='30'/>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td width='15%'>Map</td><td>".$location_link."</td>
+                            </tr>
+                            <tr><td width='15%'>Table</td><td colspan=3>".$html_pic."</td></tr>
+                            <tr><td width='15%'>Remark</td><td colspan=3>".$value['sv_remark']."</td></tr>
+                        </table>
+                    </td>";
+
+            echo "</tr>";
+        }
+    }
+
+    ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" onfocus="initMap();"></div>
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript" src="/js/jquery.fancybox-1.3.4.js"></script>
+<link rel="stylesheet" href="/css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAh6C25S5k3Hf_huOkBOI4GWab0uqDfDk8" async defer></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $("a#single_image").fancybox();
+
+        $modal = $('#modal');
+        $('.icon-map-marker').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            var loc_type = 'Visit Shop Location'; 
+
+            $.post('<?php echo HOST ?>time/staff-check-in-report-map',
+                {
+                    lat : _self.data('lat'),
+                    lng : _self.data('lng')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = $("#test").html();
+                    $modal.find('h3').append(''+loc_type+' : ('+_self.data('lat')+', '+_self.data('lng')+')');
+            });
+        });
+    
+    });
+
+</script>

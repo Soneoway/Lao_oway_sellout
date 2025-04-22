@@ -1,0 +1,29 @@
+<li class="dropdown notifi_menu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <?php $number = 0; ?>
+    <?php 
+        if (isset($this->recent_notifications) && $this->recent_notifications): 
+            foreach ($this->recent_notifications as $k => $value):
+                if (!isset($value['read']) || !$value['read']) $number++;
+            endforeach ; 
+        endif;?>
+    
+    <?php if (isset($number) && $number): ?>
+        <span class="badge badge-important"><?php echo $number ?></span>
+    <?php endif    ?><i class="icon-globe"></i></a>
+
+
+    <ul class="dropdown-menu">
+        <?php if (isset($this->recent_notifications) && count($this->recent_notifications) > 0): ?>
+            <?php foreach ($this->recent_notifications as $k => $value): ?>
+                <li>
+                    <a href="<?php echo HOST ?>user/notification-view?id=<?php echo $value['id'] ?>" 
+                        title="<?php echo $value['title'] ?>"
+                        class="<?php if (!isset($value['read']) || !$value['read']) echo "unread"; ?>"><?php echo My_String::excerpt($value['title']) ?></a>
+                </li>
+            <?php endforeach ?>
+        <?php else: ?>
+            <li><a href="#"><i>No recent notification</i></a></li>
+        <?php endif ?>
+            <li><a href="<?php echo HOST ?>user/notification" class="see-all">See All</a></li>
+    </ul>
+</li>

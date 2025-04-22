@@ -1,0 +1,303 @@
+<div class="page-header">
+    <h1>Report Sell Out by Dealer - OPPO CLUB</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/report_search_dealer_oppoclub.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-right">
+    <strong>Total Sales: <?php echo $this->total_sales;?></strong>
+    |<strong> Activated: <?php echo $this->total_count;?></strong>
+    |<strong> Total Activated: <?php echo $this->total_activated;?></strong>
+</div>
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <tr valign="center">
+                <?php echo $this->sorting(array(
+                    '#',
+                        'd_name'        => 'Name',
+                        'd_rank'        => 'Type',
+                        'area_name '    => 'Area',
+                        //'province'      => 'Province',
+                        //'district'      => 'District',
+                        'store_all'     => 'Stores',
+                        'store_active'  => 'Active Stores',
+                        //'total_sellout' => 'Sell Out',
+                        'cnt_active'    => 'Activated',
+                        //'total_active' => 'Total Activated',
+                        '<div align="center"> Quater 1 <br/> 01/04 - 30/06 </div>',
+                        '<div align="center"> Quater 2 <br/> 01/07 - 30/09 </div>',
+                        '<div align="center"> Quater 3 <br/> 01/10 - 31/12 </div>',
+                        '<div align="center"> Quater 4 <br/> 01/01 - 31/03 </div>',
+                ),
+            $this->url, $this->current_col, $this->desc); ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $params = $this->params;
+            //print_r($params);
+            if (isset($this->sales) and $this->sales)
+                $inc = $this->offset + 1;
+                foreach ($this->sales as $sale): ?>
+            <tr>
+                <td><?php echo $inc++; ?></td>
+                <td><?php echo $sale['d_name']; ?></td>
+                <td>
+                    <?php 
+                        if ($sale['d_rank'] == 7) { echo "Dealer"; } 
+                        if ($sale['d_rank'] == 8) { echo "HUB"; } 
+                    ?>
+                </td>
+
+                <td><?php echo $sale['area_name']; ?></td>
+                <!-- <td><?php echo $sale['province']; ?></td> -->
+                <!-- <td><?php echo $sale['district']; ?></td> -->
+                <td>
+                    <span class="badge badge-default view_dealer_store" 
+                        data-id="<?php echo $sale['d_id']; ?>" 
+                        data-from="<?php echo $params['from']; ?>" 
+                        data-to="<?php echo $params['to']; ?>" 
+                        data-export="1" 
+                    >
+                        <?php echo $sale['store_all']; ?>
+                    </span>
+                </td>
+
+                <td>
+                    
+                    <span class="badge badge-default view_dealer_store" 
+                        data-id="<?php echo $sale['d_id']; ?>" 
+                        data-from="<?php echo $params['from']; ?>" 
+                        data-to="<?php echo $params['to']; ?>" 
+                        <?php
+                            if ($sale['d_rank'] == 8) { echo "data-export='4'"; } 
+                            else { echo "data-export='2'"; } 
+                        ?>
+                    >
+                        <?php if (isset($sale['store_active'])) { echo $sale['store_active']; } else { echo "0"; } ?>
+                    </span>
+                </td>
+
+                <!-- 
+                <td><?php if (isset($sale['total_sellout'])) { echo $sale['total_sellout']; } else { echo "0"; } ?></td>
+                <td><?php if (isset($sale['total_active'])) { echo $sale['total_active']; } else { echo "0"; } ?></td> 
+                -->
+                <td><?php if (isset($sale['cnt_active'])) { echo $sale['cnt_active']; } else { echo "0"; } ?></td> 
+                <td>
+                    <div align="center">
+                    <?php 
+                        if ($sale['d1_level'] == '' || is_null($sale['d1_level']) ) { echo ""; }
+                        else { echo "[".$sale['d1_level']."]"; echo "<br/>"; }
+
+                        if (isset($sale['QCnt_04_2016'])) { echo $sale['QCnt_04_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_05_2016'])) { echo $sale['QCnt_05_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_06_2016'])) { echo $sale['QCnt_06_2016']; } else { echo "0"; } 
+                    ?>
+                    </div>
+                </td>
+                <td>
+                    <div align="center">
+                    <?php 
+                        if ($sale['d2_level'] == '' || is_null($sale['d2_level']) ) { echo ""; }
+                        else { echo "[".$sale['d2_level']."]"; echo "<br/>"; }
+
+                        if (isset($sale['QCnt_07_2016'])) { echo $sale['QCnt_07_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_08_2016'])) { echo $sale['QCnt_08_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_09_2016'])) { echo $sale['QCnt_09_2016']; } else { echo "0"; } 
+                    ?>
+                    </div>
+                </td>
+                <td>
+                    <div align="center">
+                    <?php 
+                        if ($sale['d3_level'] == '' || is_null($sale['d3_level']) ) { echo ""; }
+                        else { echo "[".$sale['d3_level']."]"; echo "<br/>"; }
+
+                        if (isset($sale['QCnt_10_2016'])) { echo $sale['QCnt_10_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_11_2016'])) { echo $sale['QCnt_11_2016']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_12_2016'])) { echo $sale['QCnt_12_2016']; } else { echo "0"; } 
+                    ?>
+                    </div>
+                </td>
+                <td>
+                    <div align="center">
+                    <?php 
+                        if ($sale['d4_level'] == '' || is_null($sale['d4_level']) ) { echo ""; }
+                        else { echo "[".$sale['d4_level']."]"; echo "<br/>"; }
+
+                        if (isset($sale['QCnt_01_2017'])) { echo $sale['QCnt_01_2017']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_02_2017'])) { echo $sale['QCnt_02_2017']; } else { echo "0"; } 
+                        echo " / ";
+                        if (isset($sale['QCnt_03_2017'])) { echo $sale['QCnt_03_2017']; } else { echo "0"; } 
+                    ?>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<script>
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('.view_dealer_store').click(function() {
+            $self = $(this);
+            id = $self.data('id');
+            from = $self.data('from');
+            to = $self.data('to');
+            temp = $self.data('export');
+
+            loc = '<?php echo HOST ?>timing/analytics-dealer-oppoclub?from='+from+'&to='+to+'&dealer_id='+id+'&export='+temp;
+            window.open(loc, '_self');
+        });
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+/*
+        $('#district').change(function(){
+            $('.loading').remove();
+            $('button, .btn, input').prop('disabled', true);
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var regional_market = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-sales-team",
+                {district: regional_market}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('#store').multiselect("destroy").multiselect(options);
+
+                    $('.loading').remove();
+                });
+        });
+*/
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                            
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }
+
+                            $('#district,#store').multiselect("destroy").multiselect(options);
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                    }
+                });
+        });
+    });
+</script>
+
+<?php echo $this->load('combobox');?>

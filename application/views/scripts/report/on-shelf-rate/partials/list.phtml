@@ -1,0 +1,57 @@
+<?php if($this->params['on_shelf_view'] == 1){ ?>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th><div align="center" style="width: 100%">No.</div></th>
+                <th><div align="center" style="width: 100%">RGM</div></th>
+                <th><div align="center" style="width: 100%">Provience</th>
+                <th><div align="center" style="width: 100%">Distributor ID</th>
+                <th><div align="center" style="width: 100%">Distributor</div></th>
+                <th><div align="center" style="width: 100%">Stores with On-Shelf Availability</div></th>
+                <th><div align="center" style="width: 100%">Valid Store Quantity</div></th>
+                <th><div align="center" style="width: 100%">On-Shelf Availability Rate</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $i = 1;  foreach($this->data as $item) : ?>
+            <tr>
+                <td><div align="center"><?php echo $i; ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_area']; ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_provience'] ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_id']; ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_name']; ?></div></td>
+                <td><div align="center"><?php if($item['distributor_stock'] > 0) { echo "1"; }else{ echo "0"; } ?></div></td>
+                <td><div align="center"> 1 </div></td>
+                <td><div align="center"><?php if($item['distributor_stock'] > 0) { echo "100 %"; }else{ echo "0 %"; } ?></div>
+                </tr>
+                <?php $i++; endforeach; ?>
+            </tbody>
+        </table>
+    <?php }elseif($this->params['on_shelf_view'] == 2){ ?>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th><div align="center" style="width: 100%">No.</div></th>
+                    <th><div align="center" style="width: 100%">RGM</div></th>
+                    <th><div align="center" style="width: 100%">Stores with On-Shelf Availability</div></th>
+                    <th><div align="center" style="width: 100%">Valid Store Quantity</div></th>
+                    <th><div align="center" style="width: 100%">On-Shelf Availability Rate</div></th>
+                </tr>
+            </thead>
+            <tbody>
+              <?php $i = 1;  foreach($this->data as $item) : ?>
+              <tr>
+                <td><div align="center"><?php echo $i; ?></div></td>
+                <td><div align="center"><?php echo $item['area_name']; ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_have_stock']; ?></div></td>
+                <td><div align="center"><?php echo $item['distributor_count']; ?></div></td>
+                <td><div align="center">
+                    <?php $avg = ($item['distributor_have_stock'] / $item['distributor_count']) * 100 ; echo number_format($avg,2); ?> %
+                </div>
+                </tr>
+                <?php $i++; endforeach; ?>
+
+            </tbody>
+        </table>
+    <?php }else{ ?>
+    <?php } ?>

@@ -1,0 +1,74 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Brand Name</div></th>
+        <th><div align="center">Product Name</div></th>
+        <th><div align="center">Product Status</div></th>
+        <th><div align="center">Product Order</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+
+            if ($this->product_list) {
+                $data = $this->product_list;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    if ($data[$i]['product_status'] == 1) { 
+
+                        $product_status = "<span class='label label-important del'>Disabled</span>"; 
+                        $product_order = "-";
+
+                    } else { 
+
+                        $product_status = "<span class='label label-success'>Enable</span>"; 
+                        $product_order = $data[$i]['product_position'];
+
+                    }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['brand_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['product_name']."</div></td>";
+                    echo    "<td><div align='center'>".$product_status."</div></td>";
+                    echo    "<td><div align='center'>".$product_order."</div></td>";
+
+                    if ( in_array($data[$i]['cp_id'], array(8,14,26)) ) {
+                        echo "<td></td>";
+                    } else {
+                        echo "<td><div align='center'><a title='Edit' href='/manage/competitor-product-create?id=".$data[$i]['cp_id']."'> <i class='icon-edit'></i></a></div></td>";
+                    }
+
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script>
+    $(document).ready(function () {
+
+        $(".up,.down").click(function(){
+            var row = $(this).parents("tr:first");
+
+            if(row.next().hasClass(".del")) { alert('123'); }
+
+            if ($(this).is(".up")) {
+                row.insertBefore(row.prev());
+            } else {
+                row.insertAfter(row.next());
+            }
+
+        });
+        
+    });
+</script>

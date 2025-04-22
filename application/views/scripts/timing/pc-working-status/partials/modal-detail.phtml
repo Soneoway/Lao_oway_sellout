@@ -1,0 +1,29 @@
+<div class="modal-header" align="center">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Area</h3>
+</div>
+<div class="modal-body">
+    <table border=1 width="100%">
+        <tr>
+            <th align="center" width="10%">No.</th>
+            <th align="center" width="10%">Code</th>
+            <th align="center" width="30%">Staff Name</th>
+            <th align="center" width="15%">Joind At</th>
+            <th align="center" width="15%">Off Date</th>
+        </tr>
+        <?php
+        foreach ($this->pc_resingnation as $k => $item) { ?>
+            <tr>
+                <td align="center"><?php echo $k + 1; ?></td>
+                <td align="center"><?php echo $item['staff_code']; ?></td>
+                <td><?php echo $item['staff_name']; ?></td>
+                <td align="center"><?php echo $item['joined_at']; ?></td>
+                <td align="center"><?php echo $item['off_date']; ?></td>
+            </tr>
+        <?php } ?>
+    </table>
+
+</div>
+<div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

@@ -1,0 +1,102 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form action="<?php echo HOST.'manage/dealer' ?>" method="get" class="form-horizontal form-search">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select name="area_id" id="area_id" class="span3">
+                    <option value>Choose</option>
+                    <?php if (isset($this->areas) && $this->areas): foreach ($this->areas as $id=>$name):?>
+                        <option value="<?php echo $id;?>" <?php if (isset($this->params['area_id']) and $id==$this->params['area_id']):?> selected="selected"<?php endif;?>><?php echo $name;?></option>
+                    <?php endforeach; endif;?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="region" class="span2">Province</label>
+                <select name="region_id" id="region" class="span3">
+                    <option value>Choose</option>
+                    <?php if (isset($this->regions) && $this->regions): foreach ($this->regions as $id=>$name):?>
+                        <option value="<?php echo $id;?>" <?php if (isset($this->params['region_id']) and $id==$this->params['region_id']):?> selected="selected"<?php endif;?>><?php echo $name;?></option>
+                    <?php endforeach; endif;?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="district" class="span2">District</label>
+                <select name="district_id" id="district" class="span3">
+                    <option value>Choose</option>
+                    <?php if (isset($this->districts) && $this->districts): foreach ($this->districts as $id=>$name):?>
+                        <option value="<?php echo $id;?>" <?php if (isset($this->params['district_id']) and $id==$this->params['district_id']):?> selected="selected"<?php endif;?>><?php echo $name;?></option>
+                    <?php endforeach; endif;?>
+                </select>
+            </div>
+		
+			<div class="control-group">
+				<label for="name" class="span2">Dealer Name</label>
+				<input type="text" name="name" id="name"
+					class="search-query form-control"
+					value="<?php if(isset($this->params['name']) && $this->params['name']) echo $this->params['name'] ?>" />
+			</div>
+			<div class="control-group">
+				<button type="submit" class="btn btn-primary">Search</button>
+				<button type="reset" class="btn btn-danger">Reset</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $('form button, form input, form select').prop('disabled', true);
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#region').find('option:not(:first)').remove();
+                    $('#district').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#region').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    $('.loading').remove();
+                    $('form button, form input, form select').prop('disabled', false);
+                });
+        });
+
+        $('#region').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option:not(:first)').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                            
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }                        
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                    }
+                });
+        });
+    });
+</script>

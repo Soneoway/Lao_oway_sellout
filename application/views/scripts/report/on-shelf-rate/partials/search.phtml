@@ -1,0 +1,184 @@
+<link href="../css/select2.css" rel="stylesheet"/>
+<script src="../js/select2.js"></script>
+
+<form class="form-search form-horizontal" method="get" action="/report/on-Shelfrate">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="on_shelf_view" style="color: blue; font-size: 16px"> On-Shelf_view</label>
+                <div class="controls">
+                    <select class="form-control span3" name="on_shelf_view" id="on_shelf_view">
+                        <option value="2" <?php if( isset($this->params['on_shelf_view']) && $this->params['on_shelf_view'] == 2 ) echo "selected='selected'" ?>> RGM </option>
+                        <option value="1" <?php if( isset($this->params['on_shelf_view']) && $this->params['on_shelf_view'] == 1 ) echo "selected='selected'" ?>> Distributor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="category" style="color: blue; font-size: 16px">Category :</label>
+                <div class="controls">
+                    <select class="form-control span3" name="category" id="category">
+                        <option value="11" <?php if( isset($this->params['category']) && $this->params['category'] == 11 ) echo "selected='selected'" ?>> Mobile Phone</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="pc" style="color: blue; font-size: 16px"> With Promoter : </label>
+                <div class="controls">
+                    <select class="form-control span3" name="pc" id="pc">
+                        <option value="">All</option>
+                        <option value="1" <?php if( isset($this->params['pc']) && $this->params['pc'] == 1 ) echo "selected='selected'" ?>>Yes</option>
+                        <option value="2" <?php if( isset($this->params['pc']) && $this->params['pc'] == 2 ) echo "selected='selected'" ?>>No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inventory_status" style="color: blue; font-size: 16px"> On-Shelf Filter :</label>
+                <div class="controls">
+                    <select class="form-control span3" name="inventory_status" id="inventory_status">
+                        <option value="1"  <?php if( isset($this->params['inventory_status']) && $this->params['inventory_status'] == 1 ) echo "selected='selected'" ?>> Not Timing And Not Activated </option>
+                        <option value="2"  <?php if( isset($this->params['inventory_status']) && $this->params['inventory_status'] == 2 ) echo "selected='selected'" ?>> Not Timing </option>
+                        <option value="3"  <?php if( isset($this->params['inventory_status']) && $this->params['inventory_status'] == 3 ) echo "selected='selected'" ?>> Activated No Timing</option>
+                        <!-- <option value="4"  <?php if( isset($this->params['inventory_status']) && $this->params['inventory_status'] == 4 ) echo "selected='selected'" ?>> All </option> -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="span5">
+
+        <div class="control-group">
+            <label class="span2" style="width: 130px;"><span style="font-size: 16px; font-style: bold; color: blue;">Area | ເຂດ :</span></label>
+            <select id="area_id" name="area_id[]" class="js-example-basic-multiple span3" multiple="multiple">
+                <?php foreach($this->areas as $item) : ?>
+                  <option value="<?php echo $item['id'] ?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($item['id'], $this->params['area_id']) || $item['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $item['name'] ?>
+              </option>
+          <?php endforeach ?>
+      </select>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="on-shelf-type" style="color: blue; font-size: 16px"> On-Shelf Type : </label>
+    <div class="controls">
+        <select class="form-control span3" name="on_shelf_type" id="on_shelf_type">
+            <option value="1" <?php if( isset($this->params['pc']) && $this->params['pc'] == 1 ) echo "selected='selected'" ?>> Distributor On Shelf Availability </option>
+        </select>
+    </div>
+</div>
+
+<div class="control-group">
+    <label class="span2" style="width: 130px;"><span style="font-size: 16px; font-style: bold; color: blue;">Brand | ຍີ່ຫໍ້ :</span></label>
+    <select id="brand_id" name="brand_id[]" class="js-example-basic-multiple span3" multiple="multiple">
+        <?php foreach($this->brands as $item) : ?>
+          <option value="<?php echo $item['id'] ?>" <?php if (isset($this->params['brand']) and ( (is_array($this->params['brand']) && in_array($item['id'], $this->params['brand']) || $item['id']==$this->params['brand'])) ):?>selected<?php endif;?>><?php echo $item['name'] ?>
+      </option>
+  <?php endforeach ?>
+</select>
+</div>
+
+<div class="control-group">
+    <label for="good" class="span2" style="width: 130px;"><span style="font-size: 16px; font-style: bold; color: blue;">Products | ລຸ້ນ :</span></label>
+    <select id="good" name="good[]" class="js-example-basic-multiple span3" multiple="multiple">
+       <?php
+       $data = $this->goods;
+       if ($this->goods) :
+        foreach ($this->goods as $good_list):
+            ?>
+            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good']) and ( (is_array($this->params['good']) && in_array($good_list['id'], $this->params['good']) || $good_list['id']==$this->params['good'])) ):?>selected<?php endif;?>> <?php echo $good_list['brand_name'] ?> <?php echo $good_list['name'];?></option>
+            <?php
+        endforeach;
+
+    endif;
+    ?>
+</select>
+</div>
+
+
+
+</div>
+</div>
+
+<div class="row">
+    <div class="span5">
+        <div class="controls">
+            <button type="submit" class="btn btn-success"> Search </button>
+            <button type="submit" class="btn btn-success" value="1" name="export"> Export </button>
+        </div>
+    </div>
+</div>
+
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<!-- <style>
+    .year-month-calendar {
+        display: none;
+    }
+</style> -->
+
+<script type="text/javascript">
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+        $("#model, #on_shelf_type, #area_id, #inventory_status, #pc, #category, #on_shelf_view, #brand").select2();
+
+        multi();
+
+        $('#search_bar').trigger('click');
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+
+        $('#brand_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var brand_id = $(this).val();
+            $.get("/tool/get-product",
+                {brand_id: brand_id}
+                ,function(data,status){
+                    var data = $.parseJSON( data );
+                    var obj = data.brands;
+
+                    $("#good").empty();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#good').append('<option value="'+obj[i]['id']+'">'+obj[i]['brand_name']+' '+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+    });
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,173 @@
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-info add_relative_btn"><i class="icon-plus"></i> Add Relative...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd table_list">
+            <caption>Current Relative</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Relative Name</th>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Birth Year</th>
+                    <th>Job</th>
+                    <th>Work Place</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php if (isset($this->relative) && $this->relative): ?>
+                    <?php foreach ($this->relative as $key => $value): ?>
+                        <tr class="item">
+                            <td>
+                            </td>
+                            <td>
+                                <span class="editable relative_type_txt"><?php echo My_Staff_Relative::get($value['relative_type']) ?></span>
+                            </td>
+                            <td>
+                                <span class="editable full_name_txt"><?php echo $value['full_name'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable gender_txt"><?php echo ($value['gender'] ? 'Male' : "Female") ?></span>
+                            </td>
+                            <td>
+                                <span class="editable birth_year_txt"><?php if($value['birth_year'] != null AND $value['birth_year'] != '0000') echo $value['birth_year'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable job_txt"><?php echo $value['job'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable work_place_txt"><?php echo $value['work_place'] ?></span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div><!-- End current -->
+
+<!--  start form -->
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd relative_list table_list">
+            <caption>Relative</caption>
+            <thead>
+            <tr>
+                <td>#</td>
+                <th>Relative Name</th>
+                <th>Full Name</th>
+                <th>Gender</th>
+                <th>Birth Year</th>
+                <th>Job</th>
+                <th>Work Place</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <?php if (isset($this->relative) && $this->relative): ?>
+                <?php foreach ($this->relative as $key => $value): ?>
+                    <tr class="item">
+                        <td>
+                            <input type="hidden" class="relative_id" name="relative_id[]" value="<?php if (isset($value['id'])) echo $value['id'] ?>">
+                            <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">
+                        </td>
+                        <td>
+                            <select class="input-mini relative_type" name="relative_type[]">
+                                <option value>---</option>
+                                <option value="<?php echo My_Staff_Relative::Father ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Father) echo "selected" ?>>Father</option>
+                                <option value="<?php echo My_Staff_Relative::Mother ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Mother) echo "selected" ?>>Mother</option>
+                                <option value="<?php echo My_Staff_Relative::Husband ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Husband) echo "selected" ?>>Husband</option>
+                                <option value="<?php echo My_Staff_Relative::Wife ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Wife) echo "selected" ?>>Wife</option>
+                                <option value="<?php echo My_Staff_Relative::Brother ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Brother) echo "selected" ?>>Brother</option>
+                                <option value="<?php echo My_Staff_Relative::Sister ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Sister) echo "selected" ?>>Sister</option>
+                                <option value="<?php echo My_Staff_Relative::Child ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Child) echo "selected" ?>>Child</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="input-medium full_name" value="<?php echo $value['full_name'] ?>" name="rlt_full_name[]">
+                        </td>
+                        <td>
+                            <select class="gender" name="rlt_gender[]" id="">
+                                <option value="1" <?php if (isset($value['gender']) && $value['gender'] == 1) echo "selected" ?>>Male</option>
+                                <option value="0" <?php if (isset($value['gender']) && $value['gender'] == 0) echo "selected" ?>>Female</option>
+                            </select>
+                        </td>
+                        <td>
+
+                            <input type="text"  class="input-mini birth_year" value="<?php if($value['birth_year'] != null AND $value['birth_year'] != '0000') echo $value['birth_year'] ?>" name="rlt_birth_year[]">
+                        </td>
+                        <td>
+
+                            <input type="text"  class="input-small job" value="<?php echo $value['job'] ?>" name="rlt_job[]">
+                        </td>
+                        <td>
+
+                            <input type="text"  class="input-small work_place" value="<?php echo $value['work_place'] ?>" name="rlt_work_place[]">
+                        </td>
+                        <td>
+                            <a href="<?php echo HOST ?>ajax/staff-relative-delete?id=<?php if(isset($value['id'])) echo $value['id'] ?>" class="btn btn-mini btn-danger confirmLink"><i class="icon-remove"></i> Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    relative_div = '<tr class="item new">\
+                            <td>\
+                                <input type="hidden" class="relative_id" name="relative_id[]" value="">\
+                                <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable relative_type_txt"></span>\
+                                <select class="input-mini relative_type" name="relative_type[]">\
+                                    <option value>---</option>\
+                                    <option value="<?php echo My_Staff_Relative::Father ?>">Father</option>\
+                                    <option value="<?php echo My_Staff_Relative::Mother ?>">Mother</option>\
+                                    <option value="<?php echo My_Staff_Relative::Husband ?>">Husband</option>\
+                                    <option value="<?php echo My_Staff_Relative::Wife ?>">Wife</option>\
+                                    <option value="<?php echo My_Staff_Relative::Brother ?>">Brother</option>\
+                                    <option value="<?php echo My_Staff_Relative::Sister ?>">Sister</option>\
+                                    <option value="<?php echo My_Staff_Relative::Child ?>">Child</option>\
+                                </select>\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable full_name_txt"></span>\
+                                <input type="text" class="input-medium full_name" value="" name="rlt_full_name[]">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable gender_txt"></span>\
+                                <select name="rlt_gender[]" class="gender"><option value="1">Male</option><option value="0">Female</option></select>\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable birth_year_txt"></span>\
+                                <input type="text" class="input-mini birth_year" value="" name="rlt_birth_year[]">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable job_txt"></span>\
+                                <input type="text" class="input-small job" value="" name="rlt_job[]">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable work_place_txt"></span>\
+                                <input type="text" class="input-small work_place" value="" name="rlt_work_place[]">\
+                            </td>\
+                            <td>\
+                                <button type="button" class="btn btn-mini btn-default cancel_rlt_btn">Cancel</button>\
+                            </td>\
+                        </tr>'
+        ;
+
+
+</script>

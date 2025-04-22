@@ -1,0 +1,29 @@
+<form class="form-search form-horizontal" method="get" action="/timing/timing-control">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="from" class="span2">From Date</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="to" class="span2">To Date</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+        </div>
+        <div class="span5">
+           <div class="control-group">
+            <label for="imei" class="span2">IMEI</label>
+            <input type="text" class="form-control search-query span2" id="imei" name="imei" value="<?php isset($this->params['imei']) and printf($this->params['imei']);?>">
+        </div>
+    </div>
+</div>
+<button type="submit" class="btn btn-primary">Search</button>
+</form>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+    })
+</script>

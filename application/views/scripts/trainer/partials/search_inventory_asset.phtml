@@ -1,0 +1,24 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/inventory-asset">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="Asset" class="span2">Asset</label>
+                <select id="asset_id" name="asset_id" class="span3">
+                    <option value="">Select</option>
+                    <?php
+                    if ($this->type_asset) :
+                        foreach ($this->type_asset as $key => $value):
+                            ?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['asset_id']) and ( (is_array($this->params['asset_id']) && in_array($key, $this->params['asset_id']) || $key == $this->params['asset_id'])) ):?>selected<?php endif;?>><?php echo (isset($value) and $value) ? $value :'';?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="/trainer/inventory-asset"><input type="button" class="btn btn-warning" value="Reset"/> </a>
+</form>

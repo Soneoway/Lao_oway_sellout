@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Catty Lao Invoice</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style type="text/css"> 
+ @media print
+  {
+  #print {display: none;}
+  .alert{display: none;}
+  }
+
+
+body{
+   font-family:'phetsarath ot';
+  font-size:14px;
+}
+.somediv{
+
+height:200px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  font-family:'phetsarath ot';
+  text-align:center;
+  font-size:12px;
+
+}
+th, td {
+  padding: 0px;
+  text-align: center;
+  
+}
+.boderset1{
+  border-bottom: 1px solid #fff;
+}
+.boderset2{
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 14px;
+}
+.boderset3{
+  border: 1px solid black;
+  padding-left: 2px;
+  font-size: 14px;
+}
+.boderset4{
+  border: 0px solid black;
+  padding-right: : 1px;
+  font-size: 14px;
+}
+#td{
+   text-align:left;
+   padding-left: 10px;
+   font-size: 14px;
+}
+#td1{
+   text-align:left;
+   padding-left: 10px;
+}
+#tdleft{
+   text-align:left;
+   padding-left: 8px;
+}
+#tdright{
+   text-align:right;
+   padding-right: 5px;
+}
+div{
+   text-align: center;
+   font-size:18px;
+   font-weight: bold;
+}
+b{
+  font-size: 16px;
+}
+#b2{
+  font-size: 15px;
+}
+#spanright{
+  text-align:right;
+ 
+}
+#tdfont{
+  font-size: 14px;
+}
+#tdfont2{
+  font-size: 15px;
+}
+
+.single_record{page-break-after: always;} 
+</style>
+</head>
+<body>
+
+<?php 
+    $data_print = $this->data_print;
+    $total = count($data_print);
+
+    $show_item=10;
+    $totalpage= CEIL(($total/$show_item));
+
+    if($totalpage<=0)
+    {
+      $totalpage =1;
+    }
+    ?>
+
+      <?php
+            if($data_print[0]['payment'] == 1){
+              $payment_type ="ຈ່າຍຜ່ອນ";
+            }else{
+              $payment_type ="ຈ່າຍສົດ";
+
+            }
+        ?>
+
+  <?php
+    $num =1 ;
+    $row_count=0;
+    for ($i = 1; $i <= $totalpage; $i++)
+    {
+
+
+?>
+<table style="width:830px; height:135px; border: 0px;">
+  <tr>
+    <td style="width:525px" id="td1">
+       <b>ຮ້ານ: <?php echo $data_print[0]['store_name'] ?></b> <br> 
+       <span id="b2">ທີ່ຢູ່: <?php echo $data_print[0]['address'] ?>. 
+       <br> ເບີໂທ/Tel: <?php echo $data_print[0]['contact'] ?> </span> <br> 
+       <div style="font-size:28px">ບິນຂາຍເຄື່ອງ/Sell Invoice</div>
+    </td> 
+    <td rowspan="2" id="td">
+       ເລກບິນ: <?php echo $data_print[0]['Sn_print']?><br>
+       ວັນທີຂາຍ: <?php echo $data_print[0]['print_date']?> <br>
+       ຜູ້ຂາຍເຄື່ອງ: <?php echo $data_print[0]['sale']?> <br>
+       ເບີໂທ/Tel: <?php echo $data_print[0]['staff_number']?> <br>
+       ປະເພດການຈ່າຍເງິນ: <?php echo $payment_type; ?>
+    </td>
+  </tr>
+   <tr style="height:40px">
+    <td id="td">
+       ລູກຄ້າ : <?php echo $data_print[0]['customers']?><br>
+       ເບີໂທລະສັບ : <?php echo $data_print[0]['phone_number']?>
+    </td>
+  </tr>
+</table>
+<table style="width:830px;" class="somediv">
+  <tr>
+    <td id="tdfont" style="width:40px; padding: 5px;">ລ.ດ</td>
+    <td id="tdfont" style="width:50px;"> ລຸ້ນ</td>
+    <td id="tdfont" style="width:390px;"> ລາຍການສິນຄ້າ</td>
+    <td id="tdfont" id="tdfont"style="width:40px; padding: 5px;">ຈຳນວນ</td>
+    <td id="tdfont" style="width:100px; padding: 5px;">ລາຄາ/ໜ່ວຍ</td>
+    <td id="tdfont" style="width:120px; padding: 5px;">ສ່ວນຫຼຸດ</td>
+    <td id="tdfont" style="width:147px; padding: 5px;">ລາຄາລວມ</td>
+  </tr style="height:200px;">
+    <?php
+
+    $Cg = new Application_Model_GoodCategory();
+    $cname = $Cg->get_cache();
+    $totalprice=0;
+    for ($j = 0; $j < 10; $j++)
+    {
+     
+
+      $group = $data_print[$row_count]['cattagory_name'];
+      $totalpriceall+=$total;
+      $good_name = $data_print[$row_count]['procuct_name'];
+      $good_color= $data_print[$row_count]['good_color'];
+
+      $price = $data_print[$row_count]['unit_price'];
+
+      $price_origin = $data_print[$row_count]['price_origin'];
+
+      $discount = $data_print[$row_count]['discount'];
+
+      $saleout_text= $getInvoiceDetails[$row_count]['text'];
+
+       if($good_name =="")
+       {
+          $num="";
+       }
+
+       if($discount > 0){
+          $total_price = number_format($price_origin - ($price_origin * $discount /100)); 
+       }else{
+          $total_price = $price;
+       }
+
+       $total_num += $salenum['num'];
+
+     ?>
+      <tr>
+        <td id="tdfont" class="boderset1">
+          <?php echo $num ; ?> <br>
+        </td>
+        <td id="tdfont" id="tdleft" class="boderset1" style="text-align: center;">
+          <?php echo $group ?>
+        </td>
+        <td id="tdfont" id="tdleft" class="boderset1" style="text-align: left; padding-left: 8px;">
+          <?php echo $good_name?> &nbsp; &nbsp; <?php echo $good_color ?>
+          <center><span><?php echo $data_print[$row_count]['imei'] ?></span></center>
+        </td>
+        <td id="tdfont" class="boderset1"> 
+          <?php echo $data_print[$row_count]['num']?>
+        </td>
+        <td id="tdfont" id="tdright" class="boderset1" style="text-align: right; padding-right: 6px;">
+          <?php echo $price ?>
+        </td>
+        <td id="tdfont" id="tdright" class="boderset1" style="text-align: center; font-size: 12px;">
+          <?php echo $discount ?>
+        </td>
+        <td id="tdfont" id="tdright" class="boderset1" style="text-align: right; padding-right: 6px;">
+          <?php echo $total_price?>
+        </td>
+    
+
+    </tr>
+    <?php
+
+        $row_count+=1;
+         $num +=1;
+
+         if($data_print[0]['discount'] > 0){
+         $total_price_sale = $data_print[0]['price_origin'] - ($data_print[0]['price_origin'] * $data_print[0]['discount']) /100;
+       }else{
+        $total_price_sale = $data_print[0]['price_origin'];
+       }
+
+      }
+    ?>
+</table>
+
+<table style="width:830px;">
+  <tr>
+    <td class="boderset2"></td>
+    <td id="tdfont2" style="width:351px;"><span  style="padding-left: 2px;"><?php if($totalpage == $i){ ?>ລາຄາລວມທັງໝົດ: </span><span style="padding-right: 2px;"><?php echo number_format($total_price_sale,2) ?> ກີບ<?php } ?></span></td>
+    
+  </tr>
+</table>
+<br><br> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_________________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _________________  <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ຜູ້ອອກບິນ-ຂາຍເຄື່ອງ</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>ຜູ້ຮັບຊື້</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<?php           
+}
+?>
+
+</body>
+</html>

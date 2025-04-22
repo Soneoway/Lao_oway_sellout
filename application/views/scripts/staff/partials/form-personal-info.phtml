@@ -1,0 +1,393 @@
+<style>
+    #laocolor{
+        font-family: phetsarath ot;
+        color: blue;
+        font-style: bold;
+    }
+</style>
+<?php /**
+ * @author  Buu <buu.pham@oppomobile.vn>
+ */ ?>
+<div class="row-fluid">
+    <div class="span6">
+        <div class="control-group">
+            <label for="photo" class="control-label" id="laocolor">ໃສ່ຮູບບັດພະນັກງານ <br>  (ດ້ານໜ້າ)</label>
+            <div class="controls">
+                <?php if(isset($this->staff) and !empty($this->staff->id_photo)){?>
+                    <a target="_blank" title="View" href="<?php if(isset($this->staff) and !empty($this->staff->id_photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/ID_Front/'.$this->staff->id_photo);  ?>"><img width="210" height="239" class="staff-photo" src="<?php if(isset($this->staff) and !empty($this->staff->id_photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/ID_Front/'.$this->staff->id_photo);  ?>" /></a>
+                <?php } ?>
+                <div class="clear"></div>
+                <input type="file" id="id_photo" name="id_photo" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group"><br> 
+                    <label for="del_id_photo" class="pull-left" id="laocolor">ລົບຮູບພາບ</label>
+                    <input type="checkbox" class="pull-left" name="del_id_photo" id="del_id_photo" />
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="dob" class="control-label" id="laocolor">ວັນເດືອນປີເກີດ</label>
+            <div class="controls">
+                <input type="text" class="date" required id="dob" placeholder="Date of birth" name="dob" value="<?php isset($this->staff) and $this->staff->dob and printf(date('d/m/Y',strtotime($this->staff->dob)));?>" >
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="shirt_size" class="control-label" id="laocolor">ເບີເສື້ອທີ່ໃສ່</label>
+            <div class="controls">
+                <select name="shirt_size" id="shirt_size">
+                    <option value id="laocolor">ເລືອກເບີເສື້ອ</option>
+                    <!-- <option value="<?php echo My_Staff_ShirtSize::XXS ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XXS) echo "selected" ?>>XXS</option> -->
+                    <option value="<?php echo My_Staff_ShirtSize::XS ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XS) echo "selected" ?>>SS</option>
+                    <option value="<?php echo My_Staff_ShirtSize::S ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::S) echo "selected" ?>>S</option>
+                    <option value="<?php echo My_Staff_ShirtSize::M ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::M) echo "selected" ?>>M</option>
+                    <option value="<?php echo My_Staff_ShirtSize::L ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::L) echo "selected" ?>>L</option>
+                    <option value="<?php echo My_Staff_ShirtSize::XL ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XL) echo "selected" ?>>XL</option>
+                    <option value="<?php echo My_Staff_ShirtSize::XXL ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XXL) echo "selected" ?>>2XL</option>
+                    <option value="<?php echo My_Staff_ShirtSize::XXXL ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XXXL) echo "selected" ?>>3XL</option>
+                    <option value="<?php echo My_Staff_ShirtSize::XXXXXL ?>" <?php if (isset($this->staff['shirt_size']) && $this->staff['shirt_size'] == My_Staff_ShirtSize::XXXXXL) echo "selected" ?>>5XL</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_number" class="control-label">ID Card number</label>
+            <div class="controls">
+                <input type="text" id="ID_number" data-id="<?php if(isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>" placeholder="Enter ID number" name="ID_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_number);?>">
+                <p id="id_card_validate" class="text-warning"></p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_place" class="control-label">ID Card place</label>
+            <div class="controls">
+                <input type="text" id="ID_place" placeholder="Enter ID place" name="ID_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_place);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_date" class="control-label">ID Card date</label>
+            <div class="controls">
+                <input type="text" class="date" id="ID_date" placeholder="Enter ID date" name="ID_date" value="<?php isset($this->staff) and $this->staff->ID_date and printf(date('d/m/Y',strtotime($this->staff->ID_date)));?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="nationality" class="control-label">Nationality</label>
+            <div class="controls">
+                <select name="nationality" id="nationality">
+                    <option value>Choose</option>
+                    <?php foreach ($this->nationalities as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->nationality):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="religion" class="control-label">Religion</label>
+            <div class="controls">
+                <select name="religion" id="religion">
+                    <option value>Choose</option>
+                    <?php foreach ($this->religions as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->religion):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="marital_status" class="control-label">Marital Status</label>
+            <div class="controls">
+                <select name="marital_status" id="marital_status">
+                    <option value>---</option>
+                    <option value="<?php echo My_Staff_MaritalStatus::Single ?>" <?php if (isset($this->staff['marital_status']) && $this->staff['marital_status'] == My_Staff_MaritalStatus::Single) echo "selected" ?>>Single</option>
+                    <option value="<?php echo My_Staff_MaritalStatus::Married ?>" <?php if (isset($this->staff['marital_status']) && $this->staff['marital_status'] == My_Staff_MaritalStatus::Married) echo "selected" ?>>Married</option>
+                    <option value="<?php echo My_Staff_MaritalStatus::Divorced ?>" <?php if (isset($this->staff['marital_status']) && $this->staff['marital_status'] == My_Staff_MaritalStatus::Divorced) echo "selected" ?>>Divorced</option>
+                </select>
+            </div>
+        </div>
+
+        <fieldset>
+            <legend>ID Card Address</legend>
+
+            <div class="control-group">
+                <label for="id_card_province" class="control-label">Province</label>
+                <div class="controls">
+                    <select id="id_card_province" name="id_card_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if ($this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset( $this->district_cache[ $this->id_card_address['district'] ]['parent'] ) 
+                                        && $this->district_cache[ $this->id_card_address['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="id_card_district" class="control-label">District</label>
+                <div class="controls">
+                    <select id="id_card_district" name="id_card_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->id_card_address_districts) && $this->id_card_address_districts) :
+                            foreach ($this->id_card_address_districts as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($this->id_card_address['district']) && $this->id_card_address['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="id_card_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <input type="text" id="id_card_ward" placeholder="Enter ward" name="id_card_ward" value="<?php if (isset($this->id_card_address['ward'])) echo $this->id_card_address['ward'] ;?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="id_card_address" class="control-label">Address</label>
+                <div class="controls">
+                    <input type="text" id="id_card_address" placeholder="Enter address" name="id_card_address" value="<?php if (isset($this->id_card_address['address'])) echo $this->id_card_address['address'] ;?>">
+                </div>
+            </div>
+        </fieldset>
+        <!--  -->
+        <fieldset>
+            <legend>Permanent Address</legend>
+
+            <div class="control-group">
+                <label for="perm_province" class="control-label">Province</label>
+                <div class="controls">
+                    <select id="perm_province" name="perm_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if ($this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset( $this->district_cache[ $this->permanent_address['district'] ]['parent'] ) 
+                                        && $this->district_cache[ $this->permanent_address['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="perm_district" class="control-label">District</label>
+                <div class="controls">
+                    <select id="perm_district" name="perm_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->permanent_address_districts) && $this->permanent_address_districts) :
+                            foreach ($this->permanent_address_districts as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($this->permanent_address['district']) && $this->permanent_address['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="perm_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <input type="text" id="perm_ward" placeholder="Enter ward" name="perm_ward" value="<?php if (isset($this->permanent_address['ward'])) echo $this->permanent_address['ward'] ;?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="perm_address" class="control-label">Address</label>
+                <div class="controls">
+                    <input type="text" id="perm_address" placeholder="Enter address" name="perm_address" value="<?php if (isset($this->permanent_address['address'])) echo $this->permanent_address['address'] ;?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="button" class="btn btn-success copy_to_birth_btn">Copy to Birth</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+    <!--  -->
+    <div class="span6">
+
+        <div class="control-group">
+            <label for="photo" class="control-label" id="laocolor">ໃສ່ຮູບບັດພະນັກງານ <br>  (ດ້ານຫຼັງ)</label>
+            <div class="controls">
+                <?php if(isset($this->staff) and !empty($this->staff['id_photo_back'])){?>
+                    <a target="_blank" title="View" href="<?php if(isset($this->staff) and !empty($this->staff['id_photo_back'])) printf(HOST.'photo/staff/'.$this->staff['id'].'/ID_Back/'.$this->staff['id_photo_back']);  ?>"><img width="210" height="239" class="staff-photo" src="<?php if(isset($this->staff) and !empty($this->staff['id_photo_back'])) printf(HOST.'photo/staff/'.$this->staff['id'].'/ID_Back/'.$this->staff['id_photo_back']);  ?>" /></a>
+                <?php } ?>
+                <div class="clear"></div>
+                <input type="file" id="id_photo_back" name="id_photo_back" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group"><br> 
+                    <label for="del_id_photo_back" class="pull-left" id="laocolor">ລົບຮູບພາບ</label>
+                    <input type="checkbox" class="pull-left" name="del_id_photo_back" id="del_id_photo_back" />
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="temporary_address" class="span2">Temporary Address</label>
+            <p><?php if (isset($this->staff['temporary_address'])) echo $this->staff['temporary_address'] ?></p>
+        </div>
+
+        <div class="control-group">
+            <label for="address" class="span2">ID Card Address</label>
+            <p><?php if (isset($this->staff['address'])) echo $this->staff['address'] ?></p>
+        </div>
+
+        <div class="control-group">
+            <label for="permanent_address" class="span2">Permanent Address</label>
+            <p><?php if (isset($this->staff['permanent_address'])) echo $this->staff['permanent_address'] ?></p>
+        </div>
+
+        <div class="control-group">
+            <label for="birth_place" class="span2">Birth place</label>
+            <p><?php if (isset($this->staff['birth_place'])) echo $this->staff['birth_place'] ?></p>
+        </div>
+
+        <div class="control-group">
+            <label for="native_place" class="span2">Native place</label>
+            <p><?php if (isset($this->staff['native_place'])) echo $this->staff['native_place'] ?></p>
+        </div>
+
+        <fieldset>
+            <legend>Temporary Address</legend>
+            <div class="control-group">
+                <label for="temp_province" class="control-label">Province</label>
+                <div class="controls">
+                    <select id="temp_province" name="temp_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->all_province_cache) && $this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset( $this->district_cache[ $this->temporary_address['district'] ]['parent'] ) 
+                                        && $this->district_cache[ $this->temporary_address['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_district" class="control-label">District</label>
+                <div class="controls">
+                    <select id="temp_district" name="temp_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->temporary_address_districts) && $this->temporary_address_districts) :
+                            foreach ($this->temporary_address_districts as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($this->temporary_address['district']) && $this->temporary_address['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <input type="text" id="temp_ward" placeholder="Enter ward" name="temp_ward" value="<?php if (isset($this->temporary_address['ward'])) echo $this->temporary_address['ward'];?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_address" class="control-label">Address</label>
+                <div class="controls">
+                    <input type="text" id="temp_address" placeholder="Enter address" name="temp_address" value="<?php if (isset($this->temporary_address['address'])) echo $this->temporary_address['address'] ;?>">
+                </div>
+            </div>
+
+        </fieldset>
+
+        <fieldset>
+            <legend>Birth Certificate Address</legend>
+            
+            <div class="control-group">
+                <label for="birth_province" class="control-label">Province</label>
+                <div class="controls">
+                    <select id="birth_province" name="birth_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->all_province_cache) && $this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset( $this->district_cache[ $this->birth_address['district'] ]['parent'] ) 
+                                        && $this->district_cache[ $this->birth_address['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="birth_district" class="control-label">District</label>
+                <div class="controls">
+                    <select id="birth_district" name="birth_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->birth_address_districts) && $this->birth_address_districts) :
+                            foreach ($this->birth_address_districts as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($this->birth_address['district']) && $this->birth_address['district'] == $_key):?>
+                                    selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="birth_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <input type="text" id="birth_ward" placeholder="Enter ward" name="birth_ward" value="<?php if (isset($this->birth_address['ward'])) echo $this->birth_address['ward'] ?>">
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+</div>

@@ -1,0 +1,101 @@
+<form class="form-search form-horizontal" method="get" action="/timing/pc-shop-level/pc-shop-level" onsubmit="return validateSearch()">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="store_type" class="span2">Store Type</label>
+                <select id="store_type" name="store_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php 
+                    if ($this->store_type) :
+                        foreach ($this->store_type as $store_type):
+                    ?>
+                            <option value="<?php echo $store_type['org_id'];?>" <?php if (isset($this->params['store_type']) and ( (is_array($this->params['store_type']) && in_array($store_type['org_id'], $this->params['store_type']) || $store_type['org_id']==$this->params['store_type'])) ):?>selected<?php endif;?>><?php echo $store_type['org_name'];?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+    <button type="submit" name="export" value="2" class="btn btn-primary">Export By Area</button>
+    
+
+<?php 
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    
+    if ( in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID)) ) {
+
+        echo "<br/><br/>";
+        echo "<button type='submit' name='export' value='3' class='btn btn-success'>Export Index By Area</button>&nbsp;";
+        echo "<button type='submit' name='export' value='4' class='btn btn-success'>Export Num.</button>&nbsp;";
+        echo "<button type='submit' name='export' value='5' class='btn btn-success'>Summary Index</button>&nbsp;";
+    } 
+?>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+    });
+</script>

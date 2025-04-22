@@ -1,0 +1,299 @@
+
+<div class="table-responsive">
+
+<?php 
+  $now = date('Y-m-01');
+
+  $month = date('M-Y', strtotime($now));
+  $last_month = date('M-Y', strtotime("-1 Month", strtotime($now)));
+  // $next_month = date('M-Y', strtotime("+1 Month", strtotime($now)));
+
+  // print_r($this->params2);
+
+?>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">#</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Store Code</div></th>
+      <th rowspan="2" style="vertical-align: middle;"><div align="center">Store Name</div></th>
+      <th colspan="4"><div align="center" style="font-size:14px; color: green; font-weight:bold;">ເປົ້າເດືອນກ່ອນ [<?php echo $last_month; ?>]</div></th>
+      <th colspan="5"><div align="center" style="font-size:14px; color: blue;">ເປົ້າເດືອນນີ້ [<?php echo $month; ?>]</div></th>
+    </tr>
+    <tr>
+      <th><div align="center" style="font-size: 12px; color: green;">ເປົ້າຮ້ານ</div></th>
+      <th><div align="center" style="font-size: 12px; color: green;">ເປົ້າ Hero ຂອງຮ້ານ</div></th>
+      <th><div align="center" style="font-size: 12px; color: green;">ເປົ້າ PC</div></th>
+      <th><div align="center" style="font-size: 12px; color: green;">ເປົ້າ Hero ຂອງ PC</div></th>
+      <th><div align="center" style="font-size: 12px; color: blue;">ເປົ້າຮ້ານ</div></th>
+      <th><div align="center" style="font-size: 12px; color: blue;">ເປົ້າ Hero ຂອງຮ້ານ</div></th>
+      <th><div align="center" style="font-size: 12px; color: blue;">ເປົ້າ PC</div></th>
+      <th><div align="center" style="font-size: 12px; color: blue;">ເປົ້າ Hero ຂອງ PC</div></th>
+      <th><div align="center" style="font-size: 14px; font-weight:bold; color:blueviolet">Hero Product</div></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <?php 
+
+      $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+      $i = 1;
+      $sum_target = 0;
+      if(isset($this->store_list) and $this->store_list) :
+        foreach($this->store_list as $k => $v) :
+    ?> 
+    <tr>
+      <td><div align="center"><?php echo $i++; ?></div></td>
+      <td><div align="center"><?php if(isset($v['store_code'])) echo $v['store_code']; ?></div></td>
+      <td><?php if(isset($v['store_name'])) echo $v['store_name']; ?></td>
+
+      <!-- Start Last Month -->
+      <td><div align="center" style="color: green; font-weight:bold; font-size: 18px;"><?php 
+      if($userStorage->group_id == PGPB_ID){
+        if(isset($v['Target_Store_PC2'])) { 
+          echo $v['Target_Store_PC2']; 
+          $sum_target = $sum_target + $v['Target_Store_PC2']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+
+      if($userStorage->group_id == PCDB_ID){
+        if(isset($v['pcdb_target_last'])) { 
+          echo $v['pcdb_target_last']; 
+          $sum_target = $sum_target + $v['pcdb_target_last']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+      ?></div></td> 
+
+      <td><div align="center" style="color: green; font-weight:bold; font-size: 18px;"><?php 
+      if($userStorage->group_id == PGPB_ID){
+        if(isset($v['Hero_Store_PC2'])) { 
+          echo $v['Hero_Store_PC2']; 
+          $sum_target_hero = $sum_target_hero + $v['Hero_Store_PC2']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+
+      if($userStorage->group_id == PCDB_ID){
+        if(isset($v['pcdb_target_hero_last'])) { 
+          echo $v['pcdb_target_hero_last']; 
+          $sum_target_hero = $sum_target_hero + $v['pcdb_target_hero_last']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+
+      ?></div></td>
+
+      <td><div align="center" style="color: green; font-weight:bold; font-size: 18px;">
+        <?php 
+         $number_pc = $v['pc'];
+        switch ($number_pc) {
+          case '2':
+            $pc_target = $v['Target_Store_PC2'] / 2 ;
+            echo number_format($pc_target,0);
+            break;
+          case '3':
+             $pc_target = $v['Target_Store_PC2'] / 3 ;
+             echo number_format($pc_target,0);
+            break;
+          case '4':
+             $pc_target = $v['Target_Store_PC2'] / 4 ;
+             echo number_format($pc_target,0);
+            break;
+           case '1':
+             $pc_target = $v['Target_Store_PC2'];
+             echo $pc_target;
+            break;
+        }
+        ?></div></td>
+
+      <td><div align="center" style="color: green; font-weight:bold; font-size: 18px;">
+        <?php 
+         $number_pc = $v['pc'];
+        switch ($number_pc) {
+          case '2':
+            $pc_target = $v['Hero_Store_PC2'] / 2 ;
+            echo number_format($pc_target,0);
+            break;
+          case '3':
+             $pc_target = $v['Hero_Store_PC2'] / 3 ;
+             echo number_format($pc_target,0);
+            break;
+          case '4':
+             $pc_target = $v['Hero_Store_PC2'] / 4 ;
+             echo number_format($pc_target,0);
+            break;
+           case '1':
+             $pc_target = $v['Hero_Store_PC2'];
+             echo $pc_target;
+            break;
+        }
+         ?></div></td>
+         
+    <!-- End Last Month -->
+
+    <!-- Start This Month -->
+      <td><div align="center" style="color: blue; font-weight:bold; font-size: 18px;"><?php 
+      if($userStorage->group_id == PGPB_ID){
+        if(isset($v['Target_Store_PC'])) { 
+          echo $v['Target_Store_PC']; 
+          $sum_target = $sum_target + $v['Target_Store_PC']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+
+      if($userStorage->group_id == PCDB_ID){
+        if(isset($v['pcdb_target'])) { 
+          echo $v['pcdb_target']; 
+          $sum_target = $sum_target + $v['pcdb_target']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+      ?></div></td> 
+
+      <td><div align="center" style="color: blue; font-weight:bold; font-size: 18px;"><?php 
+      if($userStorage->group_id == PGPB_ID){
+        if(isset($v['Hero_Store_PC'])) { 
+          echo $v['Hero_Store_PC']; 
+          $sum_target_hero = $sum_target_hero + $v['Hero_Store_PC']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+
+      if($userStorage->group_id == PCDB_ID){
+        if(isset($v['pcdb_target_hero'])) { 
+          echo $v['pcdb_target_hero']; 
+          $sum_target_hero = $sum_target_hero + $v['pcdb_target_hero']; 
+        } else {  
+          echo "<font color='red'>-</font>";
+        }
+      }
+      ?></div></td>
+
+      <td><div align="center" style="color: blue; font-weight:bold; font-size: 18px;">
+        <?php 
+         $number_pc = $v['pc'];
+        switch ($number_pc) {
+          case '2':
+            $pc_target = $v['Target_Store_PC'] / 2 ;
+            echo number_format($pc_target,0);
+            break;
+          case '3':
+             $pc_target = $v['Target_Store_PC'] / 3 ;
+             echo number_format($pc_target,0);
+            break;
+          case '4':
+             $pc_target = $v['Target_Store_PC'] / 4 ;
+             echo number_format($pc_target,0);
+            break;
+           case '1':
+             $pc_target = $v['Target_Store_PC'];
+             echo $pc_target;
+            break;
+        }
+        ?></div></td>
+
+      <td><div align="center" style="color: blue; font-weight:bold; font-size: 18px;">
+        <?php 
+         $number_pc = $v['pc'];
+        switch ($number_pc) {
+          case '2':
+            $pc_target = $v['Hero_Store_PC'] / 2 ;
+            echo number_format($pc_target,0);
+            break;
+          case '3':
+             $pc_target = $v['Hero_Store_PC'] / 3 ;
+             echo number_format($pc_target,0);
+            break;
+          case '4':
+             $pc_target = $v['Hero_Store_PC'] / 4 ;
+             echo number_format($pc_target,0);
+            break;
+           case '1':
+             $pc_target = $v['Hero_Store_PC'];
+             echo $pc_target;
+            break;
+        }
+         ?></div></td>
+         
+    <!-- End This Month -->
+
+
+      <td><div align="center" style="color: blueviolet; font-weight:bold; font-size: 16px;"><?php echo $this->hero['hero_product_name'] ?>
+          </div>
+      </td>
+
+    </tr>
+    <?php endforeach ; endif ?>
+
+    <?php 
+
+      // Normal Target
+      if (isset($this->store_list[0]['sale_target']) || isset($this->store_list[0]['sale_target_next'])) { 
+
+        if ($sum_target >= $this->store_list[0]['sale_target']) { $font_color = "green"; }
+        else { $font_color = "red"; }
+        if ($sum_target_next >= $this->store_list[0]['sale_target_next']) { $font_color_next = "green"; }
+        else { $font_color_next = "red"; }
+
+        echo "<tr>";
+
+        if (isset($this->store_list[0]['sale_target'])) {
+          echo "<td colspan='7'><div align='right'> Assign Target : <font color='".$font_color."'>".$sum_target."</font> of ".$this->store_list[0]['sale_target'],"</div></td>";
+        } else { echo "<td colspan='7'></td>"; }
+
+        if (isset($this->store_list[0]['sale_target_next'])) {
+          echo "<td colspan='2'><div align='right'> Assign Target : <font color='".$font_color_next."'>".$sum_target_next."</font> of ".$this->store_list[0]['sale_target_next']."</div></td>";
+        } else { echo "<td colspan='2'></td>"; }
+
+        echo "</tr>";
+      }
+
+      // Hero Target
+      if (isset($this->store_list[0]['sale_target_hero']) || isset($this->store_list[0]['sale_target_hero_next'])) {
+
+        if ($sum_target_hero >= $this->store_list[0]['sale_target_hero']) { $font_color = "green"; }
+        else { $font_color = "red"; }
+        if ($sum_target_hero_next >= $this->store_list[0]['sale_target_hero_next']) { $font_color_next = "green"; }
+        else { $font_color_next = "red"; }
+
+        echo "<tr>"; 
+
+        if (isset($this->store_list[0]['sale_target_hero'])) {
+          echo "<td colspan='7'><div align='right'> Assign Hero Target : <font color='".$font_color."'>".$sum_target_hero."</font> of ".$this->store_list[0]['sale_target_hero']."</div></td>";
+        } else { echo "<td colspan='7'></td>"; }
+
+        if (isset($this->store_list[0]['sale_target_hero_next'])) {
+          echo "<td colspan='2'><div align='right'> Assign Hero Target : <font color='".$font_color_next."'>".$sum_target_hero_next."</font> of ".$this->store_list[0]['sale_target_hero_next']."</div></td>";
+        } else { echo "<td colspan='2'></td>"; }
+
+        echo "</tr>";
+      }
+
+      if ($userStorage->group_id == SALES_ID) {
+        $QGoodKpiLog = new Application_Model_GoodKpiLog();
+        $sale_com = $QGoodKpiLog->com_sale_bkk_2017($this->params2);
+        //print_r($sale_com);
+
+        echo "<tr>";
+        echo "<td colspan='3'><div align='center'>Total Activated Unit : ".number_format($sale_com[0]['total_unit'])." Unit</div></td>";
+        echo "<td><div align='center'>Total Sale Amount : ".number_format($sale_com[0]['total_price'])." Baht</div></td>";
+        echo "<td colspan='5'><div align='center'>Sellout Commission : ".number_format($sale_com[0]['com_rate'])." Baht</div></td>";
+        echo "</tr>";
+      }
+
+    ?>
+    
+  </tbody>
+</table>
+</div>

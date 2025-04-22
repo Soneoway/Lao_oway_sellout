@@ -1,0 +1,85 @@
+<div class="page-header">
+    <h1>IMEIs <small>KPI</small></h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="row">
+    <div class="span12">
+        <p><a href="<?php echo HOST ?>timing" class="btn btn-default">Go Back</a></p>
+    </div>
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/kpi-search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" id="myTab">
+    <li class="<?php if ((isset($this->type) && $this->type=='all')) echo "active" ?>"><a href="<?php echo HOST ?>timing/kpi?type=all">All</a></li>
+    <li class="<?php if ((isset($this->type) && $this->type=='activated')) echo "active" ?>"><a href="<?php echo HOST ?>timing/kpi?type=activated">Activated</a></li>
+    <li class="<?php if ((isset($this->type) && $this->type=='not_activated')) echo "active" ?>"><a href="<?php echo HOST ?>timing/kpi?type=not_activated">Not Activated</a></li>
+    <li><a href="#">Chọn lại ngày tháng trên [Search] khi chuyển tab</a></li>
+</ul>
+
+<div class="table-responsive load-ajax">
+    <?php echo $this->render('timing/partials/kpi-list.phtml'); ?>
+</div>
+
+<script type="text/javascript">
+function search() {
+    var formdata = jQuery("form").serialize();
+    var decoded = decodeURIComponent(formdata);
+    strip = decoded.replace(/[\[\]]/g, "_");
+
+    //get ajax content
+    if ($(".load-ajax").length){
+        $(this).after("<span class=\'loading\'></span>");
+        $.ajax({
+            url: '<?php echo HOST ?>timing/kpi',
+            type: 'get',
+            dataType: 'html',
+            data: strip,
+        })
+        .done(function(data) {
+            console.log("success");
+            $(".load-ajax").html(data);
+            $(".loading").remove();
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+        
+    } else
+        window.location.href = strip;
+
+    return false;    
+}
+
+;(function($) {
+    $('.imei_customer').tooltip();
+})(jQuery);
+</script>

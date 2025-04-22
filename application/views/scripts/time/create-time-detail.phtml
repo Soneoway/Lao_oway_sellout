@@ -1,0 +1,282 @@
+<style>
+   #staff_id{
+        margin-left: 200px;
+       margin-top: -8px;
+   }
+   input[type='text']{
+       width: 350px;
+   }
+    select{
+        width: 360px !important;
+    }
+    textarea{
+        width: 330px !important;
+    }
+    .date{
+        border-radius: 3px;
+        width: 330px !important;
+    }
+
+    .form-group.info span{
+        width: 100px;
+        display: block;
+        float: left;
+    }
+
+    .form-group input{
+        display: inline-block;
+        max-width: 300px;
+    }
+
+    .form-group select{
+        display: inline-block;
+        max-width: 310px;
+    }
+
+    .form-group textarea{
+        display: inline-block;
+        max-width: 300px;
+    }
+
+    .form-group label{
+        width: 100px;
+        display: inline-block;
+    }
+
+    .add:not(:first-child){
+        border-top: 1px solid #eeeeee;
+    }
+
+    .page-header h1{
+        text-transform: uppercase;
+        font-size: 20px;
+    }
+</style>
+<div class="page-header">
+        <h1>Create time off detail for staff: </h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+
+if (isset($this->messages_success) and $this->messages_success)
+    foreach ($this->messages_success as $message):
+        echo '<div class="alert alert-success">' . $message . '</div>';
+    endforeach;    
+?>
+
+<?php 
+    if(isset($this->row) and $this->row):
+?>
+<div class="row-fluid">
+    <div class="span12">
+        <h3><?php echo $this->row['staff_name'];?> <a href="#" class='btn btn-success btn-small btn_add pull-right'><i class='icon-plus'></i></a></h3>
+    </div>
+</div>
+<div class="row-fluid"> 
+    <form role="form" id="time_form" action="<?php echo HOST . 'time/save-time-detail'; ?>" method="post"  class="row-fluid">
+        <div class="span4">
+            <div class="form-group info">
+                <p class="clearfix"><span>From</span>: <?php echo date('d/m/Y',strtotime($this->row['from_date']));?></p>
+                <p class="clearfix"><span>To</span>: <?php echo date('d/m/Y',strtotime($this->row['to_date']));?></p>
+                <p class="clearfix">
+                    <span>Type</span>:
+                    <?php 
+                        $types = unserialize(OFF_TYPE);
+                        echo $types[$this->row['off_type']];
+                    ?>
+                </p>
+                <div class='text_reason clearfix'>
+                    <span>note</span>
+                    <div class='pull-left'>
+                        <?php echo ':'.trim($this->row['reason']); ?>    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span6 list_time">
+            <?php 
+                if(isset($this->list) and $this->list):
+                    foreach ($this->list as $key => $item):
+            ?>
+            <div class="add">
+                <div class="form-group">
+                    <label for="">From date</label>
+                    <input type="text" class="form-control date" value="<?php echo date('d/m/Y',strtotime($item['from_date'])) ?>" name="from_date[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="">To date</label>
+                    <input type="text" class="form-control date" value="<?php echo date('d/m/Y',strtotime($item['to_date'])) ?>" name="to_date[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Off type</label>
+                    <select name="off_type[]" id="" required>
+                        <option value="">-----</option>
+                        <?php 
+                            $types2 = unserialize(OFF_TYPE);
+                            foreach ($types2 as $key => $value):
+                        ?>
+                                <option value="<?php echo $key;?>" <?php echo ($key == $item['off_type']) ?'selected=selected':'';?>><?php echo $value;?>
+                                </option>
+                        <?php 
+                            endforeach;
+                        ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Note</label>
+                    <textarea name="reason[]" id="" cols="30" rows="5" required><?php echo trim($item['reason'])?></textarea>
+                </div>
+            </div>
+            <?php 
+                    endforeach;
+
+                else:
+            ?>
+                   
+                    <div class="add">
+                        <div class="form-group">
+                            <label for="">From date</label>
+                            <input type="text" class="form-control date" value="<?php echo date('d/m/Y',strtotime($this->row['from_date'])) ?>" name="from_date[]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">To date</label>
+                            <input type="text" class="form-control date" value="<?php echo date('d/m/Y',strtotime($this->row['to_date'])) ?>" name="to_date[]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Off type</label>
+                            <select name="off_type[]" id="" required>
+                                <option value="">-----</option>
+                                <?php
+                                $types2 = unserialize(OFF_TYPE);
+                                foreach ($types2 as $key => $value):
+                                    ?>
+                                    <option value="<?php echo $key;?>" <?php echo ($key == $this->row['off_type']) ?'selected=selected':'';?>><?php echo $value;?>
+                                    </option>
+                                <?php
+                                endforeach;
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Note</label>
+                            <textarea name="reason[]" id="" cols="30" rows="5" required><?php echo trim($this->row['reason'])?></textarea>
+                        </div>
+                    </div>
+                
+            <?php
+                endif;
+            ?>
+
+        </div>
+        <div class="span12">
+            <p>
+                <input type="hidden" name="staff_id" value="<?php echo $this->row['staff_id']?>">
+                <input type="hidden" name="id" value="<?php echo $this->row['id']?>">
+                <a href="/time/list-pre-time-off" class="btn btn-warning pull-right" style="margin-left: 20px;">Back</a>
+
+                <?php 
+                    if(intval($this->row['approved_at']) <= 0):
+                ?>
+                <input type="submit" id="submit" value="Save" class="btn btn-primary pull-right">
+                <?php endif;?>
+            </p>
+        </div>
+
+    </form>
+ </div>
+<?php 
+    endif;
+?>
+
+<div class="new_row" style="display: none">
+    <div class="add">
+        <p><a href="#" class="btn btn-danger btn-small btn_remove pull-right"><i class="icon-minus"></i></a></p>
+        <div class="form-group">
+            <label for="">From date</label>
+            <input type="text" class="form-control date" value="" name="from_date[]" required>
+        </div>
+        <div class="form-group">
+            <label for="">To date</label>
+            <input type="text" class="form-control date" value="" name="to_date[]" required>
+        </div>
+        <div class="form-group">
+            <label for="">Off type</label>
+            <select name="off_type[]" id="" required>
+                <option value="">-----</option>
+                <?php 
+                    $types2 = unserialize(OFF_TYPE);
+                    foreach ($types2 as $key => $value):
+                ?>
+                        <option value="<?php echo $key;?>"><?php echo $value;?></option>
+                <?php 
+                    endforeach;
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="">Note</label>
+            <textarea name="reason[]" id="" cols="30" rows="5" required></textarea>
+        </div>
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script type="text/javascript" src="/js/file-validator.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        add();
+        $("#submit").click(function(){
+            var r = confirm('This action can not reverse!');
+            if(r == true){
+                return true;
+            }else{
+                return false;
+            }
+        })
+        jdate();
+    })
+
+    function add(){
+
+        var html = $('.new_row').html();
+        $(".btn_add").click(function(){
+            var num = $('.add').length;
+
+            if(num <= 2){
+                $('.list_time').append(html);
+                remove();
+                jdate();
+            }
+            return false;
+        });
+        
+    }
+
+    function remove(){
+        $(".btn_remove").click(function(){
+            var node = $(this).parent().parent();
+            $(node).remove();
+            return false;
+        });
+    }
+
+    function jdate(){
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });    
+    }
+</script>

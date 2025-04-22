@@ -1,0 +1,188 @@
+<link rel="stylesheet" href="<?php
+
+echo HOST
+
+?>css/dashboard.css" />
+<style>
+.span6 label:nth-of-type(1)
+{
+      font-weight: bold;
+      color: #707370;
+} 
+.widget-header 
+{
+    cursor: pointer;
+}
+</style>
+<div class="content-container">
+
+<div class="row">
+           
+              <div class="span12">
+                        <h1 class="page-header">
+                            Dashboard <small>Statistics Overview</small>
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <i class="fa fa-dashboard"></i> Dashboard
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="span12">
+                              <div class="widget widget-nopad">
+                                <div class="widget-header " data-toggle="collapse" data-target="#inform"> <i class="icon-list-alt"></i>
+                                  <h3> User Information  
+                                  <i class="icon-ok-sign" rel="tooltip" title="Thông tin căn bản của nhân viên" class="tooltip"></i>
+                                  </h3>
+                                </div>
+                                <!-- /widget-header -->
+                                <div class="widget-content collapse in" id="inform">
+                                  <div class="widget big-stats-container">
+                                    <div class="widget-content">
+                                     	<?php
+
+echo $this->render('index/partials/widget/basic.phtml', array('staff' => $this->
+        staff));
+
+?>
+                                    </div>
+                                    <!-- /widget-content --> 
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /widget -->
+                        </div>
+                </div>
+                    
+               <?php if(isset($this->staff['team']) and $this->staff['team'] == SALES_TEAM): ?>     
+                        <div class="row">
+                        <div class="span12"> 
+                          <div class="widget widget-nopad">
+                                    <div class="widget-header" data-toggle="collapse" data-target="#usershop"> <i class="icon-signal"></i>
+                                      <h3> User Shop of PG 
+                                       <i class="icon-ok-sign" rel="tooltip" title="Danh sách shop bạn đang đứng , nếu có sai xót vui lòng liên hệ Sale Admin khu vực" class="tooltip"></i>
+                                      
+                                      </h3>
+                                    </div>
+                                    <!-- /widget-header -->
+                                    <div class="widget-content collapse in" id="usershop">
+                                      <div class="widget big-stats-container">
+                                        <div class="widget-content">
+                                          	<?php
+
+echo $this->render('index/partials/widget/shop.phtml', array('staff' => $this->
+        staff));
+
+?>
+                                        </div>
+                                        <!-- /widget-content --> 
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <!-- /widget -->
+                             </div>
+                        </div>    
+<?php endif; ?>
+                        
+                        
+<div style="clear: both;"></div>
+    <div class="row">
+       <?php if(isset($this->staff['team']) and $this->staff['team'] == SALES_TEAM): ?>  
+        <div class="span6">
+                <div class="widget widget-nopad">
+                                <div class="widget-header"  data-toggle="collapse" data-target="#kpi"> <i class="icon-signal"></i>
+                                  <h3> KPI in This month 
+                                    <i class="icon-ok-sign" rel="tooltip" title="Danh sách điện thoại bạn bán được trong tháng" class="tooltip"></i> 
+                                    <a href="<?php echo HOST ?>timing/kpi-overview" rel="tooltip" title="Mở rộng"><i class="icon-fullscreen"></i></a>
+                                  </h3>
+                                </div>
+                                <!-- /widget-header -->
+                                <div class="widget-content collapse in" id="kpi" >
+                                  <div class="widget big-stats-container">
+                                    <div class="widget-content">
+                                     	<?php
+
+echo $this->render('index/partials/widget/kpi.phtml', array('staff' => $this->
+        staff));
+
+?>
+                                    </div>
+                                    <!-- /widget-content --> 
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /widget -->      
+                           </div>                
+   <?php endif; ?>
+   
+      <?php if(isset($this->staff['team']) and $this->staff['team'] == SALES_TEAM): ?>  
+        <div class="span6">
+                <div class="widget widget-nopad">
+                                <div class="widget-header"  data-toggle="collapse" data-target="#imei"> <i class="icon-signal"></i>
+                                  <h3> List Imei Deleted <i class="icon-ok-sign" rel="tooltip" title="Danh sách các IMEI bị xoá khỏi hệ thống vì quá 3 ngày chưa active.  Vui lòng kiểm tra tình trạng active để báo cáo lại." class="tooltip"></i></h3>
+                                </div>
+                                <!-- /widget-header -->
+                                <div class="widget-content collapse in" id="imei" >
+                                  <div class="widget big-stats-container">
+                                    <div class="widget-content">
+                                     	<?php
+
+echo $this->render('index/partials/widget/imei.phtml', array('staff' => $this->
+        staff));
+
+?>
+                                    </div>
+                                    <!-- /widget-content --> 
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /widget -->      
+                           </div>                
+   <?php endif; ?>
+   
+     <div class="span6">                
+            <?php
+
+echo $this->render('index/partials/widget/new.phtml', array('staff' => $this->
+        staff));
+
+?> 
+     </div>
+     
+     <div class="span6">                
+            <?php
+
+echo $this->render('index/partials/widget/notification.phtml', array('staff' =>
+        $this->staff));
+
+?> 
+     </div>
+          
+
+    
+<div></div>
+
+<script>
+
+$(document).ready(function(){
+    
+    $("[rel=tooltip]").tooltip({ placement: 'top'});
+    $(".collapse").collapse();
+   
+    if(isMobile() == false) {
+        $(".collapse").collapse('show');
+    }
+   
+$("#inform").collapse('show');
+});
+
+function isMobile() {
+
+    if(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i) || navigator.userAgent.match(/IEMobile/i))
+            return true;
+        return false;
+}
+</script>

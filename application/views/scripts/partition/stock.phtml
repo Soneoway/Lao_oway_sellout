@@ -1,0 +1,129 @@
+<div class="row-fluid">
+	<div class="span12">
+		<div class="stock">
+			<legend>เช็ค Stock ในร้าน</legend>
+			<div class="row-fluid">
+				<div class="span12">
+					<select class="form-control" name="stock_product" id="stock_product">
+						<option value="0">-- เลือกรุ่น --</option>
+						<?php foreach ($this->goods as $good) :?>
+							<option value="<?php echo $good['id'];?>"><?php echo $good['name'];?></option>
+						<?php endforeach;?>
+					</select>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<select class="form-control" name="stock_color" id="stock_color">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<input class="form-control" type="number" name="stock_number" id="stock_number" placeholder="จำนวน" />
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<button type="button" class="btn btn-success" id="save_stock_btn"><i class="icon-screenshot"></i>ส่ง Stock</button>
+					<span id="info"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		initStockProductChange();
+		initStockNumberChange();
+	});
+
+	var stock_model_arr = $.parseJSON('<?php echo $this->good_colors ?>');
+
+	function initStockProductChange(){
+        $( '#stock_product' ).change(function (){
+        	$('#info').text('');
+        	$('#stock_number').val('');
+
+            var _self = $(this);
+            var product_id = $(this).val();
+            var obj = stock_model_arr[product_id];
+
+            if (_self.val() == 0) {
+            	next_model.find('option').remove();
+            	return false;
+            }
+
+            next_model = $('#stock_color');
+            next_model.find('option').remove();
+
+            for (var i = 0; i < obj.length; i++) {
+                next_model.append('<option value="'+obj[i]['id']+'">'+obj[i]['model']+'</option>');
+            }
+        });
+
+        
+    }
+
+    function initStockNumberChange() {
+    	$('#save_stock_btn').on('click', function() {
+
+    		num = $('#stock_number').val();
+
+    		if ( ! num.match(/^[0-9]{1,2}$/) || num > 50 ) {
+    			$('#info').text('กรุณากรอกข้อมูล');
+    			alert('กรุณาทำรายการให้ถูกต้องด้วยค่ะ.');
+    			return false;
+    		}
+
+    		$('button').prop('disabled', true);
+    		$('select').prop('disabled', true);
+    		$('input').prop('disabled', true);
+        	$('form').bind('submit',function(e){e.preventDefault();});
+
+    		$('#info').text('...กำลังอัฟเดต...');
+
+
+    		id = $('#stock_product').val();
+    		color = $('#stock_color').val();
+    		store = $('#store').val();
+
+    		$.post('<?php echo HOST."ajax/stock-update" ?>', {
+    			product_id : id,
+    			num : num,
+    			store : store,
+    			model : color
+    		}, function (data) {
+    			$('button').prop('disabled', false);
+    			$('select').prop('disabled', false);
+    			$('input').prop('disabled', false);
+                $('form').unbind('submit');
+
+    			text = '';
+
+    			switch (data) {
+    				case '1':
+    					text = 'สำเร็จ';
+    					break;
+    				case '-1':
+    					text = 'รายการไม่ถูกต้อง';
+    					break;
+    				case '-2':
+    					text = 'สำเร็จ';
+    					break;
+    				case '-3':
+    					text = 'อัฟเดต ผิดพลาด';
+    					break;
+    				default:
+    					text = 'ไม่รู้จัก [' +data+']';
+    					break;
+    			}
+
+    			$('#info').text(text);
+    		});
+    		
+    	});
+    }
+</script>

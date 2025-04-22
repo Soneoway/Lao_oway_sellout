@@ -1,0 +1,40 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'name'   => 'Name',
+                'parent' => 'Parent',
+                'Action'
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->category) and $this->category)
+        foreach ($this->category as $k=>$cat): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                    
+                </td>
+                <td><a href="<?php echo HOST ?>manage/notification-category-edit?id=<?php echo $cat['id'] ?>"><?php echo $cat['name'] ?></a></td>
+                <td><?php if (isset($this->category_cache[ $cat['parent'] ])) echo $this->category_cache[ $cat['parent'] ] ?></td>
+                <td class="">
+                    <a title="Delete" class="confirmLink btn btn-mini btn-danger" href="/manage/notification-category-del?id=<?php echo $cat['id'];?>"> <i class="icon-trash"></i> Delete</a>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>

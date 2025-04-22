@@ -1,0 +1,347 @@
+<div class="page-header span12">
+    <div>
+        <h1>ADD TIME CHECK IN (FOR PG)</h1>
+    </div>
+    <div class="span12">
+        <div class="pull-right">
+            <a href="/trainer/list-new-staff"><button class="btn btn-success">List New Staff</button></a>
+            <button class="btn btn-info" id="new_staff" data-toggle="modal" data-target="#myModal">Create New Staff</button>
+        </div>
+    </div>
+</div>
+<div class="span12">
+    <?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+    ?>
+</div>
+<div class="container">
+    <iframe name="iframe" id="iframe" width="100%" height="0" style="border: 0"></iframe>
+    <form class="form-horizontal" action="/trainer/add-time-check-in" method="POST" target="iframe">
+        <div class="row-fluid">
+            <div class="span5">
+                <div class="control-group">
+                    <label class="control-label" for="a_area">Area</label>
+                    <div class="controls">
+                        <select id="area" name="area">
+                            <option>Select</option>
+                            <?php if (isset($this->areas) && $this->areas):
+                                ?>
+                                <?php foreach ($this->areas as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                            <?php endif ?>
+                        </select>
+                    </div>
+                </div>
+                <!-- param đưa lên là team id de get ajax cua anh cường - trong ajax anh cường get params là team_id co check truong hop = PGPB_TITLE-->
+                <div class="control-group">
+                    <label class="control-label" for="team">Title</label>
+                    <div class="controls">
+                        <select id="team" name="team">
+                            <option value>Select</option>
+                            <?php $teamCheckIn =   unserialize(TITLE_CHECK_IN_FOR_PG_TRAINING); if (isset($teamCheckIn) && $teamCheckIn): ?>
+                                <?php foreach ($teamCheckIn as $item): ?>
+                                    <option value="<?php echo $item ?>"><?php echo (isset($this->teams[$item]) and $this->teams[$item]) ? $this->teams[$item]:null?></option>
+                                <?php endforeach ?>
+                            <?php endif ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="from_date">Date</label>
+                    <div class="controls">
+                        <input type="text" class="form-control search-query  span2" id="from_date" name="from_date" value="<?php isset($this->date) and printf($this->date);?>" >
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="a_staff">Staff Name</label>
+                    <div class="controls">
+                        <input type="text" class="span2" id="staff_name" placeholder="Enter Staff name"/>
+                        <button type="button" class="add-on btn btn-info" id="btn_search"><span class="icon-search"></span></button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="span7">
+                <div class="control-group">
+                    <label class="control-label">Result</label>
+                    <div class="controls">
+                        <div class="load-ajax span5">
+                            <select  multiple="multiple" class="span5" size="10"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <button type="submit" id="btn_save" class="btn btn-primary pull-right">Check in</button>
+                </div>
+            </div>
+            <div id="add_new_staff"></div>
+        </div>
+    </form>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create New PG/PB</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-responsive">
+                        <tr>
+                            <td>First Name:</td>
+                            <td><input type="text" id="firstname" value=""/> </td>
+                        </tr>
+                        <tr>
+                            <td>Last Name:</td>
+                            <td><input type="text" id="lastname" value=""/> </td>
+                        </tr>
+                        <tr>
+                            <td>CMND</td>
+                            <td>
+                                <input type="number" value="" id="cmnd" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Gender</td>
+                            <td>
+                                <select id="gender">
+                                    <option value="">Select</option>
+                                    <option value="1">NAM</option>
+                                    <option value="0">NỮ</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Area</td>
+                            <td>
+                                <select id="area_id_new_staff">
+                                    <option value="">Select</option>
+                                    <?php if (isset($this->areas) && $this->areas):
+                                        ?>
+                                        <?php foreach ($this->areas as $key => $value): ?>
+                                        <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Province
+                            </td>
+                            <td>
+                                <select id="regional_market">
+                                    <option value="">Select</option>
+                                    <?php if (isset($this->provinces) && $this->provinces):
+                                        ?>
+                                        <?php foreach ($this->areas as $key => $value): ?>
+                                        <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                                    <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save_new_staff" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="hidden" id="staff_id_login" name="staff_id_login" value="<?php echo $this->staff_id;?>"/>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="/public/js/jquery.blockUI.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#from_date').datepicker({ dateFormat: "dd/mm/yy" });
+        $('#btn_search').click(function(){
+            search_staff();
+        });
+        getProvince();
+        initAddNewStaff();
+    });
+
+    function getProvince()
+    {
+        $('#area_id_new_staff').change(function(){
+           var staff_id_log_in   = $('#staff_id_login').val();
+           var area_id_new_staff = $('#area_id_new_staff').val();
+            $.ajax
+            ({
+                url : '/trainer/get-province',
+                type : 'POST',
+                data : {staff_id:staff_id_log_in,area:area_id_new_staff},
+                dataType: 'json',
+                success : function(result)
+                {
+                    $('#regional_market').attr('disabled','true');
+                    $('#regional_market').find('option:not(:first)').remove();
+                    $.each(result, function (i, item) {
+                        $('#regional_market').append('<option value="'+i+'">'+item+'</option>');
+                    });
+                    $('#regional_market').removeAttr('disabled');
+                },
+                error: function()
+                {
+                    alert("Not Found !!!");
+                    unblockUI();
+                }
+
+            });
+        });
+    }
+
+    function search_staff()
+    {
+        initWaiting();
+        area_id     = $('#area').val();
+        team_id     = $('#team').val();
+        staff_name  = $('#staff_name').val();
+
+        if(!area_id && !team_id)
+        {
+            alert('Please Choose Area');
+            $.unblockUI();
+            return false;
+        }
+
+        if(!team_id)
+        {
+            alert('Please Choose Title');
+            $.unblockUI();
+            return false;
+        }
+
+
+        var targetUrl = '<?php echo HOST."ajax/get-staff-for-time" ?>';
+
+        //get ajax content
+        var aj = $('.load-ajax');
+        if (aj.length && (area_id || team_id || staff_name)){
+            $.post(targetUrl,
+            {   area_id : area_id,
+                team_id : team_id,
+                staff_name : staff_name,
+                check_in_pg_for_training: 1
+            },
+            function(data)
+            {
+                aj.html(data);
+                $('#a_staffresult').addClass('span5');
+                $('#a_staffresult').attr('required','true');
+                $.unblockUI();
+            });
+        }
+    }
+
+    function initWaiting(){
+        $.blockUI({
+            fadeIn: 700,
+            fadeOut: 700,
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#000',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#fff'
+            } });
+    }
+
+    function initAddNewStaff()
+    {
+        $('#save_new_staff').click(function(){
+
+            var firstname       = $('#firstname').val();
+            var lastname        = $('#lastname').val();
+            var gender          = $('#gender').val();
+            var cmnd            = $('#cmnd').val();
+            var area            = $('#area_id_new_staff').val();
+            var regional_market = $('#regional_market').val();
+
+            // check cac gia tri coi co du khong
+            if(!firstname || !lastname || !gender || !cmnd || !area || !regional_market )
+            {
+                alert('INFO INPUT NOT ENOUGH !');
+                return false;
+            }
+
+            // get Ajax
+            $.ajax
+            ({
+                url : '/trainer/save-new-pg',
+                type : 'POST',
+                data : {
+                    firstname:firstname,
+                    lastname:lastname,
+                    cmnd:cmnd,
+                    gender:gender,
+                    area_id:area,
+                    regional_market:regional_market,
+                    save_ajax: 1
+                },
+                dataType: 'json',
+                success : function(result)
+                {
+                    if(result.code == 0)
+                    {
+                        $('#area').find('option[value='+area+']').attr('selected','true');
+                        $('#team').find('option[value=<?php echo PGPB_TITLE ?>]').attr('selected','true');
+                        $('#myModal').modal('hide');
+                        $('.load-ajax').html(result.html);
+                        $('#firstname').val('');
+                        $('#lastname').val('');
+                        $('#gender').val('');
+                        $('#cmnd').val('');
+                        $('#area_id_new_staff').val('');
+                        $('#regional_market').val('');
+                        $('#iframe').contents().find('body').empty();
+                        $('#iframe').removeClass('alert-error');
+                        $('#iframe').css({"height":"40px"});
+                        $('#iframe').addClass('alert alert-success');
+                        $('#iframe').contents().find('body').append(result.message);
+                    }
+                    else
+                    {
+
+                        $('#myModal').modal('hide');
+                        $('#iframe').contents().find('body').empty();
+                        $('#iframe').removeClass('alert-success');
+                        $('#iframe').css({"height":"40px"});
+                        $('#iframe').addClass('alert alert-error');
+                        $('#iframe').contents().find('body').append(result.message);
+                    }
+                    $.unblockUI();
+                },
+                error: function(error)
+                {
+                    console.log(error);
+                }
+
+            });
+
+
+        });
+    }
+</script>

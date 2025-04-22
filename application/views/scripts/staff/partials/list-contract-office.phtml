@@ -1,0 +1,208 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'code'         =>'Code',
+                    'print time',
+                    'lastname'     =>'Name',
+                    'Start',
+                    'End',
+                    'team'         =>'Team',
+                    'title'        =>'Title',
+                    'Province',
+
+                    'time' =>'Contract',
+                    'Action',
+                    '<input type="checkbox" class="check_all" name="check_all" />'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (isset($this->staffs) and $this->staffs)
+            foreach ($this->staffs as $k=>$staff): ?>
+        <tr <?php
+            if ($staff['contract_expired_at']):
+            $datetime1 = new DateTime($staff['contract_expired_at']);
+            $today = new DateTime();
+            $interval = $datetime1->diff($today, false);
+            $interval = $interval->invert ? $interval->days : -$interval->days;
+            if ($interval<=14):?>style="background-color: cornsilk" title="Contract is going to be out of date at <?php echo ($staff['contract_expired_at'] ? date('d/m/Y', strtotime($staff['contract_expired_at'])) : '');?>" <?php endif;endif;?>>
+            <td>
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td><?php echo $staff['code'];?></td>
+            <td><?php echo intval($staff['print_time']) ?></td>
+            <td><?php echo $staff['firstname'].' '.$staff['lastname'];?></td>          
+            <td><?php if(isset($staff['contract_signed_at'])) echo date('d/m/Y', strtotime($staff['contract_signed_at'])); ?></td>
+            <td><?php if(isset($staff['contract_expired_at'])) echo date('d/m/Y', strtotime($staff['contract_expired_at'])); ?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name'] : '');?></td>
+            <td><?php if(isset($this->regional_markets) and $this->regional_markets)
+                    echo $this->regional_markets[$staff['regional_market']];?>
+            </td>
+
+            <td><?php if(isset($staff['contract_term']) and isset($this->list_contract)) echo $this->list_contract[$staff['contract_term']];  ?></td>
+            <td class="">
+                <a href="<?php echo HOST?>staff/print?id[]=<?php if(isset($staff['id']) and $staff['id']) echo $staff['id'] ?>" target="_blank"><i class="icon-print"></i></a>
+                <a href="<?php echo HOST?>staff/print-log?object=<?php if(isset($staff['id']) and $staff['id']) echo $staff['id'] ?>" target="_blank"><i class="icon-archive"></i></a>
+                <a href="<?php echo HOST?>staff/create?id=<?php if(isset($staff['id']) and $staff['id']) echo $staff['id'] ?>" target="_blank"><i class="icon-edit"></i></a>
+                <a href="<?php echo HOST?>staff/contract-revision-list?object=<?php if(isset($staff['id']) and $staff['id']) echo $staff['id'] ?>" title="Revisons"><i class="icon-th-list"></i></a>
+
+            </td>
+            <td>
+                <input type="checkbox" name="sn" class="print_chk" value="<?php echo $staff['id'] ?>" data-sn="<?php echo $staff['id'] ?>">
+            </td>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript">
+    $modal = $('#modal');
+    
+    $('.note_label').click(function(){
+        var _self = $(this);
+
+        $('body').modalmanager('loading');
+        $('#note_content').html(_self.data('note'));
+        $('#note_id').val(_self.data('id'));
+       
+        $modal.modal('loading');
+        noteid=_self.data('id');
+
+        $.ajaxSetup({
+            cache: true
+        });
+
+        $.post('<?php echo HOST ?>/staff/quick-edit',
+                {
+                    id            : noteid,
+                    back_url : '<?php echo HOST.$this->current_url; ?>'
+                },
+                function(data){
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+    });
+    
+    
+    </script>
+  <iframe src="" class="print_frame" name="picking_list" frameborder="0" style="display:none;"></iframe>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>
+
+<script>
+$(document).ready(function(){
+     $('.check_all').change(check_all);
+       $('.btn_print').click(print);
+            $('.btn_update').click(update);
+});
+
+function check_all(e) {
+    _self = $(e.target);
+    $('.print_chk').prop('checked', _self.is(":checked"));
+  
+}
+
+function update()
+{
+        id = [];
+        $('.print_chk:checked').each(function(index, el) {
+            id.push($(el).val());
+        });
+        var type = $('#contract_id').val();
+        var print_time = $('#print_time').val();
+        
+        if( type == '' && print_time == '' )
+        {
+            alert('Please select one of field change');
+            return;
+        }
+
+        if (id.length > 0) {
+
+            $.ajax({
+                url: '<?php echo HOST ?>staff/update-contract',
+                type: 'POST',
+                data: {id: id, contract_type : type , print_time : print_time}
+            })
+            .done(function(data) {
+                alert('Update successful');
+               // location.reload();
+            })
+            .fail(function() {
+                alert('Error when updated');
+            })
+            .always(function() {
+                console.log("complete");
+            });
+
+        }
+}
+
+function print() {
+        id = [];
+        $('.print_chk:checked').each(function(index, el) {
+            id.push($(el).val());
+        });
+        var type = $('#contract_id').val();
+        
+
+        if (id.length > 0) {
+
+            $.ajax({
+                url: '<?php echo HOST ?>staff/print',
+                type: 'GET',
+                dataType: 'html',
+                data: {id: id, contract_type : type},
+            })
+            .done(function(data) {
+                $('.print_frame').get(0).contentWindow.document.body.innerHTML = data;
+                
+                setTimeout(function() {
+                    window.frames['picking_list'].focus();
+                    window.frames['picking_list'].print();
+                }, 500);
+
+                for (x in id) {
+                    set_as_printed(id[x]);
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+
+        }
+
+    }
+
+    function set_as_printed(sn) {
+        $('[data-sn="'+sn+'"]').removeClass('new').addClass('old');
+    }    
+</script>

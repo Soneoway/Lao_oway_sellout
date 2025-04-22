@@ -1,0 +1,80 @@
+<?php
+/* xu ly noi dung :)*/
+$v = $this->v;
+
+$this->luong = $luong= $this->l;
+
+$start_date = $v['contract_signed_at'];
+
+$end_date = $v['contract_expired_at'];
+                
+$date_1 = strtotime($start_date . "+ 60 days");
+
+$date_2 = strtotime($start_date . "+ 61 days");
+
+$base_luong = $luong[$v['id']]['base_salary'];
+$tong_luong = $luong[$v['id']]['bonus_salary'];
+$kpi = $luong[$v['id']]['kpi_1'];
+
+if(isset($luong[$v['id']]['probation_salary']))
+$luong_thu_viec = $luong[$v['id']]['probation_salary'];
+else
+$luong_thu_viec = intval($luong[$v['id']]['bonus_salary']*0.85);
+
+ ?>
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Tổng lương đã bao gồm phụ cấp trách nhiệm và các khoản phụ cấp khác* (nếu có) : &nbsp; <span style="color:blue;font-weight:bold"><?php echo $luong_thu_viec  ?> </span> đồng/tháng;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">*<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Các khoản phụ cấp có thể thay đổi tùy theo tình hình thực tế của công ty;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><?php if(isset($kpi) and $kpi) echo $kpi; ?><o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Hình thức trả lương và thưởng (nếu có):  Chuyển khoản/tiền mặt;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Được trả các khoản trên vào ngày 10 hàng tháng;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ nâng lương:  Tùy theo thể hiện công việc của mỗi người.<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Được trang bị bảo hộ lao động : Theo nhu cầu công việc<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ nghỉ ngơi (nghỉ hàng tuần, lễ tết …): Theo quy định của Bộ luật Lao động<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Bảo hiểm xã hội, bảo hiểm y tế bảo hiểm thất nghiệp và phép năm: Đã được trả trực tiếp trong lương theo quy định.<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ đào tạo: theo tình hình thực tế của công ty.<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Những thoả thuận khác: Không<o:p></o:p></p>
+
+

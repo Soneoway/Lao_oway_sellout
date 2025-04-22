@@ -1,0 +1,20 @@
+<form class="form-horizontal" onsubmit="return false;">
+    <div class="control-group">
+        <label class="control-label" for="a_storename">Store Name</label>
+        <div class="controls">
+            <input type="text" class="form-control" id="a_storename" placeholder="Enter Store name, press ENTER" name="a_storename" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="a_storeresult">Result</label>
+        <div class="controls">
+            <div class="load-ajax">
+                <?php echo $this->partial('ajax/store-search-new.phtml',array()); ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <button type="button" id="btn_bind" class="btn btn-primary pull-right">Bind to Dealer</button>
+    </div>
+</form>

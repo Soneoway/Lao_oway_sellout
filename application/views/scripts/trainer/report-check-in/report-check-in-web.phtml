@@ -1,0 +1,435 @@
+<?php
+
+$status_ap = array(
+    'Y' => 'Approved',
+    'N' => 'Rejected',
+    'W' => 'Wait',
+);
+
+$leave_action = array(
+    '1' => 'Sick Leave',
+    '2' => 'Personal Leave',
+    '3' => 'Vacation Leave',
+    '4' => 'Day Off',
+    '5' => 'Switch Day Off',
+    '6' => 'Ordination Leave',
+    '7' => 'Maternity Leave',
+);
+
+function DateTimeDisplay($Date)
+{
+    $day = substr($Date, 8, 2);
+    $month = substr($Date, 5, 2);
+    $year = substr($Date, 0, 4);
+    $Hour = substr($Date, 11, 2);
+    $Minute = substr($Date, 14, 2);
+    $Second = substr($Date, 17, 2);
+    if ($year == "0000") {
+        $result = "";
+    } else {
+        $result = "$day/$month/$year" . " $Hour:$Minute";
+    }
+    return $result;
+}
+
+function TimeDisplay($Date)
+{
+    $year = substr($Date, 0, 4);
+    $Hour = substr($Date, 11, 2);
+    $Minute = substr($Date, 14, 2);
+    $Second = substr($Date, 17, 2);
+    if ($year == "0000") {
+        $result = "";
+    } else {
+        $result = "$Hour:$Minute";
+    }
+    return $result;
+}
+
+function DayOfWeek($date, $style = 0)
+{
+    $arr[0] = 'Sun.';
+    $arr[1] = 'Mon.';
+    $arr[2] = 'Tues.';
+    $arr[3] = 'Wed.';
+    $arr[4] = 'Thurs.';
+    $arr[5] = 'Fri.';
+    $arr[6] = 'Sat.';
+
+
+    $w = date('w', strtotime($date));
+    if ($style == 1) {
+        $result = $arr[$w];
+    } else {
+        $result = $w;
+    }
+    return $result;
+}
+
+?>
+<style type="text/css">
+    /** {*/
+    /*font-size: 10px;*/
+    /*font-family: Arial;*/
+    /*}*/
+
+    .btn-print {
+        position: fixed;
+        z-index: 9999;
+        width: 70px;
+        right: 0;
+    }
+
+    @media only all and (min-width: 768px) {
+        .btn-print {
+            width: auto;
+        }
+    }
+
+    .button {
+        background-color: #00af47;
+        border: none;
+        color: white;
+        padding: 15px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+        margin-right: 10px;
+    }
+
+    @media print {
+        #hide-print {
+            display: none;
+        }
+    }
+
+</style>
+
+<head>
+    <title><?php echo $this->params['staff_code'] . " - " . $this->params['staff_name']; ?></title>
+    <link href="../css/font-awesome.css" rel="stylesheet">
+</head>
+
+<button class="button btn-print stick-right" id="hide-print" onclick="window.print();"><i class="icon-print"></i> Print
+</button>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:1122px;">
+    <tr style="height:30px;">
+        <th>THAI OPPO CO.,LTD</th>
+    </tr>
+    <tr>
+        <th>
+            <table cellspacing="0" border="0">
+                <tr>
+                    <td style="width:300px;" colspan="2"><b> - PC Staff Details -</b></td>
+                </tr>
+                <tr>
+                    <td>Staff Code</td>
+                    <td>: <?php echo $this->params['staff_code']; ?></td>
+                </tr>
+                <tr>
+                    <td>Staff Name</td>
+                    <td>: <?php echo $this->params['staff_name']; ?></td>
+                </tr>
+                <tr>
+                    <td>Start Date</td>
+                    <td>
+                        : <?php echo isset($this->params['joined_at']) ? date("d/m/Y", strtotime($this->params['joined_at'])) : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td>Created User</td>
+                    <td>
+                        : <?php echo isset($this->params['created_at']) ? date("d/m/Y", strtotime($this->params['created_at'])) : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td>First Check In</td>
+                    <td>
+                        : <?php echo isset($this->params['first_check_in']) ? date("d/m/Y", strtotime($this->params['first_check_in'])) : "-"; ?></td>
+                </tr>
+                <?php if (isset($this->params['off_date'])) { ?>
+                    <tr>
+                        <td>Off Date</td>
+                        <td>
+                            : <?php echo isset($this->params['off_date']) ? date("d/m/Y", strtotime($this->params['off_date'])) : "-"; ?></td>
+                    </tr>
+                <?php } ?>
+
+            </table>
+        </th>
+    </tr>
+    <tr style="height:20px;">
+        <th>
+            <table cellspacing="0" border="0" style="padding-top: 10px" ;>
+                <tr>
+                    <td>CHECK IN
+                        FOR <?php echo date("d/m/Y", strtotime($this->params['start_date'] . "-21" . "-1 Month")) . " - " . date('d/m/Y', strtotime($this->params['start_date'] . "-20")); ?></td>
+                </tr>
+            </table>
+        </th>
+    </tr>
+    <tr>
+        <td>
+            <table cellspacing="0" border="1" style="width:1122px;">
+                <tr align="center" style="font-size: 12px;">
+                    <th style="width:94px;">DAY</th>
+                    <th style="width:100px;">DAY OF WEEK</th>
+                    <th style="width:70px;">AREA</th>
+                    <th style="width:100px;">[ID] STORE</th>
+                    <th style="width:90px;">CHECK IN</th>
+                    <th style="width:90px;">CHECK OUT</th>
+                    <th style="width:100px;">STATUS</th>
+                    <th style="width:100px;">APPROVE DATE</th>
+                    <th style="width:150px;">REMARK</th>
+                </tr>
+
+                <?php
+                $data = $this->mergeAllData;
+                $cnt_data = count($data);
+                $n = 1;
+
+                for ($i = 0; $i < $cnt_data; $i++) {
+                    if ($data[$i]['mode_code'] == "CHECKIN") { ?>
+                        <tr>
+                            <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                            <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                            <td align='center'><?php echo $data[$i]['area_name']; ?></td>
+                            <td align='center'><?php echo "[" . $data[$i]['store_id'] . "] " . $data[$i]['store_name']; ?></td>
+                            <td align='center'><?php echo isset($data[$i]['t_check_in']) ? TimeDisplay($data[$i]['t_check_in']) : "-"; ?></td>
+                            <td align='center'><?php echo isset($data[$i]['t_check_out']) ? TimeDisplay($data[$i]['t_check_out']) : "-"; ?></td>
+                            <td align='center'><?php echo $status_ap[$data[$i]['status_ap']]; ?></td>
+                            <td style="text-align: center;">
+                                <?php echo ($data[$i]['status_ap'] == 'W') ? "" : DateTimeDisplay($data[$i]['approve_time']); ?>
+                            </td>
+                            <td>
+                                <?php
+                                if (date('Y-m-d', strtotime($data[$i]['first_check_in'])) == date('Y-m-d', strtotime($data[$i]['day_week']))
+                                    && date('Y-m-d', strtotime($data[$i]['day_week'])) == date('Y-m-d', strtotime($data[$i]['joined_at']))
+                                ) {
+                                    echo $data[$i]['remark']="เริ่มงานวันแรก" . ' ';
+                                } else if (date('Y-m-d', strtotime($data[$i]['first_check_in'])) < date('Y-m-d', strtotime($this->params['first_leave'])) && date('Y-m-d', strtotime($data[$i]['first_check_in'])) == date('Y-m-d', strtotime($data[$i]['day_week']))) {
+                                    echo $data[$i]['remark']="เข้าระบบครั้งแรก" . ' ';
+                                }
+                                  if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$data[$i]['day_week']){
+                                        if ( $data[$i]['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                ?>
+                            </td>
+                        </tr>
+                    <?php } else if ($data[$i]['mode_code'] == "LEAVE") { ?>
+                        <tr>
+                            <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                            <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                            <td align='center'
+                                colspan="4"><?php echo $leave_action[$data[$i]['action_id']] . ' (' . $data[$i]['leave_remark'] . ")"; ?></td>
+                            <td align='center'><?php echo $status_ap[$data[$i]['status_ap']]; ?></td>
+                            <td style="text-align: center;">
+                                <?php echo ($data[$i]['status_ap'] == 'W') ? "" : DateTimeDisplay($data[$i]['approve_time']); ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($data[$i]['action_id'] == 1) {
+                                    if ($data[$i]['certificate_file'] != null) {
+                                         echo $data[$i]['remark']="ป่วยมีใบแพทย์" . ' ';
+                                    } else {
+                                        echo  $data[$i]['remark']="ป่วยไม่มีใบแพทย์" . ' ';
+                                    }
+                                }
+                                if (date('Y-m-d', strtotime($data[$i]['first_check_in'])) == date('Y-m-d', strtotime($data[$i]['day_week']))
+                                    && date('Y-m-d', strtotime($data[$i]['day_week'])) == date('Y-m-d', strtotime($this->params['joined_at']))
+                                ) {
+                                    echo $data[$i]['remark']="เริ่มงานวันแรก" . ' ';
+                                } else if (date('Y-m-d', strtotime($data[$i]['first_check_in'])) < date('Y-m-d', strtotime($this->params['first_leave'])) && date('Y-m-d', strtotime($data[$i]['first_check_in'])) == date('Y-m-d', strtotime($data[$i]['day_week']))) {
+                                    echo $data[$i]['remark']="เข้าระบบครั้งแรก" . ' ';
+                                }
+                                  if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$data[$i]['day_week']){
+                                        if ( $data[$i]['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                ?>
+                            </td>
+                        </tr>
+                    <?php } else if ($data[$i]['mode_code'] == "TRAINING") { ?>
+                        <tr>
+                            <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                            <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                            <td align='center' colspan="4">อบรมครั้งที่ <?php echo $n; ?></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <?php $n++ ;?>
+                    <?php } else { ?>
+                        <?php if (date('Y-m-d', strtotime($data[$i]['day_week'])) < date("Y-m-d")) {
+                            $dateBegin = date('Y-m-d', strtotime("2001-01-01"));
+                            if (date('Y-m-d', strtotime($data[$i]['day_week'])) > $dateBegin && date('Y-m-d', strtotime($data[$i]['day_week'])) < date('Y-m-d', strtotime($this->params['joined_at']))) {
+                                ?>
+                                <tr>
+                                    <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                                    <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                                    <td align='center'></td>
+                                    <td align='center'></td>
+                                    <td align='center'></td>
+                                    <td align='center'></td>
+                                    <td align='center'></td>
+                                    <td align='center'></td>
+                                    <td>
+                                         <?php
+                                        if (date('Y-m-d', strtotime($data[$i]['day_week'])) == date('Y-m-d', strtotime($this->params['joined_at']))) {
+                                            echo 'เริ่มงานวันแรก';
+                                        }
+
+
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$data[$i]['day_week']){
+                                        if ( $data[$i]['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php } else {
+                                if (isset($this->params['off_date'])) {
+                                    if (date('Y-m-d', strtotime($data[$i]['day_week'])) >= date('Y-m-d', strtotime($this->params['off_date']))) {
+                                        ?>
+                                        <tr>
+                                            <td align='center'>
+                                                <?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?>
+                                            </td>
+                                            <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                                            <?php if (date('Y-m-d', strtotime($data[$i]['day_week'])) == date('Y-m-d', strtotime($this->params['off_date']))) { ?>
+                                                <td colspan="4" style="text-align: center;"> วันที่มีผลลาออก ( <?php echo date('d/m/Y', strtotime($this->params['off_date'])); ?>)</td>
+                                            <?php } else { ?>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            <?php } ?>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                                            <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                                            <td align='center' colspan="4">Not check in</td>
+                                            <td align='center'>-</td>
+                                            <td align='center'></td>
+                                            <td>   
+                                        <?php 
+                                        echo $data[$i]['day_week']="ขาดงาน" . ' ';
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                      if( $check_group['created']==$data[$i]['day_week']){
+                        
+                                      echo  ','.$check_group['change_group'];}
+
+                                      endforeach;
+                                            }
+                                    
+                                                                     
+                                           ?>
+                                            
+                                        </td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else { ?>
+                                    <tr>
+                                        <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                                        <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                                        <td align='center' colspan="4">Not check in</td>
+                                        <td align='center'>-</td>
+                                        <td align='center'></td>
+                                       <td>   
+                                        <?php 
+                                        echo $data[$i]['remark']="ขาดงาน" . ' ';
+                                        
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                      if( $check_group['created']==$data[$i]['day_week']){
+                        
+                                      echo  ','.$check_group['change_group'];}
+
+                                      endforeach;
+                                            }
+                                    
+                                                                     
+                                           ?>
+                                            
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        <?php } else { ?>
+                            <tr>
+                                <td align='center'><?php echo date("d/m/Y", strtotime($data[$i]['day_week'])); ?></td>
+                                <td align='center'><?php echo DayOfWeek($data[$i]['day_week'], 1); ?></td>
+                                <td align='center'></td>
+                                <td align='center'></td>
+                                <td align='center'></td>
+                                <td align='center'></td>
+                                <td align='center'></td>
+                                <td align='center'></td>
+                                    <td><?php 
+                                        
+
+                                        if(isset($this->check_group) and $this->check_group ){
+                                            
+                                             foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                             if( $check_group['created']==$data[$i]['day_week']){
+                        
+                                             echo  $check_group['change_group']; }
+                                            
+                                             endforeach;
+                                            }                           
+                                           ;?>
+                                            
+                                        </td>
+                                </td>
+                            </tr>
+                        <?php }
+                    }
+                } ?>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+<div style="height:50px;"></div>

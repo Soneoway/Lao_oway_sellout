@@ -1,0 +1,18 @@
+<select class="span5 search_result" id="name_result" name="s_result" <?php if (!$this->is_single): ?> multiple="multiple" <?php endif;?> size="8">
+	<?php if (isset($this->staffs) and $this->staffs): ?>
+		<?php foreach ($this->staffs as $staff): ?>
+			<option 
+				value="<?php echo $staff['id'] ?>"
+				>
+				<?php echo $staff['firstname'] . ' ' . $staff['lastname'] . ' | '. preg_replace('/oppomobile.vn/', '', $staff['email']) .  (isset($this->rm_list[$staff['regional_market']]) ? (' | ' . $this->rm_list[$staff['regional_market']] ): '') ?>
+			</option>
+		<?php endforeach ?>
+	<?php endif ?>
+</select>
+<script type="text/javascript">
+if ($('#staff_region').length > 0) {
+	$('#name_result').change(function(){
+		$('#staff_region').html($('#name_result option:selected').attr('title'));
+	});
+}
+</script>

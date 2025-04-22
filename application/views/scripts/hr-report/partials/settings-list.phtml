@@ -1,0 +1,95 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Color</th>
+            <th>Price</th>
+            <th>KPI</th>
+            <th>Com Rate</th>
+            <th>Com Rate [AEC]</th>
+            <th>Type</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+            if(isset($this->logs) && $this->logs) {
+                $data = $this->logs;
+                $brand = $this->brands;
+                //print_r($data);
+
+                for ($i=0;$i<count($data);$i++) {
+                    //$n = $i + 1;
+                    $inc = $this->offset + $i + 1;
+
+                    if ($data[$i]['from_date'] > date('Y-m-d') || $data[$i]['to_date'] < date('Y-m-d') ) {
+                        echo "<tr style='color:red;'>";
+                    } else {
+                        echo "<tr>";
+                    }
+
+                    $d = explode('-', $data[$i]['from_date']);
+                    $from = $d[2].'/'.$d[1].'/'.$d[0];
+                    $d = explode('-', $data[$i]['to_date']);
+                    $to = $d[2].'/'.$d[1].'/'.$d[0];
+
+                    echo    "<td>".$inc."</td>";
+                    echo    "<td>".$brand[$data[$i]['brand_id']]." ".$data[$i]['good_name']."</td>";
+                    echo    "<td>".$data[$i]['color_name']."</td>";
+                    echo    "<td>".number_format($data[$i]['price'],2)."</td>";
+                    echo    "<td>".$data[$i]['kpi']."</td>";
+                    echo    "<td>".$data[$i]['com_rate']."</td>";
+                    echo    "<td>".$data[$i]['com_rate_aec']."</td>";
+                    echo    "<td>".My_Kpi_Object::$name[ $data[$i]['type'] ]."</td>";
+                    echo    "<td>".$from."</td>";
+                    echo    "<td>".$to."</td>";
+                    echo    "<td>";
+                    
+                    if ($this->access('hr-report', 'settings-edit')) {
+                        echo "<a href='".HOST."hr-report/settings-edit?id=".$data[$i]['id']."' class='btn btn-mini btn-info'><i class='icon-edit'></i></a>";
+                    }
+
+                    if ($this->access('hr-report', 'settings-delete')) {
+                        echo "<a href='".HOST."hr-report/settings-delete?id=".$data[$i]['id']."' class='btn btn-mini btn-inverse confirmLink'><i class='icon-trash'></i></a>";
+                    }
+
+                    echo    "</td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+
+    <!--
+        <?php if (isset($this->logs) && $this->logs): $i = 1; ?>
+            <?php foreach ($this->logs as $key => $log): ?>
+                <tr>
+
+                    <td><?php echo $i++; ?></td>
+                    <td><?php if (isset($this->goods[ $log['good_id'] ])) echo $this->goods[ $log['good_id'] ] ?></td>
+
+                    <td><?php if (isset($this->good_colors[ $log['color_id'] ])): ?><span class="label label-success"><?php echo $this->good_colors[ $log['color_id'] ] ?></span><?php endif; ?></td>
+                    <td><?php echo $log['kpi'] ?></td>
+                    <td><?php if(isset(My_Kpi_Object::$name[ $log['type'] ])) echo My_Kpi_Object::$name[ $log['type'] ] ?></td>
+                    <td><?php if (isset($log['from'])) echo date('Y-m-d', strtotime($log['from'])) ?></td>
+                    <td><?php if (isset($log['to'])) echo date('Y-m-d', strtotime($log['to'])) ?></td>
+                    <td>
+                        <a href="<?php echo HOST ?>hr-report/settings-edit?id=<?php echo $log['id'] ?>" class="btn btn-mini btn-info"><i class="icon-edit"></i></a>
+                        <a href="<?php echo HOST ?>hr-report/settings-delete?id=<?php echo $log['id'] ?>" class="btn btn-mini btn-inverse confirmLink"><i class="icon-trash"></i></a>
+                    </td>
+                </tr>
+               
+            <?php endforeach ?>
+        <?php endif; ?> 
+     -->
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm() ?>

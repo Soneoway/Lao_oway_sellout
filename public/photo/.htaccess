@@ -1,0 +1,8 @@
+deny from all
+<filesMatch "\.(gif|jpe?g|png)$">  
+Order Allow,Deny
+Allow from all
+</filesMatch>
+<filesMatch "\.(php|pl|py|jsp|asp|htm|shtml|sh|cgi.+)$">
+    ForceType text/plain
+</filesMatch>

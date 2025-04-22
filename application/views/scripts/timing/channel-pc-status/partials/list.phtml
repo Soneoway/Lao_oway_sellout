@@ -1,0 +1,136 @@
+<?php 
+
+    $d1 = explode('/', $this->params['from']);
+    $from = $d1[2].'-'.$d1[1].'-'.$d1[0];
+
+    $d2 = explode('/', $this->params['to']);
+    $to = $d2[2].'-'.$d2[1].'-'.$d2[0];
+
+    $period_loop = ( (strtotime($to) - strtotime($from)) / (24*60*60) ) + 1;
+
+    // echo $period_loop; echo "<br/>";
+    // print_r($this->channel_pc_status);
+
+    $data = array();
+    if (isset($this->channel_pc_status) and $this->channel_pc_status) { $data = $this->channel_pc_status; }
+?>
+
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th width="5%"><div align="center">No.</div></th>
+        <th width="12%"><div align="center">Area</div></th>
+        <th width="6%"><div align="center">Store ID</div></th>
+        <th><div align="center">Store Name</div></th>
+        <th width="12%"><div align="center">Store Type</div></th>
+        <th width="5%"><div align="center">PC</div></th>
+
+        <?php 
+
+            for ($i=0;$i<$period_loop;$i++) {
+                $day_text =  date('d-M', strtotime("+".$i." Day", strtotime($from)));        
+                echo "<th width='5%'><div align='center'>".$day_text."</div></th>";
+            }
+
+        ?>
+
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if ( !empty($data) ) {
+
+        $QStoreStaff = new Application_Model_StoreStaff();
+
+        foreach ($data as $key => $value) {
+
+            $inc = $this->offset + $key + 1;
+
+            $result_pc = $QStoreStaff->getPC($value['st_id'],0);
+            $cnt_pc = count($result_pc);
+
+            echo "<tr>";
+            echo    "<td><div align='center'>".$inc."</td>";
+            echo    "<td><div align='center'>".$value['area_name']."</td>";
+            echo    "<td><div align='center'>".$value['st_id']."</td>";
+            echo    "<td><div align='left'>".$value['st_name']."</td>";
+            echo    "<td><div align='center'>".$value['st_type']."</td>";
+            echo    "<td><div align='center'>".$cnt_pc."</td>";
+
+            for ($i=0;$i<$period_loop;$i++) {
+                $day_text =  date('d-M', strtotime("+".$i." Day", strtotime($from)));        
+                echo "<td><div align='center'>".$value[$day_text]."</div></th>";
+            }
+            
+            echo "</tr>";
+        }
+    }
+
+    ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<!-- 
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/> 
+-->
+
+<script>
+/*
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+*/
+</script>
+
+<?php //echo $this->load();?>

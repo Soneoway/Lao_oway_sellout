@@ -1,0 +1,28 @@
+<select name="a_staffresult[]" id="a_staffresult" multiple="multiple" size="10">
+    <?php if (isset($this->staff) && $this->staff): ?>
+        <?php foreach ($this->staff as $key => $staff): ?>
+            <option
+                value="<?php echo $staff['id'] ?>"
+                data-id="<?php echo $staff['id'] ?>"
+                data-name="<?php echo (isset($staff['email']) and $staff['email']) ? $staff['email']: null ?>"
+                data-area="<?php echo (isset($this->regions[$staff['regional_market']]['area_id'])
+                    && $this->regions[$staff['regional_market']]['area_id']) ?
+                    $this->regions[$staff['regional_market']]['area_id']:null ?>"
+                data-region="<?php echo (isset($staff['regional_market']) and $staff['regional_market']) ? $staff['regional_market'] : null ?>"
+
+                data-area-name="<?php echo (isset($this->areas[$this->regions[$staff['regional_market']]['area_id']]) && $this->areas[$this->regions[$staff['regional_market']]['area_id']])
+                     ? $this->areas[$this->regions[$staff['regional_market']]['area_id']] : null; ?>"
+                <?php $areas =  (isset($this->areas[$this->regions[$staff['regional_market']]['area_id']]) and $this->areas[$this->regions[$staff['regional_market']]['area_id']]) ?  $this->areas[$this->regions[$staff['regional_market']]['area_id']]: null;?>>
+                <?php echo ((isset($staff['firstname']) and $staff['firstname']) ? $staff['firstname']: null) .' '.((isset($staff['lastname']) and $staff['lastname']) ? $staff['lastname']: null).' - '.((isset($this->team[$staff['team']]) and $this->team[$staff['team']]) ? $this->team[$staff['team']]: null).' - '. ((isset($this->team[$staff['title']]) and $this->team[$staff['title']]) ? $this->team[$staff['title']]: null).' - '.$areas.' - '.((isset($staff['code'])and $staff['code'])? $staff['code']: 'NHÂN VIÊN MỚI') ; ?>
+            </option>
+        <?php endforeach ?>
+    <?php endif ?>
+</select>
+<!--đánh dấu là nhân viên để khi post mình biết nó là nhân viên mới-->
+<?php if (isset($this->staff) && $this->staff): ?>
+    <?php foreach ($this->staff as $key => $item): ?>
+        <?php if(!isset($item['code']) and $item['id']){?>
+            <input type="hidden" name="new_staff[]" value="<?php echo $item['id'];?>"/>
+        <?php }?>
+    <?php endforeach ?>
+<?php endif ?>

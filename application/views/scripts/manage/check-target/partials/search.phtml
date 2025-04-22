@@ -1,0 +1,175 @@
+<?php 
+    // print_r($this->params); 
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $disabled = '';
+    if ( $userStorage->group_id == SALES_ID ) { $disabled = 'disabled'; }
+?>
+<form class="form-search form-horizontal" method="get" action="/manage/check-target/check-target" onsubmit="return validateSave()">
+
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="year_month">Year - Month : </label>
+                <div class="controls">
+                    <input name="month_year" id="month_year" class="date-picker"
+                           value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>" required="required">
+                </div>
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple" >
+                    <?php if (isset($this->areas) && $this->areas): ?>
+
+                        <?php 
+                            $arr = $this->areas;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($this->params['area_id']) && in_array($arr[$i]['id'],$this->params['area_id'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['id'] == $this->params['area_id']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['id']."' ". $sel ." >".$arr[$i]['name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="sale_id" class="span2">Sale Name</label>
+                <select id="sale_id" name="sale_id[]" class="span3 js-example-basic-multiple" multiple="multiple" <?php echo $disabled; ?> >
+                    <?php if (isset($this->sale_list) && $this->sale_list): ?>
+
+                        <?php 
+                            $arr = $this->sale_list;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($this->params['sale_id']) && in_array($arr[$i]['id'],$this->params['sale_id'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['id'] == $this->params['sale_id']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['id']."' ". $sel ." >".$arr[$i]['name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+<input type="hidden" id="province_id" name="province_id" value="<?php echo implode("|", $this->params['province_id']); ?>" />
+
+<button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSave() {
+
+        var cnt_area = 0;
+        if ( $("#area_id").val() ) { cnt_area = $("#area_id").val().length; }
+
+        if ( cnt_area == 0 ) { alert("Please Select At Least 1 Area!"); return false; } 
+
+        return true;
+
+    }
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+        $('#area_id').change(function(){
+
+            $('form').bind('submit',function(e){e.preventDefault();});
+
+            // $('form button, form input, form select').prop('disabled', true);
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            $('.loading').remove();
+
+            $('#area_id').after('<span class="loading"></span>');
+            var _self = $('#area_id');
+            var area_id = $('#area_id').val();
+            var province_id = $('#province_id').val();
+
+            $.get("/staff/load-sale",
+                {
+                    area_id: area_id, 
+                    province_id: province_id
+                }
+                ,function(data,status){
+                    // alert(data);
+                    $('form').unbind('submit');
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    // $('form button, form input, form select').prop('disabled', false);
+
+                    var obj = $.parseJSON( data );
+                    $('#sale_id').find('option').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#sale_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+    });
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+</script>

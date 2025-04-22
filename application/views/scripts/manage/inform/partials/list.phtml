@@ -1,0 +1,51 @@
+<style>.inform
+{
+    display: block;
+    height: 100px;
+    padding:5px;
+    margin:10px 0px;
+}
+h3 {
+color: #404046;
+border: 0;
+font-size: 1.3875rem;
+/* text-align: center; */
+border-bottom: 1px solid #ccc;
+padding: 10px 0px;
+}
+.title{
+    font-size: 16px;
+}
+</style>
+<div class="row">
+     <?php
+        if (isset($this->cat_informs) and $this->cat_informs and $this->inform_category)
+                   foreach ($this->cat_informs as $k=>$cat_inform): ?>
+                     
+                        <div class="span12">
+                        <h3><?php echo $this->inform_category[$cat_inform['category_id']]; ?></h3>
+                    
+            <?php  if (isset($this->informs) and $this->informs[$cat_inform['category_id']])
+                       foreach ($this->informs[$cat_inform['category_id']] as $k=>$inform): ?>
+                        
+                <?php if (!isset( $inform['status'] ) || !$inform['status'] ) echo "<del>" ?>
+               <div class="span4 inform">
+                    <a class="title" href="<?php echo HOST ?>manage/inform-view?id=<?php echo $inform['id'];?>"
+                            title="<?php echo $inform['title'] ?>"><?php echo My_String::excerpt($inform['title'], 100) ;?></a> <br />
+                <?php if (!isset( $inform['status'] ) || !$inform['status'] ) echo "</del>" ?>              
+                <?php echo My_String::excerpt($inform['content'], 100) ?> <br />
+        
+                <span>Created at: </span>  <?php if(isset($inform['created_at']) && $inform['created_at']) echo date('d/m/Y H:i:s', strtotime($inform['created_at']));?>     <br />
+               <span>Author: </span> <?php                                      
+                        if (isset($inform['created_by']) && $inform['created_by'])
+                            echo $this->staff[$inform['created_by']];                     
+                ?>
+              
+              </div>
+                   <?php endforeach;?>      
+         </div>  
+        <?php endforeach;?>  
+    </div>
+</div>
+
+<?php echo $this->load();?>

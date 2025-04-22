@@ -1,0 +1,471 @@
+<?php 
+	// print_r($this->params); echo "<br/>";
+	// echo "<pre>"; print_r($this->log);
+/*
+	$flag = 0;
+	$area_list = array(81,82,83,85,86,90,91,92,94,95,97,98,99,100,101,103,104,105,106,107,108,110,115,116);
+
+	if ( in_array($this->params['area_id'][0], $area_list) ) { $flag = 1; }
+ 
+	$flag = 1;
+*/
+?>
+
+<style type="text/css">
+* {
+	font-size: 10px;
+	font-family: Arial;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+	<tr style="height:30px;">
+		<th>Report Summary Commission for PC</th>
+	</tr>
+	<tr style="height:30px;">
+		<th>Report as of <?php echo $this->params['from_date']." - ".$this->params['to_date'];  ?></th>
+	</tr>
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" style="width:794px;">
+				<tr>
+					<td colspan="4" align="left"><strong>Total</strong></td>
+					<td align="right" id="sum_total_sellout"></td>
+					<td align="right" id="sum_total_com_rate"></td>
+					<td align="right" id="sum_total_price"></td>
+					<td align="right"></td>
+					<!-- <td align="right" id="sum_total_com_eol"></td> -->
+					<td align="right" id="sum_total_com_real"></td>
+					<td align="right"></td>
+					<td align="right"></td>
+				</tr>
+				<tr>
+					<td colspan="4" align="left" id="avg_result"></td>
+					<td align="right" id="avg_unit"></td>
+					<td align="right" id="avg_com_rate"></td>
+					<td align="right"></td>
+					<td align="right"></td>
+					<!-- <td align="right"></td> -->
+					<td align="right" id="avg_ac_payment"></td>
+					<td align="right"></td>
+					<td align="right"></td>
+				</tr>
+				<tr align="center">
+					<td>NO.</td>
+					<td>Area</td>
+					<td>ID Staff</td>
+					<td>Staff Name</td>
+					<td>Units</td>
+					<td>COM.</td>
+					<td>Total Price</td>
+					<td>Rate</td>
+					<!-- <td>Incentive</td> -->
+					<td>AC COM.</td>
+					<td>Work Day</td>
+					<td>Remark</td>
+<!--
+					<td>PC Stand By</td>
+					<td>Store ID</td>
+					<td>Store Level</td>
+					<td>Index</td>
+					<td>Gap</td>
+-->
+				</tr>
+
+				<?php 
+					$data = $this->log;
+					$QGoodKpi	= new Application_Model_GoodKpiLog();
+					$QOIT		= new Application_Model_OppoIndividualTarget();
+					$QPcActive	= new Application_Model_PcActive();
+					$QPcChk		= new Application_Model_PcCheckInLog();
+					$QPAE		= new Application_Model_PcAddonException();
+					
+					$sum_total_sellout = $sum_total_com_rate = $sum_total_price = $sum_total_com_eol = $sum_total_com_real = 0;
+					$EOL_List = $PCU_List_01 = $PCU_List_02 = $cnt_area = array();
+/*
+			        // Get Commission EOL
+			        $EOL_result = $QGoodKpi->comission_eol($this->params);
+			        for ($i=0;$i<count($EOL_result);$i++) { 
+
+			        	if ( $EOL_result[$i]['total_unit'] >= 2 ) {
+			        		$EOL_List[ $EOL_result[$i]['staff_code'] ] = $EOL_result[$i]['total_unit'] * 100; 
+			        	} else {
+			        		$EOL_List[ $EOL_result[$i]['staff_code'] ] = $EOL_result[$i]['total_unit'] * 0; 
+			        	}
+			            
+			        }
+*/
+			        // Get PC Un-Punish By Memo [Total Price < 200000]
+			        $pc_unpunish = $QGoodKpi->get_pc_unpunish($this->params);
+
+			        if ( !empty($pc_unpunish) ) {
+
+			        	$pc_unpunish_list = array();
+			        	foreach ($pc_unpunish as $key => $value) {
+			        		$pc_unpunish_list[$value['staff_code']] = $value['unpunish_type'];
+			        	}
+
+			        	for ($i=0;$i<count($pc_unpunish);$i++) { 
+			        		
+			        		// Conditoin 01 : 200k
+				        	if ( $pc_unpunish[$i]['con_01'] == 1 ) {
+				        		$PCU_List_01[ $pc_unpunish[$i]['staff_code'] ] = $pc_unpunish[$i]['staff_id'];
+				        	}
+
+				        	// Condition 02 : Index
+				        	if ( $pc_unpunish[$i]['con_02'] == 1 ) {
+				        		$PCU_List_02[ $pc_unpunish[$i]['staff_code'] ] = $pc_unpunish[$i]['staff_id'];
+				        	}
+				             
+				        }
+			        }
+			        
+
+					for ($i=0;$i<count($data);$i++) {
+
+						$flag = 1;
+
+						$cnt = $i + 1;
+						$remark = "";
+						$com_rate = $data[$i]['com_pc'];
+
+						// Calculate Work Day
+						$staff_created = $data[$i]['staff_joined'];
+						$staff_offdate = $data[$i]['staff_offdate'];
+						
+			            if (!is_null($staff_offdate) && $staff_offdate <= $this->params['to']." 23:59:59") { 
+			                $now = strtotime($staff_offdate); 
+			                $created_at = strtotime($staff_created);
+			            } else { 
+			                $now = strtotime($this->params['to']." 23:59:59"); 
+			                $created_at = strtotime($staff_created);
+			            }
+
+			            $diffdate = $now - $created_at;
+			            $work_day = floor($diffdate/(60*60*24)) + 1; // plus 1 day
+
+			            $store_level = $store_id = $pc_target = $pc_level = $etest = $debug = '';
+			            $store_org_id = $store_type_id = '';
+
+			            $addon_rate = $addon_flag = 1;
+
+			            // Check PC Un-Punish Condition 2 : Index 
+			            if ( in_array($data[$i]['staff_code'], array_keys($PCU_List_02)) ) {
+			            	$flag = 0;
+			            	$remark = "ยกเว้นค่าคอมฯพิเศษ (Index) - ".$pc_unpunish_list[ $data[$i]['staff_code'] ];
+			            }
+
+				       	if ($flag == 1) { 
+							// Check Add-on 01 : Not PC Stand By
+							if ( $data[$i]['pc_stand_by'] == 0 ) {
+								// Check Add-on 02 : Not New PC
+								if ( $work_day >= 30 ) {
+									// Check Add-on 03 : Check Number of Store 
+									if ( $data[$i]['cnt_store'] >= 1 ) {
+
+										$store_level = $data[$i]['st_level'];
+										$store_id = $data[$i]['st_id'];
+										$store_org_id = $data[$i]['st_org_id'];
+										$store_type_id = $data[$i]['st_type_id'];
+
+										// Check Add-on XX : PC Exception
+										if ( $data[$i]['cnt_store'] > 1 ) {
+
+											$params_addon = array(
+												'staff_id' 	=> $data[$i]['staff_id'],
+												'from'		=> $this->params['from'],
+												'to'		=> $this->params['to'],
+											);
+
+							                $result_pae = $QPAE->getPcExceptionStore($params_addon);
+
+							                if ( !empty($result_pae) ) {
+							                	$store_level = $result_pae['st_level'];
+							                	$store_id = $result_pae['st_id'];
+							                	$addon_flag = 0;
+							                }
+											
+										} 
+
+										if ( $data[$i]['cnt_store'] == 1 ) { $addon_flag = 0; }
+/*
+										$debug = 
+						                	"<br/>
+						                		Staff ID : ".$data[$i]['staff_id']."<br/>
+						                		PC Stand By : ".$data[$i]['pc_stand_by']."<br/>
+						                		Cnt Store : ".$data[$i]['cnt_store']."<br/>
+						                		Store Level : ".$store_level."<br/>
+						                		Addon Flag : ".$addon_flag."<br/>
+						                		Sellout : ".$data[$i]['total_sellout']."<br/>
+						                		Price : ".$data[$i]['total_price']."<br/>
+						                	";
+*/
+
+						                $work_point = $val_ach = $grade_point = $achive = $com_index = 0;
+						                
+										if ( $addon_flag == 0 ) {
+
+											$where = array();
+							                $where[] = $QOIT->getAdapter()->quoteInto('staff_id = ?', $data[$i]['staff_id']);
+							                $where[] = $QOIT->getAdapter()->quoteInto('from_date >= ?', $this->params['from']);
+							                $where[] = $QOIT->getAdapter()->quoteInto('to_date <= ?', $this->params['to']);
+
+							                $result_target = $QOIT->fetchRow($where);
+
+							                // Check Add-on 04 : Check PC Target
+							                if ( !empty($result_target) ) {
+
+							                	$pc_target = $result_target['target_price'];
+							                	// $debug .= "Target : ".$pc_target."<br/>"; 
+
+							                	$where = array();
+								                $where[] = $QPcActive->getAdapter()->quoteInto('staff_id = ?', $data[$i]['staff_id']);
+								                $where[] = $QPcActive->getAdapter()->quoteInto('created_at >= ?', $this->params['from']." 00:00:00");
+								                $where[] = $QPcActive->getAdapter()->quoteInto('created_at <= ?', $this->params['to']." 23:59:59");
+
+								                $result_pc_grade = $QPcActive->fetchRow($where);
+
+								                // Check Add-on 05 : Check PC Grade
+								                if ( !empty($result_pc_grade) && $result_pc_grade['etest_count'] == 2 ) { 
+
+								                	// $pc_level = $result_pc_grade['grade'];
+								                	$etest = $result_pc_grade['etest_result'];
+								                	// $debug .= "PC Level : ".$pc_level."<br/>"; 
+
+								                	// Check Add-on 06 : Check PC Work Hour
+								                	$where = array();
+								                	$where[] = $QPcChk->getAdapter()->quoteInto('status = ?', 'Y');
+								                	$where[] = $QPcChk->getAdapter()->quoteInto('action_id = ?', 1);
+									                $where[] = $QPcChk->getAdapter()->quoteInto('staff_id = ?', $data[$i]['staff_id']);
+									                $where[] = $QPcChk->getAdapter()->quoteInto('check_in >= ?', $this->params['from']." 00:00:00");
+									                $where[] = $QPcChk->getAdapter()->quoteInto('check_in <= ?', $this->params['to']." 23:59:59");
+
+									                $result_pc_chk = $QPcChk->fetchAll($where);
+
+									                $work_hour = count($result_pc_chk);
+
+									                // Calculate Com Index 
+									                $work_point = -5;
+									                if ( $work_hour >= 25 ) { $work_point = 0; } 
+									                if ( $work_hour >= 28 ) { $work_point = 10; } 
+/*
+									                switch ($pc_level) {
+			                                            case 'A': ($etest == 'Y') ? $grade_point = 20 : $grade_point = 10; break;
+			                                            case 'B': ($etest == 'Y') ? $grade_point = 10 : $grade_point = 5; break;
+			                                            case 'C': ($etest == 'Y') ? $grade_point = 5 : $grade_point = 0; break;
+			                                            default : $grade_point =  0; break;
+			                                        }
+*/
+			                                        if ($etest == 'Y') { $grade_point = 20; } 
+                                        			else { $grade_point = 0; }
+
+									                $achive = round(( $data[$i]['total_price'] / $pc_target ) * 100, 2);
+									                $val_ach = round( ( ($data[$i]['total_price'] * $achive) / 100 ) / 10000 , 2);
+
+									                $com_index = $work_point + $grade_point + $val_ach;
+/*
+									                $debug = 
+									                	"<br/>
+									                		Staff ID : ".$data[$i]['staff_id']."<br/>
+									                		PC Stand By : ".$data[$i]['pc_stand_by']."<br/>
+									                		Cnt Store : ".$data[$i]['cnt_store']."<br/>
+									                		Store Level : ".$store_level."<br/>
+									                		Addon Flag : ".$addon_flag."<br/>
+									                		Work Hour : ".$work_hour." : ".$work_point."<br/>
+									                		PC Level : ".$pc_level." : ".$grade_point."<br/>
+									                		Sellout/Target : ".$data[$i]['total_sellout']." : ".$pc_target."<br/>
+									                		Achieve : ".$achive."<br/>
+									                		Price : ".$data[$i]['total_price']."<br/>
+									                		Val_Ach : ".$val_ach."<br/>
+									                		Index : ".$com_index."<br/>
+									                	";
+*/
+									                if ( $store_level == 'S' ) { 
+
+									                	if ($com_index <= 60) { $addon_rate = 1; }
+									                	if ($com_index > 60) { $addon_rate = 1.2; }
+									                	if ($com_index > 70) { $addon_rate = 1.3; }
+									                	
+									                }
+
+								                	if ( $store_level == 'A' ) { 
+
+									                	if ($com_index <= 60) { $addon_rate = 1; }
+									                	if ($com_index > 60) { $addon_rate = 1.2; }
+
+									                }
+
+								                }
+
+							                }
+
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+						if ( in_array($data[$i]['staff_code'], array('6005578','6101212','6202681','5801652','6204185','6006936')) ) {
+							$addon_rate = 1;
+						}
+
+						// Commission EOL
+						if (!empty($EOL_List)) {
+							if (in_array($data[$i]['staff_code'], array_keys($EOL_List) )) {
+			                	$com_eol = $EOL_List[ $data[$i]['staff_code'] ];
+			                } else { $com_eol = 0; }
+						}
+
+		                // Check Price Threshold
+		            	$price_threshold = 200000; 
+
+		            	if ( $data[$i]['total_price'] < $price_threshold ) {
+
+		            		$this->params['staff_code'] = $data[$i]['staff_code'];
+		                	// check total sellout of this staff (All Store and Area)
+			                $sellout_result = $QGoodKpi->getAllSelloutByStaff($this->params);
+
+			                if ( $sellout_result['total_price'] < $price_threshold ) {
+
+		            			if ($work_day < 30) {
+
+			                		$remark = "ยกเว้นเงื่อนไข - ทำงานไม่ถึง 30 วัน";
+
+			                	} else {
+
+			                		// Check PC Un-Punish Condition 1 : 200K 
+			                		if ( !in_array($data[$i]['staff_code'], array_keys($PCU_List_01)) ) {
+
+					                	$addon_rate = 0;
+		            					$remark = "ยอดขายไม่ถึง ".number_format($price_threshold)." บาท ไม่ได้รับค่าคอมฯ";
+
+					                } else {
+					                	// $remark = "ยกเว้นเงื่อนไขจากแผนก Training";
+					                	$remark = "ยกเว้นเงื่อนไข 200K - ".$pc_unpunish_list[ $data[$i]['staff_code'] ];
+					                }
+			                		
+			                	} 
+			            			
+			            	} else {
+			            		$addon_rate = 1;
+			                	$remark = "โอนย้ายเขต";
+			                }
+
+		            	}
+
+		            	$com_real = round( ($com_rate * $addon_rate) + $com_eol, 0);
+
+		                if (!isset($cnt_area[$data[$i]['area_name']])) { $cnt_area[$data[$i]['area_name']] = 0; } 
+		                else { $cnt_area[$data[$i]['area_name']]++; }
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt."</td>";
+						echo 	"<td>".$data[$i]['area_name']."</td>";
+						echo 	"<td align='center'>".$data[$i]['staff_code']."</td>";
+						echo 	"<td>".$data[$i]['staff_name']."</td>";
+						echo 	"<td align='right'>".number_format($data[$i]['total_sellout'])."</td>";
+						echo 	"<td align='right'>".number_format($com_rate)."</td>";
+						echo 	"<td align='right'>".number_format($data[$i]['total_price'],2)."</td>";
+						// echo 	"<td align='right'>".$addon_rate."".$debug."</td>";
+						echo 	"<td align='right'>".$addon_rate."</td>";
+						// echo	"<td align='right'>".number_format($com_eol)."</td>";
+						echo 	"<td align='right'>".number_format($com_real)."</td>";
+						echo 	"<td align='right'>".$work_day."</td>";
+						echo 	"<td>".$remark."</td>";
+/*
+						// Debug 
+						$gap = $com_real - $com_rate;
+
+						echo 	"<td align='right'>".$data[$i]['pc_stand_by']."</td>";
+						echo 	"<td align='right'>".$store_id."</td>";
+						echo 	"<td align='right'>".$store_level."</td>";
+						echo 	"<td align='right'>".$com_index."</td>";
+						echo 	"<td align='right'>".$gap."</td>";
+*/
+						echo "</tr>";
+
+
+						$sum_total_sellout 	= $sum_total_sellout 	+ $data[$i]['total_sellout'];
+						$sum_total_com_rate = $sum_total_com_rate 	+ $com_rate;
+						$sum_total_price 	= $sum_total_price 		+ $data[$i]['total_price'];
+						// $sum_total_com_eol 	= $sum_total_com_eol 	+ $com_eol;
+						$sum_total_com_real = $sum_total_com_real 	+ $com_real;
+
+					} 
+
+					$sum_total_sellouts  = number_format($sum_total_sellout);
+					$sum_total_com_rates = number_format($sum_total_com_rate);
+					$sum_total_price 	 = number_format($sum_total_price, 2);
+					// $sum_total_com_eol 	 = number_format($sum_total_com_eol);
+					$sum_total_com_reals = number_format($sum_total_com_real);
+
+					$cnt_area = sizeof($cnt_area);
+
+					$avg_unit = number_format($sum_total_sellout / $cnt);
+					$avg_com_rate = number_format($sum_total_com_rate / $cnt);
+					$avg_ac_payment = number_format($sum_total_com_real / $cnt);
+
+				?>
+
+			</table>
+		</td>
+	</tr>
+
+</table>
+<div style="height:50px;"></div>
+
+<table border="0" style="width:794px;">
+	<tr>
+		<td align="right">Prepared By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">ASM/RM</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px">( HR Department )</td>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Sale Department )</td>
+	</tr>
+	<tr style="height:10px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Checked By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:20px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+
+	document.getElementById("sum_total_sellout").innerHTML = '<strong><?php echo $sum_total_sellouts; ?></strong>';
+	document.getElementById("sum_total_com_rate").innerHTML = '<strong><?php echo $sum_total_com_rates; ?></strong>';
+	document.getElementById("sum_total_price").innerHTML = '<strong><?php echo $sum_total_price; ?></strong>';
+	// document.getElementById("sum_total_com_eol").innerHTML = '<strong><?php echo $sum_total_com_eol; ?></strong>';
+	document.getElementById("sum_total_com_real").innerHTML = '<strong><?php echo $sum_total_com_reals; ?></strong>';
+	document.getElementById("avg_result").innerHTML = '<strong>Number of PC : <?php echo $cnt; ?> Persons / <?php echo $cnt_area; ?> Area_Avg</strong>';
+	document.getElementById("avg_unit").innerHTML = '<strong><?php echo $avg_unit; ?></strong>';
+	document.getElementById("avg_com_rate").innerHTML = '<strong><?php echo $avg_com_rate; ?></strong>';
+	document.getElementById("avg_ac_payment").innerHTML = '<strong><?php echo $avg_ac_payment; ?></strong>';
+
+</script>

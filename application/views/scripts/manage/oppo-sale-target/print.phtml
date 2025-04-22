@@ -1,0 +1,353 @@
+<?php 
+	$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+	$print_by = $userStorage->firstname." ".$userStorage->lastname;
+	$print_date = date('d F Y H:i:s');
+	//print_r($this->params);
+	$current_url = "http://".$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI];
+?>
+
+<style type="text/css">
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 11px;
+	font-family: Arial;
+}
+
+.signature{
+    font-size:11px;
+    page-break-after:always;
+
+    text-align: right;
+    height: 20px;
+    width: 100%;
+    margin:0px auto;
+    position:fixed;
+    bottom:0px;
+}
+
+</style>
+
+<form role="form" action="<?php echo HOST.'manage/oppo-sale-target-save';?>" method="post" onsubmit="return validateApprove()">
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+	<tr style="height:30px;" align="right">
+		<!-- <th style="padding-right:50px;"><?php echo date('d F Y'); ?></th>   -->
+	</tr>
+	<tr>
+		<td>
+			<strong style="padding-left:50px; font-family: phetsarath ot; font-size:16px;">ລາຍການວາງເປົ້າ ສຳລັບ Sales Area ຂອງເຂດ (<?php echo $this->params['area_name']; ?>) ເດືອນ <?php echo date('F Y', strtotime($this->params['from']) ); ?> </strong><br/>
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-left:50px;">
+			<table cellspacing="0" border="1" >
+				<tr align="center" class="header_color" style="width:660px;">
+					<td style="width:20px;">No.</td>
+					<td style="width:110px;">Area</td>
+					<td style="width:70px;">Staff Code</td>
+					<td style="width:140px;">Name</td>
+					<td style="width:150px;">Position</td>
+					<td style="width:50px;">Target</td>
+					<!-- <td style="width:180px;">Remark</td> -->
+				</tr>
+
+				<?php 
+					$data3 = $this->rms_target;
+					//print_r($data3);
+
+					$cnt = 1;
+
+					foreach ($data3 as $key => $value) {
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt++."</td>";
+						echo 	"<td align='center'>".$value['area_name']."</td>";
+						echo 	"<td align='center'>".$value['staff_code']."</td>";
+						echo 	"<td align='center' style='width:140px; padding-left:5px; word-wrap:break-word;'>".$value['staff_name']."</td>";
+						echo 	"<td align='center'>".$value['group_name']."</td>";
+						echo 	"<td align='center' style='font-weight:bold;'>".number_format($value['target'])."</td>";
+						// echo 	"<td align='center' style='width:180px; padding-left:5px; word-wrap:break-word;'>".$value['otr_remark']."</td>";
+						echo "</tr>";
+						
+						$rd_code = $value['staff_code'];
+
+					}
+
+				?>
+
+			</table>
+
+			<br/> <br/>
+
+			<table cellspacing="0" border="1" >
+				<tr align="center" class="header_color" style="width:660px;">
+					<td style="width:20px;">No.</td>
+					<td style="width:110px;">Area</td>
+					<td style="width:70px;">Staff Code</td>
+					<td style="width:140px;">Name</td>
+					<td style="width:150px;">Position</td>
+					<td style="width:50px;">Target</td>
+					<!-- <td style="width:180px;">Remark</td> -->
+				</tr>
+
+				<?php 
+					$data2 = $this->asms_target;
+					//print_r($data2);
+
+					$cnt = 1;
+					$QAsm = new Application_Model_Asm();
+
+					foreach ($data2 as $key => $value) {
+
+						// Get Area, Province of ASM 
+						$result_asm = $QAsm->getAreaProvinceByStaff($value['staff_id'], $value['area_id']);
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt++."</td>";
+						echo 	"<td align='center'>".$value['area_name']."</td>";
+						echo 	"<td align='center'>".$value['staff_code']."</td>";
+						echo 	"<td align='center' style='width:140px; padding-left:5px; word-wrap:break-word;'>".$value['staff_name']."</td>";
+						echo 	"<td align='center'>".$value['group_name']."</td>";
+						echo 	"<td align='center' style='font-weight:bold;'>".number_format($value['target'])."</td>";
+						// echo 	"<td align='center' style='width:180px; padding-left:5px; word-wrap:break-word;'>".$value['otr_remark']."</td>";
+						echo "</tr>";
+
+					}
+
+				?>
+
+			</table>
+
+			<br/> <br/>
+
+			<table cellspacing="0" border="1" >
+				<tr align="center" class="header_color" style="width:660px;">
+					<td style="width:20px;">No.</td>
+					<td style="width:110px;">Area</td>
+					<td style="width:70px;">Staff Code</td>
+					<td style="width:140px;">Name</td>
+					<td style="width:150px;">Position</td>
+					<td style="width:50px;">Target</td>
+					<!-- <td style="width:180px;">Remark</td> -->
+				</tr>
+
+				<?php 
+					$data = $this->sales_target;
+					// echo "<pre>"; print_r($data);
+					$rd_flag = $sd_flag = 0;
+
+					foreach ($data as $key => $value) {
+	                    if ( $value['rd_approve_by'] != '' ) { 
+	                    	$rd_flag = 1; 
+							$rd_approve_at = $value['rd_approve_at'];
+							break; 
+	                    }
+	                }
+
+	                foreach ($data as $key => $value) {
+	                    if ( $value['sd_approve_by'] != '' ) { 
+	                    	$sd_flag = 1; 
+							$sd_approve_at = $value['sd_approve_at'];
+							break; 
+	                    }
+	                }
+
+					$sum_target = 0;
+					$cnt = 1;
+
+					foreach ($data as $key => $value) {
+
+						if ($value['com'] == 1) {
+
+							echo "<tr>";
+							echo 	"<td align='center'>".$cnt++."</td>";
+							echo 	"<td align='center'>".$value['area_name']."</td>";
+							echo 	"<td align='center'>".$value['staff_code']."</td>";
+							echo 	"<td align='center' style='width:140px; padding-left:5px; word-wrap:break-word;'>".$value['staff_name']."</td>";
+							echo 	"<td align='center'>".$value['group_name']."</td>";
+							echo 	"<td align='center' style='font-weight:bold;'>".number_format($value['target'])."</td>";
+							// echo 	"<td align='center' style='width:180px; padding-left:5px; word-wrap:break-word;'>".$value['remark']."</td>";
+							echo "</tr>";
+
+							$sum_target = $sum_target + $value['target'];
+						}
+
+						echo "<input type='hidden' style='text-align:right;' id='ost_id[]' name='ost_id[]' value='".$value['ost_id']."' />";
+					}
+
+					echo "<tr class='header_color' style='height: 30px;'>";
+					echo 	"<td align='center' style='font-weight:bold;' colspan=4>Total</td>";
+					echo 	"<td align='center' style='font-weight:bold;'>".number_format($sum_target)."</td>";
+					echo 	"<td align='center'></td>";
+					echo "</tr>";
+
+				?>
+
+			</table>
+
+		</td>
+	</tr>
+
+	<?php if ( $this->params['area_id'] >= 81 ) { ?>
+
+		<!-- <tr>
+			<td style="padding-left:50px; font-family: phetsarath ot;">
+				<br/>
+				ຕາຕະລາງຄ່າ Commission ນະຄອນຫຼວງ (VT)<br/><br/>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding-left:50px;">
+				<table cellspacing="0" border="1" >
+					<tr class="header_color">
+						<td style="width:168px;" align="center">Commission Rate</td>
+						<td style="width:168px;" align="center">Flagship / 旗舰机</td>
+						<td style="width:168px;" align="center">Hero Model / 爆款</td>
+						<td style="width:168px;" align="center">Other Model  / 其他产品</td>
+					</tr>
+					<tr>
+						<td style="width:168px;" align="center" rowspan="2">Shopping Mall*</td>
+						<td style="width:168px;" align="center">100</td>
+						<td style="width:168px;" align="center">40</td>
+						<td style="width:168px;" align="center">10</td>
+					</tr>
+				</table>
+			</td>
+		</tr> -->
+
+	<?php } else { ?>
+
+		<!-- <tr>
+			<td style="padding-left:50px; font-family: phetsarath ot;">
+				<br/>
+				ຕາຕະລາງຄ່າ Commission ຕ່າງແຂວງ (UPC)<br/><br/>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding-left:50px;">
+				<table cellspacing="0" border="1" >
+					<tr class="header_color">
+						<td style="width:168px;" align="center">Commission Rate</td>
+						<td style="width:168px;" align="center">Flagship / 旗舰机</td>
+						<td style="width:168px;" align="center">Hero Model / 爆款</td>
+						<td style="width:168px;" align="center">Other Model  / 其他产品</td>
+					</tr>
+					<tr>
+						<td style="width:168px;" align="center">Stand Alone*</td>
+						<td style="width:168px;" align="center">100</td>
+						<td style="width:168px;" align="center">60</td>
+						<td style="width:168px;" align="center">20</td>
+					 </tr>
+					<tr>
+						<td style="width:168px;" align="center">Shopping Mall*</td>
+						<td style="width:168px;" align="center">100</td>
+						<td style="width:168px;" align="center">40</td>
+						<td style="width:168px;" align="center">10</td>
+					</tr>
+				</table>
+			</td>
+		</tr> -->
+
+	<?php } ?>
+
+	<tr>
+		<td style="padding-left:50px; font-family: phetsarath ot;">
+			<br/>
+			<!--ໝາຍເຫດ : <br/><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - ຮູບແບບນີ້ໃຊ້ສະເພາະເດືອນ <?php echo date('F Y', strtotime($this->params['from']) ); ?> ເທົ່ານັ້ນ <br/><br/>
+			 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Sales ຈະຕ້ອງມີຊື່ໃນ KPI ປະຈຳເດືອນ <u style="font-family: phetsarath ot;">ຖ້າບໍ່ມີລາຍຊື່ ຈະບໍ່ໄດ້ຮັບຄ່າ Commission</u> <br/><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - ກໍລະນີພະນັກງານເຮັດວຽກບໍ່ເຕັມເດືອນ ໃຫ້ລະບຸວັນທີ່ເລີ່ມງານ - ວັນທີ່ສຸດທ້າຍຂອງມື້ເຮັດວຽກ ໂດຍໃຫ້ລະບຸລົງໃນໝາຍເຫດ<br/><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - ຢຶດຄ່າ Commission ຈາກລະບົບ Catty System ເທົ່ານັ້ນ <strong style="font-family: phetsarath ot;">(ນັບສະເພາະei ທີ່ Activated ນັບຈາກວັນທີລາຍງານຍອດໃນລະບົບ ພານໃນໜ້າ 10 ວັນ ຫຼັງ 30 ວັນ ເທົ່ານັ້ນ.)</strong><br/><br/>
+			*RD & ASM ຈະແຈ້ງໃຫ້ Sales ຮັບຮູ້ເງຶອນໄຂຕອນປະຊຸມປະຈຳເຂດ -->
+		</td>
+	</tr>
+</table><br><br><br>
+
+<div style="height:20px;"></div>
+
+<table border="0" style="width:660px;">
+	<tr>
+		<td align="right" style="width:80px;"></td>
+		<td align="center">
+			<?php 
+				if ($rd_flag == 1) { 
+					// echo "<img src='../img/saledirector.png' alt='rd_signature' height='35%' width='50%'>";
+				}
+			?>
+		</td>
+		<td align="right" style="width:80px;"></td>
+		<td align="center">
+			<?php 
+				// Check RD Approve
+				if ($rd_flag == 1) { 
+					if ($sd_flag == 1) { 
+						// echo "<img src='../img/saledirector.png' alt='rd_signature' height='35%' width='50%'>";
+					} else {
+						if ( $userStorage->group_id == 1 || $userStorage->group_id == 7 || $userStorage->group_id == 28 ) {
+							echo "<button type='submit' class='btn btn-primary' id='btn_save' name='btn_save' style='height:50px;width:150px' value='3'>Sale Director Approve</button>";
+						}
+					}
+				}
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td align="right" style="width:80px;">RD</td>
+		<td align="left">.................................................................</td>
+		<td align="right" style="width:80px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<!-- <tr>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Sale Department )</td>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Vice President )</td>
+	</tr> -->
+	<tr style="height:5px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right" style="width:80px;"></td>
+		<td align="center">
+			<?php 
+				if ($rd_flag == 1) { 
+					echo date('d / m / Y', strtotime($rd_approve_at)); 
+				}
+			?>
+		</td>
+		<td align="right" style="width:80px;"></td>
+		<td align="center">
+			<?php 
+				if ($sd_flag == 1) { 
+					echo date('d / m / Y', strtotime($sd_approve_at)); 
+				}
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+</table>
+
+<!-- <div class="signature">
+      Printed by <?php echo $print_by; ?> | <?php echo $print_date; ?>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div> -->
+
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $current_url; ?>">
+
+</from>
+
+<script>
+
+	function validateApprove() {
+		var confirmbox = confirm("Confirm to Approve Sale Target!");
+		if (confirmbox == true) { return true; } 
+        return false;
+    }
+
+</script>

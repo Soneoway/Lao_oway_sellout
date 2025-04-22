@@ -1,0 +1,167 @@
+<style>
+    .accordion input,
+    .accordion select {
+        width: 100%;
+    }
+
+    .numbering {
+    counter-reset: rowNumber;
+    }
+
+    .numbering tbody tr {
+        counter-increment: rowNumber;
+    }
+
+    .numbering tbody tr td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+</style>
+<div class="page-header">
+    <?php if (isset($this->regional_market) and $this->regional_market):?>
+        <h1>Edit Province <small><?php echo $this->regional_market['name'] ?></small></h1>
+    <?php else:?>
+        <h1>Create Province</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST.'manage/province-save';?>" method="post" target="ifrmSave">
+
+    <div class="control-group">
+        <input type="hidden" name="districts" id="store_ids">
+        <input type="hidden" name="id" id="id" value="<?php isset($this->regional_market) and $this->regional_market and printf($this->regional_market->id);?>">
+        <button type="button" id="btn_save" class="btn btn-primary">Submit</button>
+        <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+        <button type="button" class="btn btn-danger go-back">Go back</button>
+    </div>
+
+    <ul class="nav nav-tabs" id="myTab">
+        <li class="active"><a href="#info">Province Info</a></li>
+        <li><a href="#district">Districts</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="info">
+            <div class="row-fluid">
+                <div class="span12">
+                    <?php echo $this->render('manage/province/partials/info.phtml') ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="district">
+            <div class="row-fluid">
+                <div class="span12">
+                    <?php echo $this->render('manage/province/partials/district-list.phtml') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        return;
+    }
+
+    $(document).ready(function() {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        remove_store();
+
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+        $( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                $('button, input, select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."ajax/get-district" ?>';
+
+                //get ajax content
+                var aj = $('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.post(targetUrl, {
+                        name : $('#a_storename').val()
+                    },
+                    function(data, status){
+                            $('button, input, select').prop('disabled', false);
+                            aj.html(data);
+                            $('.loading').remove();
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind').click(function(){
+            _self = $('#a_storeresult');
+            item = _self.children('option:selected');
+
+            for (var i = 0; i < item.length; i++) {
+                if ( ! is_exists( $(item[i]).data('id') ) ) {
+                    elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" data-name="'+$(item[i]).data('name')+'">'
+                            + '<td></td>'
+                            + '<td>'+$(item[i]).data('name')+'</td>'
+                            + '<td><button class="btn btn-warning btn-mini btn_remove">Remove</button></td>'
+                            + '</tr>';
+
+                    $('.store_list').append(elm);
+                }
+            }
+
+            remove_store();
+        });
+
+        $('#btn_save').click(function(){
+            var store = $('.store');
+            id_str = '';
+            
+            for(var i = 0; i < store.length; i++) {
+                id_str += $(store[i]).data('id') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#store_ids').val(id_str);
+
+            $('#form').submit();
+        });
+    });
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+        });
+    }
+</script>

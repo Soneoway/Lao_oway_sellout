@@ -1,0 +1,208 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+#map {
+    height: 300px;
+    width: 95%;
+    border-width: medium;
+    border-style: groove;
+    border-color: bisque;
+}
+
+button {
+    font-size: 24px;
+    font-family: Noto sans lao;
+    text-align: center;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+
+<div class="page-header">
+    <h1>ກຳນົດແຜນທີ່ຮ້ານຄ້າ</h1>
+</div>
+
+<div class="form-horizontal">
+    <div class="row">
+        <div stye="align:center" class="span6">
+            <div id="map"></div>
+            <input type="hidden" name="lat" id="lat" />
+            <input type="hidden" name="lng" id="lng" />
+        </div>
+
+        <div class="span6">
+            <hr>
+            <div class="control-group">
+                <label class="control-label" for=""> Store Code : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->store_code ?>"
+                        readonly>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for=""> Store Name : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->name ?>" readonly>
+                </div>
+            </div>
+            <!-- <div class="control-group">
+                <label class="control-label" for=""> Distributor Name : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3"
+                        value="<?php echo $this->distributor_cache[$this->store->d_id]['title'] ?>" readonly>
+                </div>
+            </div> -->
+            <div class="control-group">
+                <label class="control-label" for=""> Sales Area : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3"
+                        value="<?php echo $this->subarea_cache[$this->store->agency] ?>" readonly>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for=""> Address : </label>
+                <div class="controls">
+                    <input type="text" class="form-control span3" value="<?php echo $this->store->shipping_address ?>"
+                        readonly>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="span12">
+            <hr>
+            <input type="hidden" name="store_id" id="store_id" value="<?php echo $this->store->id; ?>">
+            <button style="text-align: center; font-family:Noto sans lao; font-size:20px;" class="btn btn-success"
+                id="checkin-btn">ບັນທຶກແຜນທີ່ຮ້ານຄ້າ</button>
+            <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+            <button style="text-align: center; font-family:Noto sans lao; font-size:20px;" type="button" class="btn btn-danger go-back"><b>ກັບຄືນ</b></button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+var map = L.map('map').setView([17.9627758, 102.6184226], 13); // กำหนดค่าเริ่มต้น (กรุงเทพฯ)
+
+// เพิ่มแผนที่จาก OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// ตรวจสอบว่าบราวเซอร์รองรับ Geolocation หรือไม่
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+
+        // ลบ marker เก่า ถ้ามี
+        if (typeof marker !== 'undefined') {
+            map.removeLayer(marker);
+        }
+
+        // สร้าง marker ใหม่
+        var marker = L.marker([lat, lng]).addTo(map)
+            .bindPopup("ຕຳເເໜ່ງປັດຈຸບັນຂອງທ່ານ")
+            .openPopup();
+
+        // อัปเดตตำแหน่งแผนที่
+        map.setView([lat, lng], 15);
+
+        const u_lat = $('#lat').val(lat);
+        const u_lng = $('#lng').val(lng);
+
+    }, function(error) {
+        console.error("ເກິດຂໍ້ຜິດພາດໃນການເຂົ້າເຖິງຕຳເເໜ່ງ : ", error);
+    });
+} else {
+    alert("ບຣາວເຊີບໍ່ຮອງຮັບການເຂົ້າເຖິ່ງແຜນທີ່");
+}
+
+let marker;
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+
+    } else {
+        alert("ບາວເຊີບໍ່ຮອງຮັບ GPS");
+    }
+}
+
+function showPosition(position) {
+    let lat = position.coords.latitude;
+    let lng = position.coords.longitude;
+
+    if (marker) map.removeLayer(marker);
+    marker = L.marker([lat, lng]).addTo(map).bindPopup("ຕຳແໜ່ງຂອງທ່ານ").openPopup();
+    map.setView([lat, lng], 15);
+
+    checkIn(lat, lng);
+
+}
+
+
+function showError(error) {
+    alert("ບໍສາມາດດືງຂໍ້ມູນຕຳເເໜ່ງໄດ້");
+}
+
+$(document).ready(function() {
+
+    const store_id = $('#store_id').val();
+
+    navigator.geolocation.watchPosition(function(position) {
+        $("#checkin-btn").click(function() {
+            $.ajax({
+                type: 'post',
+                url: '/report/save-store-location',
+                data: {
+                    'store_id': store_id,
+                    'lat': position.coords.latitude,
+                    'lng': position.coords.longitude
+                },
+                error: function(error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'AJAX Error',
+                        text: 'There was an error with the AJAX request: ' +
+                            error,
+                        confirmButtonText: 'Okay'
+                    });
+                },
+                success: function(data) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ບັນທຶກແຜນທີ່ຮ້ານຄ້າສຳເລັດ',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(function() {
+                        window.location.href = '/report/store-visit';
+                    })
+                }
+            });
+
+        });
+
+    });
+
+});
+
+$('.go-back').click(function(e){
+    
+window.location.href = $('#back_url').val();
+
+return false;
+});
+
+</script>

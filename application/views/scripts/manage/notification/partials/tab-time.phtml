@@ -1,0 +1,27 @@
+<div class="row-fluid">
+    <div class="span3">
+        <div class="control-group">
+            <label class="control-label" for="from">Status</label>
+            <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="status" value="1" checked <?php if(isset($this->notification['status']) && $this->notification['status']) echo "checked" ?>> Enable</label>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="span3">
+        <p>Show this Notification...</p>
+        <div class="control-group">
+            <label class="control-label" for="from">From</label>
+            <div class="controls">
+                <input type="text" class="date" id="from" name="from" value="<?php if(isset($this->notification['show_from']) && strtotime($this->notification['show_from'])) echo date('d/m/Y H:i', strtotime($this->notification['show_from'])) ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="to">To</label>
+            <div class="controls">
+                <input type="text" class="date" id="to" name="to" value="<?php if(isset($this->notification['show_to']) && strtotime($this->notification['show_to'])) echo date('d/m/Y H:i', strtotime($this->notification['show_to'])) ?>" />
+            </div>
+        </div>
+    </div>
+</div>

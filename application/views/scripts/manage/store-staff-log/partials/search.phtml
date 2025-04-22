@@ -1,0 +1,82 @@
+<?php
+$position_t = array(
+    0,1,2,3,4,5
+);
+?>
+<form action="<?php echo HOST ?>manage/store-staff-log" class="form-horizontal form-search" method="get">     
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="staff_code" class="span2" id="laocolor">ລະຫັດພະນັກງານ</label>
+                <textarea id="staff_code" name="staff_code" cols="15" rows="3" style="resize: none;"><?php 
+                    if (isset($this->params['staff_code'])) {
+                        $tmp = implode("\n", $this->params['staff_code']);
+                        echo $tmp;
+                    }
+                ?></textarea>
+            </div>
+            <div class="control-group">
+                <label class="span2" for="province">ຕຳແໜ່ງ</label>
+                <div class="controls">
+                    <select name="is_leader" id="is_leader">
+                        <option value>---</option>
+                            <?php foreach ($position_t as $pid): 
+                                if($pid == 0){
+                                    $is_leader = "PC";
+                                }else if ($pid == 1) {
+                                    $is_leader = "SALE";
+                                }else if ($pid == 2) {
+                                    $is_leader = "PCM";
+                                }else if ($pid == 3) {
+                                    $is_leader = "STOCK";
+                                }else if ($pid == 4) {
+                                    $is_leader = "ASM";
+                                }else if ($pid == 5) {
+                                    $is_leader = "MKT";
+                                }else{
+                                    $is_leader = "Not Found";
+                                }
+                                ?>
+                                <option value="<?php echo $pid;?>"<?php if( isset($this->params['is_leader']) && $this->params['is_leader'] == $pid ) echo "selected='selected'" ?>><?php echo $is_leader;?></option>
+                            <?php endforeach ?>
+                    </select>
+                </div>
+            </div>       
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="store_id" class="span2" id="laocolor">ລະຫັດຮ້ານ</label>
+                <textarea id="store_id" name="store_id" cols="15" rows="3" style="resize: none;"><?php 
+                    if (isset($this->params['store_id'])) {
+                        $tmp = implode("\n", $this->params['store_id']);
+                        echo $tmp;
+                    }
+                ?></textarea>
+            </div>
+            <div class="control-group">
+                <label for="store_name" class="span2" id="laocolor">ຊື່ຮ້ານ</label>
+                <input id="store_name" placeholder="ຄົ້ນຫາຕາມຊື່ພະນັກງານ" name="store_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->store_name['store_name']) and printf($this->params['store_name']);?>">
+            </div>
+            <div class="control-group">
+                <label class="span2" for="province">ແຂວງ</label>
+                <div class="controls">
+                    <select name="region_id" id="region_id">
+                        <option value>---</option>
+                        <?php $QArea = new Application_Model_RegionalMarket();
+                            $areas = $QArea->get_cache(); ?>
+                            <?php foreach ($areas as $id => $area): ?>
+                                <option value="<?php echo $id;?>"<?php if( isset($this->params['region_id']) && $this->params['region_id'] == $id ) echo "selected='selected'" ?>><?php echo $area;?></option>
+                            <?php endforeach ?>
+                    </select>
+                </div>
+            </div>       
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <button class="btn btn-info">Search</button>
+            <button type="reset" class="btn btn-warning">Reset</button>
+        </div>
+    </div>    
+</form>

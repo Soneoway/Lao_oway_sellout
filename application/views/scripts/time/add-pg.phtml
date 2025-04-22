@@ -1,0 +1,313 @@
+<div class="page-header">
+    <h1>Add time check in (For PG)</h1>
+</div>
+<style>
+.numbering{counter-reset:rowNumber}.numbering tbody tr{counter-increment:rowNumber}.numbering tbody tr td:first-child::before{content:counter(rowNumber);min-width:1em;margin-right:.5em}.input-append .date{width:50%}.edit_date{min-width:180px}.edit_date input{min-width:70px}.edit_lbl{cursor:pointer}.modified{background:#fed!important}.table td:nth-child(2){width:35%}.table td:nth-child(3){width:10%}.table td:nth-child(4){width:10%}.table td:nth-child(5){width:10%}#a_staffresult{width:100%}.input-append{display:inline-block;float:left;margin-left:20px!important;width:50%!important}.input-append .form-control{width:70%}
+</style>
+
+<div class="container">
+   <iframe name="iframe" id="iframe" width="100%" style="display:none;"></iframe>
+   <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+   <form id="form" class="form-horizontal" action="<?Php echo HOST ?>time/add-pg" target="ifrmSave" method="POST">
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="control-group">
+                <label class="control-label" for="a_area">Area</label>
+                <div class="controls">
+                    <select name="a_area" id="a_area">
+                        <option value>---</option>
+                        <?php if (isset($this->areas) && $this->areas):
+                        ?>
+                            <?php foreach ($this->areas as $key => $value): ?>
+                                <option value="<?php echo $value['area_id'] ?>"><?php echo $value['area_name'] ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                        
+                        <?php if (isset($this->areas_all) && $this->areas_all):
+                        ?>
+                            <?php foreach ($this->areas_all as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                        
+                    </select>
+                </div>
+            </div>
+          
+             <div class="control-group">
+                <label class="control-label" for="team">Team</label>
+                <div class="controls">
+                    <select name="team" id="team">
+                        <option value>---</option>
+                        <?php if (isset($this->team) && $this->team): ?>
+                            <?php foreach ($this->team as $key => $value): ?>
+                                     <option value="<?php echo $value['team_id'] ?>"><?php echo $value['team_name'] ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                        
+                          <?php if (isset($this->team_all) && $this->team_all):
+                        ?>
+                            <?php foreach ($this->team_all as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                    </select>
+                </div>
+            </div>
+            
+             <div class="control-group">
+                <label class="control-label" for="shift">Shift</label>
+                <div class="controls">
+                <select name="shift" id="shift" >
+                    <option value="">Choose</option>
+                    <?php if (isset($this->shifts) && $this->shifts): ?>
+                	<?php foreach ($this->shifts as $k => $shift): ?>
+            			<?php if ($shift['status'] == 1): ?>
+            				<option value="<?php echo $k ?>" data-start="<?php echo $shift['start'] ?>" data-end="<?php echo $shift['end'] ?>" <?php if(isset($this->timing->shift) && $this->timing->shift == $k) echo 'selected="selected"' ?>><?php echo $shift['name'] ?></option>
+            			<?php endif ?>
+                	<?php endforeach ?>
+                <?php endif ?>
+                </select>
+                </div>
+            </div>
+            
+             <div class="control-group">
+                    <label class="control-label" for="timepicker_start">Start time</label>
+                    <div class="controls">
+                    <input placeholder="HH:mm" type="text" class="form-control span3 cursorok" readonly="readonly" id="timepicker_start" name="timepicker_start" required="required" value="<?php if (isset($this->from)): echo $this->from; endif;?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="timepicker_end">End time</label>
+                 <div class="controls">
+                <input placeholder="HH:mm" type="text" class="form-control span3 cursorok" readonly="readonly" id="timepicker_end" name="timepicker_end" required="required" value="<?php if (isset($this->to)): echo $this->to; endif;?>">
+            </div>
+             </div>
+            
+             <div class="control-group">
+                <label class="control-label" for="from_date">Date</label>
+                <div class="controls">
+                    <input type="text" class="form-control search-query  span2" id="from_date" name="from_date" value="<?php isset($this->date) and printf($this->date);?>" >
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="a_staff">Staff Name</label>
+                <div class="controls input-append">
+                    <input type="text" class="form-control" id="a_staffname" placeholder="Enter Staff name, press ENTER" name="a_storename" />
+                    <button type="button" class="btn btn-info" id="a_storename_btn"><span class="icon-search"></span></button>
+                </div>
+            </div>
+            
+            
+        </div>
+        <div class="span8">
+            
+            <div class="control-group">
+                <label class="control-label" for="a_staffresult">Result</label>
+                <div class="controls">
+                    <div class="load-ajax">
+                        <select name="a_staffresult[]" id="a_staffresult" multiple="multiple" size="10"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button type="button" id="btn_save" class="btn btn-primary pull-right">Check in</button>
+            </div>  
+        </div>
+    </div>
+</form>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript">
+  $(document).ready(function() {
+    initAddOff();
+     
+              $( '#from_date' ).datepicker({ dateFormat: "dd/mm/yy" });            
+              $('.go-back').click(function(e){
+                window.location.href = $('#back_url').val();    
+                return false;
+              });
+       });
+       
+        function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('button').prop('disabled', false);
+        return;
+    }
+    
+    $("#yesterday").change(function() {
+        if(this.checked) 
+        {
+            var dateTime = new Date($("#from_date").datepicker("getDate"));
+            var strDay =  dateTime.getDate() - 1;            
+            if(strDay <= 9) strDay = '0' + strDay;
+                 var strMonth = dateTime.getMonth()+1;            
+            if(strMonth <= 9) strMonth = '0' + strMonth;            
+                  var strYear = dateTime.getFullYear();  
+            alert('Bạn đã chọn chấm công bù cho ngày hôm qua :'+strDay+'/'+strMonth+'/'+strYear); 
+        }
+    });
+
+    $(document).ready(function() {
+        search_filter();
+        remove_store();        
+        
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+        $( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                
+                search_staff(this);
+                return false;
+            }
+        });
+
+        $('#a_storename_btn').click(function() {
+            search_staff(this);
+        });
+
+        $('#btn_save').click(function(){
+         //   $('button').prop('disabled', true);
+            $('#form').submit();
+        });
+
+    });
+    
+    function initAddOff(){
+            $('#btn_off').click(function(e){
+                
+                $('.off').show();
+                $('.off').find('select, input, textarea').removeAttr('disabled');
+               // var old_div = $('.off');
+//                
+//                var new_div = old_div.clone();
+//        
+//                new_div.removeClass('off').find('select, input, textarea').removeAttr('disabled');
+//        
+//                new_div.insertBefore($(this)).show();
+//                
+//                $(this).remove();
+//                
+//                return true;
+            });
+            
+             
+        }
+
+    function search_staff(elm) {
+        $('button, input, select').prop('disabled', true);
+                
+        area_id    = $('#a_area').val();
+        team_id  = $('#team').val();
+        staff_name = $('#a_staffname').val();
+        shift = $('#shift').val();
+        
+        if(!area_id && team_id != <?php echo ACCESSORIES_TEAM; ?>)
+        {
+            alert('Please Choose Area');
+            $('button, input, select').prop('disabled', false);
+            return false;
+        }
+        
+        if(!team_id)
+        {
+            alert('Please Choose Teams');
+            $('button, input, select').prop('disabled', false);
+            return false;
+        }
+
+        if(!shift)
+        {
+            alert('Please Choose Shift');
+            $('button, input, select').prop('disabled', false);
+            return false;
+        }
+
+        $('.loading').remove();
+        var _self = $(elm);
+        var targetUrl = '<?php echo HOST."ajax/get-staff-for-time" ?>';
+
+        //get ajax content
+        var aj = $('.load-ajax');
+        if (aj.length && (area_id || team_id || staff_name)){
+            _self.parents('.control-group').append("<span class=\'loading\'></span>");
+
+            $.post(targetUrl, {
+                area_id : area_id,
+                team_id : team_id,
+                staff_name : staff_name,
+            }, function(data){
+                $('button, input, select').prop('disabled', false);
+                aj.html(data);                            
+                $('.loading').remove();
+            });
+        }
+    }
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function search_filter() {
+        $('#btn_f_search').click(function() {
+            area      = $('#f_area').val();
+            region    = $('#f_province').val();
+            storename = $('#f_storename').val();
+            $('.store').show();
+
+            $('.store').each(function() {
+                _self = $(this);
+                if (area && _self.data('area') != area) 
+                    _self.hide();
+
+                if (region && _self.data('region') != region) 
+                    _self.hide();
+
+                var reg = new RegExp(storename, 'gi');
+                if (storename && !_self.data('name').match(reg)) 
+                    _self.hide();
+            });
+        });
+
+        $('#btn_f_reset').click(function() {
+            $('#f_area').val('');
+            $('#f_province').val('');
+            $('#f_storename').val('');
+            $('.store').show();
+        });
+    }
+    
+     $('#shift').change(function(){
+        	var option = $(this).find('option:selected');
+            $('#timepicker_start').val(option.data('start'));
+            $('#timepicker_end').val(option.data('end'));
+        });
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+        });
+    }
+       
+</script>

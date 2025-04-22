@@ -1,0 +1,245 @@
+<style type="text/css">
+	label {
+		font-size: 14px;
+	}
+</style>
+
+<?php
+if($this->store['attribute'] == 1) {
+	$attribute = "Downtown";
+}elseif ($this->store['attribute'] == 2) {
+	$attribute = "County";
+}elseif ($this->store['attribute'] == 3){
+	$attribute = "Township";
+}else{
+	$attribute = "-";
+}
+
+
+if($this->store['status'] == 1) {
+	$status = 'In Cooperation';
+}elseif ($this->store['status'] == 2) {
+	$status = 'Suspend Cooperation';
+}else {
+	$status = 'Close';
+}
+
+if($this->store['sale_type'] == 1) {
+	$sale_type = "Physical Store";
+}elseif($this->store['sale_type'] == 2){
+	$sale_type = "Virtual Store";
+}
+
+?>
+
+<ul class="breadcrumb" style="margin-top: 20px;">
+	<li><a href="/">Home</a> <span class="divider">/</span></li>
+	<li><a href="/manage/store">Store Management</a> <span class="divider">/</span></li>
+	<li class="active">Store Detail</li>
+</ul>
+
+
+<div class="container" style="padding-bottom: 300px; padding-top: 30px;">
+	<div class="card">
+		<div class="row-fluid">
+
+			<div class="span5">
+				<div class="control-group">
+					<label style="font-size: 28px; padding-bottom: 25px; font-weight: bold;"> <?php echo $this->store['name'] ?> </label>
+					<label>Store Code : <?php echo $this->store['store_code'] ?></label>
+					<label>Affiliated Clients : <?php echo $this->client[0]['client_name'] ?></label>
+					<label>Area : <?php echo $this->area[$this->store['area_id']] ?></label>
+					<label>Administrative Attribute : <?php echo $attribute; ?></label>
+					<label>Market Deposit : 0</label>
+					<label>Creator : <?php echo $this->staff[$this->store['created_by']] ?></label>
+				</div>
+			</div>
+
+			<div class="span5">
+				<div class="control-group">
+					<label style="padding-bottom: 40px"></label>
+					<label>Affiliated Distributor : <?php echo $this->distibutor[$this->store['d_id']]['title'] ?></label>
+					<label>Provincial Company : OPPO LAOS</label>
+					<label>Affiliated Agency : <?php echo $this->subArea[$this->store['agency']] ?></label>
+					<label>Price System : </label>
+					<label>AD Deposite : 0</label>
+					<label>Creation Time : <?php echo $this->store['created_at'] ?></label>
+				</div>
+			</div>
+
+			<div class="span2">
+				<div class="control-group">
+					<button class="btn" type="submit" onclick="window.history.go(-1); return false;"> Back </button>
+					<label style="padding-top: 20px;"> Status </label>
+					<label style="font-weight: bold; font-size: 20px;"><?php echo $status ?></label>
+
+				</div>
+			</div>
+
+		</div>
+
+		<hr>
+
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="active"><a href="#basicinfo">Basic Info.</a></li>
+			<li><a href="#business">Business Info.</a></li>
+			<li><a href="#pesonal">Pesonnel Info.</a></li>
+			<li><a href="#operation">Pesonnel Info.</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+			<div class="tab-pane active" id="basicinfo" >
+				<div class="card">
+					<div class="row-fluid" style="border-style: solid; padding: 20px; border-color: lavender;">
+						<h3 style="padding-bottom: 10px"> Basic Info </h3>
+						<hr />
+
+						<div class="span4">
+							<div class="control-group">
+								<label>Cooperation Starting Date : <?php echo $this->store['start_cooperation'] ?></label>
+								<label>Sales Type : <?php echo $sale_type; ?></label>
+							</div>
+						</div>
+
+						<div class="span4">
+							<div class="control-group">
+								<label>Cooperation Ending Date : <?php echo $this->store['end_cooperation'] ?></label>
+								<label>External Code : <?php echo $this->Store['external_serial'] ?></label>
+							</div>
+						</div>
+
+						<div class="span3">
+							<div class="control-group">
+								<label>Tag : </label>
+							</div>	
+						</div>
+
+
+					</div>
+				</div>
+
+				<div class="card" style="padding-top: 10px">
+					<div class="row-fluid" style="border-style: solid; padding: 20px; border-color: lavender;">
+						<h3 style="padding-bottom: 10px">Address Info</h3>
+						<hr />
+
+						<div class="span5">
+							<div class="control-group">
+								<label>County : LAOS</label>
+								<label>Complete Store Address : <?php echo $this->store['company_address'] ?></label>
+							</div>
+						</div>
+
+						<div class="span5">
+							<div class="control-group">
+								<label>Region : <?php echo $this->area[$this->store['area_id']] ?> / <?php echo $this->regional[$this->store['province_id']] ?></label>
+								<label>Address : <?php echo $this->store['shipping_address'] ?></label>
+							</div>
+						</div>
+
+
+
+					</div>
+
+					<div class="row-fluid" style="border-style: solid; padding: 20px; border-color: lavender;">
+						<h3 style="padding-bottom: 10px">Store Delivery Address</h3>
+						<hr />
+
+						<div class="span12">
+							<div class="control-group">
+								<label>ADD Information : <?php echo $this->store['leader'] ?> / <?php echo $this->store['phone_number'] ?> / <?php echo $this->store['shipping_address'] ?></label>
+							</div>
+						</div>
+					</div>
+
+					<div class="row-fluid" style="border-style: solid; padding: 20px; border-color: lavender;">
+						<h3 style="padding-bottom: 10px"> Finance Info. </h3>
+						<hr />
+
+						<div class="span4">
+							<div class="control-group">
+								<label>Finance Client : </label>
+								<label>Print Price : </label>
+								<label>Business License Image : </label>
+							</div>
+						</div>
+
+						<div class="span4">
+							<div class="control-group">
+								<label>Finance Client Code : </label>
+								<label>Business License : </label>
+							</div>
+						</div>
+
+						<div class="span3">
+							<div class="control-group">
+								<label>Opertator Attribute : </label>
+								<label>Unified Social Credit Code : </label>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div class="tab-pane" id="business" >
+				<h3>Comming Soon</h3>
+			</div>
+
+
+			<div class="tab-pane" id="pesonal" >
+				<div class="row-fluid">
+					<h3 style="padding-bottom: 10px;">Pesonnel Info.</h3>
+					<hr />
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Post</th>
+								<th>Name</th>
+								<th>Tel.</th>
+								<th>Sales Caculation Date</th>
+								<th>Creator.</th>
+								<th>Creation Time</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+
+			</div>
+
+			<div class="tab-pane" id="operation" >
+
+				<div class="row-fluid">
+					<h3 style="padding-bottom: 10px;">Record List.</h3>
+					<hr />
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Operation Item</th>
+								<th>Operator</th>
+								<th>Operation Time.</th>
+								<th>Remarks</th>
+						</thead>
+					</table>
+				</div>
+			</div>
+
+		</div>
+
+
+	</div>
+</div>
+
+
+<script>
+	$('#myTab a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	})
+</script>

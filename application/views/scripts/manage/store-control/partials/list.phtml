@@ -1,0 +1,87 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Store Control</div></th>
+        <th><div align="center">Area (Store)</div></th>
+        <th><div align="center">Staff Code</div></th>
+        <th><div align="center">Staff Name</div></th>
+        <th><div align="center">Group</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $StoreControl = new Application_Model_StoreControl();
+
+            if ($this->store_control) {
+                $data = $this->store_control;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt_sc = $StoreControl->cnt_store_by_area($data[$i]['sc_id']);
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td>".$cnt."</td>";
+                    echo    "<td>
+                                <a title='Edit' href='".HOST."manage/store-control-edit?store_control_id=".$data[$i]['sc_id']."'>".$data[$i]['sc_name']."</a>
+                            </td>";
+
+                    echo    "<td>";
+                    for ($j=0;$j<count($cnt_sc);$j++) { echo "<div>".$cnt_sc[$j]['area_name']." ( ".$cnt_sc[$j]['cnt_store']." )</div>"; }
+                    echo    "</td>";
+
+                    echo    "<td><div align='center'>".$data[$i]['staff_code']."</div></td>";
+                    echo    "<td>".$data[$i]['staff_name']."</td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_group']."</div></td>";
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='/manage/store-control-store-edit?id=".$data[$i]['sc_id']."'><i class='icon-edit'></i></a>
+                                    <a title='Delete' class='confirmLink' href='/manage/store-control-del?id=".$data[$i]['sc_id']."'> <i class='icon-trash'></i></a>
+                                    <span class='badge badge-default' data-store-control-id='".$data[$i]['sc_id']."'>Log</span>
+                                </div>
+                            </td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>manage/store-control-short-report',
+                {
+                    store_control_id : _self.data('store-control-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    
+</script>

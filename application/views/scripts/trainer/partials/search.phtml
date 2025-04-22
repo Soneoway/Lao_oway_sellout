@@ -1,0 +1,86 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/index">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="name" class="span2">Name</label>
+                <input id="name" name="name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="code" class="span2">Staff code</label>
+                <input id="code" name="code" type="text" class="input-large search-query form-control" value="<?php isset($this->params['code']) and printf($this->params['code']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="email" class="span2">Email</label>
+                <input id="email" name="email" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['email']) and printf($this->params['email']);?>">
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->area_trainer) :
+                        foreach ($this->area_trainer as $key => $value):
+                            ?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($key, $this->params['area_id']) || $key == $this->params['area_id'])) ):?>selected<?php endif;?>><?php echo (isset($value) and $value) ? $value :'';?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $key => $value):?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($key, $this->params['regional_market']) || $key == $this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $value;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">Date of birth</label>
+                <div>
+                    <input type="text" class="input-medium search-query form-control birth" id="date" name="date" value="<?php isset($this->params['date']) and printf($this->params['date']);?>">
+                    <input type="text" class="input-medium search-query form-control birth" id="month" name="month" value="<?php isset($this->params['month']) and printf($this->params['month']);?>">
+                    <input type="text" class="input-medium search-query form-control birth" id="year" name="year" value="<?php isset($this->params['year']) and printf($this->params['year']);?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">Title</label>
+                <div>
+                    <select name="title">
+                        <option value="">Select</option>
+                        <?php $Title = unserialize(TRAINER_TITLE_SEARCH);
+                        foreach($Title as $key => $val):?>
+                            <option value="<?php echo $key ?>" <?php if(isset($this->title) and $this->title == $key ):?>selected<?php endif;?>><?php echo $val?></option>
+                        <?php endforeach;?>
+                    </select>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+</form>
+<style>
+    .birth{width:12%}
+</style>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script src="../js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="../css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="../css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">

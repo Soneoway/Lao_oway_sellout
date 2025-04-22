@@ -1,0 +1,139 @@
+<div align="center"><h2>Level – Internal (compare within PC level)</h2></div>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">Area</div></th>
+        <th colspan="2"><div align="center">Senior</div></th>
+        <th colspan="2"><div align="center">Advance</div></th>
+        <th colspan="2"><div align="center">Master</div></th>
+        <th colspan="2"><div align="center">All Level PC</div></th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <?php 
+
+        if (isset($this->pc_level_list) and $this->pc_level_list) {
+
+            $data = $this->pc_level_list;
+
+            for ($i=0;$i<count($data);$i++) { 
+
+                $sum_pc_level = $data[$i]['level_senior'] + $data[$i]['level_advance'] + $data[$i]['level_master'];
+
+                $share_01 = round( ( $data[$i]['level_senior'] / $sum_pc_level ) * 100, 1 );
+                $share_02 = round( ( $data[$i]['level_advance'] / $sum_pc_level ) * 100, 1 );
+                $share_03 = round( ( $data[$i]['level_master'] / $sum_pc_level ) * 100, 1 );
+
+                $ratio = round(($share_01/10),1)." : ".round(($share_02/10),1)." : ".round(($share_03/10),1);
+
+                echo "<tr>";
+                echo    "<td width='20%'><div align='center'><a title='View' href='#' class='view_details' data-type-id=1 data-area-id=".$data[$i]['area_id']." >".$data[$i]['area_name']."</a></div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_senior']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_01."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_advance']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_02."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_master']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_03."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$sum_pc_level."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$ratio."</div></td>";
+                echo "</tr>";
+
+            }
+
+        }
+
+    ?>
+
+    </tbody>
+</table>
+
+<div align="center"><h2>Level – External (compare with All PC)</h2></div>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">Area</div></th>
+        <th colspan="2"><div align="center">Senior</div></th>
+        <th colspan="2"><div align="center">Advance</div></th>
+        <th colspan="2"><div align="center">Master</div></th>
+        <th colspan="2"><div align="center">All PC</div></th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <?php 
+
+        if (isset($this->pc_level_list) and $this->pc_level_list) {
+
+            $data = $this->pc_level_list;
+
+            for ($i=0;$i<count($data);$i++) { 
+
+                $total_pc = $data[$i]['total_pc'];
+                $sum_pc_level = $data[$i]['level_senior'] + $data[$i]['level_advance'] + $data[$i]['level_master'];
+
+                $share_01 = round( ( $data[$i]['level_senior'] / $total_pc ) * 100, 1 );
+                $share_02 = round( ( $data[$i]['level_advance'] / $total_pc ) * 100, 1 );
+                $share_03 = round( ( $data[$i]['level_master'] / $total_pc ) * 100, 1 );
+
+                $ratio = round( ( $sum_pc_level / $total_pc ) * 100, 1 );
+
+                echo "<tr>";
+                echo    "<td width='20%'><div align='center'><a title='View' href='#' class='view_details' data-type-id=2 data-area-id=".$data[$i]['area_id']." >".$data[$i]['area_name']."</a></div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_senior']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_01."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_advance']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_02."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$data[$i]['level_master']."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$share_03."%</div></td>";
+                echo    "<td width='10%'><div align='right'>".$total_pc."</div></td>";
+                echo    "<td width='10%'><div align='right'>".$ratio."%</div></td>";
+                echo "</tr>";
+
+            }
+
+        }
+
+    ?>
+
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.view_details').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>trainer/pc-level-by-area-detail',
+                {
+                    area_id : _self.data('area-id'),
+                    type_id : _self.data('type-id'),
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    // var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    // $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+
+    });
+    
+</script>

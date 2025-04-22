@@ -1,0 +1,373 @@
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.checkboxtree.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.checkboxtree.css"/>
+<style>
+    select {
+        max-width: 100%;
+    }
+
+    #tab_show label:not(.checkbox) {
+        font-weight: bold;
+    }
+
+    .thumbnail {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        text-align: center;
+        padding: 0;
+        margin: auto;
+        text-align: center;
+    }
+
+    .thumbnail i {
+        font-size: 100px;
+    }
+
+    .thumbnail span {
+        width: 100px;
+        height: 100px;
+    }
+
+    .attachment_name {
+        word-wrap: break-word;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    #add_category_btn {
+        margin-bottom: 9px;
+    }
+
+    .ui-widget-content .ui-icon {
+        background-color: #ccc;
+        border-radius: 2px;
+    }
+
+    .ui-widget-content .ui-icon:hover {
+        cursor: pointer;
+    }
+
+    .tree input {
+        margin-left: 4px;
+    }
+
+    .tree label {
+        display: inline-block;
+        padding-left: 4px;
+    }
+
+    .tree li:hover>label {
+        background: #efe;
+    }
+
+    .ui-widget-content {
+        background: none;
+        border: none;
+    }
+</style>
+
+<div class="page-header">
+    <?php if (isset($this->notification) and $this->notification):?>
+        <h1>Edit notification</h1>
+    <?php else:?>
+        <h1>Create notification</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<div class="row-fluid">
+    <div class="span12">
+        <iframe src="" name="frame" frameborder="0" style="display:none;height=0;"></iframe>
+        <form role="form" id="form" target="frame" action="<?php echo HOST.'manage/notification-save';?>" method="post">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <p class="pull-right">
+                        <input type="hidden" name="id" id="id" value="<?php isset($this->notification) and $this->notification and printf($this->notification->id);?>">
+                        <button type="submit" id="submit_btn" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-danger" onclick="window.location='<?php echo HOST ?>manage/notification'">Go back</button>
+                    </p>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_content" data-toggle="tab">Content</a></li>
+                <li><a href="#tab_show" data-toggle="tab">Display to</a></li>
+                <li><a href="#tab_time" data-toggle="tab">Set time</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_content">
+                    <?php echo $this->render('manage/notification/partials/tab-content.phtml') ?>
+                </div>
+
+                <div class="tab-pane" id="tab_show">
+                    <?php echo $this->render('manage/notification/partials/tab-show.phtml') ?>
+                </div>
+
+                <div class="tab-pane" id="tab_time">
+                    <?php echo $this->render('manage/notification/partials/tab-time.phtml') ?>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>js/file-uploader/fileuploader.css"/>
+<script src="<?php echo HOST ?>js/file-uploader/fileuploader.js" type="text/javascript"></script>
+<script src="<?php echo HOST ?>js/ckeditor/ckeditor.js"></script>
+<script src="<?php echo HOST ?>js/jsrender.min.js"></script>
+<script>
+config = {};
+//config.toolbar = [
+//	{ name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
+//	{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ] },
+//	{ name: 'about', items: [ 'Source' ] },
+//	'/',
+//
+//	{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ] },
+//	{ name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
+//	{ name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
+//	'/',
+//	{ name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
+//	{ name: 'colors', items: [ 'TextColor', 'BGColor' ] },
+//	{ name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] },
+//	{ name: 'others', items: [ '-' ] }
+//];
+config.skin = 'office2013';
+config.extraPlugins = 'imageuploader';
+config.enterMode = CKEDITOR.ENTER_BR;
+config.shiftEnterMode = CKEDITOR.ENTER_P;
+
+    CKEDITOR.replace( 'content' , config);
+</script>
+
+<script id="file_item_div" type="text/x-jsrender">
+    <div class="span2 file_item">
+        <div class="thumbnail">
+            <span><i class="icon-file"></i></span>
+        </div>
+        <p class="attachment_name">{{:file_display_name}}</p>
+
+        <input type="hidden" name="nfile_id[]" value="" />
+        <input type="hidden" name="key[]" value="{{:keypass}}" />
+        <input type="hidden" name="file_id[]" value="{{:file_id}}" />
+        <input type="hidden" name="hash[]" value="{{:hashstr}}" />
+    </div>
+</script>
+
+<script id="alert_div" type="text/x-jsrender">
+    <div class="alert alert-{{:type}}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{:message}}
+    </div>
+</script>
+
+<script language="javascript" type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/manage.notification.category.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.tree').checkboxTree();
+
+        $('.date').datetimepicker({
+            weekStart: 1,
+            clear: true,
+            minView: '0',
+            autoclose: true,
+            format: 'dd/mm/yyyy hh:ii'
+        });
+
+        init_uploader();
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                $('.loading').remove();
+                var _self = $( "#s_name" );
+                name = _self.val().trim();
+
+                if (!name) return false;
+
+                //get ajax content
+                var aj = $('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.ajax({
+                        url: '<?php echo HOST ?>staff',
+                        type: 'post',
+                        dataType: 'html',
+                        data: {
+                            sname: 1,
+                            name: name
+                        },
+                    })
+                    .done(function(data) {
+                        console.log("success");
+                        aj.html(data);
+                    })
+                    .fail(function() {
+                        console.log("error");
+                    })
+                    .always(function() {
+                        console.log("complete");
+                        _self.next('.loading').remove();
+                    });
+                }
+
+                return false;
+            }
+        });
+
+        $('#add_pg_btn').click(function(){
+            _self = $('#name_result');
+            item = _self.children('option:selected').clone();
+            list = $(item);
+
+            for (var i = 0; i < item.length; i++) {
+
+                if ( ! is_exists( $(item[i]).attr('value'), false) ) {
+                    _des = $('#pg_name');
+                    _des.append(item[i]);
+                }
+            }
+        });
+
+        $('#remove_pg_btn').click(function(){
+            _self = $('#pg_name');
+            item = _self.children('option:selected').remove();
+        });
+
+        $('#form').submit(function(event){
+            event.preventDefault();
+            _name = $('#pg_name option');
+            id_str = '';
+
+            for(var i = 0; i < _name.length; i++) {
+                id_str += $(_name[i]).attr('value') + ',';
+            }
+
+            id_str = id_str.replace(/\,$/, '');
+            $('#pic').val(id_str);
+
+            $(this).unbind( event );
+
+            //submit
+            $(this).submit();
+
+        });
+
+        $('.checkall').change(check_all);
+        $('.display-item').change(check_select_all);
+    });
+
+    function check_select_all(e) {
+        $('.display-item').unbind('change');
+
+        _self = $(e.target);
+        type = _self.data('type');
+
+        if (!type) return false;
+
+        all_is_checked = true;
+
+        $(type).each(function(index, el) {
+            if (!$(el).prop('checked')) {
+                all_is_checked = false;
+                return false;
+            }
+        });
+        
+        $('[data-target="'+type+'"]').prop('checked', all_is_checked);
+        $('.display-item').change(check_select_all);
+    }
+
+    function check_all(e) {
+        _self = $(e.target);
+        target = _self.data('target');
+
+        if (!target) return false;
+
+        $(target).prop('checked', _self.prop('checked'));
+    }
+
+	function is_exists(id, is_leader) {
+        if(is_leader) {
+            _des = $('#leader_name');
+        } else {
+            _des = $('#pg_name');
+        }
+
+        items = _des.children('option');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).attr('value') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function init_uploader() {
+        $('.file-uploader').each(function (){
+            var _self = $(this);
+            var uploader = new qq.FileUploader({
+                element: _self[0],
+                action: '<?php echo HOST ?>manage/notification-upload',
+                multiple: false,
+                // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z'],
+                sizeLimit: 5 * 1024 * 1024,
+                onProgress: function(id, fileName, loaded, total){
+                    $('.fix-msg').addClass('show');
+
+                    $("form").submit(function (e) {
+                        e.preventDefault();
+                    });
+
+                    $(window).on('beforeunload', function() {
+                        return 'Please wait your upload proccess complete!';
+                    });
+                },
+                onComplete: function(id, fileName, responseJSON){
+                    if ( responseJSON.success==true ){
+                        var template = $.templates("#file_item_div");
+
+                        try {
+                            var htmlOutput = template.render(responseJSON);
+                            $(".file_list").append(htmlOutput);
+                        } catch(err) {}
+                    }
+
+                    $("form").unbind('submit');
+
+                    window.onbeforeunload = null;
+
+                    $('.fix-msg').removeClass('show');
+                },
+                onCancel: function(id, fileName){},
+                onError: function(id, fileName, xhr){}
+            });
+        });
+    }
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form button[type=submit]').prop('disabled', false);
+        return;
+    }
+</script>

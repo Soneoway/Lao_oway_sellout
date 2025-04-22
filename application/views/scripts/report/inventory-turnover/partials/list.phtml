@@ -1,0 +1,242 @@
+<div class="page-header">
+    <div class="row">
+        <div class="span6">
+            <h1><?php if($this->params['invertory_type'] == 11){ echo "BY RGM"; }elseif($this->params['invertory_type'] == 12){ echo "BY Model"; }elseif($this->params['invertory_type'] == 13){ echo "BY Warehouse"; }else{ } ?></h1>
+        </div>
+    </div>
+</div>
+
+<?php
+$from_date = $this->params['from'];
+$to_date = $this->params['to'];
+
+$tmp_from = explode('/',$this->params['from']);
+$tmp_to = explode('/',$this->params['to']);
+
+$from = $tmp_from[2]."-".$tmp_from[1]."-".$tmp_from[0];
+$to = $tmp_to[2]."-".$tmp_to[1]."-".$tmp_to[0];
+
+$date_count = (strtotime($to) - strtotime($from))/  ( 60 * 60 * 24 );
+
+  // echo $date_count;
+
+
+?>
+<?php if($this->params['invertory_type'] == 11){ ?> <!-- By RGM -->
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th><div align="center" style="width: 100%">No.</div></th>
+            <th><div align="center" style="width: 100%">Area Name</div></th>
+            <th><div align="center" style="width: 100%">Provience Name</div></th>
+            <!--             <th><div align="center" style="width: 100%">Distributor / Warehouse</div></th> -->
+            <th><div align="center" style="width: 100%">Sales Volume</div></th>
+            <th><div align="center" style="width: 100%">Proportion(Sales Volum)</div></th>
+            <th><div align="center" style="width: 100%">All Inventory</div></th>
+            <th><div align="center" style="width: 100%">Distributor Inventory</div></th>
+            <th><div align="center" style="width: 100%">Warehouse Inventory</div></th>
+            <th><div align="center" style="width: 100%">Proportion(Inventory)</div></th>
+            <th><div align="center" style="width: 100%">Average Flow(Units/Day)</div></th>
+            <th><div align="center" style="width: 100%">Turnover Day</div></th>
+        </tr>
+    </thead>
+    <tbody>
+       <?php 
+       $i=1; 
+       foreach ($this->data as $inventory):  ?>
+        <tr>
+           <td><?php echo $i ?></td>
+           <td><?php if($inventory['area_id'] == 120){ echo "Realme LAOS"; }else{ echo $inventory['area_name']; } ?></td>
+           <td><?php if($inventory['area_id'] == 120){ echo ""; }else{ echo $inventory['provience_name']; } ?></td>
+
+           <td><?php if($inventory['sellout']) { echo $inventory['sellout']; }else{ echo "-"; } ?> </td>
+           <td>
+               <?php 
+               if($inventory['sellout'] != 0){
+                   $proportion_sales = ($inventory['sellout'] / $inventory['total_sellout']) * 100 ;
+                   echo number_format($proportion_sales, 1, '.', '' )." %";
+               }else{
+                echo "-";
+            }
+            ?>
+        </td>
+        <td><?php echo $total_stock = $inventory['distributor_stock'] + $inventory['warehouse_stock'] ?></td>                                                                                           
+        <td><?php if($inventory['distributor_stock']){ echo $inventory['distributor_stock']; }else{ echo "-"; } ?></td>
+        <td><?php echo $inventory['warehouse_stock'];?></td>
+        <td>
+           <?php 
+           $proportion_inventory = (($total_stock  / ($inventory['total_warehouse_stock'] + $inventory['total_distributor_stock']) )) * 100;
+           echo number_format($proportion_inventory, 1, '.', '' )." %";
+           ?>
+       </td>
+       <td>
+           <?php 
+           $avg_sellout = $inventory['sellout'] / $date_count;
+           echo number_format($avg_sellout);
+           ?>
+       </td>
+       <td>
+           <?php
+           if($inventory['sellout'] != 0){
+            $day = (($inventory['warehouse_stock'] + $inventory['distributor_stock']) / $inventory['sellout']) * $date_count;
+            echo number_format($day);
+        }else{
+            echo "-";
+        }
+        ?>
+    </td>
+</tr>
+<?php 
+$total_stock_count = $total_stock_count + ( $inventory['distributor_stock'] + $inventory['warehouse_stock']);
+$total_sale = $total_sale + $inventory['sellout'];
+$distributor_stock = $distributor_stock + $inventory['distributor_stock'];
+$warehouse_stock = $warehouse_stock + $inventory['warehouse_stock'];
+$proportion_sale_value = ($total_sale / $total_sale) * 100;
+
+?>
+<?php $i++; endforeach; ?>
+<tr bgcolor="#0DAD2A">
+    <?php
+    $avg_stock = ($distributor_stock + $warehouse_stock) / ($distributor_stock + $warehouse_stock) *100;
+    ?>
+    <td>Total</td>
+    <td></td>
+    <td></td>
+    <td><?php echo $total_sale; ?></td>
+    <td><?php if($total_sale != 0){ echo $proportion_sale_value." %"; }else{ echo "-"; } ?>  </td>
+    <td><?php echo $total_stock_count ?> </td>
+    <td> <?php echo $distributor_stock; ?></td>
+    <td><?php echo $warehouse_stock; ?></td>
+    <td><?php if($distributor_stock) {echo $avg_stock." %"; }else{ echo "-"; } ?> </td>
+    <td>
+        <?php
+        $total_avg_sellout = $total_sale / $date_count;
+        echo number_format($total_avg_sellout);
+        ?>    
+    </td>
+    <td>
+        <?php
+        if($total_sale != 0){
+            $avg_day = (($warehouse_stock + $distributor_stock) / $total_sale) * $date_count ;
+            echo number_format($avg_day);
+        }else{
+            echo "-";
+        }
+
+        ?>
+    </td>
+</tr> 
+
+</tbody>
+</table>
+<?php }elseif($this->params['invertory_type'] == 12){ ?> <!-- By Model -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th><div align="center" style="width: 100%">No.</div></th>
+            <th><div align="center" style="width: 100%">Model Name</div></th>
+            <th><div align="center" style="width: 100%">Sales Volume</div></th>
+            <th><div align="center" style="width: 100%">Proportion(Sales Volum)</div></th>
+            <th><div align="center" style="width: 100%">All Inventory</div></th>
+            <th><div align="center" style="width: 100%">Distributor Inventory</div></th>
+            <th><div align="center" style="width: 100%">Warehouse Inventory</div></th>
+            <th><div align="center" style="width: 100%">Proportion(Inventory)</div></th>
+            <th><div align="center" style="width: 100%">Average Flow(Units/Day)</div></th>
+            <th><div align="center" style="width: 100%">Turnover Day</div></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php $i = 1; foreach ($this->data as $inventory):  ?>
+        <tr>
+            <td><?php echo $i; ?></td>
+
+            <?php 
+                $QBrand = new Application_Model_Brand();
+                $brand = $QBrand->getBrand($inventory['good']);
+
+                // print_r($brand);
+             ?>
+
+            <td><?php echo $brand[0]['brand_name'] ?> <?php echo $inventory['model_name']; ?></td>
+            <td><?php if($inventory['sellout']) { echo $inventory['sellout']; }else{ echo "-"; } ?></td>
+            <td><?php 
+            if($inventory['sellout'] != 0){ 
+               $proportion_sales = ($inventory['sellout'] / $inventory['total_sellout']) *100 ;  echo number_format($proportion_sales,1)." %";
+           }else{
+            echo "-";
+        }
+        ?>
+    </td>
+    <td><?php echo $total_stock = $inventory['distributor_stock'] + $inventory['warehouse_stock'] ?></td>
+    <td><?php if($inventory['distributor_stock']){ echo $inventory['distributor_stock']; }else{ echo "-"; } ?></td>
+    <td><?php if($inventory['warehouse_stock']){ echo $inventory['warehouse_stock']; }else{ echo "-"; } ?></td>
+    <td>
+        <?php 
+        $proportion_inventory = ($total_stock  / ($inventory['total_warehouse_stock'] + $inventory['total_distributor_stock'])) * 100;
+        echo number_format($proportion_inventory, 1, '.', '' )." %";
+        ?>
+    </td>
+    <td>
+        <?php 
+        $avg_sellout = $inventory['sellout'] / $date_count;
+        echo number_format($avg_sellout,1);
+        ?>
+    </td>
+    <td>
+     <?php
+     if($inventory['sellout'] != 0){
+        $day = (($inventory['warehouse_stock'] + $inventory['distributor_stock']) / $inventory['sellout']) * $date_count;
+        echo number_format($day);
+    }else{
+        echo "-";
+    }
+    ?>
+
+</td>
+</tr>
+
+<?php
+$total_sale = $total_sale + $inventory['sellout'];
+$distributor_stock = $distributor_stock + $inventory['distributor_stock'];
+$warehouse_stock = $warehouse_stock + $inventory['warehouse_stock'];
+$total_stock_count = $total_stock_count + ( $inventory['distributor_stock'] + $inventory['warehouse_stock']);
+$proportion_sale_value = ($total_sale / $total_sale) * 100;
+
+
+$i++; endforeach; ?>
+<tr bgcolor="#0DAD2A">
+    <?php
+    $avg_stock = ($distributor_stock + $warehouse_stock) / ($distributor_stock + $warehouse_stock) *100;
+    ?>
+    <td>Total</td>
+    <td></td>
+    <td><?php echo $total_sale; ?></td>
+    <td><?php if($total_sale != 0){ echo $proportion_sale_value." %"; }else{ echo "-"; } ?></td>
+    <td><?php echo $total_stock_count; ?></td>
+    <td><?php echo $distributor_stock; ?></td>
+    <td><?php echo $warehouse_stock; ?></td>
+    <td><?php if($distributor_stock) {echo $avg_stock." %"; }else{ echo "-"; } ?></td>
+    <td>
+        <?php
+        $total_avg_sellout = $total_sale / $date_count;
+        echo number_format($total_avg_sellout,1);
+        ?>  
+    </td>
+    <td>
+        <?php
+        if($total_sale != 0){
+            $avg_day = (($warehouse_stock + $distributor_stock) / $total_sale) * $date_count ;
+            echo number_format($avg_day);
+        }else{
+            echo "-";
+        }
+
+        ?>
+    </td>
+</tr>
+</tbody>
+</table>
+<?php }elseif($this->params['invertory_type'] == 13){ ?> <!-- By Warehouse -->
+<h1> By Warehouse </h1>
+<?php }else{ } ?>

@@ -1,0 +1,65 @@
+<form class="form-search form-horizontal" method="get" action="/manage/competitor-product/competitor-product">
+    <div class="row">
+        <div class="span6">
+	       
+           <div class="control-group">
+                <label for="brand_id" class="span2">Competitor Brand</label>
+                <select id="brand_id" name="brand_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->brand_list) :
+                        foreach ($this->brand_list as $brand_list):
+                            ?>
+                            <option value="<?php echo $brand_list['id'];?>" <?php if (isset($this->params['brand_id']) and ( (is_array($this->params['brand_id']) && in_array($brand_list['id'], $this->params['brand_id']) || $brand_list['id']==$this->params['brand_id'])) ):?>selected<?php endif;?>><?php echo $brand_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+        <div class="span6">
+
+
+        </div>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <!-- <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button> -->
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        
+    });
+</script>

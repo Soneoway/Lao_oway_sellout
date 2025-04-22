@@ -1,0 +1,81 @@
+<style type="text/css">
+    .kpi .total td {
+        background-color: #D4FFD6 !important;
+    }
+
+    .label {
+        font-weight: normal;
+    }
+</style>
+
+<div class="row">
+    <div class="span12">
+        <p class="pull-right">Chú thích: <span class="label label-success">% tăng</span> <span class="label label-important">% giảm</span> so với tháng liền trước</p>
+    </div>
+</div>
+<table class="table table-bordered">
+<thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Area</th>
+        <th>Province</th>
+        <?php foreach ($this->title_list as $_year => $_months): ?>
+            <?php foreach ($_months as $_month => $value): ?>
+                <th><?php echo $_month . '/' . $_year ?></th>
+            <?php endforeach ?>
+        <?php endforeach ?>
+    </tr>
+</thead>
+<tbody>
+    <?php
+    if (isset($this->sellout) and is_array($this->sellout))
+        $inc = $this->offset + 1;
+        foreach ($this->sellout as $_staff_id =>$sale): 
+        $_tmp_staff = isset($this->staff_cache[$_staff_id]) ? $this->staff_cache[$_staff_id] : false;
+        if (!$_tmp_staff) continue;
+    ?>
+    <tr>
+        <td><?php echo $inc++; ?></td>
+        <td><span data-original-title="<?php echo $_tmp_staff['phone_number'];?>" data-toggle="tooltip" class="phone_tooltip"><?php echo $_tmp_staff['name'];?></span></td>
+        <td><?php if (isset($this->teams[$_tmp_staff['title']])) echo $this->teams[$_tmp_staff['title']] ;?></td>
+        <td><?php if(isset($this->areas[ $this->provinces[ $_tmp_staff['regional_market'] ]['area_id'] ])) echo $this->areas[ $this->provinces[ $_tmp_staff['regional_market'] ]['area_id'] ] ;?></td>
+        <td><?php if(isset($this->provinces[ $_tmp_staff['regional_market'] ]['name'])) echo $this->provinces[ $_tmp_staff['regional_market'] ]['name'] ;?></td>
+        <?php foreach ($this->title_list as $_year => $_months): ?>
+        <?php foreach ($_months as $_month => $value): ?>
+            <td>
+                <?php if(isset($sale[$_year][$_month]['quantity']) && $sale[$_year][$_month]['quantity']) {
+                    $this_quantity = $sale[$_year][$_month]['quantity'];
+                } else {
+                    $this_quantity = 0;
+                }
+
+                echo $this_quantity;
+
+                // if (!isset($total[ $_year ][ $_month ]))
+                //     $total[ $_year ][ $_month ] = 0;
+
+                // $total[ $_year ][ $_month ] += $this_quantity;
+                ?>
+                <?php if (isset($last_quantity)): ?>
+                    <?php
+                        if ($last_quantity <> 0)
+                            $rate = round(($this_quantity - $last_quantity)*100/$last_quantity);
+                        elseif ($this_quantity <> 0) $rate = 100;
+                        else $rate = 0;
+                    ?>
+                    <span class="label <?php if ($rate > 0) echo 'label-success'; elseif ($rate < 0) echo 'label-important'; else echo 'label-default' ?> pull-right">
+                        <?php echo abs($rate); ?>
+                    </span>
+                <?php endif ?>
+                <?php $last_quantity = $this_quantity; ?>
+            </td>
+        <?php endforeach ?>
+        <?php unset($last_quantity) ?>
+        <?php endforeach ?>
+    </tr>
+    <?php endforeach;?>
+
+</tbody>
+</table>

@@ -1,0 +1,375 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+</style>
+<div class="page-header">
+    <h1>Area Control : Sale Binding</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<?php $area_binding = $this->area_binding; ?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/area-control-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span6">
+            <p><span><strong>- Area Details -</strong></span></p>
+            <input type="hidden" id="sub_area_id" name="sub_area_id" value="<?php echo $area_binding['sub_area_id']; ?>" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['area_name']) ? $area_binding['area_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Province</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['province_name']) ? $area_binding['province_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">District</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['district_name']) ? $area_binding['district_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Sub Area</td>
+                    <td style="padding-left: 5px;">: <?php 
+
+                        if ( isset($area_binding['sub_area_name']) ) {
+
+                            if ($area_binding['com_rate'] == 2) {
+                                echo $area_binding['sub_area_name']."&nbsp;<span class='label label-warning'>Stand Alone</span>";
+                            } else {
+                                echo $area_binding['sub_area_name']."&nbsp;<span class='label label-info'>Shopping Mall</span>";
+                            }
+
+                        } else { echo "-"; }
+
+                    ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Sub District</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['sub_district_name']) ? $area_binding['sub_district_name'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><span><strong>- Sale Responsible -</strong></span></p>
+            <input type="hidden" id="old_staff_id" name="old_staff_id" value="<?php echo $area_binding['staff_id']; ?>" />
+            <input type="hidden" id="staff_id" name="staff_id" value="<?php echo $area_binding['staff_id']; ?>" />
+            <input type="hidden" id="asm_id" name="asm_id" value="" />
+            <input type="hidden" id="asm_name" name="asm_name" value="" />
+            <input type="hidden" id="sa_com_rate" name="sa_com_rate" value="<?php echo $area_binding['com_rate']; ?>" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Province</td>
+                    <td style="padding-left: 5px;" id="staff_province">: <?php echo isset($area_binding['staff_province']) ? $area_binding['staff_province'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;" id="staff_name">: <?php echo isset($area_binding['staff_name']) ? $area_binding['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Email</td>
+                    <td style="padding-left: 5px;" id="staff_email">: <?php echo isset($area_binding['staff_email']) ? $area_binding['staff_email'] : "-"; ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_bind_sale" class="btn btn-success" type="button">Bind Sale</button>
+                <button id="btn_bind_asm" class="btn btn-success" type="button">Bind ASM</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+<input type="hidden" id="store_unchk_old" name="store_unchk_old" value="" />
+<input type="hidden" id="store_unchk" name="store_unchk" value="" />
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Store Code</div></th>
+        <th><div align='center'>Store Name</div></th>
+        <th><div align='center'>Store Type</div></th>
+        <th><div align='center'>Status</div></th>
+        <th><div align='center'>ASM Responsible</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            if ($this->store_list) {
+                $data = $this->store_list;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    if ( isset($data[$i]['asm_group']) && $data[$i]['asm_group'] != "AM" ) {
+                        $asm_id = $data[$i]['asm_id'];
+                        $asm_name = "[".$data[$i]['asm_group']."] ".$data[$i]['asm_name'];
+                    }
+
+                    if ( $data[$i]['st_status'] == 1 ) { $st_status = "<span class='label label-important'>Disable</span>"; }
+                    else { $st_status = "<span class='label label-success'>Active</span>"; }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['st_code']."</div></td>";
+                    echo    "<td>".$data[$i]['st_name']."</td>";
+                    echo    "<td>".$data[$i]['st_type']."</td>";
+                    echo    "<td><div align='center'>".$st_status."</div></td>";
+                    echo    "<td>";
+
+                    echo        "<table border=0 cellspacing=0 cellpadding=0><tr>";
+
+                    if (isset($data[$i]['asm_group']) && $data[$i]['asm_group'] == "AM" )  { 
+
+                        echo "<td width='30'><div align='center'></div></td>";
+                        echo "<td><div align='center'>[".$data[$i]['asm_group']."] ".$data[$i]['asm_name']."</div></td>";
+
+                    } else if (isset($data[$i]['asm_group']) && $data[$i]['asm_group']) {
+
+                        echo "<td width='30'><div align='center'><input type='checkbox' id='chk_asm[]' name='chk_asm[]' class='checkbox_asm' value='".$data[$i]['st_id']."' checked /></div></td>";
+                        echo "<td id='".$data[$i]['st_id']."'><div align='left'>[".$data[$i]['asm_group']."] ".$data[$i]['asm_name']."</div></td>";
+
+                    } else if ($data[$i]['st_status'] == 1) {
+                        echo "<td width='30'></td>";
+                        echo "<td></td>";
+                    } else {
+                        echo "<td width='30'><div align='center'><input type='checkbox' id='chk_asm[]' name='chk_asm[]' class='checkbox_asm' value='".$data[$i]['st_id']."' /></div> </td>";
+                        echo "<td id='".$data[$i]['st_id']."' ></td>";
+                    }
+
+                    echo        "</tr></table>";
+                    echo    "</td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+</form>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&code=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#name_result').attr("multiple", false);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind_sale').click(function(){
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            $('#staff_id').val(staff_id);
+            $('#staff_province').html(": <font color='green'>" + tmp[2].trim() + "</font>");
+            $('#staff_name').html(": <font color='green'>" + tmp[0].trim() + "</font>");
+            $('#staff_email').html(": <font color='green'>" + tmp[1].trim() + "</font>");
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+        
+        $('#btn_bind_asm').click(function(){
+
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            $('#asm_id').val(staff_id);
+
+            $("input:checkbox").each(function() {
+                //alert($(this).val());
+                if ( $(this).prop('checked') == true ) {
+                    $('#' + $(this).val() ).html("<font color='green'>" + tmp[0].trim() + "</font>");
+                } else {
+                    $('#' + $(this).val() ).html('');
+                }
+                
+            });
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+
+
+        $('.checkbox_asm').change(function() {
+            var tmp_unchk = '';
+
+            $("input:checkbox").each(function() {
+                //alert($(this).val());
+                
+                if ( $(this).prop('checked') == false ) {
+                    $('#' + $(this).val() ).html('');
+
+                    tmp_unchk = tmp_unchk + $(this).val() + ",";
+                } else {
+       
+                    if ( $('#asm_id').val() ) {
+
+                        if ( $('#name_result option:selected').html() == null ) {
+                            $('#' + $(this).val() ).html( $('#asm_name').val() );
+
+                        } else {
+                            var staff_details = $('#name_result option:selected').html();
+                            var tmp = staff_details.split('|');
+
+                            $('#' + $(this).val() ).html("<font color='green'>" + tmp[0].trim() + "</font>");
+                        }
+                        
+                    }
+                }
+
+            });
+
+            $('#store_unchk').val(tmp_unchk);
+            $('#btn_submit').prop("disabled", false);
+        });
+
+        chk_asm_change();
+    });
+
+
+    function chk_asm_change() {
+        var tmp_unchk = '';
+
+        $("input:checkbox").each(function() {
+            //alert($(this).val());
+            
+            if ( $(this).prop('checked') == false ) {
+                $('#' + $(this).val() ).html('');
+
+                tmp_unchk = tmp_unchk + $(this).val() + ",";
+            } else {
+                if ( $('#asm_id').val() ) {
+                    var staff_details = $('#name_result option:selected').html();
+                    var tmp = staff_details.split('|');
+
+                    $('#' + $(this).val() ).html("<font color='green'>" + tmp[0].trim() + "</font>");
+                }
+            }
+
+        });
+
+        $('#store_unchk').val(tmp_unchk);
+        $('#store_unchk_old').val(tmp_unchk);
+        $('#asm_id').val('<?php echo $asm_id; ?>');
+        $('#asm_name').val('<?php echo $asm_name; ?>');
+
+    }
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

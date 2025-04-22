@@ -1,0 +1,44 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'name'         => 'Leader name',
+                'email'        => 'Email',
+                'phone_number' => 'Phone Number',
+                'area_id'      => 'Area',
+                'province'     => 'Province',
+                'current_store'     => 'Current Stores',
+                'pending_store'     => 'Pending Stores',
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->leaders) and $this->leaders)
+        $inc = $this->offset + 1;
+        foreach ($this->leaders as $k=>$d): ?>
+            <tr>
+                <td>
+                    <?php
+                    
+                    echo $inc++;
+                    ?>
+                </td>
+                <td><a href="<?php echo HOST ?>manage/leader-view?id=<?php echo $d['id'];?>"><?php echo $d['firstname'].' ' .$d['lastname'];?></a></td>
+                <td><?php echo str_replace(EMAIL_SUFFIX, '@', $d['email']);?></td>
+                <td><?php echo $d['phone_number'];?></td>
+                <td><?php if(isset($this->areas[ $this->regions[ $d['regional_market'] ]['area_id'] ])) echo $this->areas[ $this->regions[ $d['regional_market'] ]['area_id'] ];?></td>
+                <td><?php if(isset($this->regions[ $d['regional_market'] ])) echo $this->regions[ $d['regional_market'] ]['name'];?></td>
+                <td><?php echo $d['current_store'] ?></td>
+                <td><?php echo $d['pending_store'] ?></td>
+
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

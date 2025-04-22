@@ -1,0 +1,70 @@
+<style>
+    .thumbnail {
+        height: 470px;
+    }
+
+    .thumbnail img {
+        width: 100%;
+    }
+
+    .thumbnail h3,
+    .thumbnail p {
+        text-align: center;
+    }
+    
+    .fb_loading_wrapper {
+        text-align: center;
+    }
+
+    .fb_loading {
+        background: url('/img/facebook_lo.gif') no-repeat;
+        background-size: 100%;
+        display: inline-block;
+        width: 160px;
+        height: 24px;
+        overflow: hidden;
+
+    }
+</style>
+<div class="page-header">
+    <h1>Staff's Photos</h1>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <ul class="thumbnails">
+            
+        </ul>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="fb_loading_wrapper">
+        </div>        
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        page = 0;
+
+        $(window).scroll(function() {
+           if($(window).scrollTop() + $(window).height() == $(document).height()) {
+               load_photo();
+           }
+        });
+
+        load_photo();
+    });
+
+    function load_photo() {
+        page++;
+        $('.fb_loading').remove();
+        $('.fb_loading_wrapper').append('<span class="fb_loading"></span>');
+        $.post('<?php echo HOST ?>staff/photo-load', {
+            page : page
+        }, function(data) {
+            
+            $('.thumbnails').append(data);
+            $('.fb_loading').remove();
+        })
+    }
+</script>

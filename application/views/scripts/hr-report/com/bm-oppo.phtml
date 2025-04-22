@@ -1,0 +1,394 @@
+<?php 
+	// print_r($this->params);
+
+	$com_month = date('F Y', strtotime($this->params['from']) );
+?>
+
+<style type="text/css">
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 10px;
+	font-family: Arial;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:1122px;">
+	<tr style="height:30px;">
+		<th>Possefy Group CO.,LTD.</th>
+	</tr>
+	<tr style="height:30px;">
+		<th>COMMISSION BRAND SHOP BY OPPO FOR <?php echo $com_month;  ?></th>
+	</tr>
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" style="width:1122px;">
+				<tr align="center" class="header_color">
+					<td>NO.</td>
+					<td>Staff ID</td>
+					<td>Name</td>
+					<td>Group</td>
+					<td>Store ID</td>
+					<td>Store Name</td>
+					<!-- <td>Area</td> -->
+					<td>Target</td>
+					<td>Sellout</td>
+					<td>Achieve</td>
+					<td>Price [EX VAT] Mobile</td>
+					<td>Price [EX VAT] ACC</td>
+					<td>% Achieve</td>
+					<td>Com. Unit</td>
+					<td>Com. Achieve</td>
+					<td>Com. ACC</td>
+					<td>Com. FF+SKU</td>
+					<td>Total Com.</td>
+				</tr>
+
+				<?php 
+
+					$sum_bm_com = $sum_pc_com = $sum_total_bm_com = 0;
+					$cnt_staff = 0;
+					$bm_flag = 1;
+
+					$QGoodKpi = new Application_Model_GoodKpiLog();
+
+					$bm_exception = $QGoodKpi->get_bm_exception();
+					$bm_exception = array_column($bm_exception, 'staff_id');
+					// echo "<pre>"; print_r($bm_exception);
+
+					$data = $this->log;
+
+				 	// echo "<pre>"; print_r($data);
+
+					for ($i=0;$i<count($data);$i++) {
+
+						$price = $bm_rate = $pc_com = $total_bm_com = $acc_price = $acc_com = $acc_ff_com = 0;
+
+						if ( isset($data[$i]['group_id']) && $data[$i]['group_id'] ) { 
+
+							$bm_target = $bm_sellout = $bm_price = $bm_rate = $bm_com = $achieve = "";
+
+							if ($data[$i]['pc_stand_by'] == 0) {
+								$acc_rate = $QGoodKpi->com_bm_acc_rate($data[$i]['group_id']);
+
+								if ( strpos($data[$i]['st_name'], 'TME') !== false ) {
+									$acc_com = 0;
+								} else {
+									$acc_com = round(($data[$i]['acc_price'] * $acc_rate) / 100);
+								} 
+								
+							}
+
+							$acc_price = $data[$i]['acc_price'];
+
+							$cnt_staff = $cnt_staff + 1;
+
+							if ($data[$i]['group_id'] == PGPB_ID) { $bm_flag = 0; }
+
+							// Check Case No BM
+							if ($data[$i]['group_id'] != BM_ID && $bm_flag == 1) {
+
+								$params2 = array();
+								$params2['store_id'] = $data[$i]['st_id'];
+								$params2['from'] = $this->params['from'];
+								$params2['to'] = $this->params['to'];
+
+								$bm_com_info = $QGoodKpi->getComBMbyOppo($params2);
+								// echo "<pre>"; print_r($bm_com_info);
+
+								$bm_sellout = $bm_com_info['sellout'];
+								$bm_price = $bm_com_info['price'];
+
+								// if ( isset($bm_com_info['st_target']) && $bm_com_info['st_target'] != 0 ) { 
+
+								if ( !empty($bm_com_info) ) { 
+
+									$bm_target = $bm_com_info['st_target'];
+									$bm_sellout = $bm_com_info['sellout'];
+									$bm_price = $bm_com_info['price'];
+
+									if ( $bm_target == 0 ) { $achieve = $acc_com = 0; } 
+									else { $achieve = round(( $bm_sellout / $bm_target ) * 100, 2); }
+
+									$bm_rate = $QGoodKpi->com_bm_rate($achieve);
+
+									$bm_com = 0;
+
+								} 
+
+								$cnt = $i + 1;
+
+								echo "<tr>";
+								echo 	"<td align='center'>-</td>";
+
+								echo 	"<td align='center'>-</td>";
+								echo 	"<td align='center'>-</td>";
+								echo 	"<td align='center'>-</td>";
+
+								echo 	"<td align='center'>".$bm_com_info['st_id']."</td>";
+								echo 	"<td align='left'>".$bm_com_info['st_name']."</td>";
+								// echo 	"<td align='center'>".$bm_com_info['area_name']."</td>";
+
+								echo 	"<td align='right'>".$bm_target."</td>";
+								echo 	"<td align='right'>".$bm_sellout."</td>";
+								echo 	"<td align='right'>".number_format($achieve,2)."</td>";
+								echo 	"<td align='right'>".number_format($bm_price,2)."</td>";
+								echo 	"<td align='right'>".number_format($acc_price,2)."</td>";
+								echo 	"<td align='right'>".number_format($bm_rate,2)."</td>";
+
+								echo 	"<td align='right'>".number_format($pc_com)."</td>";
+								echo 	"<td align='right'>".number_format($bm_com)."</td>";
+								echo 	"<td align='right'>0</td>";
+								echo 	"<td align='right'>0</td>";
+
+								// Total BM Commission
+								// $total_bm_com = $bm_com + $pc_com + $acc_com;
+
+								echo 	"<td align='right'>".number_format($total_bm_com)."</td>";
+
+								echo "</tr>";
+
+								$bm_target = $bm_sellout = $bm_price = $bm_rate = $bm_com = $achieve = "";
+
+							} else {
+
+								if ( isset($data[$i]['group_id']) && $data[$i]['group_id'] == BM_ID ) {
+
+									$params2 = array();
+									$params2['bm_id'] = $data[$i]['staff_id'];
+									$params2['store_id'] = $data[$i]['st_id'];
+									$params2['from'] = $this->params['from'];
+									$params2['to'] = $this->params['to'];
+
+									$bm_com_info = $QGoodKpi->getComBMbyOppo($params2);
+									// echo "<pre>"; print_r($bm_com_info);
+
+									// if ( isset($bm_com_info['st_target']) && $bm_com_info['st_target'] != 0 ) {
+
+									if ( !empty($bm_com_info) ) {  
+
+										$bm_target = $bm_com_info['st_target'];
+										$bm_sellout = $bm_com_info['sellout'];
+										$bm_price = $bm_com_info['price'];
+
+										if ( $bm_target == 0 ) { $achieve = $acc_com = 0; } 
+										else { $achieve = round(( $bm_sellout / $bm_target ) * 100, 2); }
+										
+										$bm_rate = $QGoodKpi->com_bm_rate($achieve);
+
+										$bm_com = round(($bm_price * $bm_rate) / 100, 2);
+
+									}
+
+								}
+
+								// Get Com Acc Film Focus 
+								$params3 = array();
+								$params3['staff_code'] = $data[$i]['staff_code'];
+								$params3['from'] = $this->params['from'];
+								$params3['to'] = $this->params['to'];
+
+								$result_acc_ff = $QGoodKpi->getAccComFF($params3);
+
+								// print_r($result_acc_ff); echo "<br/>";
+
+								if ( !empty($result_acc_ff) ) { $acc_ff_com = $result_acc_ff['com_rate']; }
+
+								// Excepion for Mar 2019
+								if ( in_array($data[$i]['staff_code'], array('5900327','6105814') ) && $com_month == 'March 2019') { $bm_com = 0; }
+								if ( in_array($data[$i]['staff_code'], array('6201203') ) && $com_month == 'March 2019') { 
+									$acc_com = $bm_com = 0; 
+									$data[$i]['staff_id'] = '';
+									$data[$i]['staff_code'] = '-';
+									$data[$i]['staff_name'] = '-';
+									$data[$i]['group_name'] = '-';
+								}
+
+								// Excepion for Apr 2019
+								if ( in_array($data[$i]['staff_code'], array('6202279','6202700') ) && $com_month == 'April 2019') { $acc_com = 0; }
+								if ( in_array($data[$i]['staff_code'], array('5902516') ) && $com_month == 'April 2019') { $acc_com = $bm_com = 0; }
+
+								// Excepion for May 2019
+								if ( in_array($data[$i]['staff_code'], array('6100742') ) && $com_month == 'May 2019') { 
+									$acc_com = $bm_com = 0; 
+									$data[$i]['staff_id'] = '';
+									$data[$i]['staff_code'] = '-';
+									$data[$i]['staff_name'] = '-';
+									$data[$i]['group_name'] = '-';
+								}
+
+								// Excepion for Jun 2019
+								if ( in_array($data[$i]['staff_code'], array('5901199') ) && $com_month == 'June 2019') { $acc_com = $bm_com = 0; }
+
+								// Excepion for Jul 2019
+								if ( in_array($data[$i]['staff_code'], array('5901199') ) && $com_month == 'July 2019') { $acc_com = $bm_com = 0; }
+								if ( in_array($data[$i]['staff_code'], array('6011650','6204839') ) && $com_month == 'July 2019') { $acc_com = 0; }
+								if ( in_array($data[$i]['staff_code'], array('6200266','6204958') ) && $com_month == 'July 2019') { 
+									$acc_com = $bm_com = 0; 
+									$data[$i]['staff_id'] = '';
+									$data[$i]['staff_code'] = '-';
+									$data[$i]['staff_name'] = '-';
+									$data[$i]['group_name'] = '-';
+								}
+
+								// Excepion for Aug 2019
+								if ( in_array($data[$i]['staff_code'], array('6200266') ) && $com_month == 'August 2019') { 
+									$acc_com = $bm_com = 0; 
+									$data[$i]['staff_id'] = '';
+									$data[$i]['staff_code'] = '-';
+									$data[$i]['staff_name'] = '-';
+									$data[$i]['group_name'] = '-';
+								}
+
+							}
+
+							$bm_flag = 0;
+
+							// No PC Commission for BM 15K
+							if ( isset($data[$i]['staff_id']) && $data[$i]['staff_id']) {
+
+								if ( !in_array($data[$i]['staff_id'], $bm_exception) && $data[$i]['group_id'] != PGPB_ID) {
+
+									// if ( $data[$i]['group_id'] == PGPB_ID ) { $this->params['bm_flag'] = 2; }
+									// else { $this->params['bm_flag'] = 1; }
+									
+									$this->params['bm_flag'] = 1;
+									$this->params['staff_code'] = $data[$i]['staff_code'];
+									$this->params['store_id'] = $data[$i]['st_id'];
+
+									$result = $QGoodKpi->report_kpiPC(null,$this->params);
+
+									// echo "<pre>"; print_r($result);
+
+									$pc_com = $result[0]['com_pc'];
+								} 
+
+							}
+
+						} 
+
+						$cnt = $i + 1;
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt."</td>";
+
+						echo 	"<td align='center'>".$data[$i]['staff_code']."</td>";
+						echo 	"<td align='left'>".$data[$i]['staff_name']."</td>";
+						echo 	"<td align='center'>".$data[$i]['group_name']."</td>";
+
+						echo 	"<td align='center'>".$data[$i]['st_id']."</td>";
+						echo 	"<td align='left'>".$data[$i]['st_name']."</td>";
+						// echo 	"<td align='center'>".$data[$i]['area_name']."</td>";
+
+						echo 	"<td align='right'>".$bm_target."</td>";
+						echo 	"<td align='right'>".$bm_sellout."</td>";
+						echo 	"<td align='right'>".number_format($achieve,2)."</td>";
+						echo 	"<td align='right'>".number_format($bm_price,2)."</td>";
+						echo 	"<td align='right'>".number_format($acc_price,2)."</td>";
+						echo 	"<td align='right'>".number_format($bm_rate,2)."</td>";
+
+						echo 	"<td align='right'>".number_format($pc_com)."</td>";
+						echo 	"<td align='right'>".number_format($bm_com)."</td>";
+						echo 	"<td align='right'>".number_format($acc_com)."</td>";
+						echo 	"<td align='right'>".number_format($acc_ff_com)."</td>";
+
+						// Total BM Commission
+						$total_bm_com = round($bm_com + $pc_com + $acc_com + $acc_ff_com, 0);
+
+						echo 	"<td align='right'>".number_format($total_bm_com)."</td>";
+
+						echo "</tr>";
+
+						$sum_bm_com = $sum_bm_com + round($bm_com,0);
+						$sum_pc_com = $sum_pc_com + $pc_com;
+						$sum_acc_com = $sum_acc_com + $acc_com;
+						$sum_acc_ff_com = $sum_acc_ff_com + $acc_ff_com;
+						$sum_total_bm_com = $sum_total_bm_com + $total_bm_com;
+
+						$sum_each = $sum_each + $total_bm_com;
+
+						// Total Each 
+						if ($data[$i]['st_id'] != $data[$i+1]['st_id'] && $i != 0 ) {
+
+							echo "<tr class='header_color'>";
+							echo 	"<td align='right' colspan='16' style='padding-right:15px;'>Total</td>";
+							echo 	"<td align='right'>".number_format($sum_each)."</td>";
+							echo "</tr>";
+
+							$sum_each = 0;
+
+							$bm_flag = 1;
+						}
+
+					} 
+
+					echo "<tr class='header_color'>";
+					echo 	"<td align='center' colspan='12'>รวม ".$cnt_staff." คน | Total Commission on ".$com_month."</td>";
+					echo 	"<td align='right'>".number_format($sum_pc_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_bm_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_acc_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_acc_ff_com)."</td>";
+					echo 	"<td align='right'>".number_format($sum_total_bm_com)."</td>";
+					echo "</tr>";
+
+				?>
+
+			</table>
+		</td>
+	</tr>
+
+</table>
+<div style="height:50px;"></div>
+
+<!-- style="visibility: hidden; -->
+
+<table border="0" style="width:1122px;">
+	<tr>
+		<td align="right" style="width:150px;">Prepared By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Checked By</td>
+		<td align="left">.................................................................</td>
+		<!-- <td align="right">Approve By</td>
+		<td align="left">.................................................................</td> -->
+	</tr>
+	<tr style="height:20px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<!-- <td align="right">Date</td>
+		<td align="left">.................................................................</td> -->
+	</tr>
+	<tr style="height:50px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:10px;"><td colspan="4"></td></tr>
+	<tr style="height:20px;">
+		<td></td>
+		<td align="left" style="padding-left:65px">Mr.Yu Zhang</td>
+		<td></td>
+		<td align="left" style="padding-left:63px">Mr.Li Gengwu</td>
+		<td></td>
+		<td align="left" style="padding-left:55px">Mr.Wang Junwei</td>
+	</tr>
+	<tr style="height:0px;"><td colspan="4"></td></tr>
+	<tr style="height:20px;">
+		<td></td>
+		<td align="left" style="padding-left:47px">( Operator Director )</td>
+		<td></td>
+		<td align="left" style="padding-left:38px">( Brand Shop Manager )</td>
+		<td></td>
+		<td align="left" style="padding-left:28px">( Executive Vice President )</td>
+	</tr>
+</table>

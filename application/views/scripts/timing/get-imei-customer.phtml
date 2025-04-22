@@ -1,0 +1,29 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>IMEI</th>
+            <th>Customer Name</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php $no = 1 ?>
+        <?php foreach ($this->result as $imei => $r): ?>
+            <tr>
+                <td><?php echo $no++; ?></td>
+                <td><?php echo $imei ?></td>
+                <?php if ($r): ?>
+                    <td><?php if( isset( $r['name'] ) ) echo $r['name']; else echo 'n/a'; ?></td>
+                    <td><?php if( isset( $r['phone_number'] ) ) echo  $r['phone_number']; else echo 'n/a'; ?></td>
+                    <td><?php if( isset( $r['address'] ) ) echo $r['address']; else echo 'n/a'; ?></td>
+                    <td><?php if( isset( $r['email'] ) ) echo $r['email']; else echo 'n/a'; ?></td>
+                <?php else: ?>
+                    <td colspan="4">n/a</td>
+                <?php endif ?>
+            </tr>
+        <?php endforeach ?>
+    </tbody>
+</table>

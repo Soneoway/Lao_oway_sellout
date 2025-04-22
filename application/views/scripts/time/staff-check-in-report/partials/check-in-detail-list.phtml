@@ -1,0 +1,608 @@
+<?php 
+    $staff_info = $this->staff_info;
+    $leave_list = $this->leave_list;
+    $checkin_list = $this->checkin_list;
+?>
+<style type="text/css">
+.td_date { opacity: 0.5; color:grey; }
+.half_br { line-height: 25px; }
+.both_chk { background: linear-gradient(to bottom, #46EE64 0%,#46EE64 50%,#000000 50%,#F7B240 50%,#F7B240 100%); }
+</style>
+
+<div class="row">
+        <div class="span6">
+
+            <p><span><strong>- Staff Details -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['staff_area']) ? $staff_info['staff_area'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Code</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['staff_code']) ? $staff_info['staff_code'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['staff_name']) ? $staff_info['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Current Group</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['staff_group']) ? $staff_info['staff_group'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Joined At</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['joined_at']) ? date('d/m/Y', strtotime($staff_info['joined_at'])) : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Created User Date</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['created_at']) ? date('d/m/Y H:i', strtotime($staff_info['created_at'])) : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">First Check In</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_info['first_checkin']) ? date('d/m/Y H:i', strtotime($staff_info['first_checkin']))." [ ".$staff_info['table_group']." ]" : "-"; ?></td>
+                </tr>
+
+            </table>
+            
+        </div>
+
+        <div class="span6">
+            <p><span><strong>- Change Position History -</strong></span></p>
+            <table class="table-striped" width="100%" >
+
+                <?php 
+
+                    if ( isset($staff_info['staff_id']) && $staff_info['staff_id'] ) {
+
+                        $table_pc = array(PGPB_ID);
+                        $table_sale = array(SALES_ID, ASM_ID, ASMSTANDBY_ID, RM_ID, RMSTANDBY_ID, 33, 34, 31);
+                        $table_bm = array(ABM_ID, BM_ID);
+                        $table_tms = array(37, 38);
+                        $table_pcm = array(36, TRAINING_TEAM_ID);
+                        $table_admin = array(SALES_ADMIN_ID);
+                        $table_am = array(AM_ID);
+
+                        $table_group = array(PGPB_ID, SALES_ID, BM_ID, 37, TRAINING_TEAM_ID, SALES_ADMIN_ID, AM_ID);
+
+                        if ( in_array($this->params['group_id'], $table_pc) ) { 
+                            $tmp_group = array_diff($table_group, $table_pc);
+                        }
+                        if ( in_array($this->params['group_id'], $table_sale) ) {
+                            $tmp_group = array_diff($table_group, $table_sale);
+                        }
+                        if ( in_array($this->params['group_id'], $table_bm) ) { 
+                            $tmp_group = array_diff($table_group, $table_bm);
+                        }
+                        if ( in_array($this->params['group_id'], $table_tms) ) { 
+                            $tmp_group = array_diff($table_group, $table_tms);
+                        }
+                        if ( in_array($this->params['group_id'], $table_pcm) ) { 
+                            $tmp_group = array_diff($table_group, $table_pcm);
+                        }
+                        if ( in_array($this->params['group_id'], $table_admin) ) { 
+                            $tmp_group = array_diff($table_group, $table_admin);
+                        }
+                        if ( in_array($this->params['group_id'], $table_am) ) { 
+                            $tmp_group = array_diff($table_group, $table_am);
+                        }
+
+                        $QStaffCheckInLog = new Application_Model_StaffCheckInLog();
+
+
+                        foreach ($tmp_group as $key => $value) {
+
+                            $result_table = $QStaffCheckInLog->checkTable($staff_info['staff_id'], $value);
+
+                            if ( !is_null($result_table['last_action']) ) {
+
+                                $sel_month_year = date("F Y" , strtotime($result_table['last_action']));
+
+                                echo "<tr>";
+                                echo    "<td>";
+                                echo        "Last Action As ".$result_table['table_group']." : ".$result_table['last_action'];
+                                echo        "&nbsp;&nbsp;<a href='".HOST."/time/staff-check-in-report-detail?code=".$staff_info['staff_code']."&group_id=".$value."&month_year=".$sel_month_year."' target='_blank'><i class='icon-external-link' ></i></a>";
+                                echo    "</td>";
+                                echo "</tr>";
+                            }
+
+                        }
+                    }
+
+                ?>
+                
+            </table>
+
+        </div>
+
+</div>
+
+<br/>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align='center'>Day</div></th>
+        <th><div align='center'>Time</div></th>
+        <th><div align='center'>Approve</div></th>
+        <th><div align='center'>Remark</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+        // Define Loop Day
+        $period_loop = ( (strtotime($this->params['period_to']) - strtotime($this->params['period_from'])) / (24*60*60) ) + 1;
+        //$period_loop = 10;
+
+        for ($i=0;$i<$period_loop;$i++) {
+
+            $day =  date('Y-m-d', strtotime("+".$i." Day", strtotime($this->params['period_from'])));
+            $day_text =  date('l : d/m/Y', strtotime("+".$i." Day", strtotime($this->params['period_from'])));
+            
+            echo "<tr>";
+            echo    "<td style='width:250px;'>";
+            echo        "<table width='100%'>";
+            echo            "<tr><td style='text-align:center;'>".$day_text."</td></tr>";
+
+            if ( isset( $checkin_list[ $day ] ) ) {
+
+                if (isset($checkin_list[$day]['store_id']) && $checkin_list[$day]['store_id']) {
+                    $store_details = $checkin_list[$day]['store_area']." : [".$checkin_list[$day]['store_id']."] ".$checkin_list[$day]['store_name'];
+                } else { $store_details = "No Store"; }
+
+                echo "<tr><td style='text-align:center;'>".$store_details."</td></tr>";
+            }
+            
+            echo        "</table>";
+            echo    "</td>";
+
+            /////////////////////////////////
+
+            echo    "<td style='width:500px;'>";
+            echo    "<table width='100%'>";
+            echo        "<tr>";
+
+            // Defined Check In
+            $tmp_checkin = strtotime($checkin_list[ $day ]['check_in']);
+
+            // Defined Check Out #1
+            if ( isset($checkin_list[ $day ]['check_out']) ) { $tmp_checkout = strtotime($checkin_list[ $day ]['check_out']); }
+            else { 
+                //$tmp_checkout = strtotime("+9 Hour", strtotime($checkin_list[ $day ]['check_in'])); 
+                $tmp_checkout = $checkin_list[ $day ]['check_in'];
+            }
+
+            // Calculate Each Hour
+            for ($j=0;$j<24;$j++) { 
+
+                $td_css = "class='td_date' style='text-align:center;'";
+
+                $td_text = sprintf("%02d", $j);
+                // $cnt     = sprintf("%02d", $j+1);
+                //$cnt2    = sprintf("%02d", $j+2);
+                
+                //echo "<td ".$td_css.">".$td_text."</td>";
+                //echo "<td ".$td_css.">23:59</td>";
+                
+                $date_compare = strtotime($day." ".$j.":00:00");
+                $date_compare2 = strtotime($day." ".$j.":59:59");
+
+                // Check In 
+                if ( isset($checkin_list[ $day ]['check_in']) ) {
+
+                    // Check In + Leave
+                    if ( isset($leave_list[ $day ]) ) {
+                        // Defined Leave - From Date, To Date
+                        $tmp_from_date = strtotime($leave_list[ $day ]['from_date']);
+                        $tmp_to_date = strtotime($leave_list[ $day ]['to_date']);
+
+                        // Defined Check Out #2
+                        if ( isset($checkin_list[ $day ]['check_out']) ) { $tmp_checkout = strtotime($checkin_list[ $day ]['check_out']); }
+                        else { 
+                            //$tmp_checkout = strtotime($day." 23:59"); 
+                            $tmp_checkout = strtotime($checkin_list[ $day ]['check_in']);
+                        }
+
+                        // Check Have Both in Same Period
+                        if (    ( ($date_compare2 >= $tmp_from_date) && ($date_compare <= $tmp_from_date) ) && 
+                                ( ($date_compare2 >= $tmp_checkin) && ($date_compare <= $tmp_checkin) ) ) {
+
+                            echo "<td class='both_chk' style='text-align:center;padding:0px;font-size:11px;'>".date("H:i", $tmp_checkin)."<br/>".date("H:i", $tmp_from_date)."</td>";
+                        } else if ( ( ($date_compare2 >= $tmp_to_date) && ($date_compare <= $tmp_to_date) ) && 
+                                    ( ($date_compare2 >= $tmp_checkout) && ($date_compare <= $tmp_checkout) ) ) {
+
+                            echo "<td class='both_chk' style='text-align:center;padding:0px;font-size:11px;'>".date("H:i", $tmp_checkout)."<br/>".date("H:i", $tmp_to_date)."</td>";
+                        } else if ( ( ($date_compare2 >= $tmp_from_date) && ($date_compare <= $tmp_from_date) ) && 
+                                    ( ($date_compare2 >= $tmp_checkout) && ($date_compare <= $tmp_checkout) ) ) {
+
+                            echo "<td class='both_chk' style='text-align:center;padding:0px;font-size:11px;'>".date("H:i", $tmp_checkout)."<br/>".date("H:i", $tmp_from_date)."</td>";
+                        } else if ( ( ($date_compare2 >= $tmp_to_date) && ($date_compare <= $tmp_to_date) ) && 
+                                    ( ($date_compare2 >= $tmp_checkin) && ($date_compare <= $tmp_checkin) ) ) {
+
+                            echo "<td class='both_chk' style='text-align:center;padding:0px;font-size:11px;'>".date("H:i", $tmp_checkin)."<br/>".date("H:i", $tmp_to_date)."</td>";
+                        } else {
+
+                            if ( ($date_compare2 >= $tmp_from_date) && ($date_compare <= $tmp_from_date) ) { 
+
+                                $td_css = "style='background-color:#F7B240; text-align:center;'";
+                                $leave_start = date("H:i", $tmp_from_date );
+                                echo "<td ".$td_css." >".$leave_start."</td>";
+
+                            } else if ( ($date_compare2 >= $tmp_to_date) && ($date_compare <= $tmp_to_date) ) {
+
+                                $td_css = "style='background-color:#F7B240; text-align:center;'";
+                                $leave_end = date("H:i", $tmp_to_date );
+                                echo "<td ".$td_css." >".$leave_end."</td>";
+
+                            } else if ( ($date_compare2 >= $tmp_checkin) && ($date_compare <= $tmp_checkin) ) {
+
+                                $td_css = "style='background-color:#46EE64; text-align:center;'";
+                                $check_in = date("H:i", $tmp_checkin );
+                                echo "<td ".$td_css." >".$check_in."</td>";
+
+                            } else if ( ($date_compare2 >= $tmp_checkout) && ($date_compare <= $tmp_checkout) ) { 
+
+                                $td_css = "style='background-color:#46EE64; text-align:center;'";
+                                $check_out = date("H:i", $tmp_checkout );
+                                echo "<td ".$td_css." >".$check_out."</td>";
+
+                            } else {
+                                
+                               if ( ($date_compare >= $tmp_checkin) && ($date_compare <= $tmp_checkout) ) {
+                                    $td_css = "style='opacity: 0.5; background-color:#46EE64; text-align:center;'";
+                                } 
+
+                                if ( ($date_compare >= $tmp_from_date) && ($date_compare <= $tmp_to_date) ) {
+                                    $td_css = "style='opacity: 0.5; background-color:#F7B240; text-align:center;'";
+                                }
+
+                                echo "<td ".$td_css.">".$td_text.":00</td>";
+                            }
+                            
+                        }
+
+                    } else {
+
+                        // Only Check In
+
+                        // Only PC and Store ID = 0
+                        if ( ($checkin_list[$day]['store_id'] == 0) && ($this->params['group_id'] == PGPB_ID) ) { $tmp_checkout = $tmp_checkin; } 
+
+                        // Check Check In
+                        if ( ($date_compare2 >= $tmp_checkin) && ($date_compare <= $tmp_checkin) ) {
+                            $td_css = "style='background-color:#46EE64; text-align:center;'";
+
+                            $check_in = date("H:i", $tmp_checkin );
+                            echo "<td ".$td_css." >".$check_in."</td>";
+                            //echo "<td>".$check_in." | start ".date("H:i", $date_compare)." | end ".date("H:i", $date_compare2)."</td>";
+                        } else {
+
+                            // Check Check Out
+                            if ( ($date_compare2 >= $tmp_checkout) && ($date_compare <= $tmp_checkout) ) {
+                                $td_css = "style='background-color:#46EE64; text-align:center;'";
+
+                                $check_out = date("H:i", $tmp_checkout );
+                                echo "<td ".$td_css.">".$check_out."</td>";
+                                //echo "<td>".$check_out." | start ".date("H:i", $date_compare)." | end ".date("H:i", $date_compare2)."</td>";
+                            } else {
+                                if ( ($date_compare >= $tmp_checkin) && ($date_compare <= $tmp_checkout) ) {
+                                    $td_css = "style='opacity: 0.5; background-color:#46EE64; text-align:center;'";
+                                    echo "<td ".$td_css.">".$td_text.":00</td>";
+                                } else {
+                                    echo "<td ".$td_css.">".$td_text.":00</td>";
+                                }
+                            }
+                            
+                        }
+
+
+                    }
+
+                    if ($j == 11) { echo "</tr><tr>"; }
+
+                } else if ( isset($leave_list[ $day ]) ) {
+                    // Only Leave
+
+                    // Defined Leave - From Date, To Date
+                    $tmp_from_date = strtotime($leave_list[ $day ]['from_date']);
+                    $tmp_to_date = strtotime($leave_list[ $day ]['to_date']);
+
+                    if ( $tmp_from_date >= $tmp_to_date ) { $tmp_to_date = strtotime("+9 Hour", $tmp_from_date); }
+
+                    // Check From Date
+                    if ( ($date_compare2 >= $tmp_from_date) && ($date_compare <= $tmp_from_date) ) {
+                        $td_css = "style='background-color:#F7B240; text-align:center;'";
+
+                        $leave_start = date("H:i", $tmp_from_date );
+                        echo "<td ".$td_css." >".$leave_start."</td>";
+                    } else {
+
+                        // Check To Date
+                        if ( ($date_compare2 >= $tmp_to_date) && ($date_compare <= $tmp_to_date) ) {
+                            $td_css = "style='background-color:#F7B240; text-align:center;'";
+
+                            $leave_end = date("H:i", $tmp_to_date );
+                            echo "<td ".$td_css.">".$leave_end."</td>";
+                        } else {
+
+                            if ( ($date_compare >= $tmp_from_date) && ($date_compare <= $tmp_to_date) ) {
+
+                                $td_css = "style='opacity: 0.5; background-color:#F7B240; text-align:center;'";
+
+                                echo "<td ".$td_css.">".$td_text.":00</td>";
+                            } else {
+
+                                echo "<td ".$td_css.">".$td_text.":00</td>";
+
+                            }
+
+                        }
+                        
+                    }
+
+                    //echo "<td ".$td_css.">".$td_text.":00</td>";
+                    if ($j == 11) { echo "</tr><tr>"; }
+                
+                } else {
+                    // Not Check In or Leave
+                    echo "<td ".$td_css.">".$td_text.":00</td>";
+                    if ($j == 11) { echo "</tr><tr>"; }
+                }
+
+            }
+
+            echo    "</tr>";
+            echo "</table>";
+
+            // Work Plan 
+            if ( isset($checkin_list[ $day ]['work_plan']) && $checkin_list[ $day ]['work_plan'] != '' ) {
+
+                echo "<div style='height:10px;'></div>";
+                echo "<i class='icon-book' style='color: #12aa00;'> Work Plan : </i>";
+                echo "<span>".$checkin_list[ $day ]['work_plan']."</span>";
+
+            }
+
+            // Work Performancec 
+            if ( isset($checkin_list[ $day ]['work_perform']) && $checkin_list[ $day ]['work_perform'] != '' ) {
+
+                echo "<div style='height:10px;'></div>";
+                echo "<i class='icon-flag' style='color: #12aa00;'> Work Performancec : </i>";
+                echo "<span>".$checkin_list[ $day ]['work_perform']."</span>";
+
+            }
+
+            echo "</td>";
+
+            /////////////////////////////////
+
+
+            echo    "<td style='width:240px;'>";
+            echo        "<table width='100%'>";
+
+            $show_checkin_remark = "";
+            $show_leave_remark = "";
+            $show_late_time = "";
+
+            // Check In Approve
+            if ( isset( $checkin_list[ $day ] ) ) {
+
+                switch ($checkin_list[$day]['chk_status']) {
+                    case 'Y':
+                        $checkin_approve = "<span class='label label-success'>Check In</span> : <i class='icon-ok' style='color: #12aa00;'></i> : ".date('d/m/Y H:i', strtotime($checkin_list[$day]['approve_date']));
+                        $checkin_remark = "";
+
+                        if ( $checkin_list[$day]['late_time'] != 0) {
+                            $show_late_time = "<br class='half_br'/><span class='label label-important'>Late Time : ".$checkin_list[$day]['late_time']." minutes </span>";
+                        }
+                        
+                        break;
+                    case 'N':
+                        $checkin_approve = "<span class='label label-success'>Check In</span> : <i class='icon-remove' style='color: #e60400;'></i> : ".date('d/m/Y H:i', strtotime($checkin_list[$day]['approve_date']));
+                        $checkin_remark = "<span class='label label-success'>Check In</span><br class='half_br'/>".$checkin_list[$day]['remark'];
+                        break;
+                    case 'W':
+
+                        if ( ($checkin_list[$day]['store_id'] == 0) && ($this->params['group_id'] == PGPB_ID) ) {
+                            $checkin_approve = "<span class='label label-success'>Check In Traning</span>";
+                        } else {
+                            $checkin_approve = "<span class='label label-success'>Check In</span> : <i class='icon-time' style='color: #e6a208;'></i> : Waiting";
+                        }
+
+                        $checkin_remark = "";
+                        break;
+                    default:
+                        $checkin_approve = "-";
+                        $checkin_remark = "-";
+                        break;
+                }
+
+                if (strtotime($day) == strtotime($staff_info['joined_at'])) { $checkin_remark = $checkin_remark ." (เริ่มทำงานวันแรก) "; }
+
+                echo "<tr><td style='text-align:center;'>".$checkin_approve.$show_late_time."</td></tr>";
+
+                if ($checkin_remark != "") {
+                    $show_checkin_remark = "<tr><td style='text-align:center;'>".$checkin_remark."</td></tr>";
+                }
+                
+            } 
+
+            // Approve Leave
+            if ( isset( $leave_list[ $day ] ) ) {
+
+                // check certificate file 
+                if ( !is_null($leave_list[$day]['certificate_file']) ) {
+
+                    $pic_path = $leave_list[$day]['pic_path'];
+
+                    $path = "http://api.oppo.in.th/images/" .$pic_path. "/" . date("Y", strtotime($leave_list[$day]['certificate_at'])) . "/" . date("Y-m", strtotime($leave_list[$day]['certificate_at'])) . "/" . date("Y-m-d", strtotime($leave_list[$day]['certificate_at'])) . "/" . $leave_list[$day]['certificate_file'];
+
+                    $cert_file = "<a href='".$path."' target='_blank'>( มีใบแพทย์ )</a>";
+
+                } else { $cert_file = " ( ไม่มีใบแพทย์ )"; }
+
+                $leave_remark = "";
+
+                switch ($leave_list[$day]['leave_status']) {
+                    case 'Y':
+                        $leave_approve =  "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span> : <i class='icon-ok' style='color: #12aa00;'></i> : ".date('d/m/Y H:i', strtotime($leave_list[$day]['approve_date']));
+
+                        if ( $leave_list[$day]['leave_type'] == "Sick Leave" ) {
+                            $leave_remark = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span><br class='half_br'/>".$cert_file;
+                        } 
+
+                        break;
+                    case 'N':
+                        $leave_approve = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span> : <i class='icon-remove' style='color: #e60400;'></i> : ".date('d/m/Y H:i', strtotime($leave_list[$day]['approve_date']));
+                        if ( $leave_list[$day]['leave_type'] == "Sick Leave" ) {
+                            $leave_remark = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span><br class='half_br'/>".$cert_file."<br class='half_br'/>".$leave_list[$day]['remark'];
+                        } else {
+                            $leave_remark = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span><br class='half_br'/>".$leave_list[$day]['remark'];
+                        }
+                        break;
+                    case 'W':
+                        $leave_approve = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span> : <i class='icon-time' style='color: #e6a208;'></i> : Waiting";
+
+                        if ( $leave_list[$day]['leave_type'] == "Sick Leave" ) {
+                            $leave_remark = "<span class='label label-warning'>".$leave_list[$day]['leave_type']."</span><br class='half_br'/>".$cert_file;
+                        } 
+                        
+                        break;
+                    default:
+                        $leave_approve = "-";
+                        $leave_remark = "-";
+                        break;
+                }
+
+                echo "<tr><td style='text-align:center;'>".$leave_approve."<br class='half_br'/>( ".$leave_list[$day]['leave_remark']." )</td></tr>";
+
+                if ( $leave_list[$day]['date_switch'] != "" ) {
+                    $leave_remark .= "Switch With<br class='half_br'/>".date("d/m/Y", strtotime($leave_list[$day]['date_switch']));
+                }
+
+                if ($leave_remark != "") {
+                    $show_leave_remark = "<tr><td style='text-align:center;'>".$leave_remark."</td></tr>";
+                }
+
+            }
+
+
+            if ( !isset( $checkin_list[ $day ] ) && !isset( $leave_list[ $day ] ) ) {
+
+                if ( strtotime($staff_info['joined_at']) > strtotime($day) || ( !is_null($staff_info['off_date']) && strtotime($staff_info['off_date']) < strtotime($day) ) ) {
+                    echo "<tr><td style='text-align:center;'></td></tr>";
+                } else if ( strtotime($staff_info['off_date']) == strtotime($day) ) {
+                    echo "<tr><td style='text-align:center;'><span class='label label-important'>Off Date</span></td></tr>";
+                } else {
+                    echo "<tr><td style='text-align:center;'><span class='label label-important'>Not Check In</span></td></tr>";
+                }
+
+                
+            }
+
+            $chk_show_pic = "";
+            // Check in Picture
+            if ( !is_null($checkin_list[$day]['filepic']) ) {
+
+                $chk_pic_path = $checkin_list[$day]['pic_path'];
+                
+                $chk_path = "http://api.oppo.in.th/images/" .$chk_pic_path. "/" . date("Y", strtotime($checkin_list[$day]['created_at'])) . "/" . date("Y-m", strtotime($checkin_list[$day]['created_at'])) . "/" . date("Y-m-d", strtotime($checkin_list[$day]['created_at'])) . "/" . $checkin_list[$day]['filepic'];
+
+                $chk_show_pic = "<div style='float:left;'><a id='single_image' href='".$chk_path."'><img src='".$chk_path."' height='60' width='60'/></a></div>";
+
+            }
+
+            $chkout_show_pic = "";
+            // Check in Picture
+            if ( !is_null($checkin_list[$day]['chkout_filepic']) ) {
+
+                $chk_pic_path = $checkin_list[$day]['pic_path'];
+                
+                $chkout_path = "http://api.oppo.in.th/images/" .$chk_pic_path. "/" . date("Y", strtotime($checkin_list[$day]['created_at'])) . "/" . date("Y-m", strtotime($checkin_list[$day]['created_at'])) . "/" . date("Y-m-d", strtotime($checkin_list[$day]['created_at'])) . "/" . $checkin_list[$day]['chkout_filepic'];
+
+                $chkout_show_pic = "<div style='float:left; padding-left:5px;'><a id='single_image' href='".$chkout_path."'><img src='".$chkout_path."' height='60' width='60'/></a></div>";
+
+            }
+
+            $location_chkin = "";
+            if ( !is_null($checkin_list[$day]['location_chkin']) && $checkin_list[$day]['location_chkin'] != '0,0') {
+
+                $loc_temp = explode(',', $checkin_list[$day]['location_chkin']);
+                $lat = trim($loc_temp[0]);
+                $lng = trim($loc_temp[1]);
+
+                $location_chkin = "<div align='center'><a title='Checkin Location' href='#!'><i class='icon-map-marker' style='color: #12aa00;' data-lat='".$lat."' data-lng='".$lng."' data-type='0' > Checkin Location</i></a></div>";
+            }
+
+            $location_chkout = "";
+            if ( !is_null($checkin_list[$day]['location_chkout']) && $checkin_list[$day]['location_chkout'] != '0,0') {
+
+                $loc_temp = explode(",", $checkin_list[$day]['location_chkout']);
+                $lat = trim($loc_temp[0]);
+                $lng = trim($loc_temp[1]);
+
+                $location_chkout = "<div align='center' ><a title='Checkout Location' href='#!'><i class='icon-map-marker' style='color: #12aa00;' data-lat='".$lat."' data-lng='".$lng."' data-type='1' > Checkout Location</i></a></div>";
+            }
+            
+            echo        "</table>";
+            echo    "</td>";
+
+            echo    "<td style='width:150px;'>";
+            echo        "<table width='100%'>".$chk_show_pic.$chkout_show_pic.$show_checkin_remark.$show_leave_remark.$location_chkin.$location_chkout."</table>";
+            echo    "</td>";
+
+            echo "</tr>";
+        }
+
+    ?>
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" onfocus="initMap();"></div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript" src="/js/jquery.fancybox-1.3.4.js"></script>
+<link rel="stylesheet" href="/css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAh6C25S5k3Hf_huOkBOI4GWab0uqDfDk8" async defer></script>
+
+<script type="text/javascript">
+    
+    $(document).ready(function() {
+        
+        $("a#single_image").fancybox();
+
+        $modal = $('#modal');
+        $('.icon-map-marker').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            var loc_type;
+            if ( _self.data('type') == 0 ) { loc_type = 'Check In Location'; } 
+            else { loc_type = 'Check Out Location'; }
+
+            $.post('<?php echo HOST ?>time/staff-check-in-report-map',
+                {
+                    lat : _self.data('lat'),
+                    lng : _self.data('lng')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = $("#test").html();
+                    $modal.find('h3').append(''+loc_type+' : ('+_self.data('lat')+', '+_self.data('lng')+')');
+            });
+        });
+
+    });
+
+</script>

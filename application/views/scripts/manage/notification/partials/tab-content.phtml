@@ -1,0 +1,59 @@
+<div class="row-fluid">
+    <div class="span9">
+        <div class="control-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control span9" id="title" name="title" required="required" value="<?php if (isset($this->notification)): echo $this->notification->title; endif;?>">
+        </div>
+    </div>
+
+    <div class="span3">
+        <?php echo $this->render('manage/notification/partials/select-category.phtml') ?>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="control-group">
+            <label for="content">Content</label>
+            <textarea name="content" id="content"><?php isset($this->notification) and print($this->notification->content);?></textarea>
+        </div>
+    </div>
+</div>
+
+<div class="upload_files">
+    <div class="row-fluid file_list">
+        <?php if (isset($this->files) && $this->files): ?>
+            <?php foreach ($this->files as $key => $value): ?>
+                <div class="span2 file_item">
+                    <?php $hash = hash("sha256", md5($this->userStorage->id) . $value['file_real_name'] . $value['id']); ?>
+                    <?php $src = HOST . 'download/notification?id='. $value['id'] . '&filename='. $value['file_real_name'].'&hash='. $hash ?>
+
+                    <a href="<?php echo $src ?>" class="thumbnail">
+                        <?php if ( preg_match('/\.(jpg)|(png)|(jpeg)$/', $value['file_real_name']) ): ?>
+                            <img src="<?php echo $src ?>" alt="<?php echo $value['file_display_name'] ?>">
+                        <?php else: ?>
+                            <span><i class="icon-file"></i></span>
+                        <?php endif ?>
+                    </a>
+                    <p class="attachment_name"><?php echo $value['file_display_name'] ?></p>
+                </div>
+            <?php endforeach ?>
+        <?php endif ?>
+    </div>
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label" for="">Attach Files</label>
+                <div class="controls">
+                    <p><strong>Kích thước file phải nhỏ hơn 5MB</strong></p>
+                    <div class="file-uploader"></div>
+                    <input type="hidden" name="photo" />
+                    <input type="hidden" class="onprogress" />
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php echo $this->render('manage/notification/partials/new-category-modal.phtml') ?>

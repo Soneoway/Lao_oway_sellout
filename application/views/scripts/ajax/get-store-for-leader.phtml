@@ -1,0 +1,47 @@
+<select class="span6 search_result" name="a_storeresult" id="a_storeresult" multiple="multiple" size="8">
+<?php 
+    if (isset($this->stores) && $this->stores) {
+        foreach ($this->stores as $key => $store) {
+
+            $area_id = $rm_name = $district_name = $area_name = $store_type = $store_control = $store_focus = '';
+
+            if(isset($this->regions[$store['regional_market']]['area_id']) && $this->regions[$store['regional_market']]['area_id']) 
+                $area_id =  $this->regions[$store['regional_market']]['area_id'];
+            if (isset($this->regions[$store['regional_market']]) && $this->regions[$store['regional_market']]) 
+                $rm_name = $this->regions[$store['regional_market']]['name'];
+            if (isset($this->regions[$store['district']]) && $this->regions[$store['district']]) 
+                $district_name = $this->regions[$store['district']]['name'];
+            if (isset($this->areas[$this->regions[$store['regional_market']]['area_id']]) && $this->areas[$this->regions[$store['regional_market']]['area_id']]) 
+                $area_name = $this->areas[$this->regions[$store['regional_market']]['area_id']];
+
+            if (isset($this->org[$store['org_dealer']]) && $this->org[$store['org_dealer']]) 
+                $store_type = $this->org[$store['org_dealer']];
+
+            if (isset($this->store_control[$store['id']]) && $this->store_control[$store['id']]) 
+                $store_control = $this->store_control[$store['id']];
+
+            if (isset($this->store_focus[$store['id']]) && $this->store_focus[$store['id']]) 
+                $store_focus = $this->store_focus[$store['id']];
+
+            echo "<option 
+                    value='".$store['id']."' 
+                    data-id='".$store['id']."' 
+                    data-name='".$store['name']."' 
+                    data-area='".$area_id."' 
+                    data-region='".$store['regional_market']."' 
+                    data-district='".$store['district']."' 
+                    data-region-name='".$rm_name."' 
+                    data-district-name='".$district_name."' 
+                    data-area-name='".$area_name."' 
+                    data-type='".$store_type."'
+                    data-del='".$store['del']."' 
+                    data-sc='".$store_control."' 
+                    data-sf='".$store_focus."' 
+                >";
+
+            echo '[ '. $store['id']. ' ] ' .$store['name'] . ((isset($this->regions[$store['regional_market']]) && $this->regions[$store['regional_market']]) ? (' | ' . $this->regions[$store['regional_market']]['name']) : '');
+            echo "</option>";
+        }
+    }
+?>
+</select>

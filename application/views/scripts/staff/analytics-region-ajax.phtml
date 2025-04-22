@@ -1,0 +1,92 @@
+<div class="page-header">
+    <h1>Staff Analytics</h1>
+    <h2>Region: <?php echo $this->regions[$this->region] . ( ! empty( $this->department ) ? ( ' / ' . $this->departments[$this->department] ) : '' ) ?></h2>
+</div>
+
+<div id="view-content" ng-controller="StaffCtrl">
+	<button type="button" class="btn-primary show-as-image" title="Save chart as image">Save Chart As</button>
+    <span>Tổng số NV: <?php echo $this->total ?></span> - 
+    <span><a href="<?php echo HOST . 'staff/analytics' ?>">All Region</a></span>
+    <?php if ( ! empty( $this->department ) ) : ?>
+    	- <span><a href="<?php echo HOST . 'staff/analytics?regional_market=' . $this->region ?>">All Department</a></span>
+	<?php endif; ?>
+	<div id="chart"></div>
+	<div>
+		<div class="table-responsive">
+		    <table class="table table-bordered">
+		        <thead>
+              <tr>
+                <th>#</th>
+                <th>Name
+                  <span ng-click="get('lastname',0)">Tăng</span>/
+                  <span ng-click="get('lastname',1)">Giảm</span>
+                </th>
+                <th>Department
+                  <span ng-click="get('department',0)">Tăng</span>/
+                  <span ng-click="get('department',1)">Giảm</span>
+                </th>
+                <th>Team 
+                  <span ng-click="get('team',0)">Tăng</span>/
+                  <span ng-click="get('team',1)">Giảm</span>
+                </th>
+                <th>Title 
+                  <span ng-click="get('title',0)">Tăng</span>/
+                  <span ng-click="get('title',1)">Giảm</span>
+                </th>
+                <th>Join At 
+                  <span ng-click="get('joined_at',0)">Tăng</span>/
+                  <span ng-click="get('joined_at',1)">Giảm</span>
+                </th>
+                <th>Phone Number 
+                  <span ng-click="get('phone_number',0)">Tăng</span>/
+                  <span ng-click="get('phone_number',1)">Giảm</span>
+                </th>
+                <th>Action
+                </th>
+              </tr>
+		        </thead>
+		        <tbody>
+		            <tr ng-repeat="staff in staffs">
+                  <td>{{staff.id}}</td>
+                  <td>{{staff.firstname + ' '+ staff.lastname}}</td>
+                  <td>{{staff.department}}</td>
+                  <td>{{staff.team}}</td>
+                  <td>{{staff.title}}</td>
+                  <td>{{staff.joined_at}}</td>
+                  <td>{{staff.phone_number}}</td>
+                  <td></td>
+                </tr>
+
+		        </tbody>
+		    </table>
+		</div>
+		<div class="paging">
+		    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function StaffCtrl($scope, $http) {
+  $scope.get = function(col, desc) {
+    $http({
+      method: 'GET',
+      url: <?php echo "'" . HOST . "staff/get-json-data'" ?>,
+      params: {
+          'col' : col,
+          'desc' : desc
+        }
+      }).
+      success(function(data, status, headers, config) {
+        $scope.staffs = data;
+        console.log(data);
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+    });
+  };
+
+  
+}
+
+</script>

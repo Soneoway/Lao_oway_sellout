@@ -1,0 +1,58 @@
+<div class="table-responsive">
+
+<?php 
+    //echo "Type : ".$this->list_type;
+
+    if ($this->list_type == "last") { $so_list = $this->so_list_last; } 
+    else { $so_list = $this->so_list; } 
+
+    //print_r($this->so_list_last);
+
+?>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th style="vertical-align: middle;"><div align="center">#</div></th>
+      <th style="vertical-align: middle;"><div align="center">Sales Order<br/>Invoice No.</div></th>
+      <th style="vertical-align: middle;"><div align="center">[ID] Distributor Name</div></th>
+      <th style="vertical-align: middle;"><div align="center">Paid At</div></th>
+      <th style="vertical-align: middle;"><div align="center">Opened By</div></th>
+      <th style="vertical-align: middle;"><div align="center">Price</div></th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php 
+
+      $sum_price = 0;
+
+      if (isset($so_list) && $so_list) {
+
+        for ($i=0;$i<count($so_list);$i++) {
+
+          $cnt = $i + 1;
+
+          echo "<tr>";
+          echo    "<td><div align='center'>".$cnt."</div></td>";
+          echo    "<td><div align='center'>".$so_list[$i]['sn_ref']."<br/>".$so_list[$i]['inv_no']."</div></td>";
+          echo    "<td>[".$so_list[$i]['d_id']."] ".$so_list[$i]['d_name']."</td>";
+          echo    "<td><div align='center'>".$so_list[$i]['pay_time']."</div></td>";
+          echo    "<td>".$so_list[$i]['created_name']."</td>";
+          echo    "<td><div align='right'>".number_format($so_list[$i]['m_total'],2)."</div></td>";
+          echo "</tr>";
+
+          $sum_price = $sum_price + $so_list[$i]['m_total'];
+        }
+
+        // Last Row
+        echo "<tr>";
+        echo    "<td colspan='5'><div align='center'>Total Price</div></td>";
+        echo    "<td><div align='right'>".number_format($sum_price,2)."</div></td>";
+        echo "</tr>";
+
+      }
+
+    ?>      
+  </tbody>
+</table>
+</div>

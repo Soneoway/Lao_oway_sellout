@@ -1,0 +1,177 @@
+<form class="form-search form-horizontal" method="get" action="/timing/area-daily-arrival-order/area-daily-arrival-order" onsubmit="return validateSearch()">
+    <div class="row">
+        <div class="span5">
+
+	       <div class="control-group">
+                <label for="d_id" class="span2">Distributor ID</label>
+                <input id="d_id" name="d_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['d_id']) and printf($this->params['d_id']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="d_name" class="span2">Distributor Name</label>
+                <input id="d_name" name="d_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['d_name']) and printf($this->params['d_name']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="sn" class="span2">SO</label>
+                <input id="sn" name="sn" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['sn']) and printf($this->params['sn']);?>">
+            </div>
+
+        </div>
+
+        <div class="span5">
+<!--
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+-->
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="status_id" class="span2">Status</label>
+                <select id="status_id" name="status_id" class="span3">
+                    <?php
+
+                    if ($this->status_list) :
+                        foreach ($this->status_list as $status):
+                            ?>
+                            <option value="<?php echo $status['id'];?>" <?php if (isset($this->params['status_id']) and ( (is_array($this->params['status_id']) && in_array($status['id'], $this->params['status_id']) || $status['id']==$this->params['status_id'])) ):?>selected<?php endif;?>><?php echo $status['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+/*
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        // end - start returns difference in milliseconds 
+        var diff = new Date(date_02 - date_01);
+
+        // get days
+        var days = (diff/1000/60/60/24) + 1;
+
+        if (days > 31) {
+            alert("Date Range Not Allow more than 31 Days [Selected Date Range is " + days + " Days!]");
+            return false;
+        }
+*/
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    $('#regional_market').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        
+    });
+</script>

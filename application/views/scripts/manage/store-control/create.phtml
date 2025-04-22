@@ -1,0 +1,294 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+    .checkbox {
+        margin-left: 10px !important; 
+    }
+</style>
+<div class="page-header">
+    <h1>Store Control : Create</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<iframe name="ifrmSave" id="ifrmSave" height="500px" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/store-control-create-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span6">
+            <p><span><strong>- Area Details -</strong></span></p>
+
+            <div class="control-group">
+                <label for="store_control_name" class="span2">Store Control</label>
+                <input id="store_control_name" name="store_control_name" type="text" class="input-medium search-query form-control" required value="" />
+            </div>
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <br/>
+
+            <p><span><strong>- PCM Responsible -</strong></span></p>
+            <input type="hidden" id="staff_id" name="staff_id" value="" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Province</td>
+                    <td style="padding-left: 5px;" id="staff_province">: -</td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;" id="staff_name">: -</td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Email</td>
+                    <td style="padding-left: 5px;" id="staff_email">: -</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_bind_pcm" class="btn btn-success" type="button">Bind PCM</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+<table class="table table-bordered" id='store_list'>
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Area</div></th>
+        <th><div align='center'>Store ID</div></th>
+        <th><div align='center'>Store Name</div></th>
+        <th><div align='center'>Store Type</div></th>
+        <th><div align='center'>Status</div></th>
+        <th><div align='center'>ASM / Sale</div></th>
+        <th><div align='center'>PC</div></th>
+        <th><div align='center'>Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+        
+        ?>
+    </tbody>
+</table>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        multi();
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&name=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#name_result').attr("multiple", false);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind_pcm').click(function(){
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            $('#staff_id').val(staff_id);
+            $('#staff_province').html(": <font color='green'>" + tmp[2].trim() + "</font>");
+            $('#staff_name').html(": <font color='green'>" + tmp[0].trim() + "</font>");
+            $('#staff_email').html(": <font color='green'>" + tmp[1].trim() + "</font>");
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+
+            $.post("/manage/load-store-by-area",
+                {area_id: area_id}
+                ,function(data,status){
+                    //alert(data);
+                    $("#store_list tbody").empty();
+
+                    var obj = $.parseJSON( data );
+
+                    for (var i = 0; i < obj.length; i++) {
+
+                        var cnt = i + 1;
+                        var st_status = '';
+                        var sale_name = '';
+                        var sc_name = '';
+
+                        if (obj[i]['st_del'] == 1) { st_status = "<span class='label label-important'>Disable</span>"; }
+                        else { st_status = "<span class='label label-success'>Active</span>";  }
+                        
+                        if (obj[i]['sale_code'] != null) { sale_name = '[ '+obj[i]['sale_code']+' ] '+obj[i]['sale_name']; } 
+
+                        if (obj[i]['sc_name'] != null) { sc_name = obj[i]['sc_name']; }
+                        else { sc_name = '<input type="checkbox" id="store[]" name="store[]" value="'+obj[i]['st_id']+'">'; }
+
+                        $('#store_list tbody').append('<tr>');
+
+                        $('#store_list tbody').append('<td><div align="center">'+cnt+'</div></td>');
+                        $('#store_list tbody').append('<td><div align="center">'+obj[i]['st_area']+'</div></td>');
+                        $('#store_list tbody').append('<td><div align="center">'+obj[i]['st_id']+'</div></td>');
+                        $('#store_list tbody').append('<td>'+obj[i]['st_name']+'</td>');
+                        $('#store_list tbody').append('<td>'+obj[i]['st_type']+'</td>');
+                        $('#store_list tbody').append('<td><div align="center">'+st_status+'</div></td>');
+
+                        $('#store_list tbody').append('<td><div align="left">'+sale_name+'</div></td>');
+                        $('#store_list tbody').append('<td><div align="left">'+obj[i]['pc_list']+'</div></td>');
+                        $('#store_list tbody').append('<td><div align="center">'+sc_name+'</div></td>');
+                        $('#store_list tbody').append('</tr>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+
+                    $('.loading').remove();
+                });
+        });
+
+
+    });
+
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

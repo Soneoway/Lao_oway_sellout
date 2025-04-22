@@ -1,0 +1,342 @@
+<!-- 
+<div class="row-fluid">
+    <div class="span6">
+        <div class="control-group">
+            <label for="level" class="control-label">Level</label>
+            <div class="controls">
+                <input type="text" id="level" placeholder="Enter level" name="level" value="<?php isset($this->staff) and $this->staff and printf($this->staff->level);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="certificate" class="control-label">Certificate</label>
+            <div class="controls">
+                <input type="text" id="certificate" placeholder="Enter certificate" name="certificate" value="<?php isset($this->staff) and $this->staff and printf($this->staff->certificate);?>">
+            </div>
+        </div>
+    </div>
+
+    <div class="span6">
+        
+    </div>
+</div>
+-->
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-info add_education_btn"><i class="icon-plus"></i> Add Education...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd  table_list">
+            <caption>Current Education</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Level</th>
+                    <th>School</th>
+                    <th>Field of Study</th>
+                    <th>Graduated Year</th>
+                    <th>Grade</th>
+                    <th>Mode of Study</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php if (isset($this->education) && $this->education): ?>
+                    <?php foreach ($this->education as $key => $value): ?>
+                        <tr class="item">
+                            <td>
+                            
+                            </td>
+                            <td>
+                                <span class="level_txt"><?php echo $value['level'] ?></span>
+                            </td>
+                            <td>
+                                <span class="school_txt"><?php echo $value['school'] ?></span>
+                            </td>
+                            <td>
+                                <span class="field_of_study_txt"><?php echo $value['field_of_study'] ?></span>
+                            </td>
+                            <td>
+                                <span class="graduated_year_txt"><?php echo $value['graduated_year'] ?></span>
+                            </td>
+                            <td>
+                                <span class="grade_txt"><?php echo $value['grade'] ?></span>
+                            </td>
+                            <td>
+                                <span class="mode_of_study_txt"><?php echo $value['mode_of_study'] ?></span>
+                            </td>
+                            <td>
+                                
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div><!-- End current education -->
+
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd education_list table_list">
+            <caption>Education</caption>
+            <thead>
+            <tr>
+                <td>#</td>
+                <th>Level</th>
+                <th>School</th>
+                <th>Field of Study</th>
+                <th>Graduated Year</th>
+                <th>Grade</th>
+                <th>Mode of Study</th>
+                <th>Default level</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <?php if (isset($this->education) && $this->education): ?>
+                <?php foreach ($this->education as $key => $value): ?>
+                    <tr class="item">
+                        <td>
+                            <input type="hidden" class="education_id" name="education_id[]" value="<?php if (isset($value['id'])) echo $value['id'] ?>">
+                            <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-small level" value="<?php echo $value['level'] ?>" name="levels[]">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-medium school" value="<?php echo $value['school'] ?>" name="school[]">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-medium field_of_study" value="<?php echo $value['field_of_study'] ?>" name="field_of_study[]">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-mini graduated_year" value="<?php echo $value['graduated_year'] ?>" name="graduated_year[]">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-mini grade" value="<?php echo $value['grade'] ?>" name="grade[]">
+                        </td>
+                        <td>
+                            <input type="text"  class="input-small mode_of_study" value="<?php echo $value['mode_of_study'] ?>" name="mode_of_study[]">
+                        </td>
+                        <td>
+                            <!-- <input type="checkbox" name='default_level[]' value='1' class='default_level'
+                                <?php if($value['default_level'] == 1) echo "checked=checked";?>
+                            > -->
+                            <select name="default_level[]" class="default_level" id="" style="width: 100px">
+                                    <option value="0">NONE</option>
+                                    <option value="1" <?php if(isset($value['default_level']) AND $value['default_level'] == 1) echo 'selected=selected';?>>DEFAULT
+                                    </option>
+                            </select>
+                        </td>
+                        <td>                         
+                            <a href="<?php echo HOST ?>ajax/staff-education-delete?id=<?php if(isset($value['id'])) echo $value['id'] ?>" class="btn btn-mini btn-danger confirmLink">
+                                <i class="icon-remove"></i> Delete
+                            </a>
+                            
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div><!-- End education -->
+
+<script>
+    education_div = '<tr class="item new">\
+                            <td>\
+                                <input type="hidden" class="education_id" name="education_id[]" value="">\
+                                <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">\
+                            </td>\
+                            <td>\
+                                <span class="editable level_txt" style="display:none"></span>\
+                                <input type="text" class="input-small level" value="" name="levels[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable school_txt" style="display:none"></span>\
+                                <input type="text" class="input-medium school" value="" name="school[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable field_of_study_txt" style="display:none"></span>\
+                                <input type="text" class="input-medium field_of_study" value="" name="field_of_study[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable graduated_year_txt" style="display:none"></span>\
+                                <input type="text" class="input-mini graduated_year" value="" name="graduated_year[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable grade_txt" style="display:none"></span>\
+                                <input type="text" class="input-mini grade" value="" name="grade[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable mode_of_study_txt" style="display:none"></span>\
+                                <input type="text" class="input-small mode_of_study" value="" name="mode_of_study[]">\
+                            </td>\
+                            <td>\
+                                <span class="editable mode_of_study_txt" style="display:none"></span>\
+                                <select name="default_level[]" style="width: 100px" class="default_level">\
+                                    <option value="0">NONE</option>\
+                                    <option value="1">DEFAULT</option>\
+                                </select>\
+                            </td>\
+                            <td>\
+                                <button type="button" class="btn btn-mini btn-default cancel_btn">Cancel</button>\
+                            </td>\
+                        </tr>'
+        ;
+</script>
+
+<!--  -->
+
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-warning add_experience_btn"><i class="icon-plus"></i> Add Experience...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd  table_list">
+            <caption>Current Experience</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Company Name</th>
+                    <th>Job Position</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Reason for Leaving</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php if (isset($this->experience) && $this->experience): ?>
+                    <?php foreach ($this->experience as $key => $value): ?>
+                        <tr class="item">
+                            <td>
+                                <input type="hidden" class="experience_id" name="experience_id" value="<?php if (isset($value['id'])) echo $value['id'] ?>">
+                                <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">
+                            </td>
+                            <td>
+                                <span class="editable company_name_txt"><?php echo $value['company_name'] ?></span>
+
+                            </td>
+                            <td>
+                                <span class="editable job_position_txt"><?php echo $value['job_position'] ?></span>
+
+                            </td>
+                            <td>
+                                <span class="editable from_date_txt"><?php echo date('d/m/Y',strtotime($value['from_date'])) ?></span>
+
+                            </td>
+                            <td>
+                                <span class="editable to_date_txt"><?php echo date('d/m/Y',strtotime($value['to_date'])) ?></span>
+
+                            </td>
+                            <td>
+                                <span class="editable reason_for_leaving_txt"><?php echo $value['reason_for_leaving'] ?></span>
+
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table borderd experience_list table_list">
+            <caption>Experience</caption>
+            <thead>
+            <tr>
+                <td>#</td>
+                <th>Company Name</th>
+                <th>Job Position</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason for Leaving</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <?php if (isset($this->experience) && $this->experience): ?>
+                <?php foreach ($this->experience as $key => $value): ?>
+                    <tr class="item">
+                        <td>
+                            <input type="hidden" class="experience_id" name="ex_experience_id[]" value="<?php if (isset($value['id'])) echo $value['id'] ?>">
+                            <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">
+                        </td>
+                        <td>
+
+                            <input type="text"  class="input-medium company_name" required="required" value="<?php echo $value['company_name'] ?>" name="ex_company_name[]">
+                        </td>
+                        <td>
+
+                            <input type="text" class="input-medium job_position" required="required" value="<?php echo $value['job_position'] ?>" name="ex_job_position[]">
+                        </td>
+                        <td>
+                            <input type="text" class="input-small from_date date" required="required" value="<?php echo ($value['from_date'] != NULL AND $value['from_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['from_date'])) : ''; ?>" name="ex_from_date[]">
+                        </td>
+                        <td>
+
+                            <input type="text" class="input-small to_date date" required="required" value="<?php echo ($value['to_date'] != NULL AND $value['to_date'] != '0000-00-00') ? date('d/m/Y',strtotime($value['to_date'])) : ''; ?>" name="ex_to_date[]">
+                        </td>
+                        <td>
+
+                            <input type="text"  class="input-small reason_for_leaving" value="<?php echo $value['reason_for_leaving'] ?>" name="ex_reason_for_leaving[]">
+                        </td>
+                        <td>
+                            <a href="<?php echo HOST ?>ajax/staff-experience-delete?id=<?php if(isset($value['id'])) echo $value['id'] ?>" class="btn btn-mini btn-danger confirmLink"><i class="icon-remove"></i> Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    experience_div = '<tr class="item new">\
+                            <td>\
+                                <input type="hidden" class="experience_id" name="ex_experience_id[]" value="">\
+                                <input type="hidden" class="staff_id" name="staff_id" value="<?php if (isset($this->staff['id']) && $this->staff['id']) echo $this->staff['id'] ?>">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable company_name_txt"></span>\
+                                <input type="text" class="input-medium company_name" value="" required="required" name="ex_company_name[]">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable job_position_txt"></span>\
+                                <input type="text" class="input-medium job_position" required="required" value="" name="ex_job_position[]">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable from_date_txt"></span>\
+                                <input type="text" class="input-small from_date date" value="" name="ex_from_date[]" required="required">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable to_date_txt"></span>\
+                                <input type="text" class="input-small to_date date" value="" name="ex_to_date[]" required="required">\
+                            </td>\
+                            <td>\
+                                <span style="display:none;" class="editable reason_for_leaving_txt"></span>\
+                                <input type="text" class="input-small reason_for_leaving" value="" name="ex_reason_for_leaving[]">\
+                            </td>\
+                            <td>\
+                                <button type="button" class="btn btn-mini btn-default cancel_exp_btn">Cancel</button>\
+                            </td>\
+                        </tr>'
+        ;
+
+
+</script>

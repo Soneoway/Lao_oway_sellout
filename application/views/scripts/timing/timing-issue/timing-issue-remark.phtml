@@ -1,0 +1,55 @@
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div id="modal_market_name">
+	<div class="modal-header" align="center">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel">Imei</h3>
+	</div>
+
+	<div class="modal-body">
+
+	    <div class="row">
+			<div class="span5">
+	            <div class="control-group">
+	            	<input id="modal_ti_id" type="hidden" value="<?php isset($this->ti_id) and printf($this->ti_id);?>">
+
+	                <label for="modal_mn_name" class="span1">Remark : </label>
+	                <textarea id="modal_remark" name="modal_remark" rows="6" style="resize: none; width: 75%;" 
+	                	<?php 
+	                		$permission = array(ADMINISTRATOR_ID, SALES_ADMIN_ID);
+	                		if (!in_array($this->group_id, $permission)): ?>
+	                			disabled
+	                	<?php endif; ?> ><?php echo isset($this->remark) ? $this->remark : "";?></textarea>
+
+	            </div>
+			</div>
+		</div>
+
+
+	</div>
+	<div class="modal-footer">
+		<?php if ($this->group_id == ADMINISTRATOR_ID || ($this->group_id == SALES_ADMIN_ID && $this->issue_type == 1) ): ?>
+			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true" onclick="saveRemark(1)" >Finish</button>
+		<?php endif; ?>
+		<?php if ($this->group_id == ADMINISTRATOR_ID || ($this->group_id == SALES_ADMIN_ID && $this->issue_type == 6) ): ?>
+			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true" onclick="saveRemark(2)" >Reject</button>
+		<?php endif; ?>
+		<?php if ($this->group_id == ADMINISTRATOR_ID): ?>
+			<button class="btn btn-warning" data-dismiss="modal" aria-hidden="true" onclick="saveRemark(3)" >In Progress</button>
+		<?php endif; ?>
+		<?php if ($this->group_id == SALES_ADMIN_ID): ?>
+			<button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="saveRemark(4)" >Save</button>
+		<?php endif; ?>
+	  	<button class="btn btn-inverse" data-dismiss="modal" aria-hidden="true">Close</button>
+	</div>
+</div>

@@ -1,0 +1,158 @@
+
+<div class="page-header">
+    <?php if (isset($this->menu) and $this->menu):?>
+        <h1>Edit Province <small><?php echo $this->menu['title'] ?></small></h1>
+    <?php else:?>
+        <h1>Create Province</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST.'manage/menu-save';?>" method="post" target="ifrmSave">
+
+    <div class="control-group">
+        <input type="hidden" name="id" id="id" value="<?php isset($this->menu) and $this->menu and printf($this->menu->id);?>">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="region_share">Parent</label>
+                    <select name="parent_id" id="parent_id" required>
+                    <option value>---</option>
+                    <?php if (isset($this->parents) && $this->parents): ?>
+                        <?php foreach ($this->parents as $k => $parent): ?>
+                            <option value="<?php echo $k ?>" 
+                                <?php if (isset($this->menu['parent_id']) && $k == $this->menu['parent_id']) 
+                                        echo "selected" ?>><?php echo $parent ?></option>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </select>
+                </div>
+            </div>
+            <div class="row-fluid">  
+                <div class="control-group">
+                    <label for="name">Title</label>
+                    <input type="text" class="span6" id="title" name="title" required="required" value="<?php if (isset($this->menu)): echo $this->menu->title; endif;?>">
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="email">URL</label>
+                    <textarea class="span6" id="url" name="url"><?php if (isset($this->menu)): echo $this->menu->url; endif;?></textarea>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="email">Position</label>
+                    <input type="text" class="span6" id="position" name="position" value="<?php if (isset($this->menu)): echo $this->menu->position; endif;?>">
+                </div>
+            </div>
+        <button type="button" id="btn_save" class="btn btn-primary">Submit</button>
+        <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+        <button type="button" class="btn btn-danger go-back">Go back</button>
+    </div>
+</form>
+<script type="text/javascript">
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        return;
+    }
+
+    $(document).ready(function() {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        remove_store();
+
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+        $( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                $('button, input, select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."ajax/get-district" ?>';
+
+                //get ajax content
+                var aj = $('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.post(targetUrl, {
+                        name : $('#a_storename').val()
+                    },
+                    function(data, status){
+                            $('button, input, select').prop('disabled', false);
+                            aj.html(data);
+                            $('.loading').remove();
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind').click(function(){
+            _self = $('#a_storeresult');
+            item = _self.children('option:selected');
+
+            for (var i = 0; i < item.length; i++) {
+                if ( ! is_exists( $(item[i]).data('id') ) ) {
+                    elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" data-name="'+$(item[i]).data('name')+'">'
+                            + '<td></td>'
+                            + '<td>'+$(item[i]).data('name')+'</td>'
+                            + '<td><button class="btn btn-warning btn-mini btn_remove">Remove</button></td>'
+                            + '</tr>';
+
+                    $('.store_list').append(elm);
+                }
+            }
+
+            remove_store();
+        });
+
+        $('#btn_save').click(function(){
+            var store = $('.store');
+            id_str = '';
+            
+            for(var i = 0; i < store.length; i++) {
+                id_str += $(store[i]).data('id') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#store_ids').val(id_str);
+
+            $('#form').submit();
+        });
+    });
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+        });
+    }
+</script>

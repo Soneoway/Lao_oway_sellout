@@ -1,0 +1,93 @@
+<form class="form-search form-horizontal" method="get" action="/manage/market-name/market-name">
+    <div class="row">
+        <div class="span5">
+	       <div class="control-group">
+                <label for="market_name_id" class="span2">Market Name ID</label>
+                <input id="market_name_id" name="market_name_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['market_name_id']) and printf($this->params['market_name_id']);?>">
+            </div>
+            <div class="control-group">
+                <label for="market_name" class="span2">Market Name</label>
+                <input id="market_name" name="market_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['market_name']) and printf($this->params['market_name']);?>">
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="market_type" class="span2">Market Type</label>
+                <select id="market_type" name="market_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php if (isset($this->market_type) && $this->market_type): ?>
+
+                        <?php 
+                            $arr = $this->market_type;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($_GET['market_type']) && in_array($arr[$i]['id'],$_GET['market_type'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['id'] == $_GET['market_type']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['id']."' ". $sel ." >".$arr[$i]['name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        
+    });
+</script>

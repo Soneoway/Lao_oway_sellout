@@ -1,0 +1,83 @@
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.checkboxtree.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.checkboxtree.css"/>
+
+<div class="page-header">
+    <h1>Edit Priviledge</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'/staff/priviledge-save';?>" method="post">
+    <div class="form-group">
+        <label for="default_page">Default page</label>
+        <input type="text" class="form-control" id="default_page" name="default_page" value="<?php printf($this->default_page);?>">
+    </div>
+
+    <div class="form-group">
+        <label for="tree2">Menus</label>
+
+        <ul id="tree2">
+            <?php
+            echo $this->menus;
+            ?>
+        </ul>
+    </div>
+
+    <div class="form-group">
+        <label for="tree1">Accesses</label>
+
+        <ul id="tree1">
+            <?php
+            $checked = array();
+            foreach ($this->acl as $module=>$item):?>
+            <li>
+                <input type="checkbox" name="access[<?php echo $module;?>]"><label><?php echo $module;?></label>
+                <ul>
+                    <?php foreach ($item as $controller=>$item_2):?>
+                    <li><input type="checkbox" name="access[<?php echo $module;?>][<?php echo $controller;?>]"><label><?php echo $controller;?></label>
+                        <ul>
+                            <?php foreach ($item_2 as $action):?>
+                            <li><input id="<?php echo $module;?>_<?php echo $controller;?>_<?php echo $action;?>" type="checkbox" name="access[<?php echo $module;?>][<?php echo $controller;?>][<?php echo $action;?>]"><label><?php echo $action;?></label></li>
+
+                            <?php
+                            if ($this->accesses and in_array($module.'::'.$controller.'::'.$action, $this->accesses)):
+                                $checked[] = $module.'_'.$controller.'_'.$action;
+                            endif;
+                            ?>
+                            <?php endforeach;?>
+                        </ul>
+                    </li>
+                    <?php endforeach;?>
+                </ul>
+            </li>
+            <?php endforeach;?>
+        </ul>
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php printf($this->id);?>">
+    <input type="hidden" name="staff_id" id="staff_id" value="<?php printf($this->staff_id);?>">
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script>
+    $(document).ready(function(){
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        $('#tree1, #tree2').checkboxTree();
+
+        <?php foreach ($checked as $i):?>
+        $('#tree1').checkboxTree('check', $('#<?php echo $i;?>'));
+        <?php endforeach;?>
+    });
+</script>

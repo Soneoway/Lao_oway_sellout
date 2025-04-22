@@ -1,0 +1,59 @@
+<?php
+class Menu {
+    function render($group_id, $attr) {
+
+        $group_id = stripslashes($group_id);
+        $group_id = strip_tags($group_id);
+        $group_id = str_replace("'","",$group_id);
+        $group_id = str_replace("-","",$group_id);
+        $group_id = trim($group_id);
+        if(!is_numeric($group_id)) die("Hello Intruder!");
+
+        $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+        if (isset($userStorage->menu) && $userStorage->menu) {
+
+            $menu = $userStorage->menu;
+
+        } else {
+
+            $QMenu = new Application_Model_Menu();
+            $where = $QMenu->getAdapter()->quoteInto('group_id = ?', $group_id);
+            $menu = $QMenu->fetchAll($where, array('parent_id', 'position'));
+
+        }
+
+        include_once APPLICATION_PATH . '/../public/Menu/config.php';
+
+        include_once APPLICATION_PATH . '/../public/Menu/includes/tree.php';
+        $tree = new Tree;
+
+        foreach ($menu as $row) {
+            $label = '<a href="'.($row[MENU_URL] ? $row[MENU_URL] : '#').'">';
+            $label .= $row[MENU_TITLE];
+            $label .= '</a>';
+
+            $tem = explode('/',  $row[MENU_URL]);
+
+            $controller = (isset($tem[1]) and $tem[1]) ? $tem[1] : '';
+
+            $active = '';
+            if ($row[MENU_PARENT]==0 and Zend_Controller_Front::getInstance()->getRequest()->getControllerName()==$controller)
+                $active = "active";
+
+            $li_attr = '';
+            if ($row[MENU_CLASS]) {
+                $li_attr = ' class="'.$row[MENU_CLASS].' '. $active . '"';
+            }
+            $tree->add_row($row[MENU_ID], $row[MENU_PARENT], $li_attr, $label);
+        }
+        $menu = $tree->generate_list($attr);
+
+
+
+        return $menu;
+    }
+}
+
+$menu = new Menu();
+echo $menu->render(1, '');

@@ -1,0 +1,30 @@
+<?php if (isset($this->type) && $this->type): ?>
+    <td>
+        <del><?php if (isset( $this->list[ $this->current_value ] )) echo $this->list[ $this->current_value ] ?></del>
+    </td>
+    <td>
+        <span class="editable current_txt" style="display:none;"><del></del></span>
+        <select class="input-medium current">
+            <option value>---</option>
+            <?php if (isset($this->list) && $this->list): ?>
+                <?php foreach ($this->list as $key => $value): ?>
+                    <?php if ( (isset($this->current_value) && $key != $this->current_value) || !isset($this->current_value) ): ?>
+                        <option value="<?php echo $key ?>"><?php echo $value ?></option> 
+                    <?php endif ?>
+                <?php endforeach ?>
+            <?php endif ?>
+        </select>
+    </td>
+    <td>
+        <span class="editable from_date_txt" style="display:none;"></span>
+        <input type="text" class="input-small from_date date" value="">
+    </td>
+    <td>
+        <span class="editable to_date_txt" style="display:none;"></span>
+        <input type="text" class="input-small to_date date" value="">
+    </td>
+    <td>
+        <button type="button" class="btn btn-mini btn-success save_transfer_btn"><i class="icon-ok"></i> Save</button>
+        <button type="button" class="btn btn-mini btn-default cancel_transfer_btn">Cancel</button>
+    </td>
+<?php endif ?>

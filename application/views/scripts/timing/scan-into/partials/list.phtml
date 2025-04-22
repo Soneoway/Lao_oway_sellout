@@ -1,0 +1,42 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th style="font-weight: bold; text-align:center; width:10%">IMEI</th>
+            <th style="font-weight: bold; text-align:center; width:10%">Store Code Before Transfer</th>
+            <th style="font-weight: bold; text-align:center; width:15%">Before Transfer</th>
+            <th style="font-weight: bold; text-align:center; width:9%">Store Code After Transfer</th>
+            <th style="font-weight: bold; text-align:center; width:15%">After Transfer</th>
+            <!-- <th>Office(Before Transfer)</th>
+            <th>Office(After Transfer)</th> -->
+            <th style="font-weight: bold; text-align:center; width:12%">Product Name</th>
+            <th style="font-weight: bold; text-align:center; width:5%">Scanned by</th>
+            <th style="font-weight: bold; text-align:center; width:11%">Scan time</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(isset($this->scanInto) && $this->scanInto) : ?>
+            <?php foreach ($this->scanInto as $value) : ?>
+
+                <tr>
+                    <td><?php echo $value['imei_sn'] ?></td>
+                    <td><?php echo $value['out_store_code'] ?></td>
+                    <td><?php echo $value['out_store_name'] ?></td>
+                    <td><?php echo $value['in_store_code'] ?></td>
+                    <td><?php echo $value['in_store_name'] ?></td>
+                    <!-- <td><?php echo $value['out_store_office'] ?></td>
+                    <td><?php echo $value['in_store_office'] ?></td> -->
+                    <td>
+                        <?php echo $value['brand_name'] ?> <?php echo $value['model_name'] ?> <?php echo $this->color[$value['color_id']] ?>
+                    </td>
+                    <td><?php echo $this->staff[$value['created_by']]['code'] ?></td>
+                    <td><?php echo $value['created_at'] ?></td>
+                </tr>
+
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

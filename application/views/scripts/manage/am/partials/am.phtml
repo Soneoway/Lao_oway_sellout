@@ -1,0 +1,38 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Store Type</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+                $i = 1;
+                if (isset($this->list) and $this->list)
+                    foreach ($this->list as $_am_id => $_am): 
+            ?>
+            <tr>
+                <td>
+                    <?php echo $i++; ?>
+                </td>
+                <td>
+                    <a title="Edit" href="<?php echo HOST ?>manage/am-edit?id=<?php echo $_am_id;?>"><?php echo $_am['staff_name']; ?></a>
+                </td>
+                <td><?php echo str_replace(EMAIL_SUFFIX, '', $_am['staff_email']) ?></td>
+                <td>
+                    <?php 
+                        if (isset($_am['store_type']) && $_am['store_type'])
+                            foreach ($_am['store_type'] as $org_id) {
+                                if (isset( $this->org[ $org_id ] ) && $this->org[ $org_id ])
+                                    echo '<p>' . $this->org[ $org_id ] . '</p>';
+                            }
+                    ?>     
+                 </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

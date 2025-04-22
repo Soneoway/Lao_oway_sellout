@@ -1,0 +1,291 @@
+<?php 
+	$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+	$print_by = $userStorage->firstname." ".$userStorage->lastname;
+	$print_date = date('d F Y H:i:s');
+	//print_r($this->params);
+
+	$staff_info = $this->staff_info;
+	$leave_list = $this->leave_list;
+    $checkin_list = $this->checkin_list;
+	//print_r($leave_list);
+
+	$period = date('d/m/Y', strtotime($this->params['period_from']))." - ".date('d/m/Y', strtotime($this->params['period_to']));
+?>
+
+<style type="text/css">
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 14px;
+	font-family: Arial;
+}
+
+.signature{
+    font-size:11px;
+    page-break-after:always;
+
+    text-align: right;
+    height: 20px;
+    width: 100%;
+    margin:0px auto;
+    position:fixed;
+    bottom:0px;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+
+	<tr style="height:50px;" align="center">
+		<th>Possefy Group CO.,LTD</th>
+	</tr>
+
+	<tr style="height:30px;" align="left">
+		<th>- Staff Details -</th>
+	</tr>
+
+	<tr>
+		<table border="0" style="width:794px;">
+			<tr>
+				<td style="height:20px; width:100px;">Staff Area</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['staff_area']) ? $staff_info['staff_area'] : "-"; ?></td>
+				<td style="height:20px; width:100px;">Joined At</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['joined_at']) ? date('d/m/Y', strtotime($staff_info['joined_at'])) : "-"; ?></td>
+			</tr>
+			<tr>
+				<td style="height:20px; width:100px;">Staff Code</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['staff_code']) ? $staff_info['staff_code'] : "-"; ?></td>
+				<td style="height:20px; width:100px;">Created At</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['created_at']) ? date('d/m/Y H:i', strtotime($staff_info['created_at'])) : "-"; ?></td>
+			</tr>
+			<tr>
+				<td style="height:20px; width:100px;">Staff Name</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['staff_name']) ? $staff_info['staff_name'] : "-"; ?></td>
+				<td style="height:20px; width:100px;">First Check In</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['first_checkin']) ? date('d/m/Y H:i', strtotime($staff_info['first_checkin']))." [ ".$staff_info['table_group']." ]" : "-"; ?></td>
+			</tr>
+			<tr>
+				<td style="height:20px; width:100px;">Staff Grup</td>
+				<td style="width:200px;">: <?php echo isset($staff_info['staff_group']) ? $staff_info['staff_group'] : "-"; ?></td>
+				<td style="height:20px; width:100px;"></td>
+				<td style="width:200px;"></td>
+			</tr>
+
+		</table>
+	</tr>
+
+	<tr><div style="height:10px;"></div>
+	</tr>
+
+	<tr style="height:30px;" align="left">
+		<th><strong>Month Period : <?php echo $period; ?></strong></th>
+	</tr>
+
+	<tr><div style="height:5px;"></div></tr>
+	
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" >
+				<tr align="center" class="header_color" >
+					<td style="height:25px; width:100px;">Date</td>
+					<td style="width:50px;">Day</td>
+					<td style="width:100px;">Store Area</td>
+					<td style="width:200px;">[ID] Store</td>
+					<td style="width:60px;">CheckIn</td>
+					<td style="width:60px;">CheckOut</td>
+					<td style="width:60px;">Status</td>
+					<td style="width:120px;">Approve Date</td>
+					<td style="width:50px;">Remark</td>
+				</tr>
+
+				<?php 
+
+					$period_loop = ( (strtotime($this->params['period_to']) - strtotime($this->params['period_from'])) / (24*60*60) ) + 1;
+
+					$cnt = 1;
+
+					for ($i=0;$i<$period_loop;$i++) {
+
+						$day =  date('Y-m-d', strtotime("+".$i." Day", strtotime($this->params['period_from'])));
+            			$day_text =  date('d/m/Y', strtotime("+".$i." Day", strtotime($this->params['period_from'])));
+            			$day_of_week =  date('D', strtotime("+".$i." Day", strtotime($this->params['period_from'])));
+
+            			echo "<tr>";
+            			echo 	"<td align='center' style='height:25px;'>".$day_text."</td>";
+            			echo 	"<td align='center'>".$day_of_week."</td>";
+
+            			if ( isset( $checkin_list[ $day ] ) ) {
+
+
+            				if ( $checkin_list[$day]['chk_status'] == 'N' && isset( $leave_list[ $day ] ) ) {
+
+            					// Reject Chekc In and have Leave
+            					// Leave Details
+	            				if (isset($leave_list[$day]['leave_type']) && $leave_list[$day]['leave_type']) {
+
+	            					$leave_details = $leave_list[$day]['leave_type']." (".$leave_list[$day]['leave_remark'].") ";
+
+	            					switch ($leave_list[$day]['leave_status']) {
+	            						case 'Y': $approve_status = "Approved"; 	break;
+	            						case 'W': $approve_status = "Wait"; 		break;
+	            						case 'N': $approve_status = "Rejected"; 	break;
+	            						default: $approve_status = "-"; 			break;
+	            					}
+
+	            					// Approve Date
+		            				if (isset($leave_list[$day]['approve_date']) && $leave_list[$day]['approve_date']) {
+		            					$approve_date = date('d/m/Y H:i', strtotime($leave_list[$day]['approve_date']));
+		            				} else { $approve_date = "-"; }
+
+	            				} else { 
+	            					$leave_details = "-"; 
+	            					$approve_status = "-"; 
+	            					$approve_date = "-"; 
+	            				}
+
+	            				// Out Put
+	            				echo 	"<td align='center' colspan='4' style>".$leave_details."</td>";
+		            			echo 	"<td align='center'>".$approve_status."</td>";
+		            			echo 	"<td align='center'>".$approve_date."</td>";
+		            			echo 	"<td align='center'></td>";
+
+            				} else {
+
+            					// Normal Check In
+
+            					// Store Details
+	            				if (isset($checkin_list[$day]['store_area']) && $checkin_list[$day]['store_area']) {
+	            					$store_area = $checkin_list[$day]['store_area'];
+	            				} else { $store_area = "-"; }
+
+	            				// Store Details
+	            				if (isset($checkin_list[$day]['store_id']) && $checkin_list[$day]['store_id']) {
+	            					$store_details = "[".$checkin_list[$day]['store_id']."] ".$checkin_list[$day]['store_name'];
+	            				} else { $store_details = "-"; }
+
+	            				// Check In
+	            				if (isset($checkin_list[$day]['check_in']) && $checkin_list[$day]['check_in']) {
+	            					$check_in = date('H:i', strtotime($checkin_list[$day]['check_in']));
+	            				} else { $check_in = "-"; }
+
+	            				// Check Out
+	            				if (isset($checkin_list[$day]['check_out']) && $checkin_list[$day]['check_out']) {
+	            					$check_out = date('H:i', strtotime($checkin_list[$day]['check_out']));
+	            				} else { $check_out = "-"; }
+
+	            				$chk_leave_remark = "";
+	            				// Approve Status
+	            				if (isset($checkin_list[$day]['chk_status']) && $checkin_list[$day]['chk_status']) {
+
+	            					switch ($checkin_list[$day]['chk_status']) {
+	            						case 'Y': 
+	            							$approve_status = "Approved"; 	
+	            							if ( $checkin_list[$day]['late_time'] != 0) {
+	            								$chk_leave_remark = "Late : ".$checkin_list[$day]['late_time']." mins ";
+											}
+	            							break;
+	            						case 'W': $approve_status = "Wait"; 		break;
+	            						case 'N': $approve_status = "Rejected"; 	break;
+	            						default: $approve_status = "-"; 			break;
+	            					}
+
+	            				} else { $approve_status = "-"; }
+
+	            				// Approve Date
+	            				if (isset($checkin_list[$day]['approve_date']) && $checkin_list[$day]['approve_date']) {
+	            					$approve_date = date('d/m/Y H:i', strtotime($checkin_list[$day]['approve_date']));
+	            				} else { $approve_date = "-"; }
+
+	            				// Remark Leave on the same day
+	            				if ( isset( $leave_list[ $day ] ) ) { 
+	            					$chk_leave_remark .= "มีการลา ".date('d/m/Y H:i', strtotime($leave_list[$day]['from_date']))." - ".date('d/m/Y H:i', strtotime($leave_list[$day]['to_date']));
+	            				} else { $chk_leave_remark .= ""; }
+
+	            				// Out Put
+	            				echo 	"<td align='center'>".$store_area."</td>";
+		            			echo 	"<td align='center'>".$store_details."</td>";
+		            			echo 	"<td align='center'>".$check_in."</td>";
+		            			echo 	"<td align='center'>".$check_out."</td>";
+		            			echo 	"<td align='center'>".$approve_status."</td>";
+		            			echo 	"<td align='center'>".$approve_date."</td>";
+		            			echo 	"<td align='center'>".$chk_leave_remark."</td>";
+
+            				}
+
+            			} else {
+
+            				// No Check In Then Check Leave
+            				if ( isset( $leave_list[ $day ] ) ) { 
+
+            					// Leave Details
+	            				if (isset($leave_list[$day]['leave_type']) && $leave_list[$day]['leave_type']) {
+
+	            					$leave_details = $leave_list[$day]['leave_type']." (".$leave_list[$day]['leave_remark'].") ";
+
+	            					switch ($leave_list[$day]['leave_status']) {
+	            						case 'Y': $approve_status = "Approved"; 	break;
+	            						case 'W': $approve_status = "Wait"; 		break;
+	            						case 'N': $approve_status = "Rejected"; 	break;
+	            						default: $approve_status = "-"; 			break;
+	            					}
+
+	            					// Approve Date
+		            				if (isset($leave_list[$day]['approve_date']) && $leave_list[$day]['approve_date']) {
+		            					$approve_date = date('d/m/Y H:i', strtotime($leave_list[$day]['approve_date']));
+		            				} else { $approve_date = "-"; }
+
+	            				} else { 
+	            					$leave_details = "-"; 
+	            					$approve_status = "-"; 
+	            					$approve_date = "-"; 
+	            				}
+
+            				} 
+
+            				if ( !isset( $checkin_list[ $day ] ) && !isset( $leave_list[ $day ] ) ) {
+				                if ( 	strtotime($staff_info['joined_at']) > strtotime($day) || 
+				                		( !is_null($staff_info['off_date']) && strtotime($staff_info['off_date']) < strtotime($day) ) 
+				                	) 
+				                {
+				                    $leave_details = ""; 
+				                	$approve_status = ""; 
+				                	$approve_date = "";
+				                } else if ( strtotime($staff_info['off_date']) == strtotime($day) ) {
+				                   	$leave_details = "Off Date"; 
+				                   	$approve_status = "-"; 
+				                   	$approve_date = "-";
+				                } else {
+				                    $leave_details = "Not Check In"; 
+				                    $approve_status = "-"; 
+				                    $approve_date = "-";
+				                }
+				            }
+
+            				// Out Put
+            				echo 	"<td align='center' colspan='4' style>".$leave_details."</td>";
+	            			echo 	"<td align='center'>".$approve_status."</td>";
+	            			echo 	"<td align='center'>".$approve_date."</td>";
+	            			echo 	"<td align='center'></td>";
+
+            			}
+            			
+            			echo "</tr>";
+					}
+
+
+				?>
+
+			</table>
+
+		</td>
+	</tr>
+
+</table>
+
+<div class="signature">
+      Printed by <?php echo $print_by; ?> | <?php echo $print_date; ?>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>

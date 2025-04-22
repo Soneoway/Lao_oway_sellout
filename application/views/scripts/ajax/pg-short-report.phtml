@@ -1,0 +1,34 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h3 id="myModalLabel">Summary &bullet; <?php echo $this->user_name ?></h3>
+</div>
+<div class="modal-body">
+	<p><small><?php echo $this->params['from'] . ' - ' . $this->params['to'] ?></small></p>
+	<p>Total: <strong><?php echo $this->total ?></strong></p>
+	<div>
+		<ol>
+			<?php foreach ($this->analytics as $key => $value): ?>
+				<li><?php if(isset($this->products[$key]) && $this->products[$key]) echo $this->products[$key] ?> : <strong><?php echo $value ?></strong></li>
+			<?php endforeach ?>
+		</ol>
+	</div>
+	<ol>
+		<?php if (  isset( $this->sales )): ?>
+			<?php foreach ($this->sales as $key => $value): ?>
+			<li>
+				<strong><?php echo $value['product'] ?></strong> | <small><?php echo $value['time'] ?></small>
+				<ul>
+					<?php if( isset( $this->store_cached[ $value['store'] ]) && $this->store_cached[ $value['store'] ] ): ?><li><?php echo $this->store_cached[ $value['store'] ] ?><?php endif; ?></li>
+					<?php if( isset($value['imei']) && $value['imei'] ): ?><li><?php echo $value['imei'] ?><?php endif; ?></li>
+					<?php if( isset($value['customer_name']) && $value['customer_name'] ): ?><li>CUSTOMER: <?php echo $value['customer_name'] ?><?php endif; ?></li>
+					<?php if( isset($value['customer_phone']) && $value['customer_phone'] ): ?><li><?php echo $value['customer_phone'] ?><?php endif; ?></li>
+					<?php if( isset($value['customer_address']) && $value['customer_address'] ): ?><li><?php echo $value['customer_address'] ?><?php endif; ?></li>
+				</ul>
+			</li>
+			<?php endforeach ?>
+		<?php endif ?>
+	</ol>
+</div>
+<div class="modal-footer">
+	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

@@ -1,0 +1,340 @@
+<?php 
+    // Distributor Type
+    $distributor_type = array(
+        '1' => 'ORG-WDS',
+        '2' => 'ORG',
+        '3' => 'Online and Staff',
+        '5' => 'ORG-Dtac/Advice',
+        '6' => 'ORG-Lotus/Powerbuy',
+        '7' => 'Dealer',
+        '8' => 'HUB',
+        '9' => 'Laos',
+        '10'=> 'Brand Shop/Service',
+    );
+
+    // Issue Status
+    $issue_status_list = array(
+        '0' => 'Waiting',
+        '1' => 'Finish',
+        '2' => 'Reject',
+        '3' => 'In Progress',
+    );
+
+    // Issue Type
+    $issue_type_list = array(
+        '1' => 'Imei Not Exists',
+        '2' => 'Store Not Exists',
+        '3' => 'Distributor Not Exists',
+        '4' => 'Store Type / Distributor Type',
+        '5' => 'Store Chain 1 Not Exists',
+        '6' => 'Mapping Distributor',
+        '7' => 'IMEI APK / Demo',
+        '8' => 'IMEI Seven-Eleven',
+        '9' => 'IMEI Grade B',
+    );
+
+    // Issue Type Suggestion
+    $suggestion_list = array(
+        '1' => 'ກວດສອບການເປີດບິນ PO ສຳລັບ Imei ນີ້',
+        '2' => 'ກວດສອບ Store ໃນລະບົບ Catty',
+        '3' => 'ກວດສອບ SO ຫຼື Distributor ຂອງ imei ນີ້ໃນລະບົບ WMS',
+        '4' => 'ກວດສອບປະເພດຂອງ Store ແລະປະເພດຂອງ Distributor',
+        '5' => 'ກວດສອບການຜູກມັດ Distributor ຂອງ Store ໃນໜ້າ Manage/Store',
+        '6' => 'ກວດສອບການ Mapping Distributor ໃນລະບົບ WMS',
+        '7' => 'ບໍ່ສາມາດເອົາເຄື່ອງ APK / Demo ມາລາຍງານຍອດໄດ້',
+        '8' => 'ບໍ່ສາມາດເອົາເຄື່ອງຈາກຮ້ານ Seven-Eleven ມາລາຍງານຍອດໄດ້',
+        '9' => 'ບໍ່ສາມາດເອົາເຄື່ອງ Grade B ມາລາຍງານຍອດໄດ້',
+    );
+
+?>
+
+<div class="page-header">
+    <h1>Timing Issue Details</h1>
+</div>
+
+<?php $ti_details = $this->timing_issue_detail; //print_r($ti_details); ?>
+<form role="form" action="<?php echo HOST.'timing/timing-issue-save';?>" method="post">
+
+<div class="row">
+        <div class="span6">
+
+            <p><span><strong>- Store Details -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Store Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_area']) ? $ti_details['st_area'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Store ID</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_id']) ? $ti_details['st_id'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Store Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_name']) ? $ti_details['st_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Store Type</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_type']) ? $ti_details['st_type'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_d_area']) ? $ti_details['st_d_area'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor ID</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_d_id']) ? $ti_details['st_d_id'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_d_name']) ? $ti_details['st_d_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Type</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['st_d_type']) ? $distributor_type[ $ti_details['st_d_type'] ] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Mapping</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['st_d_parent']) ? $ti_details['st_d_parent'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><span><strong>- Staff Request -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Code</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['staff_code']) ? $ti_details['staff_code'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['staff_name']) ? $ti_details['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Group</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['staff_group']) ? $ti_details['staff_group'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Timing Date</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['timing_daet']) ? $ti_details['timing_daet'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <?php 
+                if ($this->group_id == ADMINISTRATOR_ID) { 
+                    $QStoreStaff = new Application_Model_StoreStaff();
+
+                    $sale_info = $QStoreStaff->getSale($ti_details['st_id']);
+                    $pc_info = $QStoreStaff->getPC($ti_details['st_id']);
+
+            ?>
+            <br/>
+
+            <p><span><strong>- Store Staff Details -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">ASM/Sale</td>
+                    <td style="padding-left: 5px;">: <?php 
+
+                        if( !empty($sale_info) ) { 
+                            echo "[".$sale_info['sale_code']."] - ".$sale_info['group_name']." - ".$sale_info['sale_name'];
+                        } else {
+                            echo "-";
+                        }
+
+                    ?></td>
+                </tr>
+
+                <?php 
+
+                    if ( !empty($pc_info) ) {
+                        $cnt_pc = count($pc_info); 
+
+                        if ($cnt_pc > 1) {
+
+                            for ($i=0;$i<$cnt_pc;$i++) {
+                                $cnt = $i + 1;
+                                echo "<tr>";
+                                echo    "<td width='120px'>PC_".$cnt."</td>";
+                                echo    "<td style='padding-left: 5px;'>: [".$pc_info[$i]['pc_code']."] - ".$pc_info[$i]['group_name']." - ".$pc_info[$i]['pc_name']." </td>";
+                                echo "</tr>";
+                            }
+
+                        } else {
+                            echo "<tr>";
+                            echo    "<td width='120px'>PC</td>";
+                            echo    "<td style='padding-left: 5px;'>: [".$pc_info[0]['pc_code']."] - ".$pc_info[0]['group_name']." - ".$pc_info[0]['pc_name']." </td>";
+                            echo "</tr>";
+                        }
+                        
+                    } else {
+                        echo "<tr>";
+                        echo    "<td width='120px'>PC</td>";
+                        echo    "<td style='padding-left: 5px;'>: - </td>";
+                        echo "</tr>";
+                    }
+
+                ?>
+                
+            </table>
+            <?php } ?>
+            
+        </div>
+
+        <div class="span6">
+            <p><span><strong>- Imei Details -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Imei</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['imei']) ? $ti_details['imei'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Model / Color</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['model']) ? $ti_details['model'] : "-"; 
+                            echo " / ";
+                            echo isset($ti_details['color']) ? $ti_details['color'] : "-";
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Activated Date</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['activated_date']) ? $ti_details['activated_date'] : "N/A"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Old Data / Type</td>
+                    <td style="padding-left: 5px;">: <?php 
+                        echo ( isset($ti_details['old_data']) && $ti_details['old_data'] == 1 ) ? "Yes" : "No"; 
+                        echo " / ";
+                        echo isset($ti_details['imei_type']) ? $ti_details['imei_type'] : "-"; 
+                    ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['d_area']) ? $ti_details['d_area'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor ID</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['d_id']) ? $ti_details['d_id'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['d_name']) ? $ti_details['d_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Type</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['d_type']) ? $distributor_type[ $ti_details['d_type'] ] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Distributor Mapping</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($ti_details['d_parent']) ? $ti_details['d_parent'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><span><strong>- Issue Info -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Issue Type</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['issue_type']) ? $issue_type_list[ $ti_details['issue_type'] ] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Issue Status</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            if (isset($ti_details['issue_status']) && $ti_details['issue_status'] == 0) {
+                                echo "<span class='label label-info'>".$issue_status_list[ $ti_details['issue_status'] ]."</span>";
+                            } else if (isset($ti_details['issue_status']) && $ti_details['issue_status'] == 1) {
+                                echo "<span class='label label-success'>".$issue_status_list[ $ti_details['issue_status'] ]."</span>";
+                            } else if (isset($ti_details['issue_status']) && $ti_details['issue_status'] == 2) {
+                                echo "<span class='label label-important'>".$issue_status_list[ $ti_details['issue_status'] ]."</span>";
+                            } else if (isset($ti_details['issue_status']) && $ti_details['issue_status'] == 3) {
+                                echo "<span class='label label-warning'>".$issue_status_list[ $ti_details['issue_status'] ]."</span>";
+                            } else {
+                                echo "-";
+                            }
+                        ?>
+                    </td>
+                </tr>
+                <?php if ($this->group_id != PGPB_ID):  ?>
+                    <tr>
+                        <td width="120px">Suggestion</td>
+                        <td style="padding-left: 5px;">: <?php 
+                                echo isset($ti_details['issue_type']) ? $suggestion_list[ $ti_details['issue_type'] ] : "-"; 
+                            ?>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+                <tr>
+                    <td width="120px">Updated By</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['updated_name']) ? $ti_details['updated_name'] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Updated Date</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($ti_details['updated_date']) ? $ti_details['updated_date'] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                
+            </table>
+
+
+        </div>
+
+</div>
+
+<br/>
+
+<div class="row">
+    <div class="span11">
+        <p><span><strong>- Remark -</strong></span></p>
+        <textarea id="remark" name="remark" rows="6" style="width: 40%;" 
+            <?php 
+                $permission = array(ADMINISTRATOR_ID, SALES_ADMIN_ID);
+                if (!in_array($this->group_id, $permission)): ?>
+                    disabled
+            <?php endif; ?> ><?php echo isset($ti_details['ti_remark']) ? $ti_details['ti_remark'] : "";?></textarea>
+    </div>
+</div>
+
+<input type="hidden" name="ti_id" id="ti_id" value="<?php echo $ti_details['ti_id']; ?>">
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+<?php if ($this->group_id == ADMINISTRATOR_ID || ($this->group_id == SALES_ADMIN_ID && $ti_details['issue_type'] == 1) ): ?>
+    <button type="submit" class="btn btn-success" id="btn_save" name="btn_save" value="1">Finish</button>
+<?php endif; ?>
+<?php if ($this->group_id == ADMINISTRATOR_ID || ($this->group_id == SALES_ADMIN_ID && $ti_details['issue_type'] == 6) ): ?>
+    <button type="submit" class="btn btn-danger" id="btn_save" name="btn_save" value="2">Reject</button>
+<?php endif; ?>
+<?php if ($this->group_id == ADMINISTRATOR_ID): ?>
+    <button type="submit" class="btn btn-warning" id="btn_save" name="btn_save" value="3">In Progress</button>
+<?php endif; ?>
+<?php if ($this->group_id == SALES_ADMIN_ID): ?>
+    <button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="4">Save</button>
+<?php endif; ?>
+
+<button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

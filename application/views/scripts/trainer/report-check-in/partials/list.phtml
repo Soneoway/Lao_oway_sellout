@@ -1,0 +1,190 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Staff Code</th>
+        <th>Staff Name</th>
+        <th>Position</th>
+        <th>Area</th>
+        <?php if ($_GET['group_id'][0]==4||$_GET['group_id'][0]==30) :?>
+        <th>Building</th>
+        <th>Store Name</th>
+         <?php else  :?>
+         <?php endif;?>
+         <th>Report Type</th>
+        <th>Actoin</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $db = Zend_Registry::get('db');
+    $QPcCheckInLog = new Application_Model_PcCheckInLog();
+    $QSalesCheckInLog = new Application_Model_SalesCheckInLog();
+
+
+
+    if (isset($this->pc_check_in) and $this->pc_check_in)
+        
+        foreach ($this->pc_check_in as $k=>$pc_check_in):?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $pc_check_in['staff_code'];?></td>
+                <td><?php echo $pc_check_in['staff_name'];?></td>
+                <td><?php echo $pc_check_in['group_name'];?></td>
+                <td><?php echo $pc_check_in['area_name'];?></td>
+
+         
+                <?php 
+                    if ($_GET['group_id'][0]==4 || $_GET['group_id'][0]==30) :?>
+                   
+                    <td> <?php echo '- '.implode("<br> - ",array_map(function($el){ return $el['market_name']; }, $QPcCheckInLog->getMarketName($pc_check_in['staff_id'])));?> </td>
+                <?php else :?>
+               <?php endif; ?>
+                 <?php if ($_GET['group_id'][0]==4 || $_GET['group_id'][0]==30) :?>
+                    <td> <?php echo '- '.implode("<br> - ",array_map(function($el){ return $el['store_name']; }, $QPcCheckInLog->getStoreName($pc_check_in['staff_id'])));?>  </td>
+                <?php else :?>
+                    <?php endif; ?> 
+                
+                <td><?php 
+                // echo $pc_check_in['type_report'];
+
+                    if ($pc_check_in['type_report']=="SALES") {
+                        if ($pc_check_in['group_id']==SALES_ID ) {
+                           echo "SALES";   
+                        }
+                         elseif ($pc_check_in['group_id']==31 ) {
+                           echo "Sales Event";   
+                        }
+                         elseif ($pc_check_in['group_id']==ASM_ID ) {
+                           echo "ASM";   
+                        }
+                         elseif ($pc_check_in['group_id']==33 ) {
+                           echo "RM Assistant";   
+                        }
+                         elseif ($pc_check_in['group_id']==34 ) {
+                           echo "ASM Assistant";   
+                        }
+                        else{
+                          echo $pc_check_in['type_report'];
+                        }
+                                   }
+                    else {
+                        echo $pc_check_in['type_report'];
+                    }
+                 ?></td>
+                <td> 
+               
+                 <?php 
+                 if ($pc_check_in['type_report']=="SALES"|| $pc_check_in['type_report']=="PCM"|| $pc_check_in['type_report']=="TMS"|| $pc_check_in['type_report']=="ASM") :?>
+                  <a title="View" href="/trainer/sales-report-check-in-edit?id=<?php echo $pc_check_in['staff_id'];?>&month_year=<?php echo date('Y-m'); ?>"> <i class="icon-eye-open"></i></a>
+                 
+                 <?php elseif ($pc_check_in['type_report']=="BM") :?>
+                    <a title="View" href="/trainer/bm-report-check-in-edit?id=<?php echo $pc_check_in['staff_id'];?>&month_year=<?php echo date('Y-m'); ?>"> <i class="icon-eye-open"></i></a>
+              
+                <?php elseif ($pc_check_in['type_report']=="PC") :?>
+                    <a title="View" href="/trainer/report-check-in-edit?id=<?php echo $pc_check_in['staff_id'];?>&month_year=<?php echo date('Y-m'); ?>"> <i class="icon-eye-open"></i></a>
+                 <?php endif; ?>
+
+                 
+    
+                  <?php if ($pc_check_in['type_report']=="PC") :?>
+                <a title="Report Web" href="/trainer/report-check-in-web?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-print"></i></a>
+                <?php 
+                 elseif ($pc_check_in['type_report']=="SALES" || $pc_check_in['type_report']=="PCM"|| $pc_check_in['type_report']=="TMS") :?>
+                  <a title="View" href="/trainer/sales-report-check-in-web?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-print"></i></a>
+                  <?php elseif ($pc_check_in['type_report']=="BM") :?>
+                    <a title="View" href="/trainer/bm-report-check-in-web?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-print"></i></a>
+                  
+                
+                 <?php endif; ?>
+        
+            <?php 
+                 if ($pc_check_in['type_report']=="SALES"|| $pc_check_in['type_report']=="PCM"|| $pc_check_in['type_report']=="TMS") :?>
+                  <a title="View" href="/trainer/sales-report-check-in-excel?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>"> <i class="icon-list-alt"></i></a>
+
+                  <?php elseif ($pc_check_in['type_report']=="BM") :?>
+                    <a title="View" href="/trainer/bm-report-check-in-excel?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>"> <i class="icon-list-alt"></i></a>
+                  
+                <?php elseif ($pc_check_in['type_report']=="PC") :?>
+                 <a title="Report Excel" href="/trainer/report-check-in-excel?id=<?php echo $pc_check_in['staff_id'];?>&start_date=<?php echo date('Y-m'); ?>" target="_blank"> <i class="icon-list-alt"></i></a>
+                 <?php endif; ?>
+                   
+                </td>
+            </tr>
+
+        <?php endforeach;?>
+
+      
+    </tbody>
+
+
+</table>
+
+<div class="paging">
+    <!-- <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?> -->
+
+</div>
+<div>
+  <p>**หน้านี้แสดงข้อมูลได้สูงสุด 100 record</p>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+
+    });
+
+</script>
+
+<?php //echo $this->load();?>

@@ -1,0 +1,297 @@
+<style>
+    .target { width:100px; }
+    .target_hero { width:100px; }
+    .target_price { width:100px; }
+</style>
+
+<?php 
+
+$save_flag = 0;
+$now = date('Y-m-d');
+$rd_date = date('Y-m-02', strtotime($this->params['from']));
+
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+if ( $userStorage->group_id == ADMINISTRATOR_ID ) { $save_flag = 1; }
+if ( in_array($userStorage->group_id, array(RM_ID,RMSTANDBY_ID)) ) { if ( $now >= $rd_date) { $save_flag = 1;} }
+    // if ( $userStorage->group_id == ADMINISTRATOR_ID ) { $disabled = ''; $save_flag = 1; } else { $disabled = 'disabled'; }
+
+    $disabled='';  // Disable after 10th 'readonly'
+
+?>
+<?php if($userStorage->group_id == ADMINISTRATOR_ID){ ?>
+    <a href="/timing/delete-sale-zeor" class="btn btn-success">Delete</a>
+<?php } ?>
+
+<form class="form-search form-horizontal" method="post" action="/manage/oppo-pc-target-save">
+
+<div class="pull-right">
+    <h2 id='sale_target' name='sale_target' align="right"></h2>
+    <h2 id='sale_target_hero' name='sale_target_hero' align="right"></h2>
+    <h2 align="right"><b style="color:teal;"><?php echo "Hero Product : ". $this->heroproduct['hero_product_name']; ?></b></h2>
+</div>
+<br><br>
+
+<?php 
+
+if ( isset($this->data_list) && $this->data_list ) {
+
+    $data_list = $this->data_list;
+
+    for ($h=0;$h<count($data_list);$h++) {
+
+        echo "<h3>".$data_list[$h]['name']."</h3>";
+
+        if ( strpos($data_list[$h]['name'], "No Sale") != false ) {
+            $area_id = $data_list[$h]['area_id'];
+            $sale_id = 0;
+        } else {
+            $area_id = $data_list[$h]['area_id'];
+            $sale_id = $data_list[$h]['id'];
+        }
+
+        ?>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th><div align="center">No.</div></th>
+		            <!-- <th><div align="center">OPPO ID</th> -->
+                    <th><div align="center">[Store Code] Store Name</div></th>
+                    <th><div align="center"><?php echo $this->params['last_02']; ?></div></th>
+                    <th><div align="center"><?php echo $this->params['last_01']; ?></div></th>
+                    <th><div align="center">PC No.</div></th>
+                    <th><div align="center">Sellout Last Month</div></th>
+                    <th><div align="center">Store Target</div></th>
+                    <th><div align="center">Hero Target</div></th>
+                    <th><div align="center">Store Sellout</div></th>
+                    <!-- <th><div align="center">Activate sellout</div></th> -->
+                    <th><div align="center">Hero sellout</div></th>
+                    <!-- <th><div align="center">Hero activate</div></th> -->
+                    <th><div align="center">Achieve Target sellout</div></th>
+                    <th><div align="center">Achieve Hero sellout</div></th>
+                    <!-- <th><div align="center">Achieve Hero Sellout Activate</div></th> -->
+                    <!-- <th><div align="center">Achieve activate</div></th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $QStoreStaff = new Application_Model_StoreStaff();
+                $QSPT = new Application_Model_OppoPcTarget();
+                $QOppoSaleTarget = new Application_Model_OppoSaleTarget();
+
+                $data = $QSPT->getLast3MonthBySaleStore($this->params, $sale_id, $area_id);
+
+                $sellout = array();
+                for ($i=0;$i<count($sale);$i++) {
+                    $sellout[ $data[$i]['store_id']]['last_02'] = $data[$i]['last_02'];
+                    $sellout[ $data[$i]['store_id']]['last_01'] = $data[$i]['last_01'];
+                    $sellout[ $data[$i]['store_id']]['sellout'] = $data[$i]['sellout'];
+                    $sellout[ $data[$i]['store_id']]['activate'] = $data[$i]['activate'];
+                    $sellout[ $data[$i]['store_id']]['hero_sellout'] = $data[$i]['hero_sellout'];
+                    $sellout[ $data[$i]['store_id']]['sellout_last_01'] = $data[$i]['sellout_last_01'];
+                }
+
+                // print_r($sellout); exit;
+                
+                $sum_last_03 = $sum_last_02 = $sum_last_01 = $sum_avg = 0;
+                $sum_pc = $sum_pc_stand_by = 0;
+                $sum_sellout = $sum_price = 0;
+                $sum_activate_sellout = 0;
+                $sum_hero_sellout = 0;
+                $sum_hero_activate = 0;
+
+                if ( !empty($data) ) {
+
+                    $sellout_avg = 0;
+                    $sum_target = 0;
+
+                    for($i=0;$i<count($data);$i++) { 
+
+                        $pc_01 = $QStoreStaff->getPC($data[$i]['store_id'], 0);
+                        $pc_02 = $QStoreStaff->getPC($data[$i]['store_id'], 1);
+
+                        if($userStorage->group_id != ADMINISTRATOR_ID){
+                            $min_target = $data[$i]['last_01']; // Maximum target last month target
+                        }
+
+                        $min_target_last_01 = $data[$i]['sellout_last_01']; // Maximum target last month sellout
+
+                        $cnt_pc_01 = count($pc_01);
+                        $cnt_pc_02 = count($pc_02);
+
+                        // Check Price Target of each Store 
+                        $target_details = $QSPT->TargetByStore($this->params);
+
+
+                        // Target
+                        if ( isset($target_details[ $data[$i]['store_id'] ]['target']) ) {
+
+                             $target = "value='".$target_details[ $data[$i]['store_id'] ]['target']."' ".$disabled; // Maximum target last month target
+                             $ost_target = "value='".$target_details[ $data[$i]['store_id'] ]['spt_id']."|".$target_details[ $data[$i]['store_id'] ]['target']."' ";
+
+                             $sum_target = $sum_target + $target_details[ $data[$i]['store_id'] ]['target'];
+
+                         } else {
+
+                            $target = "value='".$target_details[ $data[$i]['store_id'] ]['target']."' min=".$min_target."' "; // Maximum target last month target
+                            $ost_target = "value=''";
+
+
+                        }
+
+                        // Hero Target
+                        if ( isset($target_details[ $data[$i]['store_id'] ]['target_hero']) ) {
+
+                            $hero_target = "value='".$target_details[ $data[$i]['store_id'] ]['target_hero']."' min='0' ".$disabled;
+                            $hero_ost_id = "value='".$target_details[ $data[$i]['store_id'] ]['spt_id']."|".$target_details[ $data[$i]['store_id'] ]['target_hero']."' ";
+
+                            $sum_hero_target = $sum_hero_target + $target_details[ $data[$i]['store_id'] ]['target_hero'];
+
+                        } else {
+
+                            $hero_target = "value='".$target_details[ $data[$i]['store_id'] ]['target_hero']."'";
+                            $hero_ost_id = "value=''";
+
+                        }
+
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td width='3%'><div align='center'>".$cnt."</div></td>";
+                        echo    "<td width='27%'><div align='left'>[".$data[$i]['store_code']."] ".$data[$i]['store_name']."</div></td>";
+                        echo    "<td width='5%'><div align='center'>".number_format($data[$i]['last_02'])."</div></td>";
+                        echo    "<td width='5%'><div align='center' style='color:blue;'>".number_format($data[$i]['last_01'])."</div></td>";
+                        echo    "<td width='5%'><div align='center'>".$cnt_pc_01."</div></td>";
+                        echo    "<td width='9%'><div align='center'><b>".number_format($min_target_last_01)."</b></div></td>";
+
+                        //Target
+                        echo "<td width='9%'><div align='center'>
+                        <input type='number' style='text-align:center; color:blue;' class='target span1' id='target[".$data[$i]['store_id']."]' name='target[".$data[$i]['store_id']."]' $target  />
+                        <input type='hidden' style='text-align:center;' id='ost_target[".$data[$i]['store_id']."]' name='ost_target[".$data[$i]['store_id']."]' $ost_target  />
+                        </div></td>";
+
+                        echo "<td width='9%'><div align='center'>
+                        <input type='number' style='text-align:center;' class='hero_target span1' id='hero_target[".$data[$i]['store_id']."]' name='hero_target[".$data[$i]['store_id']."]' $hero_target  />
+                        <input type='hidden' style='text-align:center;' id='hero_ost_id[".$data[$i]['store_id']."]' name='hero_ost_id[".$data[$i]['store_id']."]' $hero_ost_id /> 
+                        </div></td>";
+
+                        echo    "<td width='5%'><div align='center'>".number_format($data[$i]['sellout'])."</div></td>";
+                        echo    "<td width='5%'><div align='center'>".number_format($data[$i]['hero_sellout'])."</div></td>";
+
+                        $achieve_hero_sellout = ($data[$i]['hero_sellout'] / $target_details[ $data[$i]['store_id'] ]['target_hero'])*100;
+                        $achieve_hero_activate = ($data[$i]['hero_activate'] / $target_details[ $data[$i]['store_id'] ]['target_hero'])*100;
+                        $achieve_sellout = ($data[$i]['sellout'] / $target_details[ $data[$i]['store_id'] ]['target'])*100;
+                        $achieve_activate = ($data[$i]['sellout_activate'] / $target_details[ $data[$i]['store_id'] ]['target'])*100;
+
+                        $color_price = 'red';
+                        if ( $achieve_sellout >= 75 ) { $color_price = 'orange'; }
+                        if ( $achieve_sellout >= 90 ) { $color_price = 'green'; }
+
+                        echo "<td width='9%'><div align='center'><font color='".$color_price."'>".number_format($achieve_sellout,2)."%</div></td>";
+
+                        $color_price = 'red';
+                        if ( $achieve_hero_sellout >= 75 ) { $color_price = 'orange'; }
+                        if ( $achieve_hero_sellout >= 90 ) { $color_price = 'green'; }
+
+                        echo "<td width='9%'><div align='center'><font color='".$color_price."'>".number_format($achieve_hero_sellout,2)."%</div></td>";
+
+                        $color_price = 'red';
+                        if ( $achieve_hero_activate >= 75 ) { $color_price = 'orange'; }
+                        if ( $achieve_hero_activate >= 90 ) { $color_price = 'green'; }
+
+
+                        $color_price = 'red';
+                        if ( $achieve_activate >= 75 ) { $color_price = 'orange'; }
+                        if ( $achieve_activate >= 90 ) { $color_price = 'green'; }
+
+
+                        $sum_last_02 = $sum_last_02 + $data[$i]['last_02'];
+                        $sum_last_01 = $sum_last_01 + $data[$i]['last_01'];
+                        $sum_pc = $sum_pc + $cnt_pc_01;
+                        $sum_sellout_last_01 = $sum_sellout_last_01 + $data[$i]['sellout_last_01'];
+                        $sum_target = $sum_target + $target_price;
+
+                        $sum_sellout = $sum_sellout + $data[$i]['sellout'];
+                        $sum_activate_sellout = $sum_activate_sellout + $data[$i]['sellout_activate'];
+                        $sum_hero_sellout = $sum_hero_sellout + $data[$i]['hero_sellout'];
+                        $sum_hero_activate = $sum_hero_activate + $data[$i]['hero_activate'];
+
+                        $sum_price = $sum_price + $data[$i]['total_price'];
+                    }
+
+
+                }
+                ?>
+            </tbody>
+            <tfoot>
+                <?php 
+
+
+                echo "<tr bgcolor='#BDBDBD'>";
+                echo    "<td colspan='2'><div align='center'>Total</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_last_02)."</div></td>";
+                echo    "<td><div align='center'  style='color:blue; font-weight:bold'>".number_format($sum_last_01)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_pc)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_sellout_last_01)."</div></td>";
+                echo    "<td><div align='center' style='color:blue; font-weight:bold;' id='sum_target'>".number_format($sum_target)."</div></td>";
+                echo    "<td><div align='center' id='sum_target_hero'>".number_format($sum_hero_target)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_sellout)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_hero_sellout)."</div></td>";
+
+
+                $sum_achieve_total_sellout = ( $sum_sellout / $sum_target ) * 100;
+                $sum_achieve_hero_sellout = ( $sum_hero_sellout / $sum_hero_target) * 100;
+                $sum_achieve_activate = ( $sum_activate_sellout / $sum_sellout) * 100;
+                $sum_hero_sellout_activate = ( $sum_hero_activate / $sum_hero_target) * 100;
+
+
+                $sum_color_price = 'red';
+                if ( $sum_achieve_total_sellout >= 75 ) { $sum_color_price = '#DF7401'; }
+                if ( $sum_achieve_total_sellout >= 90 ) { $sum_color_price = '#04B431'; }
+                echo    "<td id='td_achieve' bgcolor='".$sum_color_price."'>
+                <div align='center' id='sum_achieve'><strong>".number_format($sum_achieve_total_sellout,2)." %</strong></div></td>";
+
+
+                $sum_color_price = 'red';
+                if ( $sum_achieve_hero_sellout >= 75 ) { $sum_color_price = '#DF7401'; }
+                if ( $sum_achieve_hero_sellout >= 90 ) { $sum_color_price = '#04B431'; }
+                echo    "<td id='td_achieve' bgcolor='".$sum_color_price."'>
+                <div align='right' id='sum_achieve'><strong>".number_format($sum_achieve_hero_sellout,2)." %</strong></div></td>";
+
+
+
+                echo "</tr>";
+
+                ?>
+            </tfoot>
+        </table>
+
+    <?php   } ?>
+
+    <input type="hidden" name="area_id" id="area_id" value='<?php echo json_encode($this->params['area_id']); ?>'>
+    <input type="hidden" name="sale_id" id="sale_id" value='<?php echo json_encode($this->params['sale_id']); ?>'>
+    <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['from']; ?>">
+
+    <?php 
+    $date2 = date('d');
+ if($userStorage->group_id == ADMINISTRATOR_ID){
+
+        echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+    }else{
+       if($date2 < 7){
+        echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+    }
+    
+    }
+?>
+<?php } ?>
+
+
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

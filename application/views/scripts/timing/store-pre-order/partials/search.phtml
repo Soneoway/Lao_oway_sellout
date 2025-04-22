@@ -1,0 +1,110 @@
+<form class="form-search form-horizontal" method="get" action="/timing/store-pre-order/store-pre-order" onsubmit="return validateSave()">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="st_id" class="span2">Store ID</label>
+                <input id="st_id" name="st_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['st_id']) and printf($this->params['st_id']);?>">
+            </div>
+            <div class="control-group">
+                <label for="st_name" class="span2">Store Name</label>
+                <input id="st_name" name="st_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['st_name']) and printf($this->params['st_name']);?>">
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['area_id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['area_id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['area_name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="good_id" class="span2">Model</label>
+                <select id="good_id" name="good_id[]" class="span3 multiselect" multiple="multiple" >
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good_id']) and ( (is_array($this->params['good_id']) && in_array($good_list['id'], $this->params['good_id']) || $good_list['id']==$this->params['good_id'])) ):?>selected<?php endif;?>><?php echo $good_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+    <!-- <button type="submit" name="export" value="2" class="btn btn-primary">Product Report</button> -->
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSave() {
+
+        var cnt_model = 0;
+        if ( $("#good_id").val() ) { cnt_model = $("#good_id").val().length; }
+
+        if ( cnt_model == 0 ) { alert("กรุณาเลือกอย่างน้อย 1 Model ค่ะ!"); return false; } 
+
+        return true;
+
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+
+        
+    });
+</script>

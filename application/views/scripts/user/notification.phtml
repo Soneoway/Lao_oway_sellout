@@ -1,0 +1,60 @@
+<style>
+    .unread {
+        font-weight: bold;
+    }
+
+    .read {
+        font-weight: normal;;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Notification <small>List</small></h1>
+</div>
+
+<?php if (isset($this->messages) && $this->messages): ?>
+    <?php foreach ($this->messages as $key => $value): ?>
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <?php echo $value ?>
+        </div>
+    <?php endforeach ?>
+<?php endif ?>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->all_notifi) and $this->all_notifi)
+                foreach ($this->all_notifi as $k=>$notifi): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><a href="<?php echo HOST ?>user/notification-view?id=<?php echo $notifi['id'] ?>" 
+                        class="view_notification <?php if(!isset($notifi['read']) || ! $notifi['read']) echo "unread"; else echo "read"; ?>"><?php 
+                            echo My_String::excerpt($notifi['title'], 120) ;?>
+                    </a>
+                </td>
+                <td><?php echo My_String::excerpt($notifi['content'], 120) ?></td>
+                <td><?php if(isset($notifi['created_at']) && $notifi['created_at']) echo date('d/m/Y H:i:s', strtotime($notifi['created_at']));?></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

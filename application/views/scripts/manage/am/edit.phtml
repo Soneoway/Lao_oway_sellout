@@ -1,0 +1,84 @@
+<style type="text/css">
+    .remove_store_type_btn {
+        margin-bottom: 9px;
+    }
+</style>
+<div class="page-header">
+    <h1>Edit AM</h1>
+</div>
+<form action="<?php echo HOST ?>manage/am-save" method="post">
+<div class="row-fluid">
+    <div class="span4">
+        <?php if (isset($this->staff) && $this->staff): ?>
+            <p><?php echo My_Staff_Group::get($this->staff['group_id']) ?>: <strong><?php echo $this->staff['firstname'] . ' ' . $this->staff['lastname']; ?></strong></p>
+        <?php endif ?>
+    </div>
+    <div class="span4">
+            <div class="control-group">
+            <label id="store_type_anchor">Store Type</label>
+                <?php if (isset($this->am) && $this->am): ?>
+                    <?php foreach ($this->am as $value): ?>
+                            <div class="store_type_select">
+                                <select name="store_type[]" class="form-control">
+                                    <option value>---</option>
+                                    <?php if (isset($this->org) && $this->org): ?>
+                                        <?php foreach ($this->org as $a_id => $a_name): ?>
+                                            <option value="<?php echo $a_id ?>" <?php if($a_id == $value['org_id']) echo 'selected' ?>><?php echo $a_name ?></option>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <button type="button" class="btn btn-default remove_store_type_btn new">&times;</button>
+                            </div>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-default" id="add_store_type_btn" type="button">Add more</button>
+            </div>
+            <input type="hidden" name="id" value="<?php if(isset($this->staff) && $this->staff) echo $this->staff['id'] ?>">
+    </div>
+    
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" onclick="window.location='<?php echo HOST ?>manage/am'">Cancel</button>
+        </div>
+    </div>
+</div>
+</form>
+
+<script type="text/javascript">
+    select_store_type = 
+'<div class="store_type_select">'+
+    '<select name="store_type[]" class="form-control">'+
+        '<option value>---</option>'+
+        '<?php if (isset($this->org) && $this->org): ?>'+
+            '<?php foreach ($this->org as $a_id => $a_name): ?>'+
+                '<option value="<?php echo $a_id ?>"><?php echo $a_name ?></option>'+
+            '<?php endforeach ?>'+
+        '<?php endif ?>'+
+    '</select>'+
+    ' <button type="button" class="btn btn-default remove_store_type_btn new">&times;</button>'+
+'</div>';
+
+
+    $(document).ready(function() {
+        $('#add_store_type_btn').click(function() {
+            $('#store_type_anchor').parent('.control-group').append(select_store_type);
+            init_store_type_remove();
+        });
+
+        init_store_type_remove();
+    });
+
+    function init_store_type_remove() {
+        $('.remove_store_type_btn.new').click(function() {
+            $(this).parent('.store_type_select').remove();
+        });
+
+        $('.remove_store_type_btn.new').removeClass('new');
+    }
+
+</script>

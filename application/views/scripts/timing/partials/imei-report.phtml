@@ -1,0 +1,596 @@
+<style>
+	label,
+	span,
+	input,
+	option,
+	select,
+	legend,
+	button,
+	table td,
+	table td p,
+	table th {
+		font-family: arial;
+	}
+
+	.table td {
+		border: none;
+	}
+
+	.table td p {
+		margin-bottom: 0;
+	}
+	
+	.table tr td:nth-child(2),
+	.table tr:nth-child(4n+1) td:nth-child(6),
+	.table tr:nth-child(4n+2) td:nth-child(5),
+	.table tr:nth-child(4n+3) td:nth-child(4),
+	.table tr:nth-child(4n+4) td:nth-child(3) {
+		border-right: 1px solid #aaa;
+	}
+
+	.table tr.dark td {
+		border-bottom: 1px solid #aaa;
+	}
+
+	.table thead tr:last-child {
+		border-bottom: 2px solid #aaa;
+	}
+
+	.table thead tr th:nth-child(1),
+	.table thead tr th:nth-child(2) {
+		background:#f5f5f5;
+	}
+
+	.table thead tr th:nth-child(10),
+	.table thead tr th:nth-child(7),
+	.table thead tr th:nth-child(8),
+	.table thead tr th:nth-child(9) {
+		background:#EDEFFF;
+	}
+
+	.table thead tr th:nth-child(5),
+	.table thead tr th:nth-child(6),
+	.table thead tr th:nth-child(3),
+	.table thead tr th:nth-child(4) {
+		background:#FFF2F2;
+	}
+
+	textarea {
+		resize: none;
+	}
+
+	.imei_photo {
+		background: white;
+		display: inline-block;
+		float: left;
+		width: 30px;
+		height: 30px;
+		overflow: hidden;
+		padding: 5px;
+		border: 1px solid #ddd;
+	}
+
+	.imei_photo img {
+		width: 30px;
+		height: 30px;
+	}
+
+	.no_photo {
+		color: red;
+	}
+
+	span.point {
+		color: blue;
+		font-weight: bold;
+		font-size: 14px;
+	}
+</style>
+<table class="table">
+    <thead>
+    	<tr>
+    		<th>#</th>
+    		<th>IMEI</th>
+    		<th colspan="4" style="background:#FFF2F2;">First Timing</th>
+    		<th colspan="4" style="background:#EDEFFF;">Second Timing</th>
+    	</tr>
+        <tr>
+			<th>#</th>
+			<th></th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Photo</th>
+			<th></th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Photo</th>
+			<th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (isset($this->dup_imeis) and $this->dup_imeis)
+            foreach ($this->dup_imeis as $k=>$imei): ?>
+        	<?php $tmp = $this->timing_sales[ $imei['timing_sales_first'] ] ?>
+                <?php $inc = $this->offset + $k + 1; ?>
+        <tr>
+            <td>
+                    <?php echo $inc; ?>
+            </td>
+            	<!-- IMEI -->
+            <td>
+            	<p><strong><?php echo $imei['imei'];?></strong></p>
+            </td>
+            <td>
+            	<!-- Staff Name/Phone -->
+            	<p class="staff_phone" title="<?php if (isset($tmp['phone_number'])) echo $tmp['phone_number']; else echo '#' ?>">
+            		<strong><?php echo $tmp['firstname'].' '.$tmp['lastname'] ?></strong>
+	            </p>
+	        </td>
+            <td>
+            	<!-- Staff Email/Phone -->
+            	<p class="staff_phone" title="<?php if (isset($tmp['phone_number'])) echo $tmp['phone_number']; else echo '#' ?>">
+            		<?php if(!empty($tmp['email'])) {list($email, $domain) =  explode('@',$tmp['email']); echo $email;}?>
+            	</p>
+            </td>
+            <td>
+            	<!-- IMEI photo -->
+            	<?php if (!empty($tmp['photo'])): ?>
+            		<a class="imei_photo" href="<?php echo HOST.'photo/timing_sales_new/'.date('Y-m', strtotime($tmp['from'])).'/'.date('Y-m-d', strtotime($tmp['from'])).'/'. $imei['timing_sales_first'].'/'.$tmp['photo'];?>">
+						<img src="<?php echo HOST.'photo/timing_sales_new/'.date('Y-m', strtotime($tmp['from'])).'/'.date('Y-m-d', strtotime($tmp['from'])).'/'. $imei['timing_sales_first'].'/'.$tmp['photo'];?>" alt="" />
+					</a>
+            	<?php else: ?>
+            		<span class="no_photo">No Photo</span>
+            	<?php endif ?>
+            </td>
+            <td>
+            	<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+            		<!-- Check -->
+	            	<?php if ($imei['solved'] == 0): ?>
+	            	<!-- Hiện nút với tên Staff khi chưa xử lý -->
+	            	<!-- Click nút với tên staff nào thì cho Staff đó hưởng IMEI này -->
+		            	<button class="btn btn-info btn-mini accept_imei" 
+		            			id="i_<?php echo $imei['id'] .'_' . $imei['staff_id_first'] ?>" 
+		            			type="button" 
+		            			data-report-id="<?php echo $imei['id'] ?>" 
+		            			data-staff-id="<?php echo $imei['staff_id_first'] ?>" 
+		            			data-imei="<?php echo $imei['imei'] ?>" 
+		            			data-name="<?php echo $tmp['lastname'] ?>"
+		            			data-two-month="<?php if( !empty($imei['date']) &&  !empty($tmp['from']) && date('m', strtotime($imei['date'])) !=  date('m', strtotime($tmp['from'])) ) echo '1'; else echo '0'; ?>"
+	            			><?php echo $tmp['lastname'] ?>
+		            	</button>
+	            	<?php elseif($imei['staff_id_first'] == $imei['staff_win']): ?>
+	            	<!-- Xử lý rồi thì hiện dấu check -->
+	            		<span><i class="icon-ok"></i></span>
+	            	<?php endif ?>
+            	<?php endif ?>
+            </td>
+            <td>
+            	<!-- Staff Name/Phone -->
+            	<p class="staff_phone" title="<?php if (isset($imei['phone_number'])) echo $imei['phone_number']; else echo '#' ?>">
+            		<strong><?php echo $imei['firstname'].' '.$imei['lastname'];?></strong>
+            	</p>
+            </td>
+            <td>
+            	<!-- Staff Email/Phone -->
+            	<p class="staff_phone" title="<?php if (isset($imei['phone_number'])) echo $imei['phone_number']; else echo '#' ?>">
+            		<?php if(!empty($imei['email'])) {list($email, $domain) =  explode('@',$imei['email']); echo $email;}?>
+            	</p>
+            </td>
+            <td>
+            	<!-- IMEI photo -->
+            	<?php if (!empty($imei['photo'])): ?>
+            		<a class="imei_photo" href="<?php echo HOST.'photo/timing_imei_duplicated/'.date('Y-m', strtotime($imei['date'])).'/'.date('Y-m-d', strtotime($imei['date'])).'/'.$imei['id'].'/'.$imei['photo'];?>">
+            			<img src="<?php echo HOST.'photo/timing_imei_duplicated/'.date('Y-m', strtotime($imei['date'])).'/'.date('Y-m-d', strtotime($imei['date'])).'/'.$imei['id'].'/'.$imei['photo'];?>" alt="">
+            		</a>
+            	<?php else: ?>
+            		<span class="no_photo">No Photo</span>
+            	<?php endif ?>
+            </td>
+            <td>
+            	<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+	            	<!-- Check -->
+	            	<?php if ($imei['solved'] == 0): ?>
+	            	<!-- Hiện nút với tên Staff khi chưa xử lý -->
+	            	<!-- Click nút với tên staff nào thì cho Staff đó hưởng IMEI này -->
+		            	<button class="btn btn-success btn-mini accept_imei" 
+		            			id="i_<?php echo $imei['id'] .'_' . $imei['staff_id'] ?>" 
+		            			type="button" 
+		            			data-report-id="<?php echo $imei['id'] ?>" 
+		            			data-staff-id="<?php echo $imei['staff_id'] ?>" 
+		            			data-imei="<?php echo $imei['imei'] ?>" 
+		            			data-name="<?php echo $imei['lastname'] ?>"
+		            			data-two-month="<?php if( !empty($imei['date']) &&  !empty($tmp['from']) && date('m', strtotime($imei['date'])) !=  date('m', strtotime($tmp['from'])) ) echo '1'; else echo '0'; ?>"
+	            			><?php echo $imei['lastname'] ?>
+		            	</button>
+	            	<?php elseif($imei['staff_id'] == $imei['staff_win']): ?>
+	            	<!-- Xử lý rồi thì hiện dấu check -->
+	            		<span><i class="icon-ok"></i></span>
+	            	<?php endif ?>
+            	<?php endif ?>
+            </td>
+        </tr>
+        <tr class="">
+        	<td></td>
+        	<td>
+        		<p><?php if( isset( $this->imei_model[ $imei['imei'] ] ) ) echo $this->imei_model[ $imei['imei'] ]['product_name'] ?></p>
+        		<p><?php if( isset( $this->imei_model[ $imei['imei'] ] ) ) echo $this->imei_model[ $imei['imei'] ]['color_name'] ?></p>
+        	</td>
+        	<!-- Cửa hàng -->
+            <td colspan="2">Store:<br /><strong><?php echo $tmp['name'] ?></strong></td>
+            <td>
+            	<!-- Chấm công cho ngày nào/Ngày tạo chấm công -->
+            	<p class="staff_phone" title="Timing At: <?php echo ($tmp['created_at'] ? date('d/m/Y H:i:s', strtotime($tmp['created_at'])) : '');?>">
+            		Timing For:<br /><?php echo ($tmp['from'] ? date('d/m/Y', strtotime($tmp['from'])) : '');?>
+            	</p>
+            </td>
+            <td>
+            	
+            </td>
+            <!-- Cửa hàng -->
+            <td colspan="2">Store:<br /><strong><?php echo $imei['name'];?></strong></td>
+            <td>
+            	<!-- Chấm công cho ngày nào/Ngày tạo báo cáo trùng IMEI -->
+            	<p class="staff_phone" title="Report At: <?php echo ($imei['created_at'] ? date('d/m/Y H:i:s', strtotime($imei['created_at'])) : '');?>">
+            		Timing For:<br /><?php echo ($imei['date'] ? date('d/m/Y', strtotime($imei['date'])) : '');?>
+            	</p>
+            </td>
+            <td>
+            	<!-- Note của người tạo report -->
+            	<?php echo $imei['note'] ?>
+        	</td>
+        </tr>
+        <tr class="">
+        	<td></td>
+        	<td>
+        		<p>Activated At:<br /><?php if( isset( $this->imei_model[ $imei['imei'] ]['activated_at'] ) ) echo date('d/m/Y H:i:s', strtotime($this->imei_model[ $imei['imei'] ]['activated_at'])); ?></p>
+        	</td>
+        	<!-- Cửa hàng -->
+            <td colspan="2">
+            	<p>Customer: <strong><?php echo (isset($tmp['customer_name']) ? $tmp['customer_name'] : '') ?></strong></p>
+            	<p>Customer Phone: <strong><?php echo (isset($tmp['customer_phone']) ? $tmp['customer_phone'] : '') ?></strong></p>
+            </td>
+            <td colspan="2">
+            	<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+            		Point: <span class="point"><?php if( isset( $this->points[ $imei['id'] ] ) ) echo $this->points[ $imei['id'] ]['first'] ?></span>
+            	<?php endif; ?>
+            </td>
+            <!-- Cửa hàng -->
+            <td colspan="2">
+            	<p>Customer: <strong><?php echo (isset($imei['customer_name']) ? $imei['customer_name'] : '');?></strong></p>
+				<p>Customer Phone: <strong><?php echo (isset($imei['customer_phone']) ? $imei['customer_phone'] : '') ?></strong></p>
+            </td>
+            <td colspan="2">
+            	<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+            		Point: <span class="point"><?php if( isset( $this->points[ $imei['id'] ] ) ) echo $this->points[ $imei['id'] ]['second'] ?></span>
+            	<?php endif; ?>
+            </td>
+        </tr>
+        <tr class="dark">
+        	<td></td>
+        	<td>
+        		<?php if (in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+					<p>
+						<!-- Check -->
+		            	<?php if ($imei['asm_check'] == 0): ?>
+		            	<?php // Hiện nút với tên Staff khi chưa xử lý ?>
+		            	<?php // Click nút với tên staff nào thì cho Staff đó hưởng IMEI này ?>
+			            	<button class="btn btn-info btn-mini allow_imei" id="i_<?php echo $imei['id'] ?>" type="button" data-report-id="<?php echo $imei['id'] ?>">
+			            		Đề Nghị
+			            	</button>
+		            	<?php else: ?>
+		            	<?php // Xử lý rồi thì hiện dấu check ?>
+		            		<span><i class="icon-ok"></i></span>
+		            	<?php endif ?>
+					</p>
+				<?php elseif( ! empty( $imei['staff_win'] ) && $imei['staff_win'] > 0 ): ?>
+					<p>
+						<button class="btn btn-warning btn-mini reverse" 
+							title="Đảo người được hưởng IMEI này"
+							data-id="<?php echo $imei['id'] ?>"
+							data-imei="<?php echo $imei['imei'] ?>"
+							<?php if( isset($imei['staff_win']) && $imei['staff_win'] == $imei['staff_id'] ) : ?>
+								data-from="<?php echo $imei['firstname'].' '.$imei['lastname'] ?>"
+								data-to="<?php echo $tmp['firstname'].' '.$tmp['lastname'] ?>"
+							<?php else: ?>
+								data-to="<?php echo $imei['firstname'].' '.$imei['lastname'] ?>"
+								data-from="<?php echo $tmp['firstname'].' '.$tmp['lastname'] ?>"
+							<?php endif; ?>>Reverse</button>
+					</p>
+            	<?php endif ?>
+        	</td>
+        	<!-- Cửa hàng -->
+            <td colspan="4">Customer Address: <strong><?php echo (isset($tmp['customer_address']) ? $tmp['customer_address'] : '') ?></strong></td>
+            <!-- Cửa hàng -->
+            <td colspan="4">Customer Address: <strong><?php echo (isset($imei['customer_address']) ? $imei['customer_address'] : '');?></strong></td>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="imei_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel">Xác Nhận</h3>
+	</div>
+	<div class="modal-body">
+		<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+		<p id="two_month"><strong style="color:blue;"><big>Chú ý: 02 báo cáo thuộc 02 tháng khác nhau</big></strong></p>
+			<p>Chấp nhận IMEI <strong><span id="s_imei"></span></strong> được hưởng bởi <strong><span id="s_name"></span></strong></p>
+			<div class="control-group">
+				<label for="note">Add a note</label>
+				<div class="controls">
+					<textarea name="note" id="note" class="form-control note_content" rows="4"></textarea>
+					<input type="hidden" name="staff_win" id="staff_win" value="" />
+				</div>
+			</div>
+		<?php else: ?>
+			<p>Bạn muốn gửi lời đề nghị duyệt IMEI này lên Giám đốc Kinh doanh?</p>
+		<?php endif ?>
+		<input type="hidden" name="report_id" id="report_id" value="" />
+	</div>
+	<div class="modal-footer">
+	  <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+	  <button class="btn btn-success" id="btn_save" aria-hidden="true">OK</button>
+	</div>
+</div>
+
+<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+<div id="reverse_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel">Đảo Chiều</h3>
+	</div>
+	<div class="modal-body">
+		<p>Bạn có chắc muốn chuyển IMEI <strong><span id="reverse_imei"></span></strong> từ <strong><span id="reverse_from"></span></strong> sang <strong><span id="reverse_to"></span></strong>?</p>
+	</div>
+	<div class="modal-footer">
+		<input type="hidden" name="report_id" id="reverse_report_id" value="" />
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		<button class="btn btn-success" id="btn_reverse" aria-hidden="true">OK</button>
+	</div>
+</div>
+<?php endif; ?>
+
+<script type="text/javascript" src="/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript" src="/js/jquery.floatThead.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css"/>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var $table = $('table.table');
+		$table.floatThead({
+		    scrollingTop: 54,
+		    useAbsolutePositioning: false
+		});
+
+		$(".imei_photo").fancybox();
+
+		$modal = $('#imei_modal');
+		$('.tool-tip').popover({
+			placement: 'top'
+			});
+
+		$('p.staff_phone').tooltip();
+
+		<?php if (!in_array( $this->user_group, array(ASM_ID, ASMSTANDBY_ID, SALES_ADMIN_ID) )): ?>
+			$reverse_modal = $('#reverse_modal');
+
+			$('.accept_imei').click(function() {
+				_self = $(this);
+				$modal.find('.alert').remove();
+				$('#s_imei').text(_self.data('imei'));
+				$('#s_name').text(_self.data('name'));
+				$('#report_id').val(_self.data('report-id'));
+				$('#staff_win').val(_self.data('staff-id'));
+
+				two = _self.data('two-month');
+				if (two == 1) {
+					$('p#two_month').show();
+				} else {
+					$('p#two_month').hide();
+				}
+
+				$('#imei_modal').modal();
+			});
+
+			$('#btn_save').click(function(){
+				var note = $('#note').val().trim();
+				$modal.modal('loading');
+				$modal.find('.alert').remove();
+				staff_win = $('#staff_win').val();
+				report_id = $('#report_id').val();
+
+				$.post('<?php echo HOST ?>/timing/imei-report-confirm',
+		            {
+						id   : report_id,
+						staff_win : staff_win,
+						note : note
+		            },
+		            function(data){
+		            	if (data == '1') {
+							$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-info fade in">' +
+							          'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+					        setTimeout(function(){$modal.modal('hide');}, 1000);
+					        $('#i_'+report_id+'_'+staff_win).after('<span><i class="icon-ok"></i></span>');
+					        $('[id^="i_'+report_id+'"]').remove();
+		            	} else if (data == '0') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+							          'Invalid Data!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	}   else if (data == '-1') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+							          'Data Not Found!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	}  else if (data == '-2') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+					        	.append('<div class="alert alert-error fade in">' +
+							          'This case is solved!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	}  else if (data == '-11') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+					        	.append('<div class="alert alert-error fade in">' +
+							          'Người Báo cáo chưa thực hiện chấm công!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	} else {
+	            			$modal
+	            				.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+						         	 'Update failed! Try again.<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						        	'</div>');
+		            	}
+		                
+	        		}
+	        	);
+					
+			});
+
+			$('button.reverse').click(function() {
+				$reverse_modal.modal();
+				_self = $(this);
+				id    = _self.data('id');
+				imei  = _self.data('imei');
+				from  = _self.data('from');
+				to    = _self.data('to');
+
+				$('#reverse_report_id').val(id);
+				$('#reverse_imei').text(imei);
+				$('#reverse_from').text(from);
+				$('#reverse_to').text(to);
+
+			});
+
+			$('button#btn_reverse').click(function() {
+				$reverse_modal.find('.alert').remove();
+				$reverse_modal.modal('loading');
+				id = $('#reverse_report_id').val();
+
+				$.post('<?php echo HOST ?>ajax/imei-report-reverse',
+		            {
+						id : id,
+		            },
+		            function(data){
+		            	if (data == '1') {
+							$reverse_modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-info fade in">' +
+							          'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+
+					        setTimeout(function(){
+					        	$reverse_modal.modal('hide');
+					        	location.reload();
+					    	}, 1000);
+
+		            	} else {
+	            			$reverse_modal
+	            				.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+						         	 'Update failed! Try again.<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						        	'</div>');
+		            	}
+		                
+	        		}
+	        	);
+			});
+
+		<?php else: ?>
+
+			$('.allow_imei').click(function() {
+				_self = $(this);
+				$modal.find('.alert').remove();
+				$('#report_id').val(_self.data('report-id'));
+				$('#imei_modal').modal();
+			});
+
+			$('#btn_save').click(function(){
+				$modal.modal('loading');
+				$modal.find('.alert').remove();
+				report_id = $('#report_id').val();
+
+				$.post('<?php echo HOST ?>/timing/imei-report-confirm',
+		            {
+						id   : report_id,
+						allow : 1
+		            },
+		            function(data){
+		            	if (data == '1') {
+							$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-info fade in">' +
+							          'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+					        setTimeout(function(){$modal.modal('hide');}, 1000);
+					        $('#i_'+report_id).after('<span><i class="icon-ok"></i></span>');
+					        $('#i_'+report_id).remove();
+		            	} else if (data == '0') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+							          'Invalid Data!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	}   else if (data == '-1') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+							          'Data Not Found!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	}  else if (data == '-2') {
+                            $modal
+                                .modal('loading')
+                                .find('.modal-body')
+                                .append('<div class="alert alert-error fade in">' +
+                                      'This case is solved!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                                    '</div>');
+                        } else if (data == '-1000') {
+		            		$modal
+								.modal('loading')
+								.find('.modal-body')
+					        	.append('<div class="alert alert-error fade in">' +
+							          'Chức năng duyệt IMEI trùng tạm đóng để chốt lương. Vui lòng xử lý lại sau ngày 10 hoặc khi có thông báo.<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							        '</div>');
+		            	} else {
+	            			$modal
+	            				.modal('loading')
+								.find('.modal-body')
+						        .append('<div class="alert alert-error fade in">' +
+						         	 'Update failed! Try again.<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						        	'</div>');
+		            	}
+		                
+	        		}
+	        	);
+					
+			});
+
+		<?php endif ?>
+	});
+</script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+

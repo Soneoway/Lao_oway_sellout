@@ -1,0 +1,82 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">BS Area</div></th>
+        <th><div align="center">Area (Store) - Sellout</div></th>
+        <th><div align="center">Staff Code</div></th>
+        <th><div align="center">Staff Name</div></th>
+        <th><div align="center">Group</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $QBsArea = new Application_Model_BsArea();
+
+            if ($this->bs_area) {
+                $data = $this->bs_area;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt_bs = $QBsArea->cnt_store_by_area($data[$i]['ba_id']);
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td>".$cnt."</td>";
+                    echo    "<td>
+                                <a title='Edit' href='".HOST."manage/bs-area-control-edit?bs_area_id=".$data[$i]['ba_id']."'>".$data[$i]['ba_name']."</a>
+                            </td>";
+
+                    echo    "<td>";
+                    for ($j=0;$j<count($cnt_bs);$j++) { echo "<div>".$cnt_bs[$j]['area_name']." ( ".$cnt_bs[$j]['cnt_store']." ) - ".$cnt_bs[$j]['sellout']."</div>"; }
+                    echo    "</td>";
+
+                    echo    "<td><div align='center'>".$data[$i]['staff_code']."</div></td>";
+                    echo    "<td>".$data[$i]['staff_name']."</td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_group']."</div></td>";
+                    echo    "<td><div align='center'><span class='badge badge-default' data-bs-area-id='".$data[$i]['ba_id']."'>Log</span></div></td>";
+                    
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>manage/bs-area-control-short-report',
+                {
+                    bs_area_id : _self.data('bs-area-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    
+</script>

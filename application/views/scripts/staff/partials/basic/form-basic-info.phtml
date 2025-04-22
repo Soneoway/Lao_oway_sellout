@@ -1,0 +1,464 @@
+<div class="row-fluid">
+    <div class="span4">
+        <div class="control-group">
+            <label for="photo" class="control-label">Staff Photo</label>
+            <div class="controls">
+                <?php if(isset($this->staffTemp) and !empty($this->staffTemp['photo'])){?>
+                    <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/'.$this->staffTemp['photo']);  ?>"><img class="staff-photo" width="210" height="239" src="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/'.$this->staffTemp['photo']);  ?>" /></a>
+                <?php }?>
+                <div class="clear"></div>
+                <input type="file" id="photo" name="photo" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group">
+                    <label for="del_photo" class="pull-left">Delete Photo</label>
+                    <input type="checkbox" class="pull-left" name="del_photo" id="del_photo" />
+                </div>
+            </div>
+        </div>
+
+        <?php if (isset($this->currentStaff)) {?>
+            <div class="control-group">
+                <label for="photo" class="control-label">Current Staff Photo</label>
+                <div class="controls">
+                    <?php if(isset($this->currentStaff) and !empty($this->currentStaff['photo'])){?>
+                        <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/'.$this->currentStaff['photo']);  ?>"><img class="staff-photo" src="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/'.$this->currentStaff['photo']);  ?>" /></a>
+                    <?php }?>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+
+    <div class="span4">
+        <?php if (isset($this->currentStaff)) {?>
+        <div class="control-group">
+            <label class="control-label">Staff Code</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><strong><?php echo $this->currentStaff['code'];?></strong></span>
+                <?php } ?>
+            </div>
+        </div>
+        <?php } ?>
+
+        <div class="control-group">
+            <label for="firstname" class="control-label">First name</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['firstname'];?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['firstname']) and isset($this->afterData['firstname'])
+                    and (
+                        $this->beforeData['firstname'] != $this->afterData['firstname']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['firstname'];?>"></i>
+                <?php } ?>
+
+                <input type="text" id="firstname" required placeholder="Enter First name" name="firstname" value="<?php echo (
+                    isset($this->staffTemp['firstname']) ? $this->staffTemp['firstname'] : (
+                        isset($this->currentStaff['firstname']) ? $this->currentStaff['firstname'] : ''
+                    )
+                );?>">
+            </div>
+
+        </div>
+
+        <div class="control-group">
+            <label for="lastname" class="control-label">Last name</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['lastname'];?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['lastname']) and isset($this->afterData['lastname'])
+                    and (
+                        $this->beforeData['lastname'] != $this->afterData['lastname']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['lastname'];?>"></i>
+                <?php } ?>
+
+                <input type="text" id="lastname" required placeholder="Enter Last name" name="lastname" value="<?php echo (
+                isset($this->staffTemp['lastname']) ? $this->staffTemp['lastname'] : (
+                    isset($this->currentStaff['lastname']) ? $this->currentStaff['lastname'] : ''
+                )
+                );?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="gender_1" class="control-label">Gender</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['gender']==1 ? 'Male' : 'Female';?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['gender']) and isset($this->afterData['gender'])
+                    and (
+                        $this->beforeData['gender'] != $this->afterData['gender']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['gender']==1 ? 'Male' : 'Female';?>"></i>
+                <?php } ?>
+
+                <input required="required" type="radio" class="form-control" id="gender_1" name="gender" value="1" <?php
+                    if (isset($this->staffTemp['gender'])){
+                        echo ($this->staffTemp['gender'] == 1 ? 'checked' : '');
+                    } elseif (isset($this->currentStaff['gender'])) {
+                        echo ($this->currentStaff['gender'] == 1 ? 'checked' : '');
+                    }
+                ?>><span>Male</span>
+                <input required="required" type="radio" class="form-control" id="gender_2" name="gender" value="0" <?php
+                    if (isset($this->staffTemp['gender'])){
+                        echo ($this->staffTemp['gender'] == 0 ? 'checked' : '');
+                    } elseif (isset($this->currentStaff['gender'])) {
+                        echo ($this->currentStaff['gender'] == 0 ? 'checked' : '');
+                    }
+                ?>><span>Female</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="department" class="control-label">Department</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->teamsCached[$this->currentStaff['department']]) ? $this->teamsCached[$this->currentStaff['department']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['department']) and isset($this->afterData['department'])
+                    and (
+                        $this->beforeData['department'] != $this->afterData['department']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo (isset($this->teamsCached[$this->beforeData['department']]) ? $this->teamsCached[$this->beforeData['department']] : '');?>"></i>
+                <?php } ?>
+
+                <select name="department" id="department" required>
+                    <option value>Choose</option>
+                    <?php if (isset($this->recursiveDeparmentTeamTitle)): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php
+                            if (isset($this->staffTemp['department'])){
+                                echo ($this->staffTemp['department'] == $item_id ? 'selected' : '');
+                            } elseif (isset($this->currentStaff['department'])) {
+                                echo ($this->currentStaff['department'] == $item_id ? 'selected' : '');
+                            }
+                            ?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="team" class="control-label">Team</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->teamsCached[$this->currentStaff['team']]) ? $this->teamsCached[$this->currentStaff['team']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['team']) and isset($this->afterData['team'])
+                    and (
+                        $this->beforeData['team'] != $this->afterData['team']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo (isset($this->teamsCached[$this->beforeData['team']]) ? $this->teamsCached[$this->beforeData['team']] : '');?>"></i>
+                <?php } ?>
+
+                <select name="team" id="team" required>
+                    <option value>Choose</option>
+                    <?php
+                        $department = null;
+                        if (isset($this->staffTemp['department'])){
+                            $department = $this->staffTemp['department'];
+                        } elseif (isset($this->currentStaff['department'])) {
+                            $department = $this->currentStaff['department'];
+                        }
+
+                    if (isset($this->recursiveDeparmentTeamTitle[$department]['children'])): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle[$department]['children'] as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php
+                                if (isset($this->staffTemp['team'])){
+                                    echo ($this->staffTemp['team'] == $item_id ? 'selected' : '');
+                                } elseif (isset($this->currentStaff['team'])) {
+                                    echo ($this->currentStaff['team'] == $item_id ? 'selected' : '');
+                                }
+                            ?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="title" class="control-label">Job Title</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->teamsCached[$this->currentStaff['title']]) ? $this->teamsCached[$this->currentStaff['title']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['title']) and isset($this->afterData['title'])
+                    and (
+                        $this->beforeData['title'] != $this->afterData['title']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo (isset($this->teamsCached[$this->beforeData['title']]) ? $this->teamsCached[$this->beforeData['title']] : '');?>"></i>
+                <?php } ?>
+
+                <select name="title" id="title" required>
+                    <option value>Choose</option>
+                    <?php
+                        $team = null;
+                        if (isset($this->staffTemp['team'])){
+                            $team = $this->staffTemp['team'];
+                        } elseif (isset($this->currentStaff['team'])) {
+                            $team = $this->currentStaff['team'];
+                        }
+
+                    if (isset($this->recursiveDeparmentTeamTitle[$department]['children'][$team]['children'])): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle[$department]['children'][$team]['children'] as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php
+                            if (isset($this->staffTemp['title'])){
+                                echo ($this->staffTemp['title'] == $item_id ? 'selected' : '');
+                            } elseif (isset($this->currentStaff['title'])) {
+                                echo ($this->currentStaff['title'] == $item_id ? 'selected' : '');
+                            }
+                            ?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="joined_at" class="control-label">Joined at</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo date('d/m/Y',strtotime($this->currentStaff['joined_at']));?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['joined_at']) and isset($this->afterData['joined_at'])
+                    and (
+                        $this->beforeData['joined_at'] != $this->afterData['joined_at']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo date('d/m/Y',strtotime($this->beforeData['joined_at']));?>"></i>
+                <?php } ?>
+
+                <input type="text" class="date" required id="joined_at" placeholder="Enter Joined at" name="joined_at" value="<?php
+                echo (
+                    isset($this->staffTemp['joined_at']) ? ($this->staffTemp['joined_at'] ? date('d/m/Y',strtotime($this->staffTemp['joined_at'])) : '') : (
+                        isset($this->currentStaff['joined_at']) ? ( $this->currentStaff['joined_at'] ? date('d/m/Y',strtotime($this->currentStaff['joined_at'])) : '') : ''
+                        )
+                    );
+                ?>">
+            </div>
+        </div>
+
+    </div>
+
+    <!--  -->
+    <div class="span4">
+        <div class="control-group">
+            <label for="area_id" class="control-label">Area</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php
+                        $province = isset($this->provinceAllCached[$this->currentStaff['regional_market']]) ? $this->provinceAllCached[$this->currentStaff['regional_market']] : '';
+                        echo (isset($this->areasCached[$province['area_id']]) ? $this->areasCached[$province['area_id']] : '');
+                        ?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['regional_market']) and isset($this->afterData['regional_market'])
+                    and (
+                        $this->beforeData['regional_market'] != $this->afterData['regional_market']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php
+                    $province = isset($this->provinceAllCached[$this->beforeData['regional_market']]) ? $this->provinceAllCached[$this->beforeData['regional_market']] : '';
+                    echo (isset($this->areasCached[$province['area_id']]) ? $this->areasCached[$province['area_id']] : '');
+                    ?>"></i>
+                <?php } ?>
+
+                <select id="area_id" name="area_id" required="required">
+                    <option value>Choose</option>
+                    <?php
+                    if (isset($this->areasCached) && $this->areasCached) :
+                        foreach ($this->areasCached as $_key => $_value):
+                            ?>
+                            <option value="<?php echo $_key ;?>" <?php
+                            if (isset($this->tempArea['id'])){
+                                echo ($this->tempArea['id'] == $_key ? 'selected' : '');
+                            } elseif (isset($this->currentArea['id'])) {
+                                echo ($this->currentArea['id'] == $_key ? 'selected' : '');
+                            }
+                            ?>><?php echo $_value;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="regional_market" class="control-label">Province</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->all_province_cache[$this->currentStaff['regional_market']]) ? $this->all_province_cache[$this->currentStaff['regional_market']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['regional_market']) and isset($this->afterData['regional_market'])
+                    and (
+                        $this->beforeData['regional_market'] != $this->afterData['regional_market']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo (isset($this->all_province_cache[$this->beforeData['regional_market']]) ? $this->all_province_cache[$this->beforeData['regional_market']] : '');?>"></i>
+                <?php } ?>
+
+                <select id="regional_market" name="regional_market" required="required">
+                    <option value>Choose</option>
+                    <?php
+                    $regionalMarkets = null;
+                    if (isset($this->tempRegionalMarkets))
+                        $regionalMarkets = $this->tempRegionalMarkets;
+                    elseif (isset($this->currentRegionalMarkets))
+                        $regionalMarkets = $this->currentRegionalMarkets;
+
+                    if ($regionalMarkets) :
+                        foreach ($regionalMarkets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php
+                            if (isset($this->tempRegionalMarket['id'])){
+                                echo ($this->tempRegionalMarket['id'] == $regional_market->id ? 'selected' : '');
+                            } elseif (isset($this->currentRegionalMarket['id'])) {
+                                echo ($this->currentRegionalMarket['id'] == $regional_market->id ? 'selected' : '');
+                            }
+                            ?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="company_id" class="control-label">Company</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->companies[$this->currentStaff['company_id']]) ? $this->companies[$this->currentStaff['company_id']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['company_id']) and isset($this->afterData['company_id'])
+                    and (
+                        $this->beforeData['company_id'] != $this->afterData['company_id']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo (isset($this->companies[$this->beforeData['company_id']]) ? $this->companies[$this->beforeData['company_id']] : '');?>"></i>
+                <?php } ?>
+
+                <select name="company_id" id="company_id" required>
+                    <option value>---</option>
+                    <?php if (isset($this->companies) && $this->companies): ?>
+                        <?php foreach ($this->companies as $key => $value): ?>
+                            <option value="<?php echo $key ?>" <?php
+                            if (isset($this->staffTemp['company_id'])){
+                                echo ($this->staffTemp['company_id'] == $key ? 'selected' : '');
+                            } elseif (isset($this->currentStaff['company_id'])) {
+                                echo ($this->currentStaff['company_id'] == $key ? 'selected' : '');
+                            }
+                            ?>><?php echo $value ?></option>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="phone_number" class="control-label">Phone number</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['phone_number'];?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['phone_number']) and isset($this->afterData['phone_number'])
+                    and (
+                        $this->beforeData['phone_number'] != $this->afterData['phone_number']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['phone_number'];?>"></i>
+                <?php } ?>
+
+                <input type="tel" id="phone_number" placeholder="Enter Phone number" name="phone_number" value="<?php echo (
+                isset($this->staffTemp['phone_number']) ? $this->staffTemp['phone_number'] : (
+                        isset($this->currentStaff['phone_number']) ? $this->currentStaff['phone_number'] : ''
+                    )
+                );?>">
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label for="temp_note" class="control-label">Temporary Note</label>
+            <div class="controls">
+                <textarea rows="6" name="temp_note" id="temp_note"><?php
+                    if (isset($this->staffTemp) and $this->staffTemp)
+                        printf($this->staffTemp['note']);
+                    ?></textarea>
+            </div>
+        </div>
+
+        <?php if (isset($this->approve) and $this->approve) {?>
+            <div class="control-group">
+                <label for="group" class="control-label">Group</label>
+                <div class="controls">
+                    <select id="group" name="group_id" required="required">
+                        <option value>----</option>
+                        <?php foreach ($this->groups as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" <?php
+                                if (isset($this->currentStaff['group_id']) and $this->currentStaff['group_id'])
+                                    echo ($this->currentStaff['group_id'] == $_key ? 'selected' : '');
+                            ?>><?php echo $_value;?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="note" class="control-label">Note</label>
+                <div class="controls">
+                    <textarea rows="6" name="note" id="note"><?php
+                        if (isset($this->currentStaff['note']) and $this->currentStaff['note']){
+                            echo $this->currentStaff['note'];
+                        }
+                        ?></textarea>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="myTags" class="control-label">Tags</label>
+                <div class="controls">
+                    <ul id="myTags"><?php
+                        if (isset($this->currentTags) and $this->currentTags):
+                            foreach ($this->currentTags as $ta)
+                                echo '<li>'.$ta.'</li>';
+                        endif;
+                        ?></ul>
+                </div>
+            </div>
+        <?php } ?>
+
+    </div>
+</div>

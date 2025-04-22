@@ -1,0 +1,27 @@
+<?php 
+
+	$QOrg = new Application_Model_Org();
+	$org_result = $QOrg->fetchAll();
+
+	$org_list = array();
+	foreach ($org_result as $key => $value) {
+		$org_list[ $value['org_id'] ] = $value['store_type_id'];
+	}
+
+	if (isset($this->stores) && $this->stores) {
+
+		if ($this->stores->count() == 0) { echo "<option value>ທ່ານຍັງບໍ່ທັນມີຮ້ານຄ້າ</option>"; } 
+		else { echo "<option value>ເລືອກຮ້ານ</option>"; }
+
+		foreach ($this->stores as $key => $store) {
+			
+			$chk_bs = 1;
+			// if ( $org_list[ $store['org_dealer'] ] == 3 || $store['org_dealer'] == 18 ) { $chk_bs = 1; }
+			// else { $chk_bs = 0; }
+
+			echo "<option value='".$store['id']."' data-bs='".$chk_bs."'>".$store['name']."</option>";
+		}
+
+	}
+
+?>

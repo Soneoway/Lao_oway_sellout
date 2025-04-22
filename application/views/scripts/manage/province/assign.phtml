@@ -1,0 +1,135 @@
+<div class="page-header">
+    <h1>Assign Staff to Province</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="row-fluid">
+	<div class="span6">
+	    <legend>Province</legend>
+        <div class="row-fluid">
+            <div class="control-group">
+                <label>Search Area</label>
+                <select name="s_area" id="s_area" class="span5">
+                    <option>-- Choose a Area --</option>
+                    <?php if (isset($this->areas) and $this->areas): ?>
+                        <?php foreach ($this->areas as $area): ?>
+                            <option value="<?php echo $area['id'] ?>"><?php echo $area['name'] ?></option>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+	    <div class="row-fluid">
+	        <div class="control-group">
+	            <label>List</label>
+	            <div class="provinces load-ajax">
+	                <?php echo $this->partial('manage/regional-market/partials/searchname.phtml',array(
+	                	'regional_markets' => $this->regional_markets,
+	                )); ?>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="span6">
+        <legend>Staff</legend>
+        <div class="row-fluid">
+            <div class="control-group">
+                <label for="s_name">Search</label>
+                <input type="text" class="form-control span5" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+            </div>
+            <div class="control-group">
+                <label>Result</label>
+                <div class="name load-ajax">
+                    <?php echo $this->partial('staff/partials/searchname.phtml',array(
+                    	'rm_list' => $this->rm_list,
+                    )); ?>
+                </div>
+            </div>
+            <div class="row-fluid">
+        		<label class="span2">Province</label>
+            	<span class="span3 help-block" id="staff_region"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+	<button type="button" id="add_btn" class="btn btn-primary">Assign</button>
+</div>
+<div class="row-fluid">
+	<div class="table-responsive load-ajax"></div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $( "#s_area" ).change(function() {
+            $('.loading').remove();
+            $('.table-responsive.load-ajax').html('');
+            var _self = $(this);
+            var targetUrl = '<?php echo HOST."manage/regional-market?area=" ?>' + $('#s_area option:selected').val();
+
+            //get ajax content
+            var aj = $('.provinces.load-ajax');
+            if (aj.length){
+                _self.after("<span class=\'loading\'></span>");
+                $.get(targetUrl
+                    ,function(data,status){
+                        aj.html(data);
+                        _self.next('.loading').remove();
+                    });
+            }
+
+            return false;
+        });
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&name=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = $('.name.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            aj.html(data);
+                            _self.next('.loading').remove();
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $("#add_btn").click(function(){
+        	var reg_id = $('#reg_result option:selected').val();
+            var staff_id = $('#name_result option:selected').val();
+            $('.label').remove();
+        	$('.loading').remove();
+
+            if (reg_id !== undefined && staff_id !== undefined) {
+            	
+            	$("#add_btn").after("<span class=\'loading\'></span>");
+            	var post_var = {id: staff_id, regional_market: reg_id};
+            	$.post( '<?php echo HOST."staff/assign" ?>',
+	        		post_var,
+	        		function( data ) {
+	        			$('.loading').remove();
+	        			data = $.parseJSON(data);
+	        			if (data.result == '1') {
+		        			$("#add_btn").after("<span class='label label-success'>Saved</span>");
+	        			} else {
+		        			$("#add_btn").after('<span class="label label-important">Failed</span>');
+	        			}
+	        			
+				});
+            }
+        });
+    });
+</script>

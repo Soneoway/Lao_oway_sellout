@@ -1,0 +1,85 @@
+<style>
+    #laocolor{
+        font-family: phetsarath ot;
+        color: blue;
+        font-style: bold;
+    }
+</style>
+<?php /**
+ * @author  Buu <buu.pham@oppomobile.vn>
+ */ ?>
+<form role="form" id="form" action="<?php if (isset($this->createBasic) and $this->createBasic) {?><?php echo HOST ?>staff/save-basic<?php } else {?><?php echo HOST ?>staff/save<?php }?>" class="form-horizontal" method="post" enctype="multipart/form-data">
+    <div class="row-fluid">
+        <div class="span12">
+            <?php if (isset($this->staff)): ?>
+                <legend>
+                    <?php if (isset($this->staff['firstname'])) echo $this->staff['firstname'] ?> <?php if (isset($this->staff['lastname'])) echo $this->staff['lastname'] ?>
+                    -
+                    <small>
+                        <?php $info = array(); ?>
+                        <?php if (isset($this->staff['code'])) $info[] = $this->staff['code'] ?>
+                        <?php if (isset($this->staff['gender']) && $this->staff['gender']) $info[] = "Male"; else $info[] = "Female"; ?>
+                        <?php if (isset($this->staff['email'])) $info[] = $this->staff['email'] ?>
+                        <?php echo implode(' - ', $info) ?>
+                    </small>
+
+                    <?php
+                        $stt = '';
+                        switch ($this->staff['status']) {
+                            case My_Staff_Status::On:
+                                $stt = 'success';
+                                break;
+                            case My_Staff_Status::Off:
+                                $stt = 'important';
+                                break;
+                            case My_Staff_Status::Temporary_Off:
+                                $stt = 'warning';
+                                break;
+                            default:
+                                $stt = 'default';
+                                break;
+                        }
+                    ?>
+                    <span class="label label-<?php echo $stt ?>"><?php echo My_Staff_Status::get($this->staff['status']) ?></span>
+                </legend>
+
+            <?php endif ?>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <p class="pull-right">
+                <input type="hidden" name="id" id="id" value="<?php isset($this->staff) and $this->staff and printf($this->staff->id);?>">
+                <input type="hidden" name="createBasic" id="createBasic" value="<?php isset($this->createBasic) and $this->createBasic and printf($this->createBasic);?>">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </p>
+        </div>
+    </div>
+
+    <div id="alert" style="display:none;" class="alert alert-error"></div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_basic_info" data-toggle="tab" id="laocolor">Basic Info <br> ຂໍ້ມູນທົ່ວໄປ</a></li>
+                <li><a href="#tab_personal_info" data-toggle="tab" id="laocolor">Personal Info <br> ຂໍ້ມູນສ່ວນຕົວ</a></li>
+                <li><a href="#tab_edu_exp" data-toggle="tab">Education &amp; Expericences</a></li>
+                <li><a href="#tab_contract" data-toggle="tab">Contract &amp; Insurance &amp; Tax Person</a></li>
+                <li><a href="#tab_relative_person" data-toggle="tab">Relative Persons</a></li>
+                <li><a href="#tab_transfer" data-toggle="tab">Transfer Of Work</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_basic_info"><?php echo $this->render( 'staff/partials/form-basic-info.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_personal_info"><?php echo $this->render( 'staff/partials/form-personal-info.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_edu_exp"><?php echo $this->render( 'staff/partials/form-edu-exp.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_contract"><?php echo $this->render( 'staff/partials/form-contract.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_relative_person"><?php echo $this->render( 'staff/partials/form-relative-person.phtml' ) ?></div>
+                <div class="tab-pane" id="tab_transfer"><?php echo $this->render( 'staff/partials/form-transfer.phtml' ) ?></div>
+            </div>
+        </div>
+    </div>
+</form>

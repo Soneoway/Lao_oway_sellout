@@ -1,0 +1,759 @@
+<?php 
+    // print_r($this->params);
+
+    $d = explode('/', $this->params['from']);
+    $from = $d[2].'-'.$d[1].'-'.$d[0];
+
+    $d = explode('/', $this->params['to']);
+    $to = $d[2].'-'.$d[1].'-'.$d[0];
+
+    if ($this->params['report_type'] == 1) {
+        $period_loop = ( (strtotime($to) - strtotime($from)) / (24*60*60) ) + 1;
+    } else {
+       
+        $start = new DateTime($from);
+        $end   = new DateTime( date("Y-m-30", strtotime($to)) );
+
+        $diff  = $start->diff($end);
+        $period_loop = $diff->format('%y') * 12 + $diff->format('%m') + 1;
+    }
+    
+    // echo $period_loop;
+
+    if ( isset($this->params['asm']) && $this->params['asm']) { 
+        $flag = 1; 
+        echo "<div id='sellout_analysis_by_area_chart_02'></div>";
+    } else { 
+        $flag = 0; 
+        echo "<div id='sellout_analysis_by_area_chart_01'></div>";
+        echo "<div id='sellout_analysis_by_area_chart_02'></div>";
+    } 
+?>
+<!-- 
+<div id='sellout_analysis_by_area_chart'></div> 
+<div id='sellout_analysis_by_area_chart_01'></div>
+<div id='sellout_analysis_by_area_chart_02'></div>
+-->
+<br />
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align:middle;"><div align="center">No.</div></th>
+        <th style="vertical-align:middle;"><div align="center">Area</div></th>
+        <?php  
+
+            for ($i=0;$i<$period_loop;$i++) {
+
+                $head_color = "";
+                if ($this->params['report_type'] == 1) {
+
+                    $day_name = date('D', strtotime("+".$i." Day", strtotime($from)));
+                    $day_text =  date('d M', strtotime("+".$i." Day", strtotime($from)));
+
+                    if ( in_array($day_name, array('Sat','Sun')) ) { $head_color = "color:red;"; }
+
+                } else {
+                    $day_text =  date('M-Y', strtotime("+".$i." Month", strtotime($from)));
+                }
+
+                echo "<th style='vertical-align:middle; ".$head_color."' ><div align='center'>".$day_text."</div></th>";
+            }
+
+        ?>
+        <th style="vertical-align:middle;"><div align="center">Total</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+        $y_max = $y_temp = 0;
+        $y_max_01 = $y_temp_01 = 0;
+        $y_max_02 = $y_temp_02 = 0;
+        $series = $series_01 = $series_02 = array();
+
+        if (isset($this->sellout) and $this->sellout) {
+
+            $data = $this->sellout;
+
+            if ( $flag == 1 ) {
+
+                $data_02 = $data;
+
+            } else {
+                
+                $data_01[0] = $data[0];
+                $data_02 = $data;
+
+                unset($data_02[0]);
+                $data_02 = array_values($data_02);
+            }
+
+            // echo "<pre>"; print_r($data); echo "<br/>";
+            // echo "<pre>"; print_r($data_01); echo "<br/>";
+            // echo "<pre>"; print_r($data_02); echo "<br/>";
+
+            // Data for Chart 01
+            for ($i=0;$i<count($data_01);$i++) {
+                
+                $series_01[$i] = array(
+                    'text'       => $data_01[$i]['zone_name'],
+                    // 'line-color' => '#4dbac0',
+                    'line-width' => '2px',
+                    'shadow'     => 0,
+                    'palette'    => $i,
+                    'marker'     => array(
+                                        'background-color' => '#fff',
+                                        'size'             => 3,
+                                        'border-width'     => 1,
+                                        // 'border-color'     => '#36a2a8',
+                                        'shadow'           => 0,
+                                    ),
+                );
+
+                for ($j=0;$j<$period_loop;$j++) {
+
+                    if ($this->params['report_type'] == 1) {
+
+                        $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                    } else {
+                        $day_text =  date('M-Y', strtotime("+".$j." Month", strtotime($from)));
+                    }
+
+                    $series_01[$i]['values'][$j] = $data_01[$i][$day_text];
+                    if ($data_01[$i][$day_text] >= $y_temp_01) { $y_temp_01 = $data_01[$i][$day_text]; }
+
+                }
+
+            }
+
+            // Data for Chart 02
+            for ($i=0;$i<count($data_02);$i++) {
+                
+                $series_02[$i] = array(
+                    'text'       => $data_02[$i]['zone_name'],
+                    // 'line-color' => '#4dbac0',
+                    'line-width' => '2px',
+                    'shadow'     => 0,
+                    'palette'    => $i,
+                    'marker'     => array(
+                                        'background-color' => '#fff',
+                                        'size'             => 3,
+                                        'border-width'     => 1,
+                                        // 'border-color'     => '#36a2a8',
+                                        'shadow'           => 0,
+                                    ),
+                );
+
+                for ($j=0;$j<$period_loop;$j++) {
+
+                    if ($this->params['report_type'] == 1) {
+
+                        $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                    } else {
+                        $day_text =  date('M-Y', strtotime("+".$j." Month", strtotime($from)));
+                    }
+
+                    $series_02[$i]['values'][$j] = $data_02[$i][$day_text];
+                    if ($data_02[$i][$day_text] >= $y_temp_02) { $y_temp_02 = $data_02[$i][$day_text]; }
+
+                }
+
+            }
+
+            // Set Y Range of Chart 02
+            if ( $y_temp_02 <= 100000 ) { $indicator_02 = 10000; }
+            if ( $y_temp_02 <= 10000 ) { $indicator_02 = 1000; }
+            if ( $y_temp_02 <= 1000 ) { $indicator_02 = 100; }
+            if ( $y_temp_02 <= 100 ) { $indicator_02 = 10; }
+            if ( $y_temp_02 <= 10 ) { $indicator_02 = 1; }
+
+            $y_max_02 = ceil($y_temp_02/$indicator_02) * $indicator_02;
+            
+            // Set Y Range of Chart 01
+            if ( $y_temp_01 <= 1000000 ) { $indicator_01 = 100000; }
+            if ( $y_temp_01 <= 100000 ) { $indicator_01 = 10000; }
+            if ( $y_temp_01 <= 10000 ) { $indicator_01 = 1000; }
+            if ( $y_temp_01 <= 1000 ) { $indicator_01 = 100; }
+            if ( $y_temp_01 <= 100 ) { $indicator_01 = 10; }
+            if ( $y_temp_01 <= 10 ) { $indicator_01 = 1; }
+
+            if ($this->params['report_type'] == 1) {
+                $y_max_01 = $indicator_01 + ($indicator_02 * 10);
+
+                if ( $y_max_01 < $y_temp_01 ) {
+
+                    while ( $y_max_01 < $y_temp_01 ) {
+                        $y_max_01 += str_pad("1",(strlen($y_max_01)-1),"0");
+                    }
+
+                }
+
+            } else {
+                $y_max_01 = ceil($y_temp_01/$indicator_01) * $indicator_01;
+            }
+            
+            // echo "Chart 02"; echo "<br/>";
+            // echo $indicator_02; echo "<br/>";
+            // echo $y_temp_02; echo "<br/>";
+            // echo $y_max_02; echo "<br/>";
+
+            // echo "Chart 01"; echo "<br/>";
+            // echo $indicator_01; echo "<br/>";
+            // echo $y_temp_01; echo "<br/>";
+            // echo $y_max_01; echo "<br/>";
+
+            $series_01 = json_encode($series_01, JSON_NUMERIC_CHECK);
+            $series_02 = json_encode($series_02, JSON_NUMERIC_CHECK);
+
+            // Data for Chart Main
+            for ($i=0;$i<count($data);$i++) {
+
+                // Data for Chart
+                $series[$i] = array(
+                    'text'       => $data[$i]['zone_name'],
+                    // 'line-color' => '#4dbac0',
+                    'line-width' => '2px',
+                    'shadow'     => 0,
+                    'palette'    => $i,
+                    'marker'     => array(
+                                        'background-color' => '#fff',
+                                        'size'             => 3,
+                                        'border-width'     => 1,
+                                        // 'border-color'     => '#36a2a8',
+                                        'shadow'           => 0,
+                                    ),
+                );
+
+                // Data for List
+                $cnt = $i + 1;
+
+                echo "<tr>";
+                echo "<td><div align='center'>".$cnt."</div></td>";
+                echo "<td>".$data[$i]['zone_name']."</td>";
+
+                for ($j=0;$j<$period_loop;$j++) {
+
+                    $td_color = "";
+                    if ($this->params['report_type'] == 1) {
+
+                        $day_name = date('D', strtotime("+".$j." Day", strtotime($from)));
+                        $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                        if ( in_array($day_name, array('Sat','Sun')) ) { $td_color = "style='background-color:#FFB3B3;'"; }
+                    } else {
+                        $day_text =  date('M-Y', strtotime("+".$j." Month", strtotime($from)));
+                    }
+
+                    echo "<td ".$td_color."><div align='right'>".$data[$i][$day_text]."</div></td>";
+
+                    $series[$i]['values'][$j] = $data[$i][$day_text];
+                    if ($data[$i][$day_text] >= $y_temp) { $y_temp = $data[$i][$day_text]; }
+
+                    $sum_day[$day_text] += $data[$i][$day_text];
+
+                }
+
+                echo "<td><div align='right'>".$data[$i]['sellout']."</div></td>";
+                echo "</tr>";
+
+            } 
+
+        }
+
+        if ($this->params['report_type'] == 1) { $indicator = 1000; } 
+        else { $indicator = 100000; }
+
+        // echo "<pre>"; print_r($data);
+        // echo "<pre>"; print_r($sum_day);
+
+        $y_max = ceil($y_temp/$indicator) * $indicator;
+        $series = json_encode($series, JSON_NUMERIC_CHECK);
+
+        // echo $y_max; echo "<br/>";
+        // echo $series; echo "<br/>";
+
+    ?>
+
+    </tbody>
+</table>
+<br/>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
+<script> 
+    zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9","ee6b7db5b51705a13dc2339db3edaf6d"];
+</script>
+
+<script type="text/javascript">
+
+var report_type = <?php echo $this->params['report_type']; ?>;
+var period_loop = <?php echo $period_loop; ?>;
+var from_date = '<?php echo $from; ?>';
+var model_list = '<?php echo $this->params['model_list']; ?>';
+
+var chart_name = 'Sellout Analysis By Area [All Model]';
+
+if (model_list != '') { chart_name = 'Sellout Analysis By Area ( '+model_list+' )'; }
+
+// KA Sellout
+var y_max = '<?php echo $y_max; ?>';
+var series = '<?php echo $series; ?>';
+
+var y_max_01 = '<?php echo $y_max_01; ?>';
+var series_01 = '<?php echo $series_01; ?>';
+
+var y_max_02 = '<?php echo $y_max_02; ?>';
+var series_02 = '<?php echo $series_02; ?>';
+
+var month_list = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+var x_list = [];
+var i;
+
+for (i = 0; i < period_loop; i++) { 
+    var date = new Date(from_date);
+
+    if ( report_type == 1 ) {
+
+        // Report Type : Days
+        date.setDate(date.getDate() + i);
+
+        var date_text = (date.getUTCDate()) + " " + month_list[(date.getUTCMonth())];
+        var date_name = date.getDay();
+
+        var x_string = "";
+        if ( date_name == 0 || date_name == 6) { x_string = "<span style='color:red;'>"+date_text+"</span>"; } 
+        else { x_string = date_text; }
+
+        x_list.push(x_string);
+
+        var y_range = "0:"+y_max+":1000";
+        var y_range_01 = "0:"+y_max_01+":1000";
+        var y_range_02 = "0:"+y_max_02+":1000";
+
+    } else {
+
+        // Report Type : Months
+        date.setMonth(date.getMonth() + i);
+        var date_text = month_list[(date.getUTCMonth())] + "-" + date.getUTCFullYear();
+
+        x_list.push(date_text);
+
+        var y_range = "0:"+y_max+":50000";
+        var y_range_01 = "0:"+y_max_01+":50000";
+        var y_range_02 = "0:"+y_max_02+":50000";
+    }
+
+    if (y_max_02 <= 100000) { y_range_02 = "0:"+y_max_02+":10000"; y_range_01 = "0:"+y_max_01+":100000";  } 
+    if (y_max_02 <= 10000) { y_range_02 = "0:"+y_max_02+":1000"; y_range_01 = "0:"+y_max_01+":10000";  } 
+    if (y_max_02 <= 1000) { y_range_02 = "0:"+y_max_02+":100"; y_range_01 = "0:"+y_max_01+":1000";  } 
+    if (y_max_02 <= 100) { y_range_02 = "0:"+y_max_02+":10"; y_range_01 = "0:"+y_max_01+":100";  } 
+    if (y_max_02 <= 10) { y_range_02 = "0:"+y_max_02+":1"; y_range_01 = "0:"+y_max_01+":10";  } 
+
+    
+
+
+}
+
+/*https://www.zingchart.com/gallery/chart/#!dashboard-custom-tokens*/
+zingchart.THEME = "classic";
+/*
+var sellout_analysis_by_area_config = {
+    "background-color":"#ecf2f6",
+    "graphset":[
+        {
+            "type":"line",
+            "background-color":"#fff",
+            "border-color":"#dae5ec",
+            "border-width":"1px",
+            "width":"96%",
+            "height":"80%",
+            "x":"2%",
+            "y":"3%",
+            "title":{
+                "margin-top":"7px",
+                "margin-left":"12px",
+                "text":chart_name,
+                "background-color":"none",
+                "shadow":0,
+                "text-align":"center",
+                "font-family":"Arial",
+                "font-size":"11px",
+                "font-color":"#707d94"
+            },
+            "plot":{
+                "animation":{
+                    "delay":500,
+                    "effect":"ANIMATION_SLIDE_LEFT"
+                },
+                "value-box": {},
+            },
+            "plotarea":{
+                "margin":"50px 25px 70px 46px"
+            },
+            "scale-y":{
+                // "values":"0:"+y_max+":100",
+                "values":y_range,
+                "line-color":"none",
+                "guide":{
+                    "line-style":"solid",
+                    "line-color":"#d2dae2",
+                    "line-width":"1px",
+                    "alpha":0.5
+                },
+                "tick":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-right":"5px"
+                }
+            },
+            "scale-x":{
+                "line-color":"#d2dae2",
+                "line-width":"2px",
+                "values":x_list,
+                "tick":{
+                    "line-color":"#d2dae2",
+                    "line-width":"1px"
+                },
+                "guide":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-top":"5px"
+                }
+            },
+            "legend":{
+                "layout":"x6",
+                "background-color":"none",
+                "shadow":0,
+                "margin":"425 auto 0 auto",
+                "border-width":"0px",
+                "item":{
+                    "font-color":"#707d94",
+                    "font-family":"Arial",
+                    "padding":"0px",
+                    "margin":"0px",
+                    "font-size":"9px"
+                },
+                "marker":{
+                    "show-line":"true",
+                    "type":"match",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "size":4,
+                    "line-width":2,
+                    "padding":"3px"
+                }
+            },
+            "crosshair-x":{
+                "lineWidth":1,
+                "line-color":"#707d94",
+                "plotLabel":{
+                    "shadow":false,
+                    "font-color":"#000",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px",
+                    "alpha":1
+                },
+                "scale-label":{
+                    "font-color":"#ffffff",
+                    "background-color":"#707d94",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px"
+                }
+            },
+            "tooltip":{
+                "visible":false
+            },
+            "series":JSON.parse(series),
+            
+        }
+    ]
+};
+*/
+var sellout_analysis_by_area_config_01 = {
+    "background-color":"#ecf2f6",
+    "graphset":[
+        {
+            "type":"line",
+            "background-color":"#fff",
+            "border-color":"#dae5ec",
+            "border-width":"1px",
+            "width":"96%",
+            "height":"80%",
+            "x":"2%",
+            "y":"3%",
+            "title":{
+                "margin-top":"7px",
+                "margin-left":"12px",
+                "text":chart_name,
+                "background-color":"none",
+                "shadow":0,
+                "text-align":"center",
+                "font-family":"Arial",
+                "font-size":"11px",
+                "font-color":"#707d94"
+            },
+            "plot":{
+                "animation":{
+                    "delay":500,
+                    "effect":"ANIMATION_SLIDE_LEFT"
+                },
+                "value-box": {},
+            },
+            "plotarea":{
+                "margin":"50px 25px 70px 46px"
+            },
+            "scale-y":{
+                // "values":"0:"+y_max+":100",
+                "values":y_range_01,
+                "line-color":"none",
+                "guide":{
+                    "line-style":"solid",
+                    "line-color":"#d2dae2",
+                    "line-width":"1px",
+                    "alpha":0.5
+                },
+                "tick":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-right":"5px"
+                }
+            },
+            "scale-x":{
+                "line-color":"#d2dae2",
+                "line-width":"2px",
+                "values":x_list,
+                "tick":{
+                    "line-color":"#d2dae2",
+                    "line-width":"1px"
+                },
+                "guide":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-top":"5px"
+                }
+            },
+            "legend":{
+                "layout":"x6",
+                "background-color":"none",
+                "shadow":0,
+                "margin":"425 auto 0 auto",
+                "border-width":"0px",
+                "item":{
+                    "font-color":"#707d94",
+                    "font-family":"Arial",
+                    "padding":"0px",
+                    "margin":"0px",
+                    "font-size":"9px"
+                },
+                "marker":{
+                    "show-line":"true",
+                    "type":"match",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "size":4,
+                    "line-width":2,
+                    "padding":"3px"
+                }
+            },
+            "crosshair-x":{
+                "lineWidth":1,
+                "line-color":"#707d94",
+                "plotLabel":{
+                    "shadow":false,
+                    "font-color":"#000",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px",
+                    "alpha":1
+                },
+                "scale-label":{
+                    "font-color":"#ffffff",
+                    "background-color":"#707d94",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px"
+                }
+            },
+            "tooltip":{
+                "visible":false
+            },
+            "series":JSON.parse(series_01),
+            
+        }
+    ]
+};
+
+var sellout_analysis_by_area_config_02 = {
+    "background-color":"#ecf2f6",
+    "graphset":[
+        {
+            "type":"line",
+            "background-color":"#fff",
+            "border-color":"#dae5ec",
+            "border-width":"1px",
+            "width":"96%",
+            "height":"80%",
+            "x":"2%",
+            "y":"3%",
+            "title":{
+                "margin-top":"7px",
+                "margin-left":"12px",
+                "text":chart_name,
+                "background-color":"none",
+                "shadow":0,
+                "text-align":"center",
+                "font-family":"Arial",
+                "font-size":"11px",
+                "font-color":"#707d94"
+            },
+            "plot":{
+                "animation":{
+                    "delay":500,
+                    "effect":"ANIMATION_SLIDE_LEFT"
+                },
+                "value-box": {},
+            },
+            "plotarea":{
+                "margin":"50px 25px 70px 46px"
+            },
+            "scale-y":{
+                // "values":"0:"+y_max+":100",
+                "values":y_range_02,
+                "line-color":"none",
+                "guide":{
+                    "line-style":"solid",
+                    "line-color":"#d2dae2",
+                    "line-width":"1px",
+                    "alpha":0.5
+                },
+                "tick":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-right":"5px"
+                }
+            },
+            "scale-x":{
+                "line-color":"#d2dae2",
+                "line-width":"2px",
+                "values":x_list,
+                "tick":{
+                    "line-color":"#d2dae2",
+                    "line-width":"1px"
+                },
+                "guide":{
+                    "visible":false
+                },
+                "item":{
+                    "font-color":"#8391a5",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding-top":"5px"
+                }
+            },
+            "legend":{
+                "layout":"x6",
+                "background-color":"none",
+                "shadow":0,
+                "margin":"425 auto 0 auto",
+                "border-width":"0px",
+                "item":{
+                    "font-color":"#707d94",
+                    "font-family":"Arial",
+                    "padding":"0px",
+                    "margin":"0px",
+                    "font-size":"9px"
+                },
+                "marker":{
+                    "show-line":"true",
+                    "type":"match",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "size":4,
+                    "line-width":2,
+                    "padding":"3px"
+                }
+            },
+            "crosshair-x":{
+                "lineWidth":1,
+                "line-color":"#707d94",
+                "plotLabel":{
+                    "shadow":false,
+                    "font-color":"#000",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px",
+                    "alpha":1
+                },
+                "scale-label":{
+                    "font-color":"#ffffff",
+                    "background-color":"#707d94",
+                    "font-family":"Arial",
+                    "font-size":"10px",
+                    "padding":"5px 10px",
+                    "border-radius":"5px"
+                }
+            },
+            "tooltip":{
+                "visible":false
+            },
+            "series":JSON.parse(series_02),
+            
+        }
+    ]
+};
+/*
+zingchart.render({ 
+    id : 'sellout_analysis_by_area_chart', 
+    data : sellout_analysis_by_area_config, 
+    height: 500, 
+    width: '100%' 
+});
+*/
+zingchart.render({ 
+    id : 'sellout_analysis_by_area_chart_01', 
+    data : sellout_analysis_by_area_config_01, 
+    height: 500, 
+    width: '100%' 
+});
+
+zingchart.render({ 
+    id : 'sellout_analysis_by_area_chart_02', 
+    data : sellout_analysis_by_area_config_02, 
+    height: 500, 
+    width: '100%' 
+});
+
+</script>

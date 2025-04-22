@@ -1,0 +1,303 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css ">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<div class="pull-right">
+    <strong> RGM : <b style="color:#a7cc69; font-size: 18px;"><?php echo $this->totalstaffbyposition['rd'];; ?></b> ||
+    </strong>
+    <strong> SALES : <b style="color:#e59866; font-size: 18px;"><?php echo $this->totalstaffbyposition['sales']; ?></b>
+        || </strong>
+    <strong> RM : <b style="color:#FF00FF; font-size: 18px;"><?php echo $this->totalstaffbyposition['asm']; ?></b> ||
+    </strong>
+    <strong> Trainer : <b style="color:#8500ee; font-size: 18px;"><?php echo $this->totalstaffbyposition['pcm']; ?></b>
+        || </strong>
+    <strong> PC : <b style="color:#a00000; font-size: 18px;"><?php echo $this->totalstaffbyposition['pc']; ?></b> ||
+    </strong>
+    <strong> PCDB : <b style="color:#45adef; font-size: 18px;"><?php echo $this->totalstaffbyposition['pcdb']; ?></b> ||
+    </strong>
+    <strong> Stock : <b style="color:#8769ad; font-size: 18px;"><?php echo $this->totalstaffbyposition['stock']; ?></b>
+        || </strong>
+    <strong> HR : <b
+            style="color:#76d7c4; font-size: 18px;"><?php echo $this->totalstaffbyposition['hr']+$this->totalstaffbyposition['hrsp']; ?></b>
+        ||</strong>
+    <strong> Other : <b style="color:#0000aa; font-size: 18px;"><?php echo $this->totalstaffbyposition['other']; ?></b>
+        || </strong>
+    <!-- <strong > Trainer : <b style="color:#ad948a; font-size: 18px;"><?php echo $this->totalstaffbyposition['trainer']; ?></b> ||</strong> -->
+    <!-- <strong > Translator : <b style="color:#ed3478; font-size: 18px;"><?php echo $this->totalstaffbyposition['translator']; ?></b> ||</strong> -->
+    <!-- <strong > Marketing : <b style="color:#45adef; font-size: 18px;"><?php echo $this->totalstaffbyposition['marketing']; ?></b> ||</strong> -->
+    <!-- <strong > Sale MKT : <b style="color:#23ef98; font-size: 18px;"><?php echo $this->totalstaffbyposition['salemkt']; ?></b> ||</strong> -->
+    <!-- <strong > Branding : <b style="color:#ad4598; font-size: 18px;"><?php echo $this->totalstaffbyposition['branding']; ?></b> ||</strong> -->
+    <strong style="color:#ff445e; font-size: 22px;"> Total : <b style="color:#ff445e; font-size: 20px;">
+            <?php echo $this->total; ?></b> </strong><br>
+</div>
+<div class="clearfix"></div>
+<div align="right">
+    =====================================================================================================================
+</div>
+<?php
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+$group_id = $userStorage->group_id;
+$issue_type = $result['issue_type'];
+?>
+<div class="pull-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<!-- <div class="pull-right">
+    <div class="dropdown">
+        <button class="dropbtn">Option</button>
+        <div class="dropdown-content">
+            <?php if ($group_id == ADMINISTRATOR_ID): ?>
+            <a class="btn-success" onclick="bulk_finish(0)">Enable</a>
+            <a class="btn-danger" onclick="bulk_finish(1)">Disable</a>
+            <?php endif; ?>
+        </div>
+    </div>
+</div> -->
+<table class="table table-bordered" id="dataTables">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Company',
+                    'code'         =>'Staff Code',
+                    'lastname'     =>'Staff Name',
+                    // 'email'        =>'Email',
+                    'regional_market'    =>'Province',
+                    // 'Department',
+                    // 'Team',
+                    'Group',
+                    'joined_at'    =>'Joined',
+                    //'regional_market'    =>'Province',
+                    'phone_number' =>'Phone No',
+                    'status'       =>'Status',
+                    'Action',
+                    // '<input type="checkbox" id="check-all">'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $QGroup = new Application_Model_Group();
+        $groups = $QGroup->get_cache_2();
+        $QRegionalMarket = new Application_Model_RegionalMarket();
+        $regionalMarket = $QRegionalMarket->get_cache();
+
+        // $staff_group='';
+        // if ($groups[$staff['group_id']] == 1) {
+        //     $staff_group = "Admintrator";
+        // }else{
+        //     $staff_group = $groups[$staff['group_id']];
+        // }
+
+        if (isset($this->staffs) and $this->staffs)
+            foreach ($this->staffs as $k=>$staff): ?>
+        <tr <?php
+            if ($staff['contract_expired_at']):
+            $datetime1 = new DateTime($staff['contract_expired_at']);
+            $today = new DateTime();
+            $interval = $datetime1->diff($today, false);
+            $interval = $interval->invert ? $interval->days : -$interval->days;
+            if ($interval<=14):?>style="background-color: cornsilk"
+            title="Contract is going to be out of date at <?php echo ($staff['contract_expired_at'] ? date('d/m/Y', strtotime($staff['contract_expired_at'])) : '');?>"
+            <?php endif;endif;?>>
+            <td>
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td><?php if($staff['company_id'] ==1) { echo "OPPO"; }else{ echo "Realme"; } ?></td>
+            <td><?php echo $staff['code'];?></td>
+            <td><?php echo $staff['firstname'].' '.$staff['lastname'];?></td>
+            <td><?php echo $regionalMarket[$staff['regional_market']]?></td>
+            <!-- <td <?php if (!$staff['email']):?> style="background-color: coral"<?php endif;?>><?php echo $staff['email'];?></td> -->
+            <!-- <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name'] : '');?></td> -->
+
+            <td><?php echo $groups[$staff['group_id']] ?></td>
+
+            <td><?php echo ($staff['joined_at'] ? date('d/m/Y', strtotime($staff['joined_at'])) : '');?></td>
+            <td><?php echo $staff['phone_number'];?></td>
+            <td><?php echo ( $staff['status']==1 ? 'Enabled' : 'Disabled' );?></td>
+            <td class="">
+                <?php $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+                   if ($userStorage->group_id == ADMINISTRATOR_ID || $userStorage->group_id == 7 ): ?>
+                <?php if ($this->userStorage->group_id == ADMINISTRATOR_ID  and $this->access('staff', 'priviledge')):?>
+                <a title="Priviledge" href="/staff/priviledge?id=<?php echo $staff['id'];?>"> <i
+                        class="icon-archive"></i></a>
+                <?php endif;?>
+
+                <?php if ($staff['staff_temp_id']){?>
+                <?php if (!$staff['staff_temp_is_approved']){?>
+                <?php if ($this->access('staff', 'approve-basic')){ ?>
+                <a title="Approve Basic Info" href="<?php echo '/staff/approve-basic?id='.$staff['staff_temp_id'];?>">
+                    <i class="icon-ok"></i></a>
+                <?php } ?>
+                <?php } else {?>
+                <?php if ($this->access('staff', 'create-basic')){ ?>
+                <a title="Create Basic Info" href="<?php echo '/staff/create-basic?id='.$staff['staff_temp_id'];?>"> <i
+                        class="icon-edit-sign"></i></a>
+                <?php }?>
+                <?php }?>
+                <?php } else {?>
+                <?php if ($this->access('staff', 'create-basic')){ ?>
+                <a title="Create Basic Info" href="<?php echo '/staff/create-basic?staff_id='.$staff['id'];?>"> <i
+                        class="icon-edit-sign"></i></a>
+                <?php } ?>
+                <?php } ?>
+
+                <?php if ($this->access('staff', 'create')): ?>
+                <a title="Edit"
+                    href="<?php echo '/staff/create?id='.$staff['id'].( ( isset($this->current_url) and $this->current_url ) ? '&'.urlencode('back_url='.$this->current_url) : '' ) ;?>">
+                    <i class="icon-edit"></i></a>
+                <?php endif;?>
+
+                <?php if ($staff['status']==1 and $this->access('staff', 'disable')):?>
+                <a title="Disable" class="confirmLink" href="/staff/disable?id=<?php echo $staff['id'];?>"> <i
+                        class="icon-ban-circle"></i></a>
+                <?php elseif($staff['status']==0 and $this->access('staff', 'enable')):?>
+                <a title="Enable" class="confirmLink" href="/staff/enable?id=<?php echo $staff['id'];?>"> <i
+                        class="icon-ok-circle"></i></a>
+                <?php endif;?>
+                <?php if($this->access('staff', 'quick-edit')):?>
+                <a href="#" class="label note_label" title="Click to view"
+                    data-id="<?php if(isset($staff['id']) && $staff['id']) echo $staff['id'] ?>">Edit</a>
+                <?php endif;?>
+                <?php if($this->access('staff', 'log')): ?>
+                <a href="<?php echo HOST ?>staff/log?object=<?php echo $staff['id'];?>" class="label label-info">Log</a>
+                <?php endif;?>
+                <?php endif;?>
+            </td>
+            <!-- <td>
+                <input type="checkbox" class="data-check" value="<?php echo $staff['id'];?>">
+            </td> -->
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<!-- <div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div> -->
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript">
+$modal = $('#modal');
+
+$('.note_label').click(function() {
+    var _self = $(this);
+
+    $('body').modalmanager('loading');
+    $('#note_content').html(_self.data('note'));
+    $('#note_id').val(_self.data('id'));
+
+    $modal.modal('loading');
+    noteid = _self.data('id');
+
+    $.ajaxSetup({
+        cache: true
+    });
+
+    $.post('<?php echo HOST ?>/staff/quick-edit', {
+            id: noteid,
+            back_url: '<?php echo HOST.$this->current_url; ?>'
+        },
+        function(data) {
+            $modal.html(data);
+            $modal.modal();
+            var name = _self.parents('tr').children('td:nth-child(2)').html();
+            $modal.find('h3').append(' <small>&bull; ' + name + '</small>');
+        });
+});
+</script>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css" />
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css" />
+
+<script type="text/javascript">
+$('#dataTables').DataTable({
+    "aLengthMenu": [
+        [10, 50, 100, 250, -1],
+        [10, 50, 100, 250, "All"]
+    ],
+    "pageLength": 10,
+    "language": {
+        "sLengthMenu": "ສະແດງ _MENU_ ຈຳນວນ",
+        "info": "ຢູ່ໜ້າທີ _PAGE_ ຫາ _PAGES_",
+        "infoEmpty": "ສະແດງໃຫ້ເຫັນ 0 ຫາ 0 ຂອງ 0 ລາຍການ",
+        "infoFiltered": "( ຈາກ _MAX_ ລາຍການທັງໝົດ )",
+        "search": "<b>ຄົ້ນຫາ</b>",
+        "zeroRecords": "ບໍ່ມີຂໍ້ມູນ",
+        "searchPlaceholder": "ໃສ່ຂໍ້ມູນ",
+        "paginate": {
+            previous: 'ກັບຄືນ',
+            next: 'ຕໍ່ໄປ'
+        }
+    }
+});
+
+//----------------------------------
+$("#check-all").click(function() {
+    $(".data-check").prop('checked', $(this).prop('checked'));
+});
+//----------------------------------
+
+function bulk_finish(status_id) {
+    var list_id = [];
+    $(".data-check:checked").each(function() {
+        list_id.push(this.value);
+    });
+    if (list_id.length > 0) {
+        if (status_id == 0) {
+            var title_id = '<font style="font-family: phetsarath ot">ທ່ານຕ້ອງການເປີດພະນັກງານຫຼືບໍ່?</font>';
+            var icons = 'success';
+            var base_url = '/staff/enable-bluk';
+        }
+        if (status_id == 1) {
+            var title_id = '<font style="font-family: phetsarath ot">ທ່ານຕ້ອງການປິດພະນັກງານຫຼືບໍ່?</font>';
+            var icons = 'error';
+            var base_url = '/staff/disable-bluk';
+        }
+        Swal.fire({
+            title: '' + title_id,
+            text: "Are you sure select this " + list_id.length + " data?",
+            icon: icons,
+            showCancelButton: true,
+            confirmButtonColor: '#ed9a03',
+            cancelButtonColor: '#ababab',
+            confirmButtonText: '<font style="font-family: phetsarath ot">ຢືນຢັ້ນ</font>',
+            cancelButtonText: '<font style="font-family: phetsarath ot">ຍົກເລີກ</font>'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        id: list_id,
+                        status_id: status_id
+                    },
+                    url: base_url,
+                    dataType: "JSON",
+                });
+            } else {
+                Swal.fire("Error", "no data selected", "error");
+            }
+        });
+
+    } else {
+        Swal.fire("Error", "no data selected", "error");
+    }
+}
+</script>
+
+
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>

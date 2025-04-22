@@ -1,0 +1,93 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Month-Year</div></th>
+        <th><div align="center">Area</div></th>
+        <th><div align="center">Staff Code</div></th>
+        <th><div align="center">Staff Name</div></th>
+        <th><div align="center">Group</div></th>
+        <th><div align="center">Un-Punish Type</div></th>
+        <th><div align="center">200k</div></th>
+        <th><div align="center">Index</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+
+
+            if ($this->unpunish_list) {
+                $data = $this->unpunish_list;
+                //print_r($data);
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $month_year = date('M Y', strtotime($data[$i]['from_date']));
+
+                    $con_01 = $con_02 = "<span class='label label-important'>No</span>";
+                    
+                    if ( $data[$i]['con_01'] == 1 ) { $con_01 = "<span class='label label-success'>Yes</span>"; }
+                    if ( $data[$i]['con_02'] == 1 ) { $con_02 = "<span class='label label-success'>Yes</span>"; }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$month_year."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_code']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['staff_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_group']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['unpunish_type']."</div></td>";
+                    echo    "<td><div align='center'>".$con_01."</div></td>";
+                    echo    "<td><div align='center'>".$con_02."</div></td>";
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='/manage/pc-unpunish-create?id=".$data[$i]['su_id']."'> <i class='icon-edit'></i></a>
+                                    <a title='Delete' class='confirmLink' href='/manage/pc-unpunish-del?id=".$data[$i]['su_id']."'> <i class='icon-trash'></i></a>
+                                </div>
+                            </td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    /*
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>manage/store-control-short-report',
+                {
+                    store_control_id : _self.data('store-control-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    */
+</script>

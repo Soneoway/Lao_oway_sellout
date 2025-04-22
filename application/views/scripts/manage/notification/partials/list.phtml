@@ -1,0 +1,47 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'title'      => 'Title',
+                'Content',
+                'created_at' => 'Created At',
+                'Action'
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->notifications) and $this->notifications)
+        foreach ($this->notifications as $k=>$notification): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                    
+                </td>
+                <td>
+                    <?php if (!isset( $notification['status'] ) || !$notification['status'] ) echo "<del>" ?>
+                        <a href="<?php echo HOST ?>manage/notification-create?id=<?php echo $notification['id'];?>"
+                                title="<?php echo $notification['title'] ?>"><?php echo My_String::excerpt($notification['title'], 100) ;?></a>
+                    <?php if (!isset( $notification['status'] ) || !$notification['status'] ) echo "</del>" ?>
+                </td>
+                <td><?php echo My_String::excerpt($notification['content'], 100) ?></td>
+                <td><?php if(isset($notification['created_at']) && $notification['created_at']) echo date('d/m/Y H:i:s', strtotime($notification['created_at']));?></td>
+                <td class="">
+                    <?php if (isset($notification['status']) && $notification['status']): ?>
+                        <a title="Disable" class="confirmLink btn btn-mini btn-inverse" href="/manage/notification-del?id=<?php echo $notification['id'];?>"> <i class="icon-ban-circle"></i></a> 
+                    <?php endif ?>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<?php echo $this->load();?>

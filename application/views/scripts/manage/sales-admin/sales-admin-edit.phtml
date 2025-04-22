@@ -1,0 +1,82 @@
+<style type="text/css">
+    .remove_btn {
+        margin-bottom: 9px;
+    }
+</style>
+<div class="page-header">
+    <h1>Edit Sales Admin</h1>
+</div>
+<form action="<?php echo HOST ?>manage/sales-admin-save" method="post">
+<div class="row-fluid">
+    <div class="span4">
+        <?php if (isset($this->staffs[ $this->id ]) && $this->staffs[ $this->id ]): ?>
+            <p>Sales Admin: <strong><?php echo $this->staffs[ $this->id ]; ?></strong></p>
+        <?php endif ?>
+    </div>
+    <div class="span4">
+            <div class="control-group">
+            <label id="anchor">Area</label>
+                <?php if (isset($this->asm) && $this->asm): ?>
+                    <?php foreach ($this->asm as $value): ?>
+                            <div class="area_select">
+                                <select name="area[]" class="form-control">
+                                    <option value>---</option>
+                                    <?php if (isset($this->areas) && $this->areas): ?>
+                                        <?php foreach ($this->areas as $a_id => $a_name): ?>
+                                            <option value="<?php echo $a_id ?>" <?php if($a_id == $value['area_id']) echo 'selected' ?>><?php echo $a_name ?></option>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <button type="button" class="btn btn-default remove_btn">&times;</button>
+                            </div>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-default" id="add_btn" type="button">Add more</button>
+            </div>
+            <input type="hidden" name="id" value="<?php if(isset($this->id) && $this->id) echo $this->id ?>">
+    </div>
+    <div class="span4">
+
+    </div>
+    
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" onclick="window.location='<?php echo HOST ?>manage/sales-admin'">Cancel</button>
+        </div>
+    </div>
+</div>
+</form>
+
+<script type="text/javascript">
+    select_area = 
+'<div class="area_select">'+
+    '<select name="area[]" class="form-control">'+
+        '<option value>---</option>'+
+        '<?php if (isset($this->areas) && $this->areas): ?>'+
+            '<?php foreach ($this->areas as $a_id => $a_name): ?>'+
+                '<option value="<?php echo $a_id ?>"><?php echo $a_name ?></option>'+
+            '<?php endforeach ?>'+
+        '<?php endif ?>'+
+    '</select>'+
+    ' <button type="button" class="btn btn-default remove_btn">&times;</button>'+
+'</div>';
+    $(document).ready(function() {
+        $('#add_btn').click(function() {
+            $('#anchor').parent('.control-group').append(select_area);
+            init_remove();
+        });
+
+        init_remove();
+    });
+
+    function init_remove() {
+        $('.remove_btn').click(function() {
+            $(this).parent('.area_select').remove();
+        });
+    }
+</script>

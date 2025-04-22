@@ -1,0 +1,76 @@
+<form class="form-search form-horizontal" method="get" action="/timing/headcount/headcount">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="selected_date" class="span2">Selected Date</label>
+                <input type="text" class="form-control search-query date span2" id="selected_date" name="selected_date" value="<?php isset($this->params['selected_date']) and printf($this->params['selected_date']);?>" >
+
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <!-- <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $id => $area):
+                            ?>
+                            <option value="<?php echo $id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($id, $this->params['area_id']) || $id==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area;?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+        </div>
+    </div>
+<button type="submit" class="btn btn-primary">Submit</button>
+<button type="submit" name="export" value="1" class="btn btn-success">By RD</button>
+<button type="submit" name="export" value="2" class="btn btn-success">By Position (Current)</button>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<!-- <script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/> -->
+
+
+<script type="text/javascript">
+
+    // options = {
+    //     selectAllText: 'Select All',
+    //     includeSelectAllOption: true,
+    //     includeSelectAllIfMoreThan: 3,
+    //     disableIfEmpty: true
+    // };
+
+    // // Multi-Select
+    // function multi() {
+    //     $('.multiselect').multiselect(options);
+    // }
+
+    $('.date').datepicker({ dateFormat: "dd/mm/yy" });
+
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        //multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+    });
+
+</script>

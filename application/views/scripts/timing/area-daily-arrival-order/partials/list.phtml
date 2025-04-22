@@ -1,0 +1,180 @@
+<?php 
+    // echo "<pre>"; print_r($this->order_list);
+    // print_r($this->total_order);
+
+    $data = array();
+    if (isset($this->order_list) and $this->order_list) { $data = $this->order_list; }
+
+    $total_ke = $delivered_ke = $pending_ke = 0;
+    $total_jt = $delivered_jt = $pending_jt = 0;
+
+    if (isset($this->total_order) and $this->total_order) { 
+
+        foreach ($this->total_order as $key => $value) {
+
+            switch ($value['company_logistics']) {
+                case 'Kerry':
+                    
+                    if ($value['kerry_status_code'] == 'POD') { $delivered_ke += 1; } 
+                    else { $pending_ke += 1; } 
+
+                    $total_ke += 1;
+                    break;
+
+                case 'J&T':
+                    
+                    if ($value['kerry_status_code'] == 'POD') { $delivered_jt += 1; } 
+                    else { $pending_jt += 1; } 
+
+                    $total_jt += 1;
+                    break;
+                
+                default: break;
+            }
+
+        }
+
+    }
+?>
+
+<table class="container" border="0">
+    <tr>
+        <td width="15%"></td>
+        <td width="10%"><img src="<?php echo HOST; ?>img/logo-ke.png" style="display:inline;"></td>
+        <td width="15%">
+            <table border="0" width="100%">
+                <tr><td align="center"><h4><?php echo number_format($delivered_ke)." / ".number_format($total_ke)." SO"; ?></h4></td></tr>
+                <tr><td align="center"><h4><font color='red'><?php echo "( ".number_format($pending_ke)." Pending )"; ?></font></h4></td></tr>
+            </table>
+        </td>
+        <td width="20%"></td>
+        <td width="10%"><img src="<?php echo HOST; ?>img/logo-jandt.png"></td>
+        <td width="15%">
+            <table border="0" width="100%">
+                <tr><td align="center"><h4><?php echo number_format($delivered_jt)." / ".number_format($total_jt)." SO"; ?></h4></td></tr>
+                <tr><td align="center"><h4><font color='red'><?php echo "( ".number_format($pending_jt)." Pending )"; ?></font></h4></td></tr>
+            </table>
+        </td>
+        <td width="15%"></td>
+    </tr>
+</table>
+
+<br/>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th width="3%"><div align="center">No.</div></th>
+        <th width="12%"><div align="center">Area</div></th>
+        <th width="5%"><div align="center">Dis ID</div></th>
+        <th width="15%"><div align="center">Distributor Name</div></th>
+        <th width="15%"><div align="center">Address</div></th>
+
+        <th width="10%"><div align="center">SO.</div></th>
+        <th width="10%"><div align="center">Con.</div></th>
+        <th width="10%"><div align="center">Created At</div></th>
+        <th width="5%"><div align="center">Phone</div></th>
+        <th width="5%"><div align="center">ACC</div></th>
+
+        <th width="5%"><div align="center">Status</div></th>
+        <th width="5%"><div align="center">Logistic</div></th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if ( !empty($data) ) {
+
+        foreach ($data as $key => $value) {
+
+            $inc = $this->offset + $key + 1;
+
+            $address = $value['address']." ".$value['district_name']." ".$value['amphure_name']." ".$value['provice_name']." ".$value['zipcode'];
+            $status = ($value['kerry_status_code']=='POD') ? "<span class='label label-success'>Delivered</span>" : "<span class='label'>Pending</span>";
+
+            echo "<tr>";
+            echo    "<td><div align='center'>".$inc."</td>";
+            echo    "<td><div align='center'>".$value['area_name']."</td>";
+            echo    "<td><div align='center'>".$value['d_id']."</td>";
+            echo    "<td><div align='left'>".$value['d_name']."</td>";
+            echo    "<td><div align='left'>".$address."</td>";
+
+            echo    "<td><div align='center'>".$value['sn_ref']."</td>";
+            echo    "<td><div align='center'>".$value['con_no']."</td>";
+            echo    "<td><div align='center'>".$value['add_time']."</td>";
+            echo    "<td><div align='center'>".$value['cnt_phone']."</td>";
+            echo    "<td><div align='center'>".$value['cnt_acc']."</td>";
+            echo    "<td><div align='center'>".$status."</td>";
+            echo    "<td><div align='center'>".$value['company_logistics']."</td>";
+
+            echo "</tr>";
+        }
+    }
+
+    ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<!-- 
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/> 
+-->
+
+<script>
+/*
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+*/
+</script>
+
+<?php //echo $this->load();?>

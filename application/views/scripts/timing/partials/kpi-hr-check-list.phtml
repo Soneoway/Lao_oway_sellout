@@ -1,0 +1,157 @@
+<style type="text/css">
+.kpi .total td {
+background-color: #D4FFD6 !important;
+}
+</style>
+<?php
+//print_r($this->sellout_last1);
+if ($this->kpi_type == "last") { $sellout = $this->sellout_last1; }
+else { $sellout = $this->sellout; }
+if (isset($sellout) && $sellout):
+//echo "test : ".$this->kpi_type;
+//print_r($this->sellout);
+?>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered kpi">
+        <caption><?php echo My_Kpi_Object::$name[ $this->sellout[0]['type'] ]; ?></caption>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Sell out</th>
+                <th>Activated</th>
+                <th>Not Activated</th>
+                <!-- <th>Activated [Commission]</th> -->
+                <th>COM/Unit</th>
+                <!-- <th>Total COM</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $length = count($sellout);
+            $sum_sellout = $sum_activated = $sum_not_activated = $sum_kpi = $sum_price = 0;
+            
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            for ($i=0;$i<$length;$i++) {
+            $cnt = $i + 1;
+            //$temp_kpi = $sellout[$i]['com_activated'] * $sellout[$i]['kpi'];
+            echo "<tr>";
+                //echo    "<td>".$cnt." / ".$sellout[$i]['id']."</td>";
+                echo    "<td>".$cnt."</td>";
+                echo    "<td>".$sellout[$i]['brand_name']." ".$sellout[$i]['good_name']."  ".$sellout[$i]['color_name']."<br/>".
+                    date_create_from_format("Y-m-d", $sellout[$i]['from_date'])->format("d/m/Y")." - ".
+                date_create_from_format("Y-m-d", $sellout[$i]['to_date'])->format("d/m/Y")  ."</td>";
+                //echo    "<td>".$sellout[$i]['total_sellout']."</td>";
+                echo "<td>";
+                    echo !empty($sellout[$i]['total_sellout']) ?
+                    '<span class="badge badge-default" data-type="1"
+                        data-staff-id="'.$userStorage->id.'"
+                        data-gkl-id="'.$sellout[$i]['id'].'"
+                        data-kpi-type="'.$this->kpi_type.'"
+                    >'.$sellout[$i]['total_sellout'].'</span>' : '0';
+                echo "</td>";
+                echo    "<td>".$sellout[$i]['activated']."</td>";
+                echo    "<td>".$sellout[$i]['not_activated']."</td>";
+                // echo    "<td>".$sellout[$i]['com_activated']."</td>";
+                //echo    "<td>".$sellout[$i]['kpi']."</td>";
+                /*
+                $chk_outsider = "";
+                $chk_outsider = substr($sellout[$i]['staff_code'], 0, 2);
+                if ( $chk_outsider == "16" || $chk_outsider == "17" ) { $com_rate_pc = $sellout[$i]['com_rate_aec']; }
+                else { $com_rate_pc = $sellout[$i]['com_rate']; }
+                */
+                $com_rate_pc = $sellout[$i]['com_rate'];
+                
+                $com_a83_sim_lock = 0;
+                $com_a3s_sim_lock = 0;
+                $notice_plus = "";
+                if ( $sellout[$i]['com_a83_sim_lock'] != 0 ) {
+                $com_a83_sim_lock = $sellout[$i]['com_a83_sim_lock'] * 60;
+                $notice_plus = "<br/><font color='green'>SimLocked COM : ".($com_a83_sim_lock/60)."x40</font>";
+                }
+                if ( $sellout[$i]['com_a3s_sim_lock'] != 0 ) {
+                $com_a3s_sim_lock = $sellout[$i]['com_a3s_sim_lock'] * 60;
+                $notice_plus = "<br/><font color='green'>SimLocked COM : ".($com_a3s_sim_lock/60)."x40</font>";
+                }
+                $temp_kpi = ($sellout[$i]['com_activated'] * $com_rate_pc) + $com_a83_sim_lock + $com_a3s_sim_lock;
+                echo    "<td>".$com_rate_pc.$notice_plus."</td>";
+                // echo    "<td>".$temp_kpi."</td>";
+            echo "</tr>";
+            $sum_sellout = $sum_sellout + $sellout[$i]['total_sellout'];
+            $sum_activated = $sum_activated + $sellout[$i]['activated'];
+            $sum_not_activated = $sum_not_activated + $sellout[$i]['not_activated'];
+            $sum_com_activated = $sum_com_activated + $sellout[$i]['com_activated'];
+            $sum_kpi = $sum_kpi + $temp_kpi;
+            $sum_price = $sum_price + $sellout[$i]['price'];
+            }
+            echo "<tr class='total' >";
+                echo    "<td>#</td>";
+                echo    "<td>Total</td>";
+                //echo    "<td>".$sum_sellout."</td>";
+                echo "<td>";
+                    echo !empty($sum_sellout) ?
+                    '<span class="badge badge-default" data-type="1"
+                        data-staff-id="'.$userStorage->id.'"
+                        data-gkl-id="0"
+                        data-kpi-type="'.$this->kpi_type.'"
+                    >'.$sum_sellout.'</span>' : '0';
+                echo "</td>";
+                echo    "<td>".$sum_activated."</td>";
+                echo    "<td>".$sum_not_activated."</td>";
+                // echo    "<td>".$sum_com_activated."</td>";
+                echo    "<td>-</td>";
+                // echo    "<td>".$sum_kpi."</td>";
+            echo "</tr>";
+            ?>
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="span6" >
+        <!-- <h3>รวม KPI: <?php echo number_format($sum_kpi); ?> คะแนน</h3> -->
+       
+        <!-- <h3>Commission ຄິດເປັນເງິນ:
+        <b style="color: blue;">
+            <?php
+        $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+        $QStaff = new Application_Model_Staff();
+        $where = $QStaff->getAdapter()->quoteInto('id = ?', $userStorage->id);
+        $result_staff = $QStaff->fetchRow($where);
+        // check work day for new staff
+        $created_at = strtotime($result_staff['joined_at']);
+        $now = time();
+        $diffdate = $now - $created_at;
+        $work_day = floor($diffdate/(60*60*24));
+        if ($work_day > 30) {
+        // if ($this->kpi_type == "last") {
+        //     $threshold = 20;
+        //     if ($sum_com_activated >= $threshold ) { $flag = 1; echo number_format($sum_kpi); }
+        //     else { $flag = 0; echo "0"; }
+        // } else {
+        $threshold = 200000;
+        if ($sum_price >= $threshold ) { $flag = 1; echo number_format($sum_kpi); }
+        else { $flag = 0; echo "0"; }
+        // }
+        
+        } else {
+        $flag = 1; echo number_format($sum_kpi);
+        }
+        ?>
+        ກີບ</h3>
+        <span style="font-size: 14px; color: red;">ການຄິດໄລ່ເງິນ commission ແມ່ນຈະໄລ່ສະເພາະເຄື່ອງທີ່ໄດ້ Activated ແລະ ຕ້ອງຢູ່ໃນເງື່ອນໄຂຂອງການລາຍງານຍອດທີ່ບໍລິສັດວາງອອກເທົ່ານັ້ນ.</span> -->
+
+        <!-- <h3>ຍອດຂາຍລວມ (Amount) : <?php echo number_format($sum_price); ?> ກີບ</h3>
+        <?php
+        if ($flag == 0) {
+        if ($this->kpi_type == "last") {
+            echo "<h5><font color='red'>Note - ยอดขายของคุณยังไม่ถึงเกณฑ์ (เกณฑ์คือ ยอดขาย Activated ตามเเงื่อนไขตั้งแต่ ".number_format($threshold)." เครื่องขึ้นไป)</font></h5>";
+        } else {
+        echo "<h5><font color='red'>Note - ຍອດຂາຍຂອງທ່ານບໍ່ຮອດຕາມເປົ້າທີ່ວາງໄວ້ (ຍອດຂາຍ Activated ຕາມເງື່ອນໄຂ ".number_format($threshold)." ກີບຂື້ນໄປ)</font></h5>";
+        }
+        
+        }
+        ?> -->
+    </div>
+</div>
+<?php endif ?>

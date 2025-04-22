@@ -1,0 +1,10 @@
+<div class="well">
+    <h4>Similar Store names - Please check carefully, DO NOT create duplicate stores</h4>
+    <?php if (isset($this->result) && $this->result): ?>
+        <ul>
+            <?php foreach ($this->result as $key => $value): ?>
+                <li <?php if ($this->id && $this->id == $key) echo 'style="color:red;font-weight:bold;"' ?>><?php echo $value ?></li>
+            <?php endforeach ?>
+        </ul>
+    <?php endif ?>
+</div>

@@ -1,0 +1,206 @@
+<div class="page-header">
+    <h1>Report Inventory By Dealer</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <form class="form-search form-horizontal" method="get">
+                    <div class="row">
+                        <div class="span5">
+                            <div class="control-group">
+                                <label for="name" class="span2">Name</label>
+                                <input id="name" name="name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+                            </div>
+
+                            <div class="control-group">
+                                <label for="area_id" class="span2">Area</label>
+                                <select id="area_id" name="area" class="span3">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->areas) :
+                                        foreach ($this->areas as $id => $area):
+                                            ?>
+                                            <option value="<?php echo $id;?>" <?php if (isset($this->params['area']) and $this->params['area']==$id):?>selected<?php endif;?>><?php echo $area;?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="regional_market" class="span2">Province</label>
+                                <select id="regional_market" name="regional_market" class="span3">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->regional_markets) :
+                                        foreach ($this->regional_markets as $_province):?>
+                                            <option value="<?php echo $_province['id'];?>" <?php if (isset($this->params['regional_market']) and $this->params['regional_market']==$_province['id']):?>selected<?php endif;?>><?php echo $_province['name'];?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="district" class="span2">District</label>
+                                <select id="district" name="district" class="span3">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if ($this->districts) :
+                                        foreach ($this->districts as $_district):?>
+                                            <option value="<?php echo $_district['id'];?>" <?php if (isset($this->params['district']) and $this->params['district']==$_district['id']):?>selected<?php endif;?>><?php echo $_district['name'];?></option>
+                                        <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!--<div class="span5">
+                            <div class="control-group">
+                                <label for="date" class="span2">From Date</label>
+                                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php /*isset($this->params['from']) and printf($this->params['from']);*/?>">
+
+                            </div>
+                            <div class="control-group">
+                                <label for="date" class="span2">To Date</label>
+                                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php /*isset($this->params['to']) and printf($this->params['to']);*/?>">
+                            </div>
+
+                            <div class="control-group">
+                                <label for="sales_from" class="span2">Sales >=</label>
+                                <input type="number" min="0" value="<?php /*if (isset($this->params['sales_from'])) echo $this->params['sales_from'];*/?>" id="sales_from" name="sales_from" />
+                            </div>
+
+                            <div class="control-group">
+                                <label for="sales_to" class="span2">Sales <=</label>
+                                <input type="number" min="0" value="<?php /*if (isset($this->params['sales_to'])) echo $this->params['sales_to'];*/?>" id="sales_to" name="sales_to" />
+                            </div>
+
+                        </div>-->
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="reset" class="btn btn-warning">Reset</button>
+                    <button type="submit" name="export" value="1" class="btn btn-info">Export</button>
+                </form>
+                <script>
+                    $(document).ready(function () {
+                        $('#area_id').change(function(){
+                            $(this).after('<span class="loading"></span>');
+                            var _self = $(this);
+                            var area_id = $(this).val();
+                            $.get("<?php echo HOST ?>staff/load-province",
+                                {area_id: area_id}
+                                ,function(data,status){
+                                    var obj = $.parseJSON( data );
+                                    $('#regional_market').find('option:not(:first)').remove();
+                                    $('#district').find('option:not(:first)').remove();
+
+                                    for (var i = 0; i < obj.length; i++) {
+                                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                                    }
+                                    _self.nextAll('.loading').remove();
+                                });
+                        });
+
+                        $('#regional_market').change(function(){
+                            $('form').bind('submit',function(e){e.preventDefault();});
+                            $('form button, form input, form select').prop('disabled', true);
+                            $('.loading').remove();
+
+                            $(this).after('<span class="loading"></span>');
+                            var _self = $(this);
+                            var region = $(this).val();
+                            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                                    region: region
+                                }
+                                ,function(data,status){
+                                    $('#district').find('option:not(:first)').remove();
+
+                                    try {
+                                        if (data) {
+                                            var obj = $.parseJSON( data );
+
+                                            for (var i = 0; i < obj.length; i++) {
+                                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                                            }
+                                        }
+
+                                    } catch(err) {
+
+                                    } finally {
+                                        $('.loading').remove();
+                                        $('form').unbind('submit');
+                                        $('form button, form input, form select').prop('disabled', false);
+                                    }
+                                });
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Name',
+                    'Area',
+                    'Province',
+                    'Total Sell In',
+                    'Total Activated',
+                    'Inventory',
+                ),
+                $this->url, $this->current_col, $this->desc); ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if (isset($this->result) and $this->result)
+        foreach ($this->result as $item): ?>
+            <tr>
+                <td>
+                    <?php
+                    echo $item['id'];
+                    ?>
+                </td>
+                <td><a href="/timing/analytics-inventory-by-dealer-detail?dealer_id=<?php echo $item['id']; ?>"><?php echo isset($this->distributorCached[$item['id']]['title']) ? $this->distributorCached[$item['id']]['title'] : '';?></a></td>
+                <td><?php echo isset($this->distributorCached[$item['id']]['area_name']) ? $this->distributorCached[$item['id']]['area_name'] : '';?></td>
+                <td><?php echo isset($this->distributorCached[$item['id']]['region_name']) ? $this->distributorCached[$item['id']]['region_name'] : '';?></td>
+                <td><?php echo isset($item['sum_sum2']) ? $item['sum_sum2'] : 0;?></td>
+                <td><?php echo isset($item['sum_sum1']) ? $item['sum_sum1'] : 0;?></td>
+                <td><?php
+                    echo (isset($item['sum_sum2']) ? $item['sum_sum2'] : 0) - (isset($item['sum_sum1']) ? $item['sum_sum1'] : 0);
+                    ?></td>
+            </tr>
+        <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

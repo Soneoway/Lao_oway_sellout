@@ -1,0 +1,47 @@
+<div class="page-header">
+    <?php if (isset($this->sub_district) and $this->sub_district):?>
+        <h1>Edit Sub District <small><?php echo $this->sub_district['name'] ?></small></h1>
+    <?php else:?>
+        <h1>Create Sub District</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form action="<?php echo HOST ?>manage/sub-district-save" method="post" class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="name">Sub District Name</label>
+        <div class="controls">
+            <input type="text" id="name" name="name" placeholder="Name" required 
+                value="<?php if (isset($this->sub_district['name']) && $this->sub_district['name']) 
+                            echo $this->sub_district['name'] ?>">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="name">District</label>
+        <div class="controls">
+            <select name="district" id="district" required>
+                <option value>---</option>
+                <?php if (isset($this->district) && $this->district): ?>
+                    <?php foreach ($this->district as $key => $value): ?>
+                        <option value="<?php echo $value['sub_dist_id'] ?>"
+                            <?php if (isset($this->sub_district['district']) && $value['sub_dist_id'] == $this->sub_district['district']) 
+                                    echo "selected" ?>><?php echo $value['sub_dist_name'] ?></option>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <input type="hidden" name="id" value="<?php if(isset($this->sub_district['id']) && $this->sub_district['id']) echo$this->sub_district['id'] ?>">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button class="btn btn-danger" onclick="window.location='<?php echo HOST ?>manage/sub-district'">Go Back</button>
+    </div>
+</form>

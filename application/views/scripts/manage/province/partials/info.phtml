@@ -1,0 +1,25 @@
+ <div class="row-fluid">
+    <div class="span6">
+        <div class="control-group">
+            <label for="name">Province Name</label>
+            <input type="text" class="form-control" id="name" name="name" required="required" value="<?php if (isset($this->regional_market)): echo $this->regional_market->name; endif;?>">
+        </div>
+
+        <div class="control-group">
+            <label for="area_id">Area</label>
+            <select id="area_id" name="area_id" class="form-control" required="required">
+                <option value="">Choose</option>
+                <?php
+                if ($this->areas) :
+                    foreach ($this->areas as $area):
+                        ?>
+                        <option value="<?php echo $area->id;?>" <?php if ( isset($this->regional_market->area_id) and $this->regional_market->area_id==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                    <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,79 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Area</div></th>
+        <th><div align="center">RD</div></th>
+        <th><div align="center">Assistant</div></th>
+        <th><div align="center">ASM</div></th>
+        <th><div align="center">PCM Leader</div></th>
+        <th><div align="center">Sale</div></th>
+        <th><div align="center">PCM</div></th>
+        <th><div align="center">TMS</div></th>
+        <th><div align="center">Total</div></th>
+        <th><div align="center">HR</div></th>
+        <th><div align="center">Sale Admin</div></th>
+        <th><div align="center">Management</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+
+            if ($this->mhl_list) {
+                $data = $this->mhl_list;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt = $this->offset + $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_rd']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_assist']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_asm']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_pcm_leader']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_sale']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_pcm']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_tms']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['cnt_total']."</div></td>";
+
+                    // HR Approve 
+                    if ($data[$i]['cnt_hr_approve_by'] > 0) {
+                        echo "<td><div align='center'><span class='label label-success'>Approved</span></div></td>";
+                    } else {
+                        echo "<td><div align='center'><span class='label label-info'>Waiting</span></div></td>";
+                    }
+
+                    // Admin Approve 
+                    if ($data[$i]['cnt_admin_approve'] > 0) {
+                        echo "<td><div align='center'><span class='label label-success'>Approved</span></div></td>";
+                    } else {
+                        echo "<td><div align='center'><span class='label label-info'>Waiting</span></div></td>";
+                    }
+
+                    // Management Approve 
+                    if ($data[$i]['cnt_mgt_approve'] > 0) {
+                        echo "<td><div align='center'><span class='label label-success'>Approved</span></div></td>";
+                    } else {
+                        echo "<td><div align='center'><span class='label label-info'>Waiting</span></div></td>";
+                    }
+
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='".HOST."manage/monthly-headcount-edit?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&month_year=".$data[$i]['month_year']."'><i class='icon-edit'></i></a>
+                                </div>
+                            </td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>

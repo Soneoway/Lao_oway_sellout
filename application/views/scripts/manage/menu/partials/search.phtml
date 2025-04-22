@@ -1,0 +1,36 @@
+<form class="form-search form-horizontal" method="get" action="/manage/menu">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="title" class="span2">Title</label>
+                <input id="title" name="title" type="text" class="form-control" value="<?php isset($this->params['title']) and printf($this->params['title']);?>">
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="parent_id" class="span2">Main Menu</label>
+                <select id="parent_id" name="parent_id" class="span3">
+                    <option value="">Choose</option>
+                        <?php foreach ($this->parents as $k => $parent): ?>
+                            <option value="<?php echo $k ?>"><?php echo $parent ?></option>
+                        <?php endforeach ?>
+                </select>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" id="reset_btn" class="btn btn-warning">Reset</button>
+</form>
+<script>
+    $(document).ready(function () {
+
+        $('#reset_btn').click(function(){
+            $('input, select').val('');
+            $('.form-search').submit();
+        });
+    });
+</script>

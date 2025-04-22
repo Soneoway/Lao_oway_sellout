@@ -1,0 +1,154 @@
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+
+<div class="page-header">
+    <h1>KPI Settings <small><?php if (isset($this->log) && $this->log) echo "Edit"; else echo "Add"; ?></small></h1>
+</div>
+
+<form class="form-horizontal" method="post" action="<?php echo HOST ?>hr-report/settings-save">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="">Product</label>
+                <div class="controls">
+                    <select name="good_id" id="good_id" required>
+                        <option value="0">---</option>
+                        <?php if (isset($this->goods) && $this->goods): ?>
+                            <?php 
+                                asort($this->goods);
+                                foreach ($this->goods as $key => $value): 
+                            ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->log['good_id']) && $this->log['good_id']==$key) echo "selected" ?>><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="">Color</label>
+                <div class="controls">
+                    <select name="color_id" id="color_id" required  >
+                        <option value>---</option>
+                        <?php if (isset($this->good_colors) && $this->good_colors): ?>
+                            <?php 
+                                asort($this->good_colors);
+                                foreach ($this->good_colors as $key => $value): 
+                            ?>
+                                <option value="<?php echo $key ?>" <?php if(isset($this->log['color_id']) && $this->log['color_id']==$key) echo "selected" ?>><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="from">From</label>
+                <div class="controls">
+                    <input type="text" class="date" name="from" id="from" autocomplete="off" value="<?php if(isset($this->log['from_date']) && strtotime($this->log['from_date'])) echo date('d/m/Y', strtotime($this->log['from_date'])); ?>" required>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="to">To</label>
+                <div class="controls">
+                    <input type="text" class="date" name="to" id="to" autocomplete="off" value="<?php if(isset($this->log['to_date']) && strtotime($this->log['to_date'])) echo date('d/m/Y', strtotime($this->log['to_date'])); ?>" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="kpi">KPI</label>
+                <div class="controls">
+                    <input type="text" required name="kpi" id="kpi" value="<?php if(isset($this->log['kpi'])) echo $this->log['kpi']; else echo '0'; ?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="com_rate">Com Rate</label>
+                <div class="controls">
+                    <input type="text" required name="com_rate" id="com_rate" value="<?php if(isset($this->log['com_rate'])) echo $this->log['com_rate']; else echo '0'; ?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="com_rate_aec">Com Rate [AEC]</label>
+                <div class="controls">
+                    <input type="text" required name="com_rate_aec" id="com_rate_aec" value="<?php if(isset($this->log['com_rate_aec'])) echo $this->log['com_rate_aec']; else echo '0'; ?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="price">Price</label>
+                <div class="controls">
+                    <input type="text" required name="price" id="price" value="<?php if(isset($this->log['price'])) echo $this->log['price']; else echo '0.00'; ?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="type">KPI For</label>
+                <div class="controls">
+                    <select name="type" id="type" required>
+                        <option value>---</option>
+                        <?php foreach (My_Kpi_Object::$name as $key => $value): ?>
+                            <option value="<?php echo $key ?>" <?php if(isset($this->log['type']) && $this->log['type']==$key) echo "selected" ?> ><?php echo $value ?>
+
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <input type="hidden" name="refer" value="<?php echo $this->refer ?>">
+            <input type="hidden" name="id" value="<?php if(isset($this->log['id'])) echo $this->log['id'] ?>">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="<?php echo HOST ?>hr-report/settings" class="btn btn-default">Cancel</a>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+
+<script> 
+
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+    });
+
+    $('#good_id').change(function(){
+            
+            var _self = $(this);
+            var good_id = $(this).val();
+
+            if (good_id == 0) {
+                alert('กรุณาเลือก Model ค่ะ');
+            } else {
+                $('.loading').remove();
+                $(this).after('<span class="loading"></span>');
+
+                $('button, .btn, input, select').prop('disabled', true);
+                $.get("/hr-report/load-good-color",
+                    {good_id: good_id}
+                    ,function(data,status){
+                        var obj = $.parseJSON( data );
+
+                        $('#color_id').find('option').remove();
+                        for (var i = 0; i < obj.length; i++) {
+                            $('#color_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                        }
+
+                        $('button, .btn, input, select').prop('disabled', false);
+                        //$('.multiselect').multiselect("destroy").multiselect(options);
+                        $('.loading').remove();
+                    });
+            }
+
+        });
+</script>

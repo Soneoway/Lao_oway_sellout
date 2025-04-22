@@ -1,0 +1,78 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/orders-out">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="sn" class="span2">SN</label>
+                <input id="sn" name="sn" type="text" class="input-medium search-query form-control" value="<?php if (isset($this->params['sn']))echo $this->params['sn']; ?>">
+            </div>
+
+            <div class="control-group">
+                <label for="confirmed_at_from" class="span2">Confirmed From</label>
+                <input id="confirmed_at_from" name="confirmed_at_from" type="text" class="input-medium search-query form-control date" value="<?php if (isset($this->params['confirmed_at_from'])) echo $this->params['confirmed_at_from'];?>">
+            </div>
+
+            <div class="control-group">
+                <label for="confirmed_at_to" class="span2">Confirmed To</label>
+                <input id="confirmed_at_to" name="confirmed_at_to" type="text" class="input-medium search-query form-control date" value="<?php if (isset($this->params['confirmed_at_to']))echo $this->params['confirmed_at_to']; ?>">
+            </div>
+            <div class="control-group">
+                <label for="status" class="span2">Status</label>
+                <select name="status">
+                    <option value="">Select</option>
+                    <?php $status = unserialize(ORDER_STATUS_TRAINING); foreach($status as $key => $value):?>
+                        <option value="<?php echo $key;?>" <?php if (isset($this->params['status']) and $this->params['status'] == $key):?> selected <?php endif;?> > <?php echo $value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="created_at_from" class="span2">Created From</label>
+                <input id="created_at_from" name="created_at_from" type="text" class="input-medium search-query form-control date" value="<?php if (isset($this->params['created_at_from'])) echo $this->params['created_at_from'];?>">
+            </div>
+
+            <div class="control-group">
+                <label for="created_at_to" class="span2">Created To</label>
+                <input id="created_at_to" name="created_at_to" type="text" class="input-medium search-query form-control date" value="<?php if (isset($this->params['created_at_to']))echo $this->params['created_at_to']; ?>">
+            </div>
+
+            <div class="control-group">
+                <label for="asset_id" class="span2">Asset</label>
+                <select name="asset_id">
+                    <option value="">Select</option>
+                    <?php if($this->type_asset) foreach($this->type_asset as $key => $value):?>
+                        <option value="<?php echo $key;?>" <?php if (isset($this->params['asset_id']) and $this->params['asset_id'] == $key):?> selected <?php endif;?> > <?php echo $value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="output_to_staff_id" class="span2">Output To Trainer</label>
+                <select name="output_to_staff_id">
+                    <option value="">Select</option>
+                    <?php if($this->list_trainer) foreach($this->list_trainer as $key => $value):?>
+                        <option value="<?php echo $key;?>" <?php if (isset($this->params['output_to_staff_id']) and $this->params['output_to_staff_id'] == $key):?> selected <?php endif;?> > <?php echo $value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="submit" name="export" value="1" class="btn btn-danger">Export</button>
+    <a href="/trainer/orders-out"><input id ="reset" type="button" value="Reset"class="btn btn-warning" ></a>
+
+</form>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script>
+    $(document).ready(function()
+    {
+        $('.date').mousedown( function(){
+            $(this).datepicker({ dateFormat: "yy-mm-dd" });
+        });
+    });
+</script>

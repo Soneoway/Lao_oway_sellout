@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OWAY Catty System</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/ico" href="/img/mini-icon.png" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <!--<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600"
+      rel="stylesheet">-->
+      <link href="/css/font-awesome.css" rel="stylesheet">
+      <link href="/css/style.css" rel="stylesheet">
+      <link href="/css/default.css" rel="stylesheet">
+      <link href="/css/pages/dashboard.css" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.10.1/sweetalert2.min.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.10.1/sweetalert2.min.js"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
+      <style>
+        * {
+            font-family: 'Noto Sans Lao', sans-serif;
+        }
+        
+        body{
+          font:12px normal Arial,sans-serif;
+          color:#34495E;
+      }
+
+      a{
+        color: #01867d;
+    }
+
+    h1{
+
+
+      letter-spacing:-2px;
+      font-size:2.5em;
+
+  }
+
+
+  table{
+      border-collapse:collapse;
+      width:100%;
+
+  }
+
+  .table{
+   // border:2px solid #01867d;
+}
+
+.table thead{
+  background:#01867d;
+}
+
+thead{
+  color:white;
+
+}
+
+th,td{
+  text-align:center;
+  padding:5px 0;
+}
+
+
+
+tbody tr:hover{
+    background:#BDC3C7;
+    color:#333333;
+}
+
+.fixed{
+  top:0;
+  position:fixed;
+  width:auto;
+  display:none;
+  border:none;
+}
+
+.scrollMore{
+  margin-top:600px;
+}
+
+.up{
+  cursor:pointer;
+}
+
+
+.preloader{background-color:#f7f7f7;width:100%;height:100%;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;-webkit-transition:.6s;-o-transition:.6s;transition:.6s;margin:0 auto; display: flex;align-items: center;justify-content: center;}.preloader .preloader-circle{width:100px;height:100px;position:relative;border-style:solid;border-width:5px;border-top-color:#ffdd00;border-bottom-color:transparent;border-left-color:transparent;border-right-color:transparent;z-index:10;border-radius:50%;-webkit-box-shadow:0 1px 5px 0 rgba(35,181,185,0.15);box-shadow:0 1px 5px 0 rgba(35,181,185,0.15);background-color:#ffffff;-webkit-animation:zoom 3000ms infinite ease;animation:zoom 2000ms infinite ease;-webkit-transition:.6s;-o-transition:.6s;transition:.6s}.preloader .preloader-circle2{border-top-color:#0078ff}.preloader .preloader-img{position:absolute;top:50%;z-index:200;left:0;right:0;margin:0 auto;text-align:center;display:inline-block;-webkit-transform:translateY(-50%);-ms-transform:translateY(-50%);transform:translateY(-50%);padding-top:6px;-webkit-transition:.6s;-o-transition:.6s;transition:.6s}.preloader .preloader-img img{max-width:55px}.preloader .pere-text strong{font-weight:800;color:#dca73a;text-transform:uppercase}@-webkit-keyframes zoom{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);-webkit-transition:.6s;-o-transition:.6s;transition:.6s}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg);-webkit-transition:.6s;-o-transition:.6s;transition:.6s}}@keyframes zoom{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);-webkit-transition:.6s;-o-transition:.6s;transition:.6s}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg);-webkit-transition:.6s;-o-transition:.6s;transition:.6s}}
+
+.dropbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  left: -90px;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+</style>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <script src="/js/jquery-1.7.2.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/base.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-87800894-1', 'auto');
+      ga('send', 'pageview');
+
+  </script>
+
+</head>
+<body>
+<!-- <div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="/img/realmemascot.jpg" width="165" alt="">
+            </div>
+        </div>
+    </div>
+</div> -->
+<?php echo $this->render('navbar.phtml') ?>
+<!-- /navbar -->
+<div class="subnavbar">
+    <div class="subnavbar-inner">
+        <div class="container">
+            <?php echo $this->render('menu.phtml') ?>
+        </div>
+    </div>
+</div>
+<!-- /subnavbar -->
+<div class="main" style="padding-bottom: 500px;">
+    <div class="main-inner">
+        <div class="container">
+            <div id="bg-text"><?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read(); 
+            echo $userStorage->id." | ".$userStorage->code; 
+        ?></div>
+        <?php echo $this->layout()->content; ?>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /main-inner -->
+</div>
+<!-- /main -->
+<!-- notification -->
+<?php echo $this->render('notification.phtml') ?>
+<!-- /notification -->
+<?php echo $this->render('footer.phtml') ?>
+<!-- /footer -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script> -->
+<script>
+	$(document).ready(function() {
+		$('.subnavbar .container > ul li').click(function(e){
+			// e.preventDefault();
+			_self = $(this);
+			len = _self.find('ul.dropdown:visible').length;
+
+            //has no submenu
+            if (_self.find('ul.dropdown').length === 0)
+                _self.click(function() {
+                    window.location = $('a', this).attr('href');
+                    return false;
+                });
+
+            if (len === 0) {
+                $('.subnavbar .container > ul li').find('ul.dropdown').removeClass('show');
+                $('.subnavbar .container > ul li').removeClass('open');
+                _self.find('ul.dropdown').addClass('show');
+                _self.addClass('open');
+            }
+            else {
+                _self.find('ul.dropdown').removeClass('show');
+                _self.removeClass('open');
+
+            }
+        });
+
+		$('.subnavbar .container>ul>li>a').click(function(e){
+			_self = $(this);
+			len = _self.next('ul.dropdown').length;
+
+			if (len > 0)
+				e.preventDefault();
+		});
+	});
+
+	$(document).mouseup(function (e)
+	{
+       var container = $(".subnavbar .container > ul li");
+
+	    if (!container.is(e.target) // if the target of the click isn't the container...
+	        && container.has(e.target).length === 0) // ... nor a descendant of the container
+	    {
+           container.find('ul.dropdown').removeClass('show');
+           container.removeClass('open');
+
+       }
+   });
+
+    $(window).on('load', function () {
+      $('#preloader-active').delay(350).fadeOut('slow');
+      $('body').delay(350).css({
+        'overflow': 'visible'
+    });
+  });
+</script>
+</body>
+</html>

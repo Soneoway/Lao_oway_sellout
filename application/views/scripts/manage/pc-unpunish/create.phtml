@@ -1,0 +1,231 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+</style>
+<div class="page-header">
+    <h1>Un-Punish : Create</h1>
+</div>
+
+<?php 
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/pc-unpunish-create-save" method="post" target="ifrmSave">
+<input type="hidden" id="su_id" name="su_id" value="<?php echo isset($this->unpunish_detail['su_id']) ? $this->unpunish_detail['su_id'] : ""; ?>" />
+    <div class="row">
+        <div class="span6">
+            <p><span><strong>- Un-Punishment Details -</strong></span></p>
+
+            <div class="control-group">
+                <label for="unpunish_id" class="span2">Un-Punishment Type</label>
+                <select id="unpunish_id" name="unpunish_id" class="span3" required >
+                    <option value="">-- Select Punish Type --</option>
+                    <?php
+                    if ($this->unpunish_list) :
+                        foreach ($this->unpunish_list as $unpunish_list):
+                            ?>
+                            <option value="<?php echo $unpunish_list->id;?>" <?php if (isset($this->unpunish_detail['unpunish_id']) and $this->unpunish_detail['unpunish_id']==$unpunish_list->id):?>selected<?php endif;?>><?php echo $unpunish_list->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="con_01" class="span2">200k</label>
+                <div>
+                    <input type="checkbox" name="con_01" id="con_01" value="1" <?php if (isset($this->unpunish_detail) and $this->unpunish_detail['con_01']==1):?> checked="checked" <?php endif;?> />
+                </div>  
+            </div>
+
+            <div class="control-group">
+                <label for="con_02" class="span2">Index</label>
+                <div>
+                    <input type="checkbox" name="con_02" id="con_02" value="1" <?php if (isset($this->unpunish_detail) and $this->unpunish_detail['con_02']==1):?> checked="checked" <?php endif;?> />
+                </div>  
+            </div>
+
+            <br/>
+
+            <div class="control-group">
+                <label for="from_date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from_date" name="from_date" value="<?php isset($this->unpunish_detail['from_date']) and printf($this->unpunish_detail['from_date']);?>" required />
+            </div>
+
+            <div class="control-group">
+                <label for="to_date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to_date" name="to_date" value="<?php isset($this->unpunish_detail['to_date']) and printf($this->unpunish_detail['to_date']);?>" required />
+            </div>
+
+            <br/>
+
+            <p><span><strong>- Staff Details -</strong></span></p>
+            <input type="hidden" id="staff_id" name="staff_id" value="<?php echo isset($this->unpunish_detail['staff_id']) ? $this->unpunish_detail['staff_id'] : ""; ?>" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Province</td>
+                    <td style="padding-left: 5px;" id="staff_province">: <?php echo isset($this->unpunish_detail['staff_province']) ? $this->unpunish_detail['staff_province'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;" id="staff_name">: <?php echo isset($this->unpunish_detail['staff_name']) ? $this->unpunish_detail['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Email</td>
+                    <td style="padding-left: 5px;" id="staff_email">: <?php echo isset($this->unpunish_detail['staff_email']) ? $this->unpunish_detail['staff_email'] : "-"; ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_bind_staff" class="btn btn-success" type="button">Bind Staff</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        // Allow Submit for Edit Mode
+        if ( $("#su_id").val() != '' ) { $('#btn_submit').prop("disabled", false); }
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&name=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#name_result').attr("multiple", false);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind_staff').click(function(){
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            $('#staff_id').val(staff_id);
+            $('#staff_province').html(": <font color='green'>" + tmp[2].trim() + "</font>");
+            $('#staff_name').html(": <font color='green'>" + tmp[0].trim() + "</font>");
+            $('#staff_email').html(": <font color='green'>" + tmp[1].trim() + "</font>");
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+
+    });
+
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

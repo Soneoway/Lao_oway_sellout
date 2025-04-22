@@ -1,0 +1,384 @@
+<?php
+if ( isset($this->params['area_permission']) && !empty($this->params['area_permission']) ) {
+    $area_permission = json_encode($this->params['area_permission']); 
+} else {
+    $area_permission = '';
+}
+
+?>
+<style>
+    #laocolor{
+        color: blue;
+        font-style: bold;
+        font-size: 16PX;
+    }
+</style>
+
+<form class="form-search form-horizontal" method="get" action="/manage/store">
+    <div class="row" style="padding-bottom : 30px">
+        <div class="span5">
+         <div class="control-group">
+            <label for="id" class="span2" id="laocolor">Store Code : </label>
+            <input id="id" placeholder="" name="id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['id']) and printf($this->params['id']);?>">
+        </div>
+        <div class="control-group">
+            <label for="name" class="span2" id="laocolor">Store Name : </label>
+            <input id="name" placeholder="" name="name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+        </div>
+
+        <div class="control-group">
+            <label for="staff_email" class="span2" style="font-size: 16px; color: orange"> Staff Code | ລະຫັດພະນັກງານ : </label>
+            <input id="staff_email" name="staff_email" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_email']) and printf($this->params['staff_email']);?>">
+        </div>
+        <div class="control-group">
+            <label for="d_id" class="span2"  style="font-size: 16px; color: orange">Distributor Code : </label>
+            <input id="d_id" name="d_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['d_id']) and printf($this->params['d_id']);?>">
+        </div>
+        <div class="control-group">
+            <label for="d_name" class="span2"  style="font-size: 16px; color: orange">Distributor Name :</label>
+            <input id="d_name" name="d_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['d_name']) and printf($this->params['d_name']);?>">
+        </div>
+    </div>
+
+    <div class="span5">
+
+        <div class="control-group">
+            <label for="area_id" class="span2" id="laocolor">Area | ເຂດ : </label>
+            <select id="area_id" name="area_id[]" class=" multiselect" multiple="multiple">
+                <?php
+                if ($this->areas) :
+                    foreach ($this->areas as $area):
+                        ?>
+                        <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="regional_market" class="span2" id="laocolor">Province | ແຂວງ :</label>
+            <select id="regional_market" name="regional_market[]" class=" multiselect" multiple="multiple">
+                <?php
+                if ($this->regional_markets) :
+                    foreach ($this->regional_markets as $regional_market):?>
+                        <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="store_status" id="laocolor" class="span2"> Status : </label>
+            <select name="store_status" class="span2" id="store_status">
+                <option value="1" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 1): ?> selected <?php endif; ?>> In Cooperation </option>
+                <option value="2" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 2): ?> selected <?php endif; ?>> Suspend Cooperation </option>
+                <option value="3" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 3): ?> selected <?php endif; ?>> Close </option>
+            </select>
+        </div>
+
+           <!--  <div class="control-group">
+                <label for="district" class="span2" id="laocolor">District | ເມືອງ :</label>
+                <select id="district" name="district[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->districts) :
+                        foreach ($this->districts as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['district']) and ( (is_array($this->params['district']) && in_array($regional_market['id'], $this->params['district']) || $regional_market['id']==$this->params['district'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+           <!--  <div class="control-group">
+                <label for="market_type" class="span2">Market Type</label>
+                <select id="market_type" name="market_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php if (isset($this->market_type) && $this->market_type): ?>
+
+                        <?php 
+                            $arr = $this->market_type;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($_GET['market_type']) && in_array($arr[$i]['id'],$_GET['market_type'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['id'] == $_GET['market_type']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['id']."' ". $sel ." >".$arr[$i]['name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div> -->
+
+           <!--  <div class="control-group">
+                <label for="market_name" class="span2">Market Name</label>
+                <select id="market_name" name="market_name[]" class="span3 js-example-basic-multiple" multiple="multiple">
+                    <?php if (isset($this->market_name) && $this->market_name): ?>
+
+                        <?php 
+                            $arr = $this->market_name;
+                                    
+                            for($i=0;$i<=count($arr)-1;$i++) { 
+                                $sel = "";
+                                if(is_array($_GET['market_name']) && in_array($arr[$i]['id'],$_GET['market_name'])) {
+                                    $sel = 'selected'; 
+                                } else if ($arr[$i]['id'] == $_GET['market_name']) {
+                                    $sel = 'selected';
+                                }
+                                echo "<option value='".$arr[$i]['id']."' ". $sel ." >".$arr[$i]['name']."</option>";
+                            } 
+                        ?>
+                    <?php endif ?>
+                </select>
+            </div> -->
+
+<!--             <div class="control-group">
+                <label for="store_type" class="span2">Store Type</label>
+                <select id="store_type" name="store_type[]" class="span3 multiselect" multiple="multiple">
+                    <?php 
+                    if ($this->store_type) :
+                        foreach ($this->store_type as $store_type):
+                    ?>
+                            <option value="<?php echo $store_type['org_id'];?>" <?php if (isset($this->params['store_type']) and ( (is_array($this->params['store_type']) && in_array($store_type['org_id'], $this->params['store_type']) || $store_type['org_id']==$this->params['store_type'])) ):?>selected<?php endif;?>><?php echo $store_type['org_name'];?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="store_level" class="span2">Store Level</label>
+                <select id="store_level" name="store_level[]" class="span3 multiselect" multiple="multiple">
+                    <?php 
+                    if ($this->store_level_list) :
+                        foreach ($this->store_level_list as $store_level_list):
+                    ?>
+                            <option value="<?php echo $store_level_list['id'];?>" <?php if (isset($this->params['store_level']) and ( (is_array($this->params['store_level']) && in_array($store_level_list['id'], $this->params['store_level']) || $store_level_list['id']==$this->params['store_level'])) ):?>selected<?php endif;?>><?php echo $store_level_list['name'];?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <div class="control-group">
+                <label for="" class="span2" style="color: blue">ລະຖານະພະນັກງານໃນຮ້ານຄ້າ</label>
+                <table>
+                    <tr>
+                        <td>
+                          <span class="span2">
+                            <label for="have_rd"><input type="checkbox" id="have_rd" name="have_rd" value="1"
+                                <?php if(isset($this->params['have_rd']) && $this->params['have_rd'] == 1) echo 'checked' ?> /> Have RD</label>
+                            </span>
+                        </td>
+                        <td>  
+                            <span class="span2">
+                                <label for="have_asm"><input type="checkbox" id="have_asm" name="have_asm" value="1"
+                                    <?php if(isset($this->params['have_asm']) && $this->params['have_asm'] == 1) echo 'checked' ?> /> Have ASM</label>
+                                </span>
+                            </td>
+                            <td>
+                              <span class="span2">
+                                <label for="have_sales"><input type="checkbox" id="have_sales" name="have_sales" value="1"
+                                    <?php if(isset($this->params['have_sales']) && $this->params['have_sales'] == 1) echo 'checked' ?> /> Have Sales</label>
+                                </span>
+                            </td>
+                            <td>
+                               <span class="span2">
+                                <label for="have_pcm"><input type="checkbox" id="have_pcm" name="have_pcm" value="1"
+                                    <?php if(isset($this->params['have_pcm']) && $this->params['have_pcm'] == 1) echo 'checked' ?> /> Have PCM</label>
+                                </span>
+                            </td>
+                            <td>
+                               <span class="span2">
+                                <label for="have_pcdb"><input type="checkbox" id="have_pcdb" name="have_pcdb" value="1"
+                                    <?php if(isset($this->params['have_pcdb']) && $this->params['have_pcdb'] == 1) echo 'checked' ?> /> Have PCDB</label>
+                                </span>
+                            </td>
+                            <td>
+                               <span class="span2">
+                                <label for="have_stock"><input type="checkbox" id="have_stock" name="have_stock" value="1"
+                                    <?php if(isset($this->params['have_stock']) && $this->params['have_stock'] == 1) echo 'checked' ?> /> Have Stock</label>
+                                </span>
+                            </td>
+                            <td>
+                            </span>
+                            <span class="span2">
+                                <label for="have_pg"><input type="checkbox" id="have_pg" name="have_pg" value="1"
+                                    <?php if(isset($this->params['have_pg']) && $this->params['have_pg'] == 1) echo 'checked' ?> /> Have PC</label>
+                                </span>
+                            </td>
+                            <td>
+                               <span class="span2">
+                                <label for="no_pc"><input type="checkbox" id="no_pc" name="no_pc" value="1"
+                                    <?php if(isset($this->params['no_pc']) && $this->params['no_pc'] == 1) echo 'checked' ?> /> No PC</label>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="span2">
+                                    <label for="no_staff"><input type="checkbox" id="no_staff" name="no_staff" value="1"
+                                        <?php if(isset($this->params['no_staff']) && $this->params['no_staff'] == 1) echo 'checked' ?> /> No Staff</label>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+
+    <button type="submit" class="btn btn-primary"><span style="font-size: 18px; font-family:'Noto sans lao'">Search</span></button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+
+    <?php if ($this->access('sales-report', 'store-list')): ?>
+        <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>sales-report/store-list" class="btn btn-success">Export</button>
+        <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>sales-report/store-list" class="btn btn-success">Store PC</button>
+    <?php endif ?>
+
+    <a href="/manage/view-store-staff" class="btn btn-success">View Store-Staff History</a>
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+        multi();
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                region: region
+            }
+            ,function(data,status){
+                $('#district').find('option').remove();
+                $('#store').find('option').remove();
+
+                try {
+                    if (data) {
+                        var obj = $.parseJSON( data );
+
+                        for (var i = 0; i < obj.length; i++) {
+                            $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                        }
+
+                        $('#district,#store').multiselect("destroy").multiselect(options);
+                    }
+
+                } catch(err) {
+
+                } finally {
+                    $('.loading').remove();
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+                }
+            });
+        });
+
+        $('#market_type').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $('#market_type').after('<span class="loading"></span>');
+            var _self = $('#market_type');
+            var market_type_id = $('#market_type').val();
+            var area_id = '<?php echo $area_permission; ?>';
+
+            $.get("/manage/load-market-name",
+            {
+                market_type_id: market_type_id, 
+                area_id: area_id 
+            }
+            ,function(data,status){
+                    //alert(data);
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+
+                    var obj = $.parseJSON( data );
+                    $('#market_name').find('option').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#market_name').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+        
+
+
+        $('#no_staff').on('change', function() {
+            if ($('#no_staff').prop('checked')) {
+                $('#have_sales').prop('checked', false);
+                $('#have_pg').prop('checked', false);
+            }
+        });
+
+        $('#have_sales, #have_pg').on('change', function() {
+            if ($('#have_sales').prop('checked') || $('#have_pg').prop('checked') ) {
+                $('#no_staff').prop('checked', false);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,75 @@
+<?php
+
+$date      = $this->getRequest()->getParam('month_year', date('Y-m-d'));
+$sale_code = $this->getRequest()->getParam('sale_code');
+
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+$last_03 = date('M-Y', strtotime("-3 Month", strtotime($date)));
+$last_02 = date('M-Y', strtotime("-2 Month", strtotime($date)));
+$last_01 = date('M-Y', strtotime("-1 Month", strtotime($date)));
+
+$params = array(
+	'from'      => date('Y-m-01', strtotime($date)),
+	'to'        => date('Y-m-t', strtotime($date)),
+	'sale_code' => $sale_code,
+	'group_id'  => $userStorage->group_id,
+	'last_03'   => $last_03,
+	'last_02'   => $last_02,
+	'last_01'   => $last_01,
+);
+
+if (in_array($userStorage->group_id, array(SALES_ID))) {
+	$params['sale_code'] = $userStorage->code;
+}
+
+if (in_array($userStorage->group_id, array(RM_ID, ASM_ID, ASMSTANDBY_ID))) {
+	$params['asm'] = $userStorage->id;
+}
+
+$QOppoSaleTarget = new Application_Model_OppoSaleTarget();
+$QOppoPcTarget   = new Application_Model_OppoPcTarget();
+
+$QOppoAreaTarget = new Application_Model_OppoAreaTarget();
+$hero            = $QOppoAreaTarget->getheroproduct();
+
+if (isset($params['sale_code']) && $params['sale_code']) {
+	$list = $QOppoPcTarget->getListByPcStore($params);
+
+	// Get Sellout Last 3 Month By Store
+	$sale = $QOppoSaleTarget->getLast3MonthBySaleStore($params);
+
+	$sellout = array();
+	for ($i = 0; $i < count($sale); $i++) {
+		$sellout[$sale[$i]['st_id']]['last_03']       = $sale[$i]['last_03'];
+		$sellout[$sale[$i]['st_id']]['last_02']       = $sale[$i]['last_02'];
+		$sellout[$sale[$i]['st_id']]['last_01']       = $sale[$i]['last_01'];
+		$sellout[$sale[$i]['st_id']]['sellout']       = $sale[$i]['sellout'];
+		$sellout[$sale[$i]['st_id']]['total_price']   = $sale[$i]['total_price'];
+		$sellout[$sale[$i]['st_id']]['activate']      = $sale[$i]['activate'];
+		$sellout[$sale[$i]['st_id']]['hero_sellout']  = $sale[$i]['hero_sellout'];
+		$sellout[$sale[$i]['st_id']]['hero_activate'] = $sale[$i]['hero_activate'];
+	}
+
+	// Get Current Sale Target
+	$sale_target = $QOppoPcTarget->getCurrentSaleTarget($params);
+}
+
+$this->view->params       = $params;
+$this->view->lists        = $list;
+$this->view->sellouts     = $sellout;
+$this->view->sales_target = $sale_target;
+$this->view->hero         = $hero;
+
+$flashMessenger       = $this->_helper->flashMessenger;
+$messages             = $flashMessenger->setNamespace('success')->getMessages();
+$this->view->messages = $messages;
+
+if ($this->getRequest()->isXmlHttpRequest()) {
+	$this->_helper->layout->disableLayout();
+
+	$this->_helper->viewRenderer->setRender('oppo-pc-target/partials/list');
+} else {
+
+	$this->_helper->viewRenderer->setRender('oppo-pc-target/index');
+}

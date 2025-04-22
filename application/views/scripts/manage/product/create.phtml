@@ -1,0 +1,96 @@
+<style>
+    .p-model .remove-model {
+        margin-bottom: 9px;
+    }
+</style>
+<div class="page-header">
+    <?php if (isset($this->product) and $this->product):?>
+        <h1>Edit Product</h1>
+    <?php else:?>
+        <h1>Create Product</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'manage/product-save';?>" method="post">
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required="required" value="<?php if (isset($this->product)): echo $this->product->name; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label for="distributor_price">Distributor's Price</label>
+        <input type="number" class="form-control" id="distributor_price" name="distributor_price" value="<?php if (isset($this->product)): echo $this->product->distributor_price; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label for="price_2">II Agency Price</label>
+        <input type="number" class="form-control" id="price_2" name="price_2" value="<?php if (isset($this->product)): echo $this->product->price_2; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label for="retailer_price">Retailer Price</label>
+        <input type="number" class="form-control" id="retailer_price" name="retailer_price" value="<?php if (isset($this->product)): echo $this->product->retailer_price; endif;?>">
+    </div>
+
+    <div class="form-group">
+        <label>Model</label>
+        <?php if ($this->models) :?>
+        <?php foreach ($this->models as $model) :?>
+        <p class="p-model">
+            <input type="text" class="form-control" name="models[]" value="<?php echo $model->model;?>" />
+            <button type="button" class="btn-danger remove-model form-control"><i class="icon-minus"></i></button>
+            <input type="hidden" name="model_ids[]" value="<?php echo $model->id;?>" />
+        </p>
+        <?php endforeach;?>
+        <?php endif;?>
+        <label><button type="button" class="btn-success add-model"><i class="icon-plus"></i></button></label>
+    </div>
+
+    <input type="hidden" name="removed_models" id="removed_models" />
+    <input type="hidden" name="id" id="id" value="<?php isset($this->product) and $this->product and printf($this->product->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        initRemove();
+        $( '.add-model' ).click(function (){
+            var new_model = '<p class="p-model"><input type="text" class="form-control" name="models[]" /> <button type="button" class="btn-danger remove-model form-control"><i class="icon-minus"></i></button></p>';
+            $(new_model).insertBefore($(this).parent());
+            initRemove();
+            return false;
+        });
+    });
+
+    function initRemove(){
+        $( '.remove-model' ).click(function (){
+            var removed = $(this).parent().find('input[type=hidden]').val();
+            if (typeof removed != 'undefined'){
+                var removed_list = $('#removed_models').val();
+                if (removed_list=='')
+                    $('#removed_models').val(removed);
+                else
+                    $('#removed_models').val(removed_list+','+removed);
+            }
+
+            $(this).parent().remove();
+
+            return false;
+        });
+    }
+</script>

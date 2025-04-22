@@ -1,0 +1,76 @@
+<?php 
+	//print_r($this->params);
+?>
+
+<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+		    /*text-align: center;*/
+      }
+
+      #map {
+        height: 450px;
+        width: 530px;
+      }
+
+</style>
+
+<div id="modal_location">
+	<div class="modal-header" align="center">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel"></h3>
+	</div>
+
+	<div class="modal-body">
+
+	    <div class="row">
+			<div class="span5">
+	            <div class="control-group">
+	            		<div id="map"></div>
+	            </div>
+			</div>
+		</div>
+
+	</div>
+	<div class="modal-footer">
+	  	<button class="btn btn-inverse" data-dismiss="modal" aria-hidden="true">Close</button>
+	</div>
+</div> 
+
+<script type="text/javascript">
+  function initMap() {
+
+      var lat_code = <?php echo $this->params['lat']; ?>;
+      var lng_code = <?php echo $this->params['lng']; ?>;
+
+      var mapOptions = {
+        center: {lat: lat_code, lng: lng_code},
+        zoom: 18,
+      }
+          
+      var maps = new google.maps.Map(document.getElementById("map"),mapOptions);
+      
+      var marker = new google.maps.Marker({
+         position: new google.maps.LatLng(lat_code, lng_code),
+         map: maps,
+         title: 'Map Location',
+      });
+
+      var info = new google.maps.InfoWindow({
+          content : '<div style="font-size: 15px;color: green">Locaion : ('+lat_code+', '+lng_code+')</div>'
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+          info.open(maps, marker);
+      });
+
+  }
+</script>

@@ -1,0 +1,19 @@
+<form class="form-search form-horizontal" method="get" action="/manage/notification">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="title" class="span2">Title</label>
+                <input id="title" name="title" type="text" class="input-medium search-query form-control" value="<?php if (isset($this->params['title'])) echo $this->params['title']; ?>">
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="content" class="span2">Content</label>
+                <input id="content" name="content" type="text" class="input-medium search-query form-control" value="<?php if (isset($this->params['content'])) echo $this->params['content']; ?>">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+</form>

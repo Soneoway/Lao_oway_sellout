@@ -1,0 +1,316 @@
+
+<div class="page-header">
+        <h1>Approve Timing</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+?>
+
+<style>
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+    #email_modal textarea {
+    	resize: none;
+    }
+
+    .stock {
+    	margin-bottom: 20px;
+    	padding: 10px;
+		background: white;
+    }
+    
+    
+        #clock {
+        	position: relative;
+        	width: 360px;
+        	height: 360px;
+        	margin: 0px auto 0 auto;
+        	background: url(../img/clockface.png);
+        	list-style: none;
+        	}
+        
+        #sec, #min, #hour {
+        	position: absolute;
+        	width: 18px;
+        	height: 360px;
+        	top: 0px;
+        	left: 165px;
+        	}
+        
+        #sec {
+        	background: url(../img/sechand.png);
+        	z-index: 3;
+           	}
+           
+        #min {
+        	background: url(../img/minhand.png);
+        	z-index: 2;
+           	}
+           
+        #hour {
+        	background: url(../img/hourhand.png);
+        	z-index: 1;
+           	}
+        hr {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  border-color: #EEEEEE -moz-use-text-color #FFFFFF;
+  border-style: solid none;
+  border-width: 1px 0;
+  margin: 18px 0;
+}   	
+</style>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->
+WARNING_TIMING_MESSAGES): ?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES; ?></p>
+</div>
+<?php endif; ?>
+
+<style>
+    .customCalendar,
+    .customCalendar div,
+    .customCalendar span {
+        background-color: green; /* background color */
+        border-color: green;     /* border color */
+        color: yellow;           /* text color */
+    }
+</style>
+
+  <div class="row-fluid">
+    <div>
+        <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+        <form role="form" id="time_form" action="<?php echo HOST . 'time/approve-month'; ?>" method="post"  class="row-fluid">
+        <div class="span10">
+        
+         <div class="control-group">
+                <label>Month</label>
+                <label>
+                    <?php if (isset($this->month) and $this->month):
+                        $dt = DateTime::createFromFormat('!m', $this->month);
+                            echo $dt->format('F');
+endif; ?></label>
+            </div>
+            
+            <div class="control-group">
+                <label>Attendance Norm</label>
+                <label>
+                    <?php if (isset($this->date) and $this->date)
+                       echo $this->date[$this->month];?>
+</label>
+            </div>
+        
+             <div class="control-group">
+                <label>Staff code</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->code;
+endif; ?></label>
+            </div>
+
+            <div class="control-group">
+                <label>Name</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->firstname . ' ' . $this->staff->lastname;
+endif; ?></label>
+            </div>    
+            
+            <div class="control-group">
+                <label>Title</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->title;
+endif; ?></label>
+            </div>
+            
+            <div class="control-group">
+                <label>Total Timing</label>
+                <label>
+                    <?php if(isset($this->time) and $this->time)
+                        echo $this->time;                    
+                     ?>
+                </label>
+            </div>
+            
+            <div class="clearfix"></div>
+            <input type="hidden" name="id" id="id" value="<?php if ( isset($this->staff) and $this->staff) echo $this->staff->id;?>">
+            <input type="hidden" name="month" id="month" value="<?php if ( isset($this->month) and $this->month) echo $this->month;?>">
+            <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url ) echo $this->back_url;?>">
+            <button id="btn_submit" type="submit" class="btn btn-primary">Approve</button>
+            <button type="button" class="btn btn-danger go-back">Go back</button>
+            
+        </div>
+    </div>
+  </div>
+
+  
+  <div class="row-fluid">
+        <div class="widget widget-nopad">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+                <h3>Recent Timing</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+                <div id="calendar">
+                </div>
+            </div>
+            <!-- /widget-content -->
+        </div>
+    </div>
+  
+ </div>
+ 
+    <script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+    <script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+    <script type="text/javascript" src="/js/file-validator.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+ 
+  <script type="text/javascript">
+        
+        function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#timing_form button[type=submit]').prop('disabled', false);
+        return;
+    }
+         $('#work').on('change', function() {
+
+            if(this.value == 1)
+            {
+                $('.train').show();
+            }
+            else
+            {
+                $('.train').hide();
+            }
+
+        });
+        $(document).ready(function() {
+              $('.train').hide();              
+              $('.go-back').click(function(e){
+
+                window.location.href = $('#back_url').val();    
+                return false;
+              });
+              
+              var calendar = $('#calendar').fullCalendar({
+                
+            
+                
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month'
+            },
+            
+            
+            
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/time/event?id=<?php
+                     echo $this->staff->id;
+                ?>"
+        });
+        
+        
+		$('form#timing_form').bind('submit',function(e){
+        	$('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+              
+              setInterval( function() {
+              var seconds = new Date().getSeconds();
+              var sdegree = seconds * 6;
+              var srotate = "rotate(" + sdegree + "deg)";
+              
+              $("#sec").css({"-moz-transform" : srotate, "-webkit-transform" : srotate});
+                  
+              }, 1000 );
+              
+         
+              setInterval( function() {
+              var hours = new Date().getHours();
+              var mins = new Date().getMinutes();
+              var hdegree = hours * 30 + (mins / 2);
+              var hrotate = "rotate(" + hdegree + "deg)";
+              
+              $("#hour").css({"-moz-transform" : hrotate, "-webkit-transform" : hrotate});
+                  
+              }, 1000 );
+        
+        
+              setInterval( function() {
+              var mins = new Date().getMinutes();
+              var mdegree = mins * 6;
+              var mrotate = "rotate(" + mdegree + "deg)";
+              
+              $("#min").css({"-moz-transform" : mrotate, "-webkit-transform" : mrotate});
+                  
+              }, 1000 );
+              
+              $('form#time_form').bind('submit',function(e){
+        	  $('form#time_form button[type=submit]').prop('disabled', true);
+        });
+      
+        }); 
+    
+    </script>         

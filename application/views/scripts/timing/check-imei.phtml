@@ -1,0 +1,92 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <th><div align="center">IMEI</div></th>
+            <th><div align="center">Model</div></th>
+            <th><div align="center">Color</div></th>
+            <!-- <th><div align="center">Area</div></th> -->
+            <th><div align="center"> Area-Province</div></th>
+            <th><div align="center">Distributor IMEI</div></th>
+            <th><div align="center">Sell Out Staff</div></th>
+            <th><div align="center">Position</div></th>
+            <!-- <th><div align="center">Store Area</div></th> -->
+            <th><div align="center">Store Timing</div></th>
+            <th><div align="center">Timing Date</div></th>
+            <th><div align="center">Activated Date</div></th>
+            <th><div align="center"> Reporter Remark</div>
+            <th><div align="center">Pre-Order</div></th>
+
+        <!--<th><div align="center">VIP Card Number</div></th>
+            <th><div align="center">Sim Locked</div></th> -->
+
+            <!-- <th><div align="center">Sim Activated</div></th>
+            <th><div align="center">Timing Control ( Not Include Sales )</div></th> -->
+            <!-- <th><div align="center">O-Guard</div></th> -->
+        </tr>
+    </thead>
+    <tbody>
+        <?php $no = 1; ?>
+        <?php foreach ($this->result as $imei => $r): ?>
+            <tr>
+                <td><div align="center"><?php echo $no++; ?></div></td>
+                <td><div align="center"><?php echo $imei ?></div></td>
+
+                <?php if ( count( $r['sales_info'] ) > 0 ): ?>
+                    <td>
+                        <div align="center">
+                            <?php echo $r['sales_info']['brand_name']; ?> &nbsp;
+                            <?php if( isset( $r['sales_info']['good_name'] ) ) echo $r['sales_info']['good_name']; else echo '-'; ?>
+                        </div>
+                    </td>
+                    <td><div align="center"><?php if( isset( $r['sales_info']['good_color'] ) ) echo $r['sales_info']['good_color']; else echo '-'; ?></div></td>
+
+                    <!-- <td><div align="center"> <?php if(isset($r['sales_info']['area_name'] )) echo $r['sales_info']['area_name']; else echo '-' ; ?></div></td> -->
+                    <td><div align="center"> <?php if(isset($r['sales_info']['provice_name'] )) echo $r['sales_info']['provice_name']; else echo '-' ; ?></div></td>
+
+                    <td><div align="center"><?php if( isset( $r['sales_info']['distributor_name'] ) ) echo $r['sales_info']['distributor_name']; else echo '-' ?></td>
+
+                    <td><div align="left"><?php if( isset( $r['sales_info']['staff'] ) ) echo $r['sales_info']['staff']; else echo '-'; ?></div></td>
+                    <td><div align="center"><?php if( isset( $r['sales_info']['group'] ) ) echo $r['sales_info']['group']; else echo '-'; ?></div></td>
+                    <!-- <td><div align="center"><?php if( isset( $r['sales_info']['area'] ) ) echo $r['sales_info']['area']; else echo '-'; ?></div></td> -->
+                    <td><div align="left"><?php if( isset( $r['sales_info']['store'] ) ) echo "[".$r['sales_info']['store_code']."] ".$r['sales_info']['store']; else echo '-'; ?></div></td>
+                    <td><div align="center"><?php 
+                            if( isset( $r['sales_info']['date'] ) ) { 
+                                echo date( 'd/m/Y H:i:s', strtotime($r['sales_info']['date']) );
+                            } else { echo '-'; } 
+                        ?>           
+                    </div></td>
+                    <td><div align="center"><?php 
+                            if( isset( $r['sales_info']['active_date'] ) ) { 
+                                echo date( 'd/m/Y H:i:s', strtotime($r['sales_info']['active_date']) ); 
+                            } else { echo '-'; } 
+                        ?>           
+                    </div></td>
+                    <td><div align="center"><?php if(isset($r['sales_info']['remark'] )) { echo $r['sales_info']['remark']; }else { echo "-"; } ?></td>
+                    <td><div align="center"><?php if( isset( $r['sales_info']['pre_order_status'] ) ) echo $r['sales_info']['pre_order_status']; else echo '-'; ?></div></td>
+
+             <!--   <td><div align="center"><?php if( isset( $r['sales_info']['warrant_no'] ) ) echo $r['sales_info']['warrant_no']; else echo '-'; ?></div></td>
+                    <td><div align="center"><?php if( isset( $r['sales_info']['sim_locked'] ) ) echo $r['sales_info']['sim_locked']; else echo '-'; ?></div></td> -->
+
+                    <!-- <td><div align="center"><?php 
+                            if( isset( $r['sales_info']['sim_activated_at'] ) && $r['sales_info']['sim_activated_at'] != '-' ) {
+                                echo date( 'd/m/Y H:i:s', strtotime($r['sales_info']['sim_activated_at']) ); 
+                            } else { echo '-'; } 
+                        ?>
+                    </div></td> -->
+                    <!-- <td><div align="center"><?php if( isset( $r['sales_info']['status_control'] ) ) echo $r['sales_info']['status_control']; else echo '-'; ?></td>
+                    <td><div align="center"><?php if( isset( $r['sales_info']['o_guard'] ) ) echo $r['sales_info']['o_guard']; else echo '-'; ?></div></td> -->
+                <?php else: ?>
+
+                    <td colspan="16"><div align="left">
+                        <?php if( isset( $r['result']['info'] ) ) echo $r['result']['info']; else echo '-'; ?> 
+                    </div></td>
+
+                <?php endif ?>
+                
+            </tr>
+
+        <?php endforeach ?>
+
+    </tbody>
+</table>

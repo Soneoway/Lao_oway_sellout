@@ -1,0 +1,131 @@
+<div class="page-header">
+    <h1>Attendace Norm</h1>
+</div>
+
+<style>
+    .editable .target {
+        width: 45px;
+    }
+
+    .status {
+        margin-left: 10px;
+    }
+</style>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'month'   => 'Month',
+                    'date'    => 'Date',
+                    'Set special Date'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isset($this->date) && $this->date): ?>
+            <?php foreach ($this->date as $k => $v): ?>
+                <tr>
+                    <td><?php echo $this->offset + $k + 1; ?></td>
+                    <td><?php if(isset($v['id'])) 
+                    {
+                         $dt = DateTime::createFromFormat('!m', $v['id']);
+                         echo $dt->format('F');
+                    }
+                    
+                    ?></td>
+                    <td><div class="editable">
+                               
+                                <a href="#" class="value" data-value="<?php echo $v['date'] ?>"><?php echo $v['date'] ?></a>
+                                <span class="form" style="display:none;">
+                                    <input type="text" data-id="<?php echo $v['id'] ?>" class="form-control target" value="<?php echo $v['date'] ?>">
+                                </span>
+                            </div>
+</td>
+                    <td><a target="_blank" href="<?php echo HOST?>time/date-special?month=<?php echo $k+1 ?>" class="value" data-value="<?php echo $v['date'] ?>">Add special date</a></td>
+                </tr>
+            <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>
+
+
+<script>
+    <?php if ($this->access('time', 'date')): ?>
+    
+    $(document).ready(function() {
+        $('.editable .value').click(show_edit_form);
+    });
+
+
+    old_value = 0;
+
+    function show_edit_form(e) {
+        e.preventDefault();
+
+        _self = $(e.target);
+        _self.hide();
+
+        old_value = _self.data('value');
+
+        _form = _self.parent('.editable').find('.form');
+        _form.show();
+        
+        _form.keypress(save_date);
+
+        $('.editable .value').unbind('click');
+    }
+
+    function save_date(e) {
+        if (e.which == 13) {
+            e.preventDefault();
+
+            _self = $(e.target);
+
+            date = 0;
+            id = _self.data("id");
+
+            try {
+                date = parseInt( _self.val().trim() );
+            } catch (err) {
+                console.log(err.message);
+                return false;
+            }
+
+            $.ajax({
+                url: '<?php echo HOST ?>time/date-update',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    date : date,
+                    id : id,
+                },
+            })
+            .done(function(data) {
+                console.log("success");
+                    window.location.reload();                
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+            
+        }
+    }
+
+    <?php endif; ?>
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+    });
+</script>

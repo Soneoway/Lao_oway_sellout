@@ -1,0 +1,45 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle;"><div align="center">No.</div></th>
+        <th style="vertical-align: middle;"><div align="center">Staff Code</div></th>
+        <th style="vertical-align: middle;"><div align="center">Staff Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">Group</div></th>
+        <th style="vertical-align: middle;"><div align="center">Phone Number</div></th>
+        <th style="vertical-align: middle;"><div align="center">Joined At</div></th>
+        <th style="vertical-align: middle;"><div align="center">Off Date</div></th>
+        <th style="vertical-align: middle;"><div align="center">Area</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            if ($this->lists) {
+                $data = $this->lists;
+
+                for ($i=0;$i<count($data);$i++) {
+
+                    $cnt = $i + 1;
+
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_code']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['staff_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_group']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_phone']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['joined_at']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['off_date']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['staff_area']."</div></td>";
+
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>

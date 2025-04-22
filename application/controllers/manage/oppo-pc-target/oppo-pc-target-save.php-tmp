@@ -1,0 +1,261 @@
+<?php
+$this->_helper->layout->disableLayout();
+$this->_helper->viewRenderer->setNoRender(true);
+
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+$temp        = array();
+$data        = array();
+$data2       = array();
+$result      = array();
+
+$flag     = 0;
+$null_row = 0;
+
+if (in_array($userStorage->group_id, array(RM_ID, RMSTANDBY_ID))) {
+	$data2                  = array();
+	$data2['rd_approve_by'] = $userStorage->id;
+	$data2['rd_approve_at'] = date('Y-m-d H:i:s');
+	$flag                   = 1;
+}
+
+if (in_array($userStorage->group_id, array(ASM_ID, ASMSTANDBY_ID))) {
+	$data2                   = array();
+	$data2['asm_approve_by'] = $userStorage->id;
+	$data2['asm_approve_at'] = date('Y-m-d H:i:s');
+	$flag                    = 1;
+}
+
+if (in_array($userStorage->group_id, array(36))) {
+	$data2                          = array();
+	$data2['pcm_leader_approve_by'] = $userStorage->id;
+	$data2['pcm_leader_approve_at'] = date('Y-m-d H:i:s');
+	$flag                           = 1;
+}
+
+$target = $this->getRequest()->getParam('target');
+$opt_id = $this->getRequest()->getParam('opt_id');
+
+$target_hero = $this->getRequest()->getParam('target_hero');
+$hero_opt_id = $this->getRequest()->getParam('hero_opt_id');
+
+$target_price = $this->getRequest()->getParam('target_price');
+$price_opt_id = $this->getRequest()->getParam('price_opt_id');
+
+$sale_code = $this->getRequest()->getParam('sale_code');
+
+$tmp_my     = $this->getRequest()->getParam('month_year');
+$month_year = date('Y-m', strtotime($tmp_my));
+
+$QOppoPcTarget = new Application_Model_OppoPcTarget();
+
+// Normal Target
+foreach ($target as $key => $value) {
+
+	$temp['store_id'][] = $key;
+	$temp['target'][]   = $value;
+}
+
+$insert_key = array();
+
+for ($i = 0; $i < count($target); $i++) {
+
+	$data = array(
+		'store_id'  => $temp['store_id'][$i],
+		'target'    => $temp['target'][$i],
+		'from_date' => date('Y-m-01', strtotime($month_year)),
+		'to_date'   => date('Y-m-t', strtotime($month_year)),
+	);
+
+	if ($data['target'] != '') {
+
+		if (isset($opt_id[$temp['store_id'][$i]]) && $opt_id[$temp['store_id'][$i]]) {
+
+			$tmp        = explode("|", $opt_id[$temp['store_id'][$i]]);
+			$id         = $tmp[0];
+			$old_target = $tmp[1];
+
+			if ($old_target != $data['target']) {
+
+				unset($data['from_date']);
+				unset($data['to_date']);
+
+				$data['updated_by'] = $userStorage->id;
+				$data['updated_at'] = date('Y-m-d H:i:s');
+
+				$where  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+				$result = $QOppoPcTarget->update($data, $where);
+			}
+
+			if ($flag == 1) {
+				$where2  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+				$result2 = $QOppoPcTarget->update($data2, $where2);
+			}
+
+		} else {
+
+			// Check Already Exists Data
+			$where_chk   = array();
+			$where_chk[] = $QOppoPcTarget->getAdapter()->quoteInto('store_id = ?', $temp['store_id'][$i]);
+			$where_chk[] = $QOppoPcTarget->getAdapter()->quoteInto('from_date = ?', date('Y-m-01', strtotime($month_year)));
+			$where_chk[] = $QOppoPcTarget->getAdapter()->quoteInto('to_date = ?', date('Y-m-t', strtotime($month_year)));
+
+			$result_chk = $QOppoPcTarget->fetchRow($where_chk);
+
+			if (empty($result_chk)) {
+
+				$data['created_by'] = $userStorage->id;
+				$data['created_at'] = date('Y-m-d H:i:s');
+
+				$result = $QOppoPcTarget->insert($data);
+
+				$insert_key[$i] = $result;
+
+				if ($flag == 1) {
+					$where2  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $result);
+					$result2 = $QOppoPcTarget->update($data2, $where2);
+				}
+
+			} else {
+
+				unset($data['from_date']);
+				unset($data['to_date']);
+
+				$data['updated_by'] = $userStorage->id;
+				$data['updated_at'] = date('Y-m-d H:i:s');
+
+				$where   = array();
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('store_id = ?', $temp['store_id'][$i]);
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('from_date = ?', date('Y-m-01', strtotime($month_year)));
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('to_date = ?', date('Y-m-t', strtotime($month_year)));
+
+				$result = $QOppoPcTarget->update($data, $where);
+
+				if ($flag == 1) {
+					$where2  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+					$result2 = $QOppoPcTarget->update($data2, $where2);
+				}
+
+				$null_row = 1;
+
+			}
+
+		}
+
+	}
+}
+
+// Hero Target
+foreach ($target_hero as $key2 => $value2) {
+
+	$temp2['store_id'][]    = $key2;
+	$temp2['target_hero'][] = $value2;
+}
+
+for ($i = 0; $i < count($temp2['store_id']); $i++) {
+
+	$data2 = array(
+		'store_id'    => $temp2['store_id'][$i],
+		'target'      => $target[$temp2['store_id'][$i]],
+		'target_hero' => $temp2['target_hero'][$i],
+		'updated_by'  => $userStorage->id,
+		'updated_at'  => date('Y-m-d H:i:s'),
+	);
+
+	if (isset($data2['target_hero']) && $data2['target_hero'] !== '') {
+		if (isset($data2['target']) && $data2['target'] !== '') {
+
+			if (isset($hero_opt_id[$temp2['store_id'][$i]]) && $hero_opt_id[$temp2['store_id'][$i]]) {
+
+				$tmp2       = explode("|", $hero_opt_id[$temp2['store_id'][$i]]);
+				$id         = $tmp2[0];
+				$old_target = $tmp2[1];
+
+				if ($old_target != $data2['target_hero']) {
+
+					$where  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+					$result = $QOppoPcTarget->update($data2, $where);
+				}
+
+			} else {
+
+				if (isset($opt_id[$temp2['store_id'][$i]]) && $opt_id[$temp2['store_id'][$i]]) {
+					$tmp = explode("|", $opt_id[$temp2['store_id'][$i]]);
+					$id  = $tmp[0];
+				} else {
+					$id = $insert_key[$i];
+				}
+
+				$where  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+				$result = $QOppoPcTarget->update($data2, $where);
+
+			}
+
+			if ($null_row == 1) {
+
+				$where   = array();
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('store_id = ?', $temp2['store_id'][$i]);
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('from_date = ?', date('Y-m-01', strtotime($month_year)));
+				$where[] = $QOppoPcTarget->getAdapter()->quoteInto('to_date = ?', date('Y-m-t', strtotime($month_year)));
+
+				$result = $QOppoPcTarget->update($data2, $where);
+
+			}
+		}
+	}
+
+}
+
+// Price Target
+foreach ($target_price as $key3 => $value3) {
+
+	$temp3['store_id'][]     = $key3;
+	$temp3['target_price'][] = $value3;
+}
+
+for ($i = 0; $i < count($target_price); $i++) {
+
+	$data3 = array(
+		'store_id'     => $temp3['store_id'][$i],
+		'target_price' => $temp3['target_price'][$i],
+		'updated_by'   => $userStorage->id,
+		'updated_at'   => date('Y-m-d H:i:s'),
+	);
+
+	if (isset($data3['target_price']) && $data3['target_price'] !== '') {
+		if (isset($data3['target']) && $data3['target'] !== '') {
+
+			if (isset($price_opt_id[$temp3['store_id'][$i]]) && $price_opt_id[$temp3['store_id'][$i]]) {
+
+				$tmp2      = explode("|", $price_opt_id[$temp3['store_id'][$i]]);
+				$id        = $tmp2[0];
+				$old_price = $tmp2[1];
+
+				if ($old_price != $data3['target_price']) {
+
+					$where  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+					$result = $QOppoPcTarget->update($data3, $where);
+				}
+
+			} else {
+
+				if (isset($opt_id[$temp3['store_id'][$i]]) && $opt_id[$temp3['store_id'][$i]]) {
+					$tmp = explode("|", $opt_id[$temp3['store_id'][$i]]);
+					$id  = $tmp[0];
+				} else {
+					$id = $insert_key[$i];
+				}
+
+				$where  = $QOppoPcTarget->getAdapter()->quoteInto('id = ?', $id);
+				$result = $QOppoPcTarget->update($data3, $where);
+
+			}
+		}
+
+	}
+
+}
+
+$flashMessenger = $this->_helper->flashMessenger;
+$flashMessenger->setNamespace('success')->addMessage('Done!');
+
+echo '<script>parent.location.href="'.HOST.'manage/oppo-pc-target/oppo-pc-target?month_year='.$month_year.'&sale_code='.$sale_code.'"</script>';

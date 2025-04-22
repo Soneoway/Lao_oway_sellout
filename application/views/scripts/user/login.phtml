@@ -1,0 +1,56 @@
+<div class="account-container">
+
+    <div class="content clearfix">
+
+        <form action="/user/auth" method="post">
+
+            <center><h2 style="font-family: Times New Roman">Catty System</h1></center>
+
+            <div class="login-fields">
+
+                <?php
+                if (isset($this->messages) and $this->messages) :
+                    foreach ($this->messages as $message): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo $message;?>
+                    </div>
+                    <?php endforeach;
+                endif;?>
+
+                <?php
+                if (isset($this->messages_success) and $this->messages_success) :
+                    foreach ($this->messages_success as $message): ?>
+                        <div class="alert alert-success" role="alert">
+                            <?php echo $message;?>
+                        </div>
+                    <?php endforeach;
+                endif;?>
+
+                <p></p>
+
+                <div class="input-group mb-3">
+                    <label for="input-group-text">User</label>
+                    <input type="text" id="email" name="email" placeholder="Staff Code" autocomplete="off" required="required" class="form-control username-field" autofocus />
+                </div> <!-- /field -->
+
+                <div class="input-group mb-3">
+                    <label for="input-group-text">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Password" required="required" autocomplete="off" class="form-control password-field"/>
+                </div> <!-- /password -->
+
+            </div> <!-- /login-fields -->
+
+            <div class="login-actions">
+                <button type="submit" class="button btn btn-outline-success">login</button>
+
+            </div> <!-- .actions -->
+
+        </form>
+
+    </div> <!-- /content -->
+
+</div> <!-- /account-container -->
+
+<div class="login-extra">
+    
+</div> <!-- /login-extra -->

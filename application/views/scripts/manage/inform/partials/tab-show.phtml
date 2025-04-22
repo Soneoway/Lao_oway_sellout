@@ -1,0 +1,35 @@
+<div class="row-fluid">
+    <div class="span2">
+      
+
+      
+
+    </div>
+
+    <div class="span3">
+        <div class="control-group">
+            <label for="">Inform Teams:</label>
+            <?php if (isset($this->team_cache) && $this->team_cache): ?>
+                <?php foreach ($this->team_cache as $key => $value): ?>
+                    <p>
+                        <label class="checkbox"><input type="checkbox" name="teams[]" value="<?php echo $key;?>" <?php if (isset($this->old_team_objects) && in_array($key, $this->old_team_objects)) echo "checked" ?>> <?php echo $value;?></label>
+                    </p>
+                <?php endforeach ?>
+            <?php endif ?>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+     $('#all').change(check_all);     
+});
+
+function check_all(e) {
+    _self = $(e.target);
+    $('.checkbox').prop('checked', _self.is(":checked"));
+  
+}
+</script>

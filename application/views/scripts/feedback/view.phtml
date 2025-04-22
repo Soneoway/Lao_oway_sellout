@@ -1,0 +1,78 @@
+<div class="page-header">
+    
+        <h1>View Feedback</h1>
+   
+</div>
+
+<?php 
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<style type="text/css">
+    input,textarea{width: 500px;}
+    p.wrap {
+    width: 50%;
+    border: 1px solid rgba(234, 234, 234, 0.52);
+    padding: 20px;
+    word-wrap: break-word;
+    background: #fff;
+}
+</style>
+<form role="form" action="<?php echo HOST.'feedback/view';?>" method="post">
+
+    <div class="form-group">
+               <p><span><strong>Store : </strong></span><?PHP echo $this->feedback['store_name'] ?></p>
+    </div>
+    <div class="form-group">
+       <p><span><strong>Staff : </strong></span><?PHP echo $this->feedback['name']." ".$this->feedback['lastname']?></p>
+    </div>
+    <div class="form-group">
+       <p><span><strong>Created : </strong></span><?PHP echo date('d/m/Y', strtotime($this->feedback['created_at']))  ?></p>
+    </div>
+    <div class="form-group">
+       <p><span><strong>Title : </strong></span><?PHP echo $this->feedback['title'] ?></p>
+    </div>
+    <div class="form-group">
+        <p><span><strong>Content :</strong></span></p>
+        <p class="wrap"><?PHP echo $this->feedback['content'] ?></p>
+       
+    </div>
+
+    
+    <?PHP if (in_array($userStorage->group_id, array(ASM_ID))){
+
+            $read_by = $this->feedback['read_by'];
+            $read_ = explode(',', $read_by);
+           
+        if (in_array($userStorage->id, $read_ )) {?>
+             <div class="form-group">
+                <input type="checkbox" disabled name="mark" checked   value="1" ><span> Mark Read</span>
+            </div>
+                 <div style="clear:both;margin-bottom:25px"></div>
+
+      <?PHP  }else{ ?>
+            <div class="form-group">
+                <input type="checkbox" name="mark" required  value="1" ><span> Mark Read</span> 
+             </div>
+             <div style="clear:both;margin-bottom:25px"></div>
+             <button type="submit" class="btn btn-primary">Mark Read</button>
+      <?PHP    }
+      } ?>
+     
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <input type="hidden" name="act" id="act" value="read_mark">
+    <input type="hidden" name="id" id="id" value="<?PHP echo $_GET['id'] ?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+</script>

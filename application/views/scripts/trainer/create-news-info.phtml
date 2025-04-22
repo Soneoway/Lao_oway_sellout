@@ -1,0 +1,181 @@
+<div class="page-header">
+    <?php if (isset($this->product) and $this->product): ?>
+        <h1>Edit News Information</h1>
+    <?php else: ?>
+        <h1>Create News Information</h1>
+    <?php endif; ?>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+// print_r($this->product);
+?>
+<div class="row">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/news-info-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="region_share">Information Type</label>
+                        <select name="type" id="type" required="required">
+                            <option value="file" <?php if (isset($this->product) && ($this->product->type == 'file')): echo "selected=selected"; endif; ?>>File PDF</option>
+                            <option value="vdo" <?php if (isset($this->product) && ($this->product->type == 'vdo')): echo "selected=selected"; endif; ?>>VDO </option>
+                            <option value="text" <?php if (isset($this->product) && ($this->product->type == 'text')): echo "selected=selected"; endif; ?>>Text</option>
+                            <option value="picture" <?php if (isset($this->product) && ($this->product->type == 'picture')): echo "selected=selected"; endif; ?>>Picture</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="name">Topic</label>
+                        <input type="text" class="span6" id="name" name="name" required="required"
+                               value="<?php if (isset($this->product)): echo $this->product->name; endif; ?>">
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="name">VDO Link (Youtube)</label>
+                        <input type="text" class="span6" name="video_link" id="video_link" <?php if (isset($this->product) && ($this->product->type != 'vdo')): echo "disabled"; endif; ?>
+                               value="<?php if (isset($this->product)): echo $this->product->video_link; endif; ?>">
+                    </div>
+                </div>
+
+<!--                <div class="row-fluid">-->
+<!--                    <div class="control-group">-->
+<!--                        <label for="name">Detail</label>-->
+<!--                        <textarea class="span6" rows="6"-->
+<!--                                  name="detail">--><?php //if (isset($this->product)): echo $this->product->detail; endif; ?><!--</textarea>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+
+
+            <div class="span3">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="image">Upload Image title</label>
+                        <?php if (isset($this->product->img_title) && ($this->product->img_title != '')): ?>
+                            <a target="_blank" title="View" href="/<?php echo 'trainer/' . $this->product->img_title; ?>">
+                                <img class="staff-photo" src="<?php echo HOST.'trainer/' . $this->product->img_title; ?>" width="100%"></a>
+                        <?php endif; ?>
+                        <input type="file" class="span6" name="img_title"/>
+                        <input type="hidden" name="img_title_edit"
+                               value="<?php if (isset($this->product)): echo $this->product->img_title; endif; ?>"/>
+                    </div>
+                </div>
+            </div>
+            <div class="span3">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="email">Upload File content</label>
+                        <input type="file" class="span6" name="file_link"/>
+                        <input type="hidden" name="file_edit"
+                               value="<?php if (isset($this->product)): echo $this->product->file_link; endif; ?>"/>
+                    </div>
+                </div>
+                <?php if (isset($this->product->file_link) && ($this->product->file_link != '')): ?>
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <a class="btn btn-warning" target="_blank"
+                               href="/<?php echo 'trainer/' . $this->product->file_link; ?>"><i class="icon-eye-open"></i> View File</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <div class="row-fluid">
+                    <div class="form-group">
+                        <label>Display</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable" value="P" <?php if (isset($this->product) && ($this->product->enable == 'P')): echo "checked"; else: echo "checked"; endif; ?>>Preview
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable" value="Y" <?php if (isset($this->product) && ($this->product->enable == 'Y')): echo "checked"; endif;?>>Enable
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable" value="N" <?php if (isset($this->product) && ($this->product->enable == 'N')): echo "checked"; endif;?>>Disable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span12">
+                <div class="control-group">
+                    <label for="content">Content</label>
+                    <textarea name="detail" id="detail"><?php if (isset($this->product)): echo $this->product->detail; endif; ?></textarea>
+                </div>
+            </div>
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->product) and $this->product and printf($this->product->id); ?>">
+                <div class="clearfix">
+            <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em">
+                <?php if (isset($this->product) and $this->product): ?>
+                    <button id="add_btn" class="btn btn-primary" type="submit">Edit Product</button>
+                <?php else: ?>
+                    <button id="add_btn" class="btn btn-primary" type="submit">Add Product</button>
+                <?php endif; ?>
+            </div>
+            <div class="clearfix">
+        </form>
+    </div>
+</div>
+
+
+<script src="<?php echo HOST ?>js/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript">
+
+    $('#type').change(function () {
+        if ($(this).val() != "vdo") {
+            $('#video_link').prop('disabled', true);
+        } else {
+            $('#video_link').prop('disabled', false)
+        }
+    });
+
+    config = {};
+//    config.toolbar = [
+//        {
+//            name: 'clipboard',
+//            groups: ['clipboard', 'undo'],
+//            items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']
+//        },
+//        {
+//            name: 'basicstyles',
+//            groups: ['basicstyles', 'cleanup'],
+//            items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']
+//        },
+//        {name: 'about', items: ['Source']},
+//        '/',
+//
+//        {
+//            name: 'paragraph',
+//            groups: ['list', 'indent', 'blocks', 'align', 'bidi'],
+//            items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']
+//        },
+//        {name: 'links', items: ['Link', 'Unlink', 'Anchor']},
+//        {
+//            name: 'insert',
+//            items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']
+//        },
+//        '/',
+//        {name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+//        {name: 'colors', items: ['TextColor', 'BGColor']},
+//        {name: 'tools', items: ['Maximize', 'ShowBlocks']},
+//        {name: 'others', items: ['-']}
+//    ];
+
+    config.skin = 'office2013';
+    config.extraPlugins = 'imageuploader';
+
+    CKEDITOR.replace('detail', config);
+</script>

@@ -1,0 +1,85 @@
+<?php 
+    //print_r($this->params);
+
+    if (isset($this->data_list) and $this->data_list) {
+
+        $QAsm = new Application_Model_Asm();
+
+        $data = $this->data_list;
+        // echo "<pre>"; print_r($data);
+
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>No.</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Area</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>RD Name</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Store ID</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Store Name</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Store Type</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Status</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>PreOrder Type</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Product</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Unit</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Sellout</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Sellout PreOrder</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        $sum_unit = 0;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            $result_rd = $QAsm->getStaffByAreaID($data[$i]['area_id'], 1);
+
+            // Data for List
+            $cnt = $this->offset + $i + 1;
+
+            echo    "<tr>";
+            echo        "<td width='3%'><div align='center'>".$cnt."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$data[$i]['area_name']."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$result_rd[0]['staff_name']."</div></td>";
+            echo        "<td width='7%'><div align='center'>".$data[$i]['st_id']."</div></td>";
+            echo        "<td width='30%'><div align='left'>".$data[$i]['st_name']."</div></td>";
+            echo        "<td width='15%'><div align='center'>".$data[$i]['st_type']."</div></td>";
+            echo        "<td width='5%'><div align='center'>".$data[$i]['st_status']."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$data[$i]['pre_order_type']."</div></td>";
+            echo        "<td width='20%'><div align='center'>".$data[$i]['good_name']."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$data[$i]['unit']."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$data[$i]['sellout']."</div></td>";
+            echo        "<td width='10%'><div align='center'>".$data[$i]['sellout_pre']."</div></td>";
+            echo    "</tr>";
+
+            $sum_unit += $data[$i]['unit'];
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+        // echo        "<tr style='background-color:#BDBDBD;'>";
+        // echo            "<td colspan='7'><div align='center'>Total</div></td>";
+        // echo            "<td><div align='center'>".$sum_unit."</div></td>";
+        // echo        "</tr>";
+        echo    "</tfoot>";
+        echo    "</table>";
+
+    }
+
+?>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+    });
+
+</script>

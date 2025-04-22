@@ -1,0 +1,1013 @@
+<style>
+	ul strong {
+		color: darkblue;
+	}
+
+	li {
+		font-weight: bold;
+	}
+
+	label {
+		display: inline-block;
+		font-style: italic;
+		font-weight: normal;
+	}
+
+	label:after {
+		content: ' : ';
+	}
+</style>
+<div class="page-header">
+    <h1>Staff Log <small>
+    	<?php if( isset( $this->staffs[ $this->params['object'] ] ) ) 
+    		echo $this->staffs[ $this->params['object'] ] ?>
+    	<a href="<?php echo HOST."staff/create?id=".$this->params['object'] ?>" 
+    		title="Click to Edit Staff" target="_blank">
+    		<i class="icon-share"></i>
+    	</a>
+    	</small>
+	</h1>
+</div>
+<div class="row">
+    <div class="span12">
+        <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Log type</th>
+                    <th>user</th>
+                    <th>at</th>
+                    <th>Before</th>
+                    <th>after</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php if (isset($this->logs) && $this->logs): ?>
+                    <?php foreach ($this->logs as $log_k => $log): ?>
+                    <tr>
+                        <td>
+                            <?php if ( $log['type'] == LogType::Update ): ?>
+                                Edited
+                            <?php elseif( $log['type'] == LogType::Insert ): ?>
+                                Created
+                            <?php endif ?>
+                        </td>
+                        <td>
+                            <?php if( isset( $this->staffs[ $log['user_id'] ] ) ) echo $this->staffs[ $log['user_id'] ] ?>
+                        </td>
+
+                        <td>
+                            <?php echo date( 'd/m/Y H:i:s', strtotime($log['time']) ) ?>
+                        </td>
+
+                        <td>
+                            <ul>
+                                <!-- staff code -->
+                                <?php if ( isset( $log['diffs']['code'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['code'] ) ) echo $this->labels['code'] ?></label>
+                                        <?php echo $log['before']['code'] ?>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['code'] ) ) echo $this->labels['code'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract type -->
+                                <?php if ( isset( $log['diffs']['contract_type'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_type'] ) ) echo $this->labels['contract_type'] ?></label>
+                                        <strong><?php if(isset($this->contractType[$log['before']['contract_type']])) echo $this->contractType[$log['before']['contract_type']] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_type'] ) ) echo $this->labels['contract_type'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract signed at-->
+                                <?php if ( isset( $log['diffs']['contract_signed_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_signed_at'] ) ) echo $this->labels['contract_signed_at'] ?></label>
+                                        <strong><?php if( isset( $log['before']['contract_signed_at'] ) ) echo date( 'd/m/Y', strtotime($log['before']['contract_signed_at'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_signed_at'] ) ) echo $this->labels['contract_signed_at'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract_term -->
+                                <?php if ( isset( $log['diffs']['contract_term'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_term'] ) ) echo $this->labels['contract_term'] ?></label>
+                                        <strong><?php if( isset($this->contractTerm[ $log['before']['contract_term'] ]) ) echo $this->contractTerm[ $log['before']['contract_term'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_term'] ) ) echo $this->labels['contract_term'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract_expired_at -->
+                                <?php if ( isset( $log['diffs']['contract_expired_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_expired_at'] ) ) echo $this->labels['contract_expired_at'] ?></label>
+                                        <strong><?php if( isset( $log['before']['contract_expired_at'] ) ) echo date( 'd/m/Y', strtotime($log['before']['contract_expired_at'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_expired_at'] ) ) echo $this->labels['contract_expired_at'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- Department -->
+                                <?php if ( isset( $log['diffs']['department'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['department'] ) ) echo $this->labels['department'] ?></label>
+                                        <strong><?php if( isset( $this->department[ $log['before']['department'] ] ) ) echo $log['before']['department'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['department'] ) ) echo $this->labels['department'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- team -->
+                                <?php if ( isset( $log['diffs']['team'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['team'] ) ) echo $this->labels['team'] ?></label>
+                                        <strong><?php if( isset( $this->team[ $log['before']['team'] ] ) ) echo $this->team[ $log['before']['team'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['team'] ) ) echo $this->labels['team'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['firstname'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['firstname'] ) ) echo $this->labels['firstname'] ?></label>
+                                        <strong><?php echo $log['before']['firstname'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['firstname'] ) ) echo $this->labels['firstname'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- lastname -->
+                                <?php if ( isset( $log['diffs']['lastname'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['lastname'] ) ) echo $this->labels['lastname'] ?></label>
+                                        <strong><?php echo $log['before']['lastname'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['lastname'] ) ) echo $this->labels['lastname'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- title -->
+                                <?php if ( isset( $log['diffs']['title'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['title'] ) ) echo $this->labels['title'] ?></label>
+                                        <strong><?php echo $log['before']['title'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['title'] ) ) echo $this->labels['title'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['joined_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['joined_at'] ) ) echo $this->labels['joined_at'] ?></label>
+                                        <strong><?php if( isset($log['before']['off_date'] ) ) echo date( 'd/m/Y', strtotime($log['before']['off_date'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['joined_at'] ) ) echo $this->labels['joined_at'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['off_date'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['off_date'] ) ) echo $this->labels['off_date'] ?></label>
+                                        <strong><?php if( isset($log['before']['off_date'] ) ) echo date( 'd/m/Y', strtotime($log['before']['off_date'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['off_date'] ) ) echo $this->labels['off_date'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['gender'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['gender'] ) ) echo $this->labels['gender'] ?></label>
+                                        <strong><?php echo ($log['before']['gender'] == 1 ? 'Male' : 'Female') ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['gender'] ) ) echo $this->labels['gender'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['dob'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['dob'] ) ) echo $this->labels['dob'] ?></label>
+                                        <strong><?php echo $log['before']['dob'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['dob'] ) ) echo $this->labels['dob'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['certificate'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['certificate'] ) ) echo $this->labels['certificate'] ?></label>
+                                        <strong><?php echo $log['before']['certificate'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['certificate'] ) ) echo $this->labels['certificate'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['level'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['level'] ) ) echo $this->labels['level'] ?></label>
+                                        <strong><?php echo $log['before']['level'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['level'] ) ) echo $this->labels['level'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['temporary_address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['temporary_address'] ) ) echo $this->labels['temporary_address'] ?></label>
+                                        <strong><?php echo $log['before']['temporary_address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['temporary_address'] ) ) echo $this->labels['temporary_address'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['address'] ) ) echo $this->labels['address'] ?></label>
+                                        <strong><?php echo $log['before']['address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['address'] ) ) echo $this->labels['address'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['regional_market'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['regional_market'] ) ) echo $this->labels['regional_market'] ?></label>
+                                        <strong><?php if( isset( $this->regionalMarket[ $log['before']['regional_market'] ] ) ) echo $this->regionalMarket[ $log['before']['regional_market'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['regional_market'] ) ) echo $this->labels['regional_market'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['permanent_address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['permanent_address'] ) ) echo $this->labels['permanent_address'] ?></label>
+                                        <strong><?php echo $log['before']['permanent_address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['permanent_address'] ) ) echo $this->labels['permanent_address'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['birth_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['birth_place'] ) ) echo $this->labels['birth_place'] ?></label>
+                                        <strong><?php echo $log['before']['birth_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['birth_place'] ) ) echo $this->labels['birth_place'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['native_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['native_place'] ) ) echo $this->labels['native_place'] ?></label>
+                                        <strong><?php echo $log['before']['native_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['native_place'] ) ) echo $this->labels['native_place'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['ID_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_number'] ) ) echo $this->labels['ID_number'] ?></label>
+                                        <strong><?php echo $log['before']['ID_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_number'] ) ) echo $this->labels['ID_number'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['ID_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_place'] ) ) echo $this->labels['ID_place'] ?></label>
+                                        <strong><?php echo $log['before']['ID_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_place'] ) ) echo $this->labels['ID_place'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['ID_date'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_date'] ) ) echo $this->labels['ID_date'] ?></label>
+                                        <strong><?php if( isset( $log['before']['ID_date'] ) ) echo date( 'd/m/Y', strtotime($log['before']['ID_date'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_date'] ) ) echo $this->labels['ID_date'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['nationality'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['nationality'] ) ) echo $this->labels['nationality'] ?></label>
+                                        <strong><?php if( isset( $this->nationality[ $log['before']['nationality'] ] ) ) echo $this->nationality[ $log['before']['nationality'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['nationality'] ) ) echo $this->labels['nationality'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['religion'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['religion'] ) ) echo $this->labels['religion'] ?></label>
+                                        <strong><?php if( isset( $this->religion[ $log['before']['religion'] ] ) ) echo $this->religion[ $log['before']['religion'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['religion'] ) ) echo $this->labels['religion'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['phone_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['phone_number'] ) ) echo $this->labels['phone_number'] ?></label>
+                                        <strong><?php echo $log['before']['phone_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['phone_number'] ) ) echo $this->labels['phone_number'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['note'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['note'] ) ) echo $this->labels['note'] ?></label>
+                                        <strong><?php echo $log['before']['note'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['note'] ) ) echo $this->labels['note'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['additional_info'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['additional_info'] ) ) echo $this->labels['additional_info'] ?></label>
+                                        <strong><?php echo $log['before']['additional_info'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['additional_info'] ) ) echo $this->labels['additional_info'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['email'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['email'] ) ) echo $this->labels['email'] ?></label>
+                                        <strong><?php echo $log['before']['email'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['email'] ) ) echo $this->labels['email'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['group_id'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['group_id'] ) ) echo $this->labels['group_id'] ?></label>
+                                        <strong><?php if( isset( $this->group[ $log['before']['group_id'] ] ) ) echo $this->group[ $log['before']['group_id'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['group_id'] ) ) echo $this->labels['group_id'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['social_insurance_time'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_time'] ) ) echo $this->labels['social_insurance_time'] ?></label>
+                                        <strong><?php echo $log['before']['social_insurance_time'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_time'] ) ) echo $this->labels['social_insurance_time'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['social_insurance_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_number'] ) ) echo $this->labels['social_insurance_number'] ?></label>
+                                        <strong><?php echo $log['before']['social_insurance_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_number'] ) ) echo $this->labels['social_insurance_number'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['personal_tax'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['personal_tax'] ) ) echo $this->labels['personal_tax'] ?></label>
+                                        <strong><?php echo $log['before']['personal_tax'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['personal_tax'] ) ) echo $this->labels['personal_tax'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['family_allowances_registered'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['family_allowances_registered'] ) ) echo $this->labels['family_allowances_registered'] ?></label>
+                                        <strong><?php echo $log['before']['family_allowances_registered'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['family_allowances_registered'] ) ) echo $this->labels['family_allowances_registered'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+
+                                <?php if ( isset( $log['diffs']['is_officer'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['is_officer'] ) ) echo $this->labels['is_officer'] ?></label>
+                                        <strong><?php echo ( isset($log['before']['is_officer']) && $log['before']['is_officer']==1 ? 'Yes' : 'No' ) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['is_officer'] ) ) echo $this->labels['is_officer'] ?></label>
+                                        NULL
+                                    </li>
+                                <?php endif ?>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <!-- staff code -->
+                                <?php if ( isset( $log['diffs']['code'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['code'] ) ) echo $this->labels['code'] ?></label>
+                                       <?php echo $log['after']['code'] ?>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['code'] ) ) echo $this->labels['code'] ?></label>
+                                        <?php echo $log['after']['code'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract type -->
+                                <?php if ( isset( $log['diffs']['contract_type'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_type'] ) ) echo $this->labels['contract_type'] ?></label>
+                                        <strong><?php if(isset($this->contractType[$log['before']['contract_type']])) echo $this->contractType[$log['before']['contract_type']] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_type'] ) ) echo $this->labels['contract_type'] ?></label>
+                                        <?php if(isset($this->contractType[$log['after']['contract_type']])) echo $this->contractType[$log['after']['contract_type']] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract signed at-->
+                                <?php if ( isset( $log['diffs']['contract_signed_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_signed_at'] ) ) echo $this->labels['contract_signed_at'] ?></label>
+                                        <strong><?php if( isset( $log['after']['contract_signed_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['contract_signed_at'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_signed_at'] ) ) echo $this->labels['contract_signed_at'] ?></label>
+                                        <?php if( isset( $log['after']['contract_signed_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['contract_signed_at'])) ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- contract term -->
+                                <?php if ( isset( $log['diffs']['contract_term'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_term'] ) ) echo $this->labels['contract_term'] ?></label>
+                                        <strong><?php if( isset($this->contractTerm[ $log['after']['contract_term'] ]) ) echo $this->contractTerm[ $log['after']['contract_term'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_term'] ) ) echo $this->labels['contract_term'] ?></label>
+                                        <?php if( isset($this->contractTerm[ $log['after']['contract_term'] ]) ) echo $this->contractTerm[ $log['after']['contract_term'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!--  contract_expired_at -->
+                                <?php if ( isset( $log['diffs']['contract_expired_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_expired_at'] ) ) echo $this->labels['contract_expired_at'] ?></label>
+                                        <strong><?php if( isset( $log['after']['contract_expired_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['contract_expired_at'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['contract_expired_at'] ) ) echo $this->labels['contract_expired_at'] ?></label>
+                                        <?php if( isset( $log['after']['contract_expired_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['contract_expired_at'])) ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- department -->
+                                <?php if ( isset( $log['diffs']['department'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['department'] ) ) echo $this->labels['department'] ?></label>
+                                        <strong><?php if( isset( $this->department[ $log['after']['department'] ] ) ) echo $log['after']['department'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['department'] ) ) echo $this->labels['department'] ?></label>
+                                        <?php if( isset( $this->department[ $log['after']['department'] ] ) ) echo $this->department[ $log['after']['department']] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- team -->
+                                <?php if ( isset( $log['diffs']['team'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['team'] ) ) echo $this->labels['team'] ?></label>
+                                        <strong><?php if( isset( $this->team[ $log['after']['team'] ] ) ) echo $this->team[ $log['after']['team'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['team'] ) ) echo $this->labels['team'] ?></label>
+                                        <?php if( isset( $this->team[ $log['after']['team'] ] ) ) echo $this->team[ $log['after']['team'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- firstname -->
+                                <?php if ( isset( $log['diffs']['firstname'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['firstname'] ) ) echo $this->labels['firstname'] ?></label>
+                                        <strong><?php echo $log['after']['firstname'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['firstname'] ) ) echo $this->labels['firstname'] ?></label>
+                                        <?php echo $log['after']['firstname'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- lastname -->
+                                <?php if ( isset( $log['diffs']['lastname'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['lastname'] ) ) echo $this->labels['lastname'] ?></label>
+                                        <strong><?php echo $log['after']['lastname'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['lastname'] ) ) echo $this->labels['lastname'] ?></label>
+                                        <?php echo $log['after']['lastname'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- title -->
+                                <?php if ( isset( $log['diffs']['title'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['title'] ) ) echo $this->labels['title'] ?></label>
+                                        <strong><?php echo $log['after']['title'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['title'] ) ) echo $this->labels['title'] ?></label>
+                                        <?php echo $log['after']['title'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- joined_at -->
+                                <?php if ( isset( $log['diffs']['joined_at'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['joined_at'] ) ) echo $this->labels['joined_at'] ?></label>
+                                        <strong><?php if( isset($log['after']['joined_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['joined_at'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['joined_at'] ) ) echo $this->labels['joined_at'] ?></label>
+                                        <?php if( isset($log['after']['joined_at'] ) ) echo date( 'd/m/Y', strtotime($log['after']['joined_at'])) ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- off_date -->
+                                <?php if ( isset( $log['diffs']['off_date'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['off_date'] ) ) echo $this->labels['off_date'] ?></label>
+                                        <strong><?php if( isset($log['after']['off_date'] ) ) echo date( 'd/m/Y', strtotime($log['after']['off_date'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['off_date'] ) ) echo $this->labels['off_date'] ?></label>
+                                        <?php if( isset($log['after']['off_date'] ) ) echo date( 'd/m/Y', strtotime($log['after']['off_date'])) ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- gender -->
+                                <?php if ( isset( $log['diffs']['gender'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['gender'] ) ) echo $this->labels['gender'] ?></label>
+                                        <strong><?php echo ($log['after']['gender'] == 1 ? 'Male' : 'Female') ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['gender'] ) ) echo $this->labels['gender'] ?></label>
+                                        <?php echo ($log['after']['gender'] == 1 ? 'Male' : 'Female') ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- dob -->
+                                <?php if ( isset( $log['diffs']['dob'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['dob'] ) ) echo $this->labels['dob'] ?></label>
+                                        <strong><?php echo $log['after']['dob'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['dob'] ) ) echo $this->labels['dob'] ?></label>
+                                        <?php echo $log['after']['dob'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- certificate -->
+                                <?php if ( isset( $log['diffs']['certificate'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['certificate'] ) ) echo $this->labels['certificate'] ?></label>
+                                        <strong><?php echo $log['after']['certificate'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['certificate'] ) ) echo $this->labels['certificate'] ?></label>
+                                        <?php echo $log['after']['certificate'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- level -->
+                                <?php if ( isset( $log['diffs']['level'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['level'] ) ) echo $this->labels['level'] ?></label>
+                                        <strong><?php echo $log['after']['level'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['level'] ) ) echo $this->labels['level'] ?></label>
+                                        <?php echo $log['after']['level'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- temporary_address -->
+                                <?php if ( isset( $log['diffs']['temporary_address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['temporary_address'] ) ) echo $this->labels['temporary_address'] ?></label>
+                                        <strong><?php echo $log['after']['temporary_address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['temporary_address'] ) ) echo $this->labels['temporary_address'] ?></label>
+                                        <?php echo $log['after']['temporary_address'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- address -->
+                                <?php if ( isset( $log['diffs']['address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['address'] ) ) echo $this->labels['address'] ?></label>
+                                        <strong><?php echo $log['after']['address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['address'] ) ) echo $this->labels['address'] ?></label>
+                                        <?php echo $log['after']['address'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- regional_market -->
+                                <?php if ( isset( $log['diffs']['regional_market'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['regional_market'] ) ) echo $this->labels['regional_market'] ?></label>
+                                        <strong><?php if( isset( $this->regionalMarket[ $log['after']['regional_market'] ] ) ) echo $this->regionalMarket[ $log['after']['regional_market'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['regional_market'] ) ) echo $this->labels['regional_market'] ?></label>
+                                        <?php if( isset( $this->regionalMarket[ $log['after']['regional_market'] ] ) ) echo $this->regionalMarket[ $log['after']['regional_market'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- permanent_address -->
+                                <?php if ( isset( $log['diffs']['permanent_address'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['permanent_address'] ) ) echo $this->labels['permanent_address'] ?></label>
+                                        <strong><?php echo $log['after']['permanent_address'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['permanent_address'] ) ) echo $this->labels['permanent_address'] ?></label>
+                                        <?php echo $log['after']['permanent_address'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- birth_place -->
+                                <?php if ( isset( $log['diffs']['birth_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['birth_place'] ) ) echo $this->labels['birth_place'] ?></label>
+                                        <strong><?php echo $log['after']['birth_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['birth_place'] ) ) echo $this->labels['birth_place'] ?></label>
+                                        <?php echo $log['after']['birth_place'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- native_place -->
+                                <?php if ( isset( $log['diffs']['native_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['native_place'] ) ) echo $this->labels['native_place'] ?></label>
+                                        <strong><?php echo $log['after']['native_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['native_place'] ) ) echo $this->labels['native_place'] ?></label>
+                                        <?php echo $log['after']['native_place'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- ID_number -->
+                                <?php if ( isset( $log['diffs']['ID_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_number'] ) ) echo $this->labels['ID_number'] ?></label>
+                                        <strong><?php echo $log['after']['ID_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_number'] ) ) echo $this->labels['ID_number'] ?></label>
+                                        <?php echo $log['after']['ID_number'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- ID_place -->
+                                <?php if ( isset( $log['diffs']['ID_place'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_place'] ) ) echo $this->labels['ID_place'] ?></label>
+                                        <strong><?php echo $log['after']['ID_place'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_place'] ) ) echo $this->labels['ID_place'] ?></label>
+                                        <?php echo $log['after']['ID_place'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- ID_date -->
+                                <?php if ( isset( $log['diffs']['ID_date'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_date'] ) ) echo $this->labels['ID_date'] ?></label>
+                                        <strong><?php if( isset( $log['after']['ID_date'] ) ) echo date( 'd/m/Y', strtotime($log['after']['ID_date'])) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['ID_date'] ) ) echo $this->labels['ID_date'] ?></label>
+                                        <?php if( isset( $log['after']['ID_date'] ) ) echo date( 'd/m/Y', strtotime($log['after']['ID_date'])) ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- nationality -->
+                                <?php if ( isset( $log['diffs']['nationality'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['nationality'] ) ) echo $this->labels['nationality'] ?></label>
+                                        <strong><?php if( isset( $this->nationality[ $log['after']['nationality'] ] ) ) echo $this->nationality[ $log['after']['nationality'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['nationality'] ) ) echo $this->labels['nationality'] ?></label>
+                                        <?php if( isset( $this->nationality[ $log['after']['nationality'] ] ) ) echo $this->nationality[ $log['after']['nationality'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- religion -->
+                                <?php if ( isset( $log['diffs']['religion'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['religion'] ) ) echo $this->labels['religion'] ?></label>
+                                        <strong><?php if( isset( $this->religion[ $log['after']['religion'] ] ) ) echo $this->religion[ $log['after']['religion'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['religion'] ) ) echo $this->labels['religion'] ?></label>
+                                        <?php if( isset( $this->religion[ $log['after']['religion'] ] ) ) echo $this->religion[ $log['after']['religion'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- phone_number -->
+                                <?php if ( isset( $log['diffs']['phone_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['phone_number'] ) ) echo $this->labels['phone_number'] ?></label>
+                                        <strong><?php echo $log['after']['phone_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['phone_number'] ) ) echo $this->labels['phone_number'] ?></label>
+                                        <?php echo $log['after']['phone_number'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- note -->
+                                <?php if ( isset( $log['diffs']['note'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['note'] ) ) echo $this->labels['note'] ?></label>
+                                        <strong><?php echo $log['after']['note'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['note'] ) ) echo $this->labels['note'] ?></label>
+                                        <?php echo $log['after']['note'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- additional_info -->
+                                <?php if ( isset( $log['diffs']['additional_info'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['additional_info'] ) ) echo $this->labels['additional_info'] ?></label>
+                                        <strong><?php echo $log['after']['additional_info'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['additional_info'] ) ) echo $this->labels['additional_info'] ?></label>
+                                        <?php echo $log['after']['additional_info'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- email -->
+                                <?php if ( isset( $log['diffs']['email'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['email'] ) ) echo $this->labels['email'] ?></label>
+                                        <strong><?php echo $log['after']['email'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['email'] ) ) echo $this->labels['email'] ?></label>
+                                        <?php echo $log['after']['email'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- group_id -->
+                                <?php if ( isset( $log['diffs']['group_id'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['group_id'] ) ) echo $this->labels['group_id'] ?></label>
+                                        <strong><?php if( isset( $this->group[ $log['after']['group_id'] ] ) ) echo $this->group[ $log['after']['group_id'] ] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['group_id'] ) ) echo $this->labels['group_id'] ?></label>
+                                        <?php if( isset( $this->group[ $log['after']['group_id'] ] ) ) echo $this->group[ $log['after']['group_id'] ] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- social_insurance_time -->
+                                <?php if ( isset( $log['diffs']['social_insurance_time'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_time'] ) ) echo $this->labels['social_insurance_time'] ?></label>
+                                        <strong><?php echo $log['after']['social_insurance_time'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_time'] ) ) echo $this->labels['social_insurance_time'] ?></label>
+                                        <?php echo $log['after']['social_insurance_time'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- social_insurance_number -->
+                                <?php if ( isset( $log['diffs']['social_insurance_number'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_number'] ) ) echo $this->labels['social_insurance_number'] ?></label>
+                                        <strong><?php echo $log['after']['social_insurance_number'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['social_insurance_number'] ) ) echo $this->labels['social_insurance_number'] ?></label>
+                                        <?php echo $log['after']['social_insurance_number'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- personal_tax -->
+                                <?php if ( isset( $log['diffs']['personal_tax'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['personal_tax'] ) ) echo $this->labels['personal_tax'] ?></label>
+                                        <strong><?php echo $log['after']['personal_tax'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['personal_tax'] ) ) echo $this->labels['personal_tax'] ?></label>
+                                        <?php echo $log['after']['personal_tax'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- family_allowances_registered -->
+                                <?php if ( isset( $log['diffs']['family_allowances_registered'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['family_allowances_registered'] ) ) echo $this->labels['family_allowances_registered'] ?></label>
+                                        <strong><?php echo $log['after']['family_allowances_registered'] ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['family_allowances_registered'] ) ) echo $this->labels['family_allowances_registered'] ?></label>
+                                        <?php echo $log['after']['family_allowances_registered'] ?>
+                                    </li>
+                                <?php endif ?>
+
+                                <!-- is_officer -->
+                                <?php if ( isset( $log['diffs']['is_officer'] ) && $log['type'] == LogType::Update ): ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['is_officer'] ) ) echo $this->labels['is_officer'] ?></label>
+                                        <strong><?php echo ( isset($log['after']['is_officer']) && $log['after']['is_officer']==1 ? 'Yes' : 'No' ) ?></strong>
+                                    </li>
+                                <?php elseif($log['type'] == LogType::Insert) : ?>
+                                    <li>
+                                        <label for=""><?php if( isset( $this->labels['is_officer'] ) ) echo $this->labels['is_officer'] ?></label>
+                                        <?php echo ( isset($log['after']['is_officer']) && $log['after']['is_officer']==1 ? 'Yes' : 'No' ) ?>
+                                    </li>
+                                <?php endif ?>
+                            </ul>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            <?php endif ?>
+            </tbody>
+        </table>
+    </div><!-- end table -->
+    </div>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

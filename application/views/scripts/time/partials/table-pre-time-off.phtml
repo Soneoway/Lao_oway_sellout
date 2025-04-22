@@ -1,0 +1,92 @@
+<style>
+    .approved{
+        color: white;
+        text-shadow: none;
+        background-color: #35aa47;
+        padding: 1px;
+        border-radius: 2px;
+        font-size: 12px;
+    }
+    .txt_center{
+        text-align: center;
+    }
+</style>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'staff_name'    => 'staff',
+                'team'          => 'team',
+                'title',
+                'type',
+                'from_date'     => 'from',
+                'to_date'       => 'to',
+                'Reason/Note',
+                'Status',
+                'Action'
+            ),
+            $this->url, $this->current_col, $this->desc);
+        ?>
+    </tr>
+    </thead>
+    <tbody>
+            <?php
+                $intCount = 0;
+                if( isset($this->list) AND $this->list):
+                    foreach($this->list as $item):
+            ?>
+                        <tr>
+                            <td><?php echo ++$intCount;?></td>
+                            <td><?php echo $item['staff_name'].' ('.$item['code'].')'; ?></td>
+                            <td><?php echo $item['team']?></td>
+                            <td><?php echo $item['title']?></td>
+                            <td>
+                                <?php
+                                    $types = unserialize(OFF_TYPE);
+                                    foreach($types as $key => $value):
+                                        if($key == $item['off_type']):
+                                            echo $value;
+                                        endif;
+                                    endforeach;
+                                ?>
+                            </td>
+                            <td>
+                                  <?php echo ($item['from_date'] > 0) ? date('d/m/Y',strtotime($item['from_date'])): '';?>
+                            </td>
+                            <td>
+                                <?php echo ($item['to_date'] AND $item['to_date'] > 0) ? date('d/m/Y',strtotime($item['to_date'])): '';?>
+                            </td>
+                            <td><?php echo (isset($item['reason']) ? $item['reason'] : '')?></td>
+                            <td>
+                                <?php 
+                                    if(isset($item['approved_at']) AND $item['approved_at'] > 0):
+                                        echo '<label class="approved txt_center">approved</label>';
+                                    else:
+                                        echo '<label class="txt_center">Pending</label>';
+                                    endif;
+                                ?>
+                            </td>
+                            <td>
+
+                                <a href="/time/create-off-long-time?id=<?php echo $item['id']?>" title='detach'><i class="icon-edit"></i></a>
+                            <?php  if($item['bh'] == 1):?>
+                                <a href="/time/create-time-detail?id=<?php echo $item['id']?>" title='detach'><i class="icon-adjust"></i></a>
+                            <?php endif;?>    
+                            </td>
+                        </tr>
+            <?php
+                    endforeach;
+                endif;
+            ?>
+    </tbody>
+</table>
+<div class="paging">
+
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php  echo $this->confirm();?>
+

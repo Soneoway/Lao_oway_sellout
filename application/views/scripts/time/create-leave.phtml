@@ -1,0 +1,264 @@
+<div class="page-header">
+        <h1>APPLICATION FOR LEAVE </h1>
+</div>
+
+<?php
+$today = date('d/m/Y');
+
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+?>
+
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->
+WARNING_TIMING_MESSAGES): ?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES; ?></p>
+</div>
+<?php endif; ?>
+
+
+<div class="row-fluid">
+    <?php if(isset($this->time) and $this->time) : ?>
+    
+    <div class="span6">
+        <div class="control-group">
+            <h3>You've attendance today, please come back tomorrow !</h3>
+        </div>
+    </div>
+    
+    <?Php else : ?>
+    
+    <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+    <form role="form" id="time_form" action="<?php echo HOST . 'time/save-leave'; ?>" method="post"  class="row-fluid">
+        <div class="span6">
+            <div class="control-group">
+                <label>Staff code</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->code;
+endif; ?></label>
+            </div>
+
+            <div class="control-group">
+                <label>Name</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->firstname . ' ' . $this->staff->lastname;
+endif; ?></label>
+            </div>    
+            
+            <div class="control-group">
+                <label>Title</label>
+                <label>
+                    <?php if (isset($this->staff)):
+    echo $this->staff->title;
+endif; ?></label>
+            </div>
+           
+                   <hr />
+                   <div class="control-group">
+                        
+                   </div> 
+                   
+                   <div class="control-group">
+                         <label for="type" class="span2">Type</label>
+                         <select name="type" id="type" required="require" >
+                            <option value="">เลือก</option>
+                            <option value="1">ลากิจ</option>
+                            <option value="2">ลาป่วย</option>
+                            <option value="3">ลาคลอด</option>
+							<option value="4">วันหยุด</option>
+                         </select><font color="red">***</font>
+                   </div>
+                   
+                   <div class="control-group">
+                         <label for="shift" class="span2">shift</label>
+                         <select name="shift" id="type" required="require" >
+                            <option value="">เลือก</option>
+                            <option value="0">เต็มวัน</option>
+                            <option value="1">ครึ่งวัน</option>
+                         </select><font color="red">***</font>
+                   </div>
+                   
+                   <div class="control-group">
+                        <label for="from_date" class="span2">เริ่มวันที่</label>
+                        <!--
+                        <input required="require" type="text" class="form-control search-query date span2" id="from_date" name="from_date" value="<?php isset($this->params['from_date']) and printf($this->params['from_date']);?>" readonly > -->
+
+                        <input required="require" type="text" class="form-control search-query date span2" id="from_date" name="from_date" value="<?php echo $today ?>" readonly >
+
+                        <font color="red">***</font>
+                  </div>
+
+                    <div class="control-group">
+                        <label for="to_date" class="span2">ถึงวันที่</label>
+                        <!-- 
+                        <input required="require" type="text" class="form-control search-query date span2" id="to_date" name="to_date" value="<?php isset($this->params['to_date']) and printf($this->params['to_date']);?>" readonly > -->
+                        <input required="require" type="text" class="form-control search-query date span2" id="to_date" name="to_date" value="<?php echo $today ?>" readonly >
+
+                         <font color="red">***</font>
+                    </div>
+                    
+                     <div class="control-group">
+                        <label for="reason" class="span2">เหตุผล</label>
+                        
+                        <textarea required="require" id="reason" name="reason" type="text" class="input-medium search-query form-control span2" cols="40" rows="5" value="<?php isset($this->params['reason']) and printf($this->params['reason']);?>"></textarea><font color="red">***</font>
+                        
+                    </div>
+                   
+            
+             <div class="clearfix"></div>
+                    <input type="hidden" name="id" id="id" value="<?php if ( isset($this->staff) and $this->staff) echo $this->staff->id;?>">
+                    <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url ) echo $this->back_url;?>">
+                    <button id="btn_submit" type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-danger go-back">Go back</button>              
+            </div>  
+          
+        <div class="span6">
+            <div class="control-group">
+                <ul id="clock">	
+            	   	<li id="sec"></li>
+            	   	<li id="hour"></li>
+            		<li id="min"></li>
+            	</ul>
+            </div>
+        </div>
+                    
+        
+  </form>
+  <?php endif; ?>
+  
+  <div class="row-fluid">
+        <div class="widget widget-nopad">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+                <h3>Recent Timing</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+                <div id="calendar">
+                </div>
+            </div>
+            <!-- /widget-content -->
+        </div>
+    </div>
+  
+ </div>
+ 
+    <script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+    <script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+    <script type="text/javascript" src="/js/file-validator.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+ 
+  <script type="text/javascript">
+        
+        function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#timing_form button[type=submit]').prop('disabled', false);
+        return;
+    }
+         $('#work').on('change', function() {
+
+            if(this.value == 1)
+            {
+                $('.train').show();
+            }
+            else
+            {
+                $('.train').hide();
+            }
+
+        });
+        $(document).ready(function() {
+              $('.train').hide();  
+              $( '.date' ).datepicker({ dateFormat: "dd/mm/yy",minDate: "0",maxDate: "30" });            
+              $('.go-back').click(function(e){
+
+                window.location.href = $('#back_url').val();    
+                return false;
+              });
+              
+              var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month'
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/time/event?id=<?php
+                    if (isset($this->timing) and $this->timing->staff_id!=$this->user_id)
+                        echo $this->timing->staff_id;
+                    else
+                        echo $this->user_id;
+                ?>"
+        });
+
+		$('form#timing_form').bind('submit',function(e){
+        	$('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+              
+              setInterval( function() {
+              var seconds = new Date().getSeconds();
+              var sdegree = seconds * 6;
+              var srotate = "rotate(" + sdegree + "deg)";
+              
+              $("#sec").css({"-moz-transform" : srotate, "-webkit-transform" : srotate});
+                  
+              }, 1000 );
+              
+         
+              setInterval( function() {
+              var hours = new Date().getHours();
+              var mins = new Date().getMinutes();
+              var hdegree = hours * 30 + (mins / 2);
+              var hrotate = "rotate(" + hdegree + "deg)";
+              
+              $("#hour").css({"-moz-transform" : hrotate, "-webkit-transform" : hrotate});
+                  
+              }, 1000 );
+        
+        
+              setInterval( function() {
+              var mins = new Date().getMinutes();
+              var mdegree = mins * 6;
+              var mrotate = "rotate(" + mdegree + "deg)";
+              
+              $("#min").css({"-moz-transform" : mrotate, "-webkit-transform" : mrotate});
+                  
+              }, 1000 );
+              
+              $('form#time_form').bind('submit',function(e){
+        	  $('form#time_form button[type=submit]').prop('disabled', true);
+        });
+      
+        }); 
+    
+    </script>         

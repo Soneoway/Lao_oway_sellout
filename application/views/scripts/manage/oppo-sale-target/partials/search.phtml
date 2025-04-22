@@ -1,0 +1,53 @@
+<form class="form-search form-horizontal" method="get" action="/manage/oppo-sale-target/oppo-sale-target">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="year_month">Year - Month : </label>
+                <div class="controls">
+                    <div class="input-append">
+                    <input name="month_year" id="month_year" class="date-picker"
+                           value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>" required="required">
+                    <button type="submit" class="btn btn-primary">Submit</button></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="span5">
+
+        </div>
+    </div>
+
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css"/>
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+    });
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,111 @@
+<style>
+	label,input[type='text']{
+		display: inline-block;
+	}
+
+	b{
+		font-size: 20px;
+	}
+</style>
+<div class="page-header">
+    <h1>Get Imei activated</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+<div class="row">	
+	<div id="search">
+		<form action="/timing/imei-activated">
+			<div class="span3">
+				<div class="control-group">
+					<label for="">From</label>
+					<input type="text" class="form-control date" value="<?php if(isset($this->params['from']) AND printf($this->params['from']))?>" name="from" required>
+				</div>
+			</div>
+			<div class="span3">
+				<div class="control-group">
+					<label for="">To</label>
+					<input type="text" class="form-control date" value="<?php if(isset($this->params['to']) AND printf($this->params['to']))?>" name="to" required>
+				</div>
+			</div>
+
+			<div class="span3">
+				<div class="control-group">
+					<label for="">Good</label>
+					<select name="good_id" id="" class="form-control">
+						<option value="">---</option>
+						<?php 
+							if(isset($this->goods) AND $this->goods):
+								foreach($this->goods as $key => $value):
+						?>
+							<option value="<?php echo $key;?>" <?php if($key == $this->params['good_id']) echo 'selected=selected';?>><?php echo $value;?></option>
+						<?php			
+								endforeach;
+							endif;
+						?>
+					</select>
+				</div>
+			</div>
+
+			<div class="span3">
+				<input type="submit" name="submit" value="Search" class="btn btn-primary">
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="span12">
+		<div class="result">
+			<label for="">Result imei activated: </label>	<b><?php if(isset($this->total) AND $this->total) echo $this->total;?></b>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span12">
+		<table class="table table-bordered">
+			<thead>
+				<?php echo $this->sorting(array(
+             		'good_desc'=>'Good name',
+             		'total'=>'Activated number'
+            	),$this->url, $this->sort, $this->desc);
+            	
+        		?>
+			</thead>
+			<tbody>
+				<?php 
+					if(isset($this->list) AND $this->list):
+						foreach ($this->list as $key => $value):
+				
+				?>
+				<tr>
+					<td><?php echo $value['good_desc']?></td>
+					<td><?php echo $value['total']?></td>
+				</tr>
+				<?php 
+						endforeach;
+					endif;
+				?>
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script>
+
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+    });
+
+</script>

@@ -1,0 +1,50 @@
+<div class="account-container">
+
+    <div class="content clearfix">
+        <form action="/user/reset" method="post">
+
+            <h1>Reset password</h1>
+
+            <div class="login-fields">
+
+                <?php
+                if (isset($this->messages) and $this->messages) :
+                    foreach ($this->messages as $message): ?>
+                    <div class="alert alert-error">
+                        <?php echo $message;?>
+                    </div>
+                    <?php endforeach;
+                endif;?>
+
+                <?php
+                if (isset($this->messages_success) and $this->messages_success) :
+                    foreach ($this->messages_success as $message): ?>
+                    <div class="alert alert-success">
+                        <?php echo $message;?>
+                    </div>
+                    <?php endforeach;
+                endif;?>
+
+                <p>Please provide your details</p>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Email" autocomplete="off" required="required" class="login username-field" />
+                </div> <!-- /field -->
+            </div> <!-- /login-fields -->
+
+            <div class="login-actions">
+
+                <button type="submit" class="button btn btn-success btn-large">Reset</button>
+
+            </div> <!-- .actions -->
+
+        </form>
+
+    </div> <!-- /content -->
+
+</div> <!-- /account-container -->
+
+<div class="login-extra">
+    <a href="/user/login">Login</a>
+</div> <!-- /login-extra -->

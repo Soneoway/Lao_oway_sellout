@@ -1,0 +1,108 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Type</th>
+        <th>Store ID</th>
+        <th>Store Name</th>
+        <!-- <th>PC</th> -->
+        <!-- <th>Sales</th> -->
+        <th>Distributor Type</th>
+        <th>Distributor Name</th>
+        <th>Area</th>
+        <th>Sellout</th>       
+        <!-- <th>Actoin</th> -->
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if (isset($this->sellout) and $this->sellout)
+        foreach ($this->sellout as $k=>$sellout): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $sellout['org_name']; ?></td>
+                <td><?php echo $sellout['store_id'];?></td>
+                <td><?php echo $sellout['store_name'];?></td>
+                <!-- <td><?php echo $sellout['pc'];?></td> -->
+                <!-- <td><?php echo $sellout['salse'];?></td> -->
+                <td><?php echo $sellout['org_type'];?></td>
+                <td><?php echo $sellout['title'];?></td>
+                <td><?php echo $sellout['area_name'];?></td>
+                <td><?php echo $sellout['sellout'];?></td>
+                    
+               <!--  <td>
+                    <a title="View" href="/timing/timing-issue-edit?id=<?php echo $sellout['ti_id'];?>"> <i class="icon-eye-open"></i></a>
+                    <a title="Remark" href="#" ><i class="icon-edit" data-ti-id="<?php echo $sellout['ti_id'];?>"></i></a>
+
+                </td> -->
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    
+</script>
+
+<?php //echo $this->load();?>

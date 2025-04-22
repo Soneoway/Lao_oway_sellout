@@ -1,0 +1,53 @@
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th style="text-align: center;" width="5%">No.</th>
+            <th style="text-align: center;" width="10%">Area</th>
+            <th style="text-align: center;" width="20%">Topic</th>
+            <th style="text-align: center;" width="20%">PC</th>
+            <th style="text-align: center;" width="20%">PCM</th>
+            <th style="text-align: center;" width="10%">Created at</th>
+            <th style="text-align: center;" width="10%">Status</th>
+            <th style="text-align: center;" width="10%">Remark</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        function getStatus ($status, $solve) {
+            if ($status == "Y" && $solve == "N") {
+                $result = '<storng style="color: #00aa00">PASS</storng>';
+            } else if ($status == "Y" && $solve == "Y") {
+                $result = '<storng style="color: #00aa00">Solved</storng>';
+            } else {
+                $result = '<storng style="color: #ea0100">NOT PASS</storng>';
+            }
+            return $result;
+        }
+
+        $count = 0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k => $item):
+                $filepic = "http://api.oppo.in.th/images/check_list/".date('Y', strtotime($item['created_at']))."/".date('Y-m', strtotime($item['created_at']))."/".date('Y-m-d', strtotime($item['created_at']))."/".$item['filepic'];
+                ?>
+                <tr>
+                    <td style="text-align: center;"><?php echo $k + 1; ?></td>
+                    <td><?php echo isset($item['area']) ? $item['area'] : ''; ?></td>
+                    <td><?php echo isset($item['topic']) ? $item['topic'] : ''; ?></td>
+                    <td><?php echo isset($item['pc_name']) ? $item['pc_name'] : ''; ?></td>
+                    <td><?php echo isset($item['pcm_name']) ? $item['pcm_name'] : ''; ?></td>
+                    <td style="text-align: center;"><?php echo isset($item['created_at']) ? date("d/m/Y H:i:s", strtotime($item['created_at'])) : ''; ?></td>
+                    <td style="text-align: center;"><?php echo getStatus($item['status'], $item['solve']); ?></td>
+                    <td>
+                        <a href="<?php echo $filepic; ?>" id="single_image">
+                            <img width="70" src="<?php echo $filepic; ?>">
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>

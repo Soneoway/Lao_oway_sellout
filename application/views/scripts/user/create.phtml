@@ -1,0 +1,124 @@
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<div class="page-header">
+    <?php if (isset($this->user) and $this->user):?>
+        <h1>Edit User</h1>
+    <?php else:?>
+        <h1>Create User</h1>
+    <?php endif;?>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'user/save';?>" method="post">
+    <div class="form-group">
+        <label for="exampleInputName">Name</label>
+        <input type="text" class="form-control" id="exampleInputName" placeholder="Enter Name" name="name" required="required" value="<?php isset($this->user) and $this->user and printf($this->user->name);?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputUsername">Username</label>
+        <input type="text" class="form-control" id="exampleInputUsername" placeholder="Enter Username" name="username" required="required" value="<?php isset($this->user) and $this->user and printf($this->user->username);?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" name="email" required="required" value="<?php isset($this->user) and $this->user and printf($this->user->email);?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <?php if ( isset($this->user) and $this->user ):?>
+        <p>
+            <a href="javascript:void(0);" id="btn-change-pass" title="Change password">Change Password</a>
+        </p>
+        <input type="hidden" name="change-pass" id="change-pass" value="0">
+        <input type="password" class="form-control hidden" id="exampleInputPassword1" placeholder="Password" name="password">
+        <?php else: ?>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password" required="required">
+        <?php endif; ?>
+    </div>
+    <div class="form-group">
+        <label for="staff">Assign for staff</label>
+        <label for="department">Department</label>
+        <select name="department" id="department">
+            <option value="">Choose</option>
+            <?php foreach ($this->departments as $item):?>
+                <option value="<?php echo $item->id;?>" <?php if (isset($this->selected_staff['department']) and $item->id==$this->selected_staff['department']):?>selected<?php endif;?>><?php echo $item->name;?></option>
+            <?php endforeach;?>
+        </select>
+        <label for="team">Team</label>
+        <select name="team" id="team">
+            <option value="">Choose</option>
+            <?php foreach ($this->teams as $item):?>
+                <option value="<?php echo $item->id;?>" <?php if (isset($this->selected_staff['team']) and $item->id==$this->selected_staff['team']):?>selected<?php endif;?>><?php echo $item->name;?></option>
+            <?php endforeach;?>
+        </select>
+        <label for="staff">Staff name</label>
+        <input id="staff" name="staff" value="<?php isset($this->selected_staff['staff_firstname']) and printf($this->selected_staff['staff_firstname'] . ' ' . $this->selected_staff['staff_lastname']);?>" />
+        <input type="hidden" name="selected_staff" id="selected_staff" value="<?php isset($this->selected_staff['staff_id']) and printf($this->selected_staff['staff_id']);?>" />
+        <style>
+            .ui-autocomplete {
+                max-height: 100px;
+                overflow-y: auto;
+                /* prevent horizontal scrollbar */
+                overflow-x: hidden;
+            }
+            /* IE 6 doesn't support max-height
+             * we use height instead, but this forces the menu to always be this tall
+             */
+            * html .ui-autocomplete {
+                height: 100px;
+            }
+            /*.ui-autocomplete-loading {
+                background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat;
+            }*/
+        </style>
+        <script>
+            $(function() {
+                $( "#staff" )
+                    // don't navigate away from the field on tab when selecting an item
+                    .bind( "keydown", function( event ) {
+                        if ( event.keyCode === $.ui.keyCode.TAB &&
+                            $( this ).data( "ui-autocomplete" ).menu.active ) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        source: function( request, response ) {
+                            $.getJSON( "/staff/search", {
+                                term: request.term,
+                                team: $('#team').val(),
+                                department: $('#department').val()
+                            }, response );
+                        },
+                        select: function( event, ui ) {
+                            $('#selected_staff').val(ui.item.id);
+                        }
+                    });
+            });
+        </script>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputGroup">Group</label>
+        <select id="exampleInputGroup" name="group_id" required="required">
+            <?php foreach ($this->groups as $group):?>
+                <option value="<?php echo $group->id;?>"><?php echo $group->name;?></option>
+            <?php endforeach;?>
+        </select>
+    </div>
+    <input type="hidden" name="id" id="id" value="<?php isset($this->user) and $this->user and printf($this->user->id);?>">
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+<script>
+$(document).ready(function() {
+    $('#btn-change-pass').click(function(){
+        $('#exampleInputPassword1').toggleClass('hidden');
+        if ($('#change-pass').val()==1)
+            $('#change-pass').val(0);
+        else
+            $('#change-pass').val(1);
+    });
+});
+</script>

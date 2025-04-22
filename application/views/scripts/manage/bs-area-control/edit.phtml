@@ -1,0 +1,251 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+</style>
+<div class="page-header">
+    <h1>BS Area Control : ABM Binding</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<?php $area_binding = $this->bs_area_binding; ?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/bs-area-control-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span6">
+            <p><span><strong>- Area Details -</strong></span></p>
+            <input type="hidden" id="bs_area_id" name="bs_area_id" value="<?php echo $area_binding['ba_id']; ?>" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">BS Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['ba_name']) ? $area_binding['ba_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($area_binding['area_name']) ? $area_binding['area_name'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><span><strong>- ABM Responsible -</strong></span></p>
+            <input type="hidden" id="old_staff_id" name="old_staff_id" value="<?php echo $area_binding['staff_id']; ?>" />
+            <input type="hidden" id="staff_id" name="staff_id" value="<?php echo $area_binding['staff_id']; ?>" />
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Staff Province</td>
+                    <td style="padding-left: 5px;" id="staff_province">: <?php echo isset($area_binding['staff_province']) ? $area_binding['staff_province'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name</td>
+                    <td style="padding-left: 5px;" id="staff_name">: <?php echo isset($area_binding['staff_name']) ? $area_binding['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Email</td>
+                    <td style="padding-left: 5px;" id="staff_email">: <?php echo isset($area_binding['staff_email']) ? $area_binding['staff_email'] : "-"; ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                    <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                    <div class="load-ajax">
+                        <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-fluid">
+                <button id="btn_bind_abm" class="btn btn-success" type="button">Bind ABM</button>
+
+                <button type="submit" id="btn_submit" class="btn btn-primary" disabled="disabled">Submit</button>
+
+                <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                <button type="button" class="btn btn-danger go-back">Go back</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Area</div></th>
+        <th><div align='center'>Store ID</div></th>
+        <th><div align='center'>Store Name</div></th>
+        <th><div align='center'>Store Type</div></th>
+        <th><div align='center'>Status</div></th>
+        <th><div align='center'>Sellout</div></th>
+        <th><div align='center'>ASM / Sale</div></th>
+        <th><div align='center'>PC</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $QStoreStaff = new Application_Model_StoreStaff();
+
+            if ($this->store_list) {
+                $data = $this->store_list;
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $pc_list = $QStoreStaff->getPC($data[$i]['st_id']);
+
+                    if ( $data[$i]['st_status'] == 1 ) { $st_status = "<span class='label label-important'>Disable</span>"; }
+                    else { $st_status = "<span class='label label-success'>Active</span>"; }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['st_area']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['st_id']."</div></td>";
+                    echo    "<td>".$data[$i]['st_name']."</td>";
+                    echo    "<td>".$data[$i]['st_type']."</td>";
+                    echo    "<td><div align='center'>".$st_status."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['st_sellout']."</div></td>";
+
+                    if (isset($data[$i]['sale_code'])) {
+                        echo "<td>[ ".$data[$i]['sale_code']." ] ".$data[$i]['sale_name']."</td>";
+                    } else {
+                        echo "<td></td>";
+                    }
+                    
+                    echo    "<td>";
+
+                    for ($j=0;$j<count($pc_list);$j++) { echo "<div>[ ".$pc_list[$j]['pc_code']." ] ".$pc_list[$j]['pc_name']."</div>"; }
+
+                    echo    "</td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+</form>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+
+        $( "#s_name" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+
+                $('form').bind('submit',function(e){e.preventDefault();});
+                $('form button, form input, form select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."staff?sname=1&name=" ?>' + $('#s_name').val();
+
+                //get ajax content
+                var aj = _self.parent().parent().next().find('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.get(targetUrl
+                        ,function(data,status){
+                            $('form').unbind('submit');
+                            $('form button, form input, form select').prop('disabled', false);
+
+                            aj.html(data);
+                            _self.next('.loading').remove();
+
+                            $('#name_result').attr("multiple", false);
+                            $('#btn_submit').prop("disabled", true);
+                        });
+                }
+
+                return false;
+            }
+        });
+
+        $('#btn_bind_abm').click(function(){
+
+            var staff_id = $('#name_result option:selected').val();
+            var staff_details = $('#name_result option:selected').html();
+
+            var tmp = staff_details.split('|');
+
+            $('#staff_id').val(staff_id);
+            $('#staff_province').html(": <font color='green'>" + tmp[2].trim() + "</font>");
+            $('#staff_name').html(": <font color='green'>" + tmp[0].trim() + "</font>");
+            $('#staff_email').html(": <font color='green'>" + tmp[1].trim() + "</font>");
+
+            $('#btn_submit').prop("disabled", false);
+            
+        });
+
+    });
+
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+
+</script>

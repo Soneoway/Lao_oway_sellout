@@ -1,0 +1,108 @@
+<form class="form-search form-horizontal" method="get" action="/manage/sales-achievement/sales-achievement">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="year_month">Year - Month : </label>
+                <div class="controls">
+                    <!-- <div class="input-append"> -->
+                    <input name="month_year" id="month_year" class="date-picker"
+                           value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>" required="required">
+                    <!-- <button type="submit" class="btn btn-primary">Submit</button></div> -->
+                </div>
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $id==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    // Multi-Select
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+/*
+        $('.view_staff').click(function() {
+            $self = $(this);
+            area_id = $self.data('id');
+            temp = $self.data('export');
+            from = $('#from').val();
+            to = $('#to').val();
+
+            loc = '<?php echo HOST ?>timing/analytics-area?tmp_area_id='+area_id+'&export='+temp+'&from='+from+'&to='+to;
+            window.open(loc, '_self');
+        });
+*/
+    });
+
+    
+
+</script>

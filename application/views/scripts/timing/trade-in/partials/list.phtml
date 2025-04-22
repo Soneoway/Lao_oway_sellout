@@ -1,0 +1,142 @@
+<?php 
+    $data = array();
+    if (isset($this->data_list) and $this->data_list) { $data = $this->data_list; }
+?>
+
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th width="5%"><div align="center">No.</div></th>
+        <th width="30%"><div align="center">Store Info</div></th>
+        <th width="25%"><div align="center">Reporter Info</div></th>
+        <th width="20%"><div align="center">IMEI Info</div></th>
+        <th width="20%"><div align="center">IMEI Info (Trade-In)</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if ( !empty($data) ) {
+
+        foreach ($data as $key => $value) {
+
+            $inc = $this->offset + $key + 1;
+
+            $customer_pay = $value['price'] - $value['eva_total'];
+            
+            $total_discount = 0;
+            if ( isset($value['eva_total']) && $value['eva_total'] <> 0 ) { 
+                $total_discount = "<font color='red'> - ".number_format($value['eva_total'],2)."</font>";
+            }
+
+            echo "<tr>";
+            echo    "<td><div align='center'>".$inc."</td>";
+            echo    "<td><table width='100%'>
+                            <tr><td width='15%'>Area</td><td>".$value['area_name']."</td></tr>
+                            <tr><td width='15%'>ID</td><td>".$value['st_id']."</td></tr>
+                            <tr><td width='15%'>Name</td><td>".$value['st_name']."</td></tr>
+                            <tr><td width='15%'>Type</td><td>".$value['st_type']."</td></tr>
+                            <tr><td width='15%'>Kerry</td><td>".$value['mc_status']."</td></tr>
+                        </table>
+                    </td>";
+
+            echo    "<td><table width='100%'>
+                            <tr><td width='15%'>Code</td><td>".$value['staff_code']."</td></tr>
+                            <tr><td width='15%'>Name</td><td>".$value['staff_name']."</td></tr>
+                            <tr><td width='15%'>Group</td><td>".$value['staff_group']."</td></tr>
+                        </table>
+                    </td>";
+
+            echo    "<td><table width='100%'>
+                            <tr><td>IMEI</td><td>".$value['imei']."</td></tr>
+                            <tr><td>Code</td><td>".$value['product_code']."</td></tr>
+                            <tr><td>Model</td><td>".$value['product_name']."</td></tr>
+                            <tr><td>Color</td><td>".$value['color_name']."</td></tr>
+                            <tr><td>Price</td><td>".number_format($value['price'],2)."</td></tr>
+                            <tr><td>Timing Date</td><td>".date('d/m/Y H:i:s', strtotime($value['timing_date']))."</td></tr>
+                            <tr><td>Cust. Pay</td><td><font color='green'>".number_format($customer_pay,2)."</font></td></tr>
+                        </table>
+                    </td>";
+
+            echo    "<td><table width='100%'>
+                            <tr><td>IMEI</td><td>".$value['imei_turn']."</td></tr>
+                            <tr><td>Brand</td><td>".$value['brand_name']."</td></tr>
+                            <tr><td>Model</td><td>".$value['model_name']."</td></tr>
+                            <tr><td>ROM</td><td>".$value['rom_name']."</td></tr>
+                            <tr><td>Grade</td><td>".$value['eva_grade']."</td></tr>
+                            <tr><td>Grade Discount</td><td>".number_format($value['eva_value'],2)."</td></tr>
+                            <tr><td>Total Discount</td><td>".$total_discount."</td></tr>
+                        </table>
+                    </td>";
+
+            echo "</tr>";
+        }
+    }
+
+    ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<!-- 
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/> 
+-->
+
+<script>
+/*
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+*/
+</script>
+
+<?php //echo $this->load();?>

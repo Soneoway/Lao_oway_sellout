@@ -1,0 +1,162 @@
+<div class="row-fluid">
+    <div class="span12">
+        <p><button type="button" class="btn btn-info add_relative_btn"><i class="icon-plus"></i> Add Relative...</button></p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <?php if (isset($this->currentRelative) && $this->currentRelative->count()){ ?>
+            <table class="table borderd relative_list table_list">
+                <caption>Current Relative Person</caption>
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <th>Relative Name</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Birth Year</th>
+                        <th>Job</th>
+                        <th>Work Place</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if (isset($this->currentRelative) && $this->currentRelative): ?>
+                    <?php foreach ($this->currentRelative as $key => $value): ?>
+                        <tr class="item">
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <span class="editable relative_type_txt"><?php echo My_Staff_Relative::get($value['relative_type']) ?></span>
+                            </td>
+                            <td>
+                                <span class="editable full_name_txt"><?php echo $value['full_name'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable gender_txt"><?php echo ($value['gender'] ? 'Male' : "Female") ?></span>
+                            </td>
+                            <td>
+                                <span class="editable birth_year_txt"><?php echo $value['birth_year'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable job_txt"><?php echo $value['job'] ?></span>
+                            </td>
+                            <td>
+                                <span class="editable work_place_txt"><?php echo $value['work_place'] ?></span>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+                </tbody>
+            </table>
+        <?php } ?>
+
+        <table class="table borderd relative_list table_list">
+            <caption>Relative</caption>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Relative Name</th>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Birth Year</th>
+                    <th>Job</th>
+                    <th>Work Place</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody class="relative-tbody">
+                <?php
+                $relativeList = null;
+                if (isset($this->staffTemp) and $this->staffTemp)
+                    $relativeList = $this->tempRelative;
+                elseif (isset($this->currentStaff) and $this->currentStaff)
+                    $relativeList = $this->currentRelative;
+
+                if ($relativeList):
+                    foreach ($relativeList as $key => $value): ?>
+                        <tr class="item relative-row">
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <select class="input-mini relative_type" name="relative_type[]">
+                                    <option value>---</option>
+                                    <option value="<?php echo My_Staff_Relative::Father ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Father) echo "selected" ?>>Father</option>
+                                    <option value="<?php echo My_Staff_Relative::Mother ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Mother) echo "selected" ?>>Mother</option>
+                                    <option value="<?php echo My_Staff_Relative::Husband ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Husband) echo "selected" ?>>Husband</option>
+                                    <option value="<?php echo My_Staff_Relative::Wife ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Wife) echo "selected" ?>>Wife</option>
+                                    <option value="<?php echo My_Staff_Relative::Brother ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Brother) echo "selected" ?>>Brother</option>
+                                    <option value="<?php echo My_Staff_Relative::Sister ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Sister) echo "selected" ?>>Sister</option>
+                                    <option value="<?php echo My_Staff_Relative::Child ?>" <?php if (isset($value['relative_type']) && $value['relative_type'] == My_Staff_Relative::Child) echo "selected" ?>>Child</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="full_name[]" class="input-medium full_name" value="<?php echo $value['full_name'] ?>">
+                            </td>
+                            <td class="td-rlt_gender">
+                                <label class="gender"><input type="radio" name="rlt_gender[<?php echo $key;?>]" class="gender" value="1" <?php if (isset($value['gender']) && $value['gender'] == 1) echo "checked" ?>> Male</label>
+                                <label class="gender"><input type="radio" name="rlt_gender[<?php echo $key;?>]" class="gender" value="0" <?php if (isset($value['gender']) && $value['gender'] == 0) echo "checked" ?>> Female</label>
+                            </td>
+                            <td>
+                                <input type="text" name="birth_year[]" class="input-mini birth_year" value="<?php echo $value['birth_year'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" name="job[]" class="input-small job" value="<?php echo $value['job'] ?>">
+                            </td>
+                            <td>
+                                <input type="text" name="work_place[]" class="input-small work_place" value="<?php echo $value['work_place'] ?>">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-mini btn-danger relative-remove"><i class="icon-remove"></i> Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    relative_div = '<tr class="relative-row">\
+                            <td>\
+                                &nbsp;\
+                            </td>\
+                            <td>\
+                                <select class="input-mini relative_type" name="relative_type[]">\
+                                    <option value>---</option>\
+                                    <option value="<?php echo My_Staff_Relative::Father ?>">Father</option>\
+                                    <option value="<?php echo My_Staff_Relative::Mother ?>">Mother</option>\
+                                    <option value="<?php echo My_Staff_Relative::Husband ?>">Husband</option>\
+                                    <option value="<?php echo My_Staff_Relative::Wife ?>">Wife</option>\
+                                    <option value="<?php echo My_Staff_Relative::Brother ?>">Brother</option>\
+                                    <option value="<?php echo My_Staff_Relative::Sister ?>">Sister</option>\
+                                    <option value="<?php echo My_Staff_Relative::Child ?>">Child</option>\
+                                </select>\
+                            </td>\
+                            <td>\
+                                <input type="text" class="input-medium full_name" name="full_name[]" value="">\
+                            </td>\
+                            <td class="td-rlt_gender">\
+                                <label class="gender"><input type="radio" name="rlt_gender[]" class="gender rlt_gender" value="1"> Male</label>\
+                                <label class="gender"><input type="radio" name="rlt_gender[]" class="gender rlt_gender" value="0"> Female</label>\
+                            </td>\
+                            <td>\
+                                <input type="text" class="input-mini birth_year" name="birth_year[]" value="">\
+                            </td>\
+                            <td>\
+                                <input type="text" class="input-small job" name="job[]" value="">\
+                            </td>\
+                            <td>\
+                                <input type="text" class="input-small work_place" name="work_place[]" value="">\
+                            </td>\
+                            <td>\
+                                <button type="button" class="btn btn-mini btn-danger relative-remove"><i class="icon-remove"></i> Delete</button>\
+                            </td>\
+                        </tr>'
+        ;
+
+
+</script>

@@ -1,0 +1,102 @@
+<style>
+.red
+{
+      background-color: #BA0000 !important;
+  color: white;
+}
+.green
+{
+      background-color: #00BA8B !important;
+      color: white;
+}
+</style>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Imei</th>
+            <th>รุ่น</th>
+            <th>สี</th>
+            <th>Activated</th>
+            <th>การกระทำ</th>
+            <th>สถานะ</th>
+        </tr>
+    </thead>
+      <tbody>
+<?php $i = 1;
+    if(isset($this->list_expired) and $this->list_expired ) :
+        foreach($this->list_expired as $k=>$v) : 
+                $status = '';
+                if (isset($v['already_timing']) && $v['already_timing'])
+                    $status = 'Đã chấm công';
+                if(isset($v['limit_expire']) && $v['limit_expire'])
+                    $status = 'Active quá 15 ngày';
+                if(isset($v['limit_expire_activated']) && $v['limit_expire_activated'])
+                    $status = 'Đã kích hoạt quá thời gian quy định';
+
+            ?>   
+
+         <tr class="item" rel="tooltip" title="<?php if(isset($v['store_name'])) echo $v['store_name'] . ' - ' . $v['from']; ?>">
+            <td   ><?php echo $i++;  ?></td>
+            <td><?php if(isset($v['imei'])) echo $v['imei'];  ?></td>
+            <td><?php if(isset($v['good_name'])) echo $v['good_name'];  ?></td>
+            <td><?php if(isset($v['good_color'])) echo $v['good_color'];  ?></td>
+            <td <?php if(isset($v['activated_at']) and $v['activated_at']) echo 'class="green"'; else echo 'class="red"' ?>><?php  if(isset($v['activated_at'])) echo $v['activated_at']; else echo 'Not Activated';  ?></td>
+            <td><?php if(isset($v['can_reimport']) && $v['can_reimport']): ?>
+              <button class="btn btn-info btn-mini reimport_btn" data-imei="<?php echo $v['imei'] ?>" data-id="<?php echo $v['id'] ?>"><i class="icon-download-alt"></i> Reimport</button>
+            <?php endif ?></td>
+            <td class="status"><?php if (isset($status) && $status) echo $status; ?></td>
+        </tr>
+ <?php endforeach; endif;?>
+ 
+   </tbody>
+</table>
+
+<script type="text/javascript">
+;(function($) {
+    $('.reimport_btn').click(reimport);
+
+    function reimport(e) {
+        if ( ! $(e.target).hasClass('reimport_btn') )
+            _self = $(e.target).parents('.reimport_btn');
+        else
+            _self = $(e.target);
+
+        imei  = _self.data('imei');
+        id    = _self.data('id');
+        _item = _self.parents('.item');
+        $('.loading').remove();
+        _item.find('.status').html('');
+
+        _item.find('.status').html('<span class="loading"></span>');
+
+        $.ajax({
+            url: '<?php echo HOST ?>timing/expired-submit',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                id: id,
+                imei: imei
+            },
+        })
+        .done(function(data) {
+            console.log("success");
+
+            if (data && data.code == 1) {
+                _self.remove();
+                _item.find('.status').text('Done');
+            } else {
+                _item.find('.status').text('[' +data.code +'] '+ data.message);
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('.loading').remove();
+            console.log("complete");
+        });
+        
+    }
+})(jQuery);
+</script>

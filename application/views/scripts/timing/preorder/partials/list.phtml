@@ -1,0 +1,95 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th style="vertical-align: middle;"><div align="center">No.</div></th>
+            <th style="vertical-align: middle;"><div align="center">Store Code</div></th>
+            <!-- <th style="vertical-align: middle;"><div align="center">Store ID</div></th> -->
+            <th style="vertical-align: middle;"><div align="center">Store Name</div></th>
+            <th style="vertical-align: middle;"><div align="center">Model</div></th>
+            <th style="vertical-align: middle;"><div align="center">Color</div></th>
+            <th style="vertical-align: middle;"><div align="center">Type</div></th>
+            <th style="vertical-align: middle;"><div align="center">Custromer Name</div>
+                <th style="vertical-align: middle;"><div align="center">Custromer Phone</div>
+                    <th style="vertical-align: middle;"><div align="center">Created Code</div></th>
+                    <th style="vertical-align: middle;"><div align="center">Created BY</div></th>
+                    <th style="vertical-align: middle;"><div align="center">Created Date</div></th>
+		<!-- <th style="vertical-align: middle;"><div align="center">Status</div></th> -->
+                    <th style="vertical-align: middle;"><div align="center">Action</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+                if ($this->preorder_list) {
+                    $data = $this->preorder_list;
+
+                    for ($i=0;$i<count($data);$i++) {
+
+                        $color = '';
+                        if ( $data[$i]['indicator'] < 0 ) { $color = "red"; } 
+
+                        $cnt = $this->offset + $i + 1;
+
+                        echo "<tr>";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['store_code']."</div></td>";
+                        // echo    "<td><div align='center'>".$data[$i]['store_id']."</div></td>";
+                        echo    "<td><div align='left'>".$data[$i]['store_name']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['good_name']."</div></td>";              
+                        echo    "<td><div align='center'>".$data[$i]['good_color']."</div></td>";
+
+                        if($data[$i]['type'] == 1)
+                        {
+                            $type = "<span style='color: green'>ມີມັດຈຳ</span>";
+                        }else{
+                            $type = "<span style='color: red'>ບໍ່ມີມັດຈຳ</span>";
+                        }
+
+                        echo    "<td><div align='center'>".$type."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['customers_name']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['customers_phone']."</div></td>";
+
+                        echo    "<td><div align='center'>".$data[$i]['staff_code']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['staff_name']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['add_time']."</div></td>";
+
+                        if($data[$i]['confirm'] == '')
+                        {
+                            $status = "-";
+                        }else{
+                            $status = "<span style='color: green'>confirm<span>";
+                        }
+
+                        //echo "<td><div align='center'>".$status."</div></td>";
+
+                        ?>
+                        <td>
+                            <?php if($userStorage->id == 18) { ?>
+                          <?php if($data[$i]['imei_sn'] == ''){ ?>
+                                    <a href="/timing/add-imei?pre_id=<?php echo $data[$i]['pre_id'] ?>" title="timing" ><i class="icon-qrcode" aria-hidden="true"></i></a>
+                                     <a href="/timing/edit-pre?pre_id=<?php echo $data[$i]['pre_id'] ?>&&good_id=<?php echo $data[$i]['good_id'] ?>&&good_color=<?php echo $data[$i]['color_id'] ?>"><i class="icon-edit-sign" aria-hidden="true"></i></a>
+                            <?php } ?>
+
+                            <?php if($data[$i]['imei_sn'] == ''){ ?>
+                                <a href="/timing/delete-pre?id=<?php echo $data[$i]['pre_id'] ?>" onclick="return confirm('Are you sure you want to delete this item?');" title="cancel"><i class="icon-trash" aria-hidden="true" style="color: red"></i></a>
+                            <?php }else{ ?>
+
+                                <a href="/timing/rolback-pre?imei=<?php echo $data[$i]['imei_sn'] ?>" onclick="return confirm('Are you sure you want to delete this item?');" title="rolback"><i class="icon-repeat" aria-hidden="true"></i></a>
+                            <?php } ?>
+                        <?php } ?>
+
+                        </td>
+                        <?php
+                    }
+
+                }
+                ?>
+            </tbody>
+        </table>
+
+        <div class="paging">
+            <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+        </div>
+
+        <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>

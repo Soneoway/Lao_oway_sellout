@@ -1,0 +1,770 @@
+<?php 
+    //print_r($this->params);
+
+    $d1 = explode('/', $this->params['from']);
+    $d2 = explode('/', $this->params['to']);
+
+    $from = $d1[2].'-'.$d1[1].'-'.$d1[0];
+    $to = $d2[2].'-'.$d2[1].'-'.$d2[0];
+
+    $period_loop = ( (strtotime($to) - strtotime($from)) / (24*60*60) ) + 1;
+
+    $y_max = $y_temp = $y_total_max = $y_total_temp = 0;
+
+    // Data for Chart : Check Compare Last Month
+    if (isset($this->ka_sellout_sum) and $this->ka_sellout_sum) {
+
+        $from_last = date('Y-m-'.$d1[0], strtotime("-31 Days", strtotime($to)));
+        $flag_month_last = date('M-Y', strtotime($from_last));
+
+        $data = $this->ka_sellout_sum;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for Chart
+            $series[$i] = array(
+                'text'       => $data[$i]['channel_name'],
+                // 'line-color' => '#4dbac0',
+                'line-width' => '2px',
+                'shadow'     => 0,
+                'palette'    => $i,
+                'marker'     => array(
+                                    'background-color' => '#fff',
+                                    'size'             => 3,
+                                    'border-width'     => 1,
+                                    // 'border-color'     => '#36a2a8',
+                                    'shadow'           => 0,
+                                ),
+            );
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                // Check Last Month
+                if (strpos($data[$i]['channel_name'], $flag_month_last) !== false) {
+
+                    $day_name = date('D', strtotime("+".$j." Day", strtotime($from_last)));
+                    $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from_last)));
+
+                } else {
+
+                    $day_name = date('D', strtotime("+".$j." Day", strtotime($from)));
+                    $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                }
+
+                $series[$i]['values'][$j] = $data[$i][$day_text];
+                if ($data[$i][$day_text] >= $y_temp) { $y_temp = $data[$i][$day_text]; }
+
+            }
+
+        }
+
+    } else {
+
+        $data = $this->ka_sellout;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for Chart
+            $series[$i] = array(
+                'text'       => $data[$i]['channel_name'],
+                // 'line-color' => '#4dbac0',
+                'line-width' => '2px',
+                'shadow'     => 0,
+                'palette'    => $i,
+                'marker'     => array(
+                                    'background-color' => '#fff',
+                                    'size'             => 3,
+                                    'border-width'     => 1,
+                                    // 'border-color'     => '#36a2a8',
+                                    'shadow'           => 0,
+                                ),
+            );
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                $day_name = date('D', strtotime("+".$j." Day", strtotime($from)));
+                $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                $series[$i]['values'][$j] = $data[$i][$day_text];
+                if ($data[$i][$day_text] >= $y_temp) { $y_temp = $data[$i][$day_text]; }
+
+            }
+
+        }
+
+    }
+
+    $y_max = ceil($y_temp/100) * 100;
+    $series = json_encode($series, JSON_NUMERIC_CHECK);
+
+    // Start HTML 
+
+    if ( isset($this->ka_share) and $this->ka_share ) {
+
+        $data_share = $this->ka_share;
+
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>No.</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Model Code</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Model Name</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Unit</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>% Share</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        $sum_unit = $sum_share = 0;
+
+        for ($i=0;$i<count($data_share);$i++) {
+
+            $cnt = $i + 1;
+
+            echo    "<tr>";
+            echo        "<td width='5%'><div align='center'>".$cnt."</div></td>";
+            echo        "<td width='10%'>".$data_share[$i]['product_code']."</td>";
+            echo        "<td width='65%'>".$data_share[$i]['product_name']."</td>";
+            echo        "<td width='10%'><div align='right'>".number_format($data_share[$i]['sellout'],0)."</div></td>";
+            echo        "<td width='10%'><div align='right'>".number_format($data_share[$i]['share'],2)."</div></td>";
+            echo    "</tr>";
+
+            $sum_unit += $data_share[$i]['sellout'];
+            // $sum_share += $data_share[$i]['share'];
+
+        }
+
+        $sum_share = round(( $sum_unit / $this->total_sellout ) * 100, 2);
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+        echo    "<tr style='background-color:#BDBDBD;'>";
+        echo        "<td colspan='3'><div align='center'>Total</div></td>";
+        echo        "<td><div align='right'>".number_format($sum_unit,0)."</div></td>";
+        echo        "<td><div align='right'>".number_format($sum_share,2)."</div></td>";
+        echo    "</tr>";
+        echo    "</tfoot>";
+        echo "</table>";
+
+    }
+
+    // Start Graph
+
+    echo "<div id='ka_chart'></div>";
+    echo "<br/>";
+
+    if (isset($this->ka_sellout) and $this->ka_sellout) {
+
+        $flag_month = date('M-Y', strtotime($from));
+
+        $series_total[0] = array(
+            'text'       => 'Total '.$flag_month,
+            // 'line-color' => '#4dbac0',
+            'line-width' => '2px',
+            'shadow'     => 0,
+            'palette'    => $i,
+            'marker'     => array(
+                                'background-color' => '#fff',
+                                'size'             => 3,
+                                'border-width'     => 1,
+                                // 'border-color'     => '#36a2a8',
+                                'shadow'           => 0,
+                            ),
+        );
+
+        $data = $this->ka_sellout;
+        // echo "<pre>"; print_r($data);
+
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>No.</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Channel</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+            $head_color = "";
+
+            $day_name = date('D', strtotime("+".$i." Day", strtotime($from)));
+            $day_text =  date('d M', strtotime("+".$i." Day", strtotime($from)));
+
+            if ( in_array($day_name, array('Sat','Sun')) ) { $head_color = "color:red;"; }
+
+            echo "<th style='vertical-align:middle; ".$head_color."' ><div align='center'>".$day_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        $sum_sellout = 0;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for List
+            $cnt = $i + 1;
+
+            echo    "<tr>";
+            echo        "<td width='5%'><div align='center'>".$cnt."</div></td>";
+            echo        "<td width='20%'>".$data[$i]['channel_name']."</td>";
+
+            for ($j=0;$j<$period_loop;$j++) {
+                $day_name = date('D', strtotime("+".$j." Day", strtotime($from)));
+                $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                $td_color = "";
+                if ( in_array($day_name, array('Sat','Sun')) ) { $td_color = "style='background-color:#FFB3B3;'"; }
+
+                // Check Compare
+                if (isset($this->ka_sellout_last1) and $this->ka_sellout_last1) {
+                    $day_date = date('Y-m-d', strtotime("+".$j." Day", strtotime($from)));
+
+                    echo "<td ".$td_color."><div align='right'><span class='badge badge-default export_details' data-channel='".$data[$i]['channel_id']."' data-type='1' data-selected_date='".$day_date."'>".$data[$i][$day_text]."</span></div></td>";
+                } else {
+
+                    echo "<td ".$td_color."><div align='right'>".$data[$i][$day_text]."</div></td>";
+                }
+
+                $sum_day[$day_text] += $data[$i][$day_text];
+
+                $series_total[0]['values'][$j] = $sum_day[$day_text];
+                if ($sum_day[$day_text] >= $y_total_temp) { $y_total_temp = $sum_day[$day_text]; }
+            }
+
+            echo        "<td><div align='right'><span class='badge badge-default export_details' data-channel='".$data[$i]['channel_id']."' data-type='3' data-selected_date='".$from."|".$to."'>".$data[$i]['sellout']."</span></div></td>";
+            echo    "</tr>";
+            
+            $sum_sellout += $data[$i]['sellout'];
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo        "<tr style='background-color:#BDBDBD;'>";
+        echo            "<td colspan='2'><div align='center'>Total</div></td>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+
+            $day_text =  date('d-M', strtotime("+".$i." Day", strtotime($from)));
+
+            // Check Compare
+            if (isset($this->ka_sellout_last1) and $this->ka_sellout_last1) {
+                $day_date = date('Y-m-d', strtotime("+".$i." Day", strtotime($from)));
+
+                echo "<td><div align='right'><span class='badge badge-default export_details' data-channel='".implode("|", $this->params['channel_id'])."' data-type='2' data-selected_date='".$day_date."'>".$sum_day[$day_text]."</span></div></td>";
+            } else {
+
+                echo "<td><div align='right'>".$sum_day[$day_text]."</div></td>";
+            }
+            
+        }
+
+        echo            "<td><div align='right'><span class='badge badge-default export_details' data-channel='".implode("|", $this->params['channel_id'])."' data-type='4' data-selected_date='".$from."|".$to."'>".$sum_sellout."</span></div></td>";
+        echo        "</tr>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+
+    }
+
+    echo "<br/>";
+
+    // Table Sellout Diff & Last Month
+    if (isset($this->ka_sellout_last1) and $this->ka_sellout_last1) {
+
+        $data_last = $this->ka_sellout_last1;
+        // echo "<pre>"; print_r($data_last);
+
+        // Table Sellout Diff
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>No.</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Channel</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+            $day_text =  date('d', strtotime("+".$i." Day", strtotime($from)));
+            echo "<th style='vertical-align:middle;' ><div align='center'>Day ".$day_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for List
+            $cnt = $i + 1;
+
+            $channel_name = explode(" (", $data[$i]['channel_name']);
+
+            echo    "<tr>";
+            echo        "<td width='5%'><div align='center'>".$cnt."</div></td>";
+            echo        "<td width='20%'>".$channel_name[0]."</td>";
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                $day_text_01 =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+                $day_text_02 =  date('d-M', strtotime("+".$j." Day", strtotime($from_last)));
+
+                $sellout_diff = round((( $data[$i][$day_text_01] / $data_last[$i][$day_text_02] ) - 1) * 100, 0);
+
+                $font_color = "color='black'";
+                if ($sellout_diff <= 0) { $font_color = "color='red'"; } 
+                if ($sellout_diff >= 100) { $font_color = "color='green'"; } 
+
+                echo    "<td><div align='right'><font ".$font_color." >".$sellout_diff."%</font></div></td>";
+
+            }
+
+            $total_sellout_diff = round((( $data[$i]['sellout'] / $data_last[$i]['sellout'] ) - 1) * 100, 0);
+
+            $font_color = "color='black'";
+            if ($total_sellout_diff <= 0) { $font_color = "color='red'"; } 
+            if ($total_sellout_diff >= 100) { $font_color = "color='green'"; } 
+
+            echo        "<td><div align='right'><font ".$font_color." >".$total_sellout_diff."%</font></div></td>";
+            echo    "</tr>";
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+        echo "<br/>";
+
+        // Table Last Month
+        $from_last = date('Y-m-'.$d1[0], strtotime("-31 Days", strtotime($to)));
+        $flag_month_last = date('M-Y', strtotime($from_last));
+
+        $series_total[1] = array(
+            'text'       => 'Total '.$flag_month_last,
+            // 'line-color' => '#4dbac0',
+            'line-width' => '2px',
+            'shadow'     => 0,
+            'palette'    => $i,
+            'marker'     => array(
+                                'background-color' => '#fff',
+                                'size'             => 3,
+                                'border-width'     => 1,
+                                // 'border-color'     => '#36a2a8',
+                                'shadow'           => 0,
+                            ),
+        );
+
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>No.</div></th>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Channel</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+            $head_color = "";
+
+            $day_name = date('D', strtotime("+".$i." Day", strtotime($from_last)));
+            $day_text =  date('d M', strtotime("+".$i." Day", strtotime($from_last)));
+
+            if ( in_array($day_name, array('Sat','Sun')) ) { $head_color = "color:red;"; }
+
+            echo "<th style='vertical-align:middle; ".$head_color."' ><div align='center'>".$day_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        $sum_sellout = 0;
+
+        for ($i=0;$i<count($data_last);$i++) {
+
+            // Data for List
+            $cnt = $i + 1;
+
+            echo    "<tr>";
+            echo        "<td width='5%'><div align='center'>".$cnt."</div></td>";
+            echo        "<td width='20%'>".$data_last[$i]['channel_name']."</td>";
+
+            for ($j=0;$j<$period_loop;$j++) {
+                $day_name = date('D', strtotime("+".$j." Day", strtotime($from_last)));
+                $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from_last)));
+
+                $td_color = "";
+                if ( in_array($day_name, array('Sat','Sun')) ) { $td_color = "style='background-color:#FFB3B3;'"; }
+
+                echo    "<td ".$td_color."><div align='right'>".$data_last[$i][$day_text]."</div></td>";
+
+                $sum_day[$day_text] += $data_last[$i][$day_text];
+
+                $series_total[1]['values'][$j] = $sum_day[$day_text];
+                if ($sum_day[$day_text] >= $y_total_temp) { $y_total_temp = $sum_day[$day_text]; }
+            }
+
+            echo        "<td><div align='right'>".$data_last[$i]['sellout']."</div></td>";
+            echo    "</tr>";
+            
+            $sum_sellout += $data_last[$i]['sellout'];
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo        "<tr style='background-color:#BDBDBD;'>";
+        echo            "<td colspan='2'><div align='center'>Total</div></td>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+            $day_text =  date('d-M', strtotime("+".$i." Day", strtotime($from_last)));
+            echo "<td><div align='right'>".$sum_day[$day_text]."</div></td>";
+        }
+
+        echo            "<td><div align='right'>".$sum_sellout."</div></td>";
+        echo        "</tr>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+
+    }
+
+
+    $y_total_max = ceil($y_total_temp/100) * 100;
+    $series_total = json_encode($series_total, JSON_NUMERIC_CHECK);
+
+    echo "<br/>";
+    echo "<div id='ka_chart_total'></div>";
+
+?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
+<script> 
+    zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9","ee6b7db5b51705a13dc2339db3edaf6d"];
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('.export_details').click(function() {
+            $self = $(this);
+            channel = $self.data('channel');
+            selected_date = $self.data('selected_date');
+            type = $self.data('type');
+
+            loc = '<?php echo HOST ?>timing/ka-sellout?export=2&type='+type+'&channel='+channel+'&selected_date='+selected_date;
+            window.open(loc, '_self');
+        });
+
+
+    });
+
+    var period_loop = <?php echo $period_loop; ?>;
+    var from_date = '<?php echo $from; ?>';
+
+    // KA Sellout
+    var y_max = '<?php echo $y_max; ?>';
+    var series = '<?php echo $series; ?>';
+
+    // Total KA Sellout
+    var y_total_max = '<?php echo $y_total_max; ?>';
+    var series_total = '<?php echo $series_total; ?>';
+
+    var sum_sellout = '<?php echo $sum_sellout; ?>';
+
+    var month_list = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    var x_list = [];
+    var i;
+
+    for (i = 0; i < period_loop; i++) { 
+        var date = new Date(from_date);
+        date.setDate(date.getDate() + i);
+
+        var date_text = (date.getUTCDate()) + " " + month_list[(date.getUTCMonth())];
+        var date_name = date.getDay();
+
+        var x_string = "";
+        if (date_name == 0 || date_name == 6) { x_string = "<span style='color:red;'>"+date_text+"</span>"; } 
+        else { x_string = date_text; }
+
+        x_list.push(x_string);
+    }
+
+    /*https://www.zingchart.com/gallery/chart/#!dashboard-custom-tokens*/
+    zingchart.THEME = "classic";
+
+    var ka_chart_total_config = {
+        "background-color":"#ecf2f6",
+        "graphset":[
+            {
+                "type":"line",
+                "background-color":"#fff",
+                "border-color":"#dae5ec",
+                "border-width":"1px",
+                "width":"96%",
+                "height":"80%",
+                "x":"2%",
+                "y":"3%",
+                "title":{
+                    "margin-top":"7px",
+                    "margin-left":"12px",
+                    "text":"Key Account's Total Sellout ( "+sum_sellout+" )",
+                    "background-color":"none",
+                    "shadow":0,
+                    "text-align":"center",
+                    "font-family":"Arial",
+                    "font-size":"11px",
+                    "font-color":"#707d94"
+                },
+                "plot":{
+                    "animation":{
+                        "delay":500,
+                        "effect":"ANIMATION_SLIDE_LEFT"
+                    },
+                    "value-box": {
+                        "text": "%v",
+                        "font-color": "#707d94",
+                        "font-family": "Arial",
+                        "font-size": "11px",
+                        "font-weight": "normal",
+                        "font-style": "normal"
+                    }
+                },
+                "plotarea":{
+                    "margin":"50px 25px 70px 46px"
+                },
+                "scale-y":{
+                    "values":"0:"+y_total_max+":100",
+                    "line-color":"none",
+                    "guide":{
+                        "line-style":"solid",
+                        "line-color":"#d2dae2",
+                        "line-width":"1px",
+                        "alpha":0.5
+                    },
+                    "tick":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-right":"5px"
+                    }
+                },
+                "scale-x":{
+                    "line-color":"#d2dae2",
+                    "line-width":"2px",
+                    "values":x_list,
+                    "tick":{
+                        "line-color":"#d2dae2",
+                        "line-width":"1px"
+                    },
+                    "guide":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-top":"5px"
+                    }
+                },
+                "legend":{
+                    "layout":"x6",
+                    "background-color":"none",
+                    "shadow":0,
+                    "margin":"425 auto 0 auto",
+                    "border-width":"0px",
+                    "item":{
+                        "font-color":"#707d94",
+                        "font-family":"Arial",
+                        "padding":"0px",
+                        "margin":"0px",
+                        "font-size":"9px"
+                    },
+                    "marker":{
+                        "show-line":"true",
+                        "type":"match",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "size":4,
+                        "line-width":2,
+                        "padding":"3px"
+                    }
+                },
+                "crosshair-x":{
+                    "lineWidth":1,
+                    "line-color":"#707d94",
+                    "plotLabel":{
+                        "shadow":false,
+                        "font-color":"#000",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px",
+                        "alpha":1
+                    },
+                    "scale-label":{
+                        "font-color":"#ffffff",
+                        "background-color":"#707d94",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px"
+                    }
+                },
+                "tooltip":{
+                    "visible":false
+                },
+                "series":JSON.parse(series_total) 
+                
+            }
+        ]
+    };
+
+    var ka_chart_config = {
+        "background-color":"#ecf2f6",
+        "graphset":[
+            {
+                "type":"line",
+                "background-color":"#fff",
+                "border-color":"#dae5ec",
+                "border-width":"1px",
+                "width":"96%",
+                "height":"80%",
+                "x":"2%",
+                "y":"3%",
+                "title":{
+                    "margin-top":"7px",
+                    "margin-left":"12px",
+                    "text":"Key Account's Sellout",
+                    "background-color":"none",
+                    "shadow":0,
+                    "text-align":"center",
+                    "font-family":"Arial",
+                    "font-size":"11px",
+                    "font-color":"#707d94"
+                },
+                "plot":{
+                    "animation":{
+                        "delay":500,
+                        "effect":"ANIMATION_SLIDE_LEFT"
+                    },
+                },
+                "plotarea":{
+                    "margin":"50px 25px 70px 46px"
+                },
+                "scale-y":{
+                    "values":"0:"+y_max+":100",
+                    "line-color":"none",
+                    "guide":{
+                        "line-style":"solid",
+                        "line-color":"#d2dae2",
+                        "line-width":"1px",
+                        "alpha":0.5
+                    },
+                    "tick":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-right":"5px"
+                    }
+                },
+                "scale-x":{
+                    "line-color":"#d2dae2",
+                    "line-width":"2px",
+                    "values":x_list,
+                    "tick":{
+                        "line-color":"#d2dae2",
+                        "line-width":"1px"
+                    },
+                    "guide":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-top":"5px"
+                    }
+                },
+                "legend":{
+                    "layout":"x6",
+                    "background-color":"none",
+                    "shadow":0,
+                    "margin":"425 auto 0 auto",
+                    "border-width":"0px",
+                    "item":{
+                        "font-color":"#707d94",
+                        "font-family":"Arial",
+                        "padding":"0px",
+                        "margin":"0px",
+                        "font-size":"9px"
+                    },
+                    "marker":{
+                        "show-line":"true",
+                        "type":"match",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "size":4,
+                        "line-width":2,
+                        "padding":"3px"
+                    }
+                },
+                "crosshair-x":{
+                    "lineWidth":1,
+                    "line-color":"#707d94",
+                    "plotLabel":{
+                        "shadow":false,
+                        "font-color":"#000",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px",
+                        "alpha":1
+                    },
+                    "scale-label":{
+                        "font-color":"#ffffff",
+                        "background-color":"#707d94",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px"
+                    }
+                },
+                "tooltip":{
+                    "visible":false
+                },
+                "series":JSON.parse(series) 
+                
+            }
+        ]
+    };
+
+    zingchart.render({ 
+        id : 'ka_chart_total', 
+        data : ka_chart_total_config, 
+        height: 500, 
+        width: '100%' 
+    });
+
+    zingchart.render({ 
+        id : 'ka_chart', 
+        data : ka_chart_config, 
+        height: 500, 
+        width: '100%' 
+    });
+
+</script>

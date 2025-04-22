@@ -1,0 +1,118 @@
+<form class="form-search form-horizontal" method="get" action="<?php echo HOST.'statistics/stock' ?>">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="area" class="span2">Area</label>
+                <select id="area" name="area" class="span3">
+                    <option value="">เลือก</option>
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $id => $area):
+                            ?>
+                            <option value="<?php echo $id;?>" <?php if (isset($this->params['area']) and $this->params['area']==$id):?>selected<?php endif;?>><?php echo $area;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="region" class="span2">Province</label>
+                <select id="region" name="region" class="span3">
+                    <option value="">เลือก</option>
+                    <?php
+                    if ($this->regions) :
+                        foreach ($this->regions as $id => $region):?>
+                            <option value="<?php echo $id;?>" <?php if (isset($this->params['region']) and $this->params['region']==$id):?>selected<?php endif;?>><?php echo $region;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="store" class="span2">ร้าน</label>
+                <select id="store" name="store" class="span3">
+                    <option value="">เลือก</option>
+                    <?php
+                    if ($this->stores) :
+                        foreach ($this->stores as $id => $store):?>
+                            <option value="<?php echo $id;?>" <?php if (isset($this->params['store']) and $this->params['store']==$id):?>selected<?php endif;?>><?php echo $store;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="span5">
+        	<div class="control-group">
+                <label for="store" class="span2">Dealer</label>
+                <input type="text" name="dealer" class="span3" placeholder="Enter Dealer name" value="<?php if(isset($this->params['dealer']) && $this->params['dealer']) echo $this->params['dealer'] ?>" />
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">วันที่</label>
+                <input type="text" class="date span3" id="date" name="date" value="<?php if(isset($this->params['date']) && $this->params['date']) echo trim($this->params['date']);?>">
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">ค้นหา</button>
+    <button type="reset" class="btn btn-warning reset">ล้าง</button>
+    <!-- <button type="submit" name="export" value="1" class="btn btn-success">Export</button> -->
+</form>
+<style>
+.birth{width:12%}
+</style>
+<script>
+    $(document).ready(function () {
+    	$( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('#area').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#region').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#region').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('#region').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.get("/staff/load-sales-team",
+                {regional_market: region}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option:not(:first)').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+    });
+</script>

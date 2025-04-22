@@ -1,0 +1,28 @@
+<?php
+/* xu ly noi dung :)*/
+$v = $this->v;
+
+$this->luong = $this->l;
+
+ ?>
+
+<p class="cols2">-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Mức lương và phụ cấp mới: <o:p></o:p></p>
+
+
+<p class="cols2 left2">•<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>	<span>Lương cơ bản là: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['bonus_salary'] ?>  đồng/tháng</span>
+
+<p class="cols2">-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Các khoản phụ cấp khác chưa bao gồm trong lương : (có thể thay đổi tùy theo tình hình hoạt động kinh doanh thực tế của Công ty) <o:p></o:p></p>
+
+<p class="cols2 left2"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Tiền cơm: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_1'] ?> đồng/người/tháng. <o:p></o:p></p>
+
+<p class="cols2 left2"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Tiền điện thoại: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_2'] ?> đồng/người/tháng. <o:p></o:p></p>
+
+<p class="cols2 left2"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Tiền xăng xe: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_3'] ?> đồng/người/tháng. <o:p></o:p></p>
+
+<p class="cols2">-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Thưởng doanh số: Thưởng theo doanh số hàng tháng (nếu có); <o:p></o:p></p>

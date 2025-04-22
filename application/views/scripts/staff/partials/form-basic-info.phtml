@@ -1,0 +1,485 @@
+<style type="text/css">
+
+#message{
+        font-size: 14px;
+    line-height: 14px;
+    margin-left: 70px;
+}
+
+.valid {
+    color: green !important;
+}
+
+.valid:before {
+    position: relative;
+    left: -35px;
+    content: "✔";
+}
+
+.invalid {
+    color: red !important;
+}
+
+.invalid:before {
+    position: relative;
+    left: -35px;
+    content: "✖";
+}
+body,p{
+    font-family: phetsarath ot;
+}
+
+    #laocolor{
+        font-family: phetsarath ot;
+        color: blue;
+        font-style: bold;
+    }
+
+</style>
+
+<?php /**
+ * @author  Buu <buu.pham@oppomobile.vn>
+ */ ?>
+
+<input type="hidden" name="old_title" value="<?php echo $this->staff['title']; ?>">
+<input type="hidden" name="old_group" value="<?php echo $this->staff['group_id']; ?>">
+<input type="hidden" name="old_regional_market" value="<?php echo $this->staff['regional_market']; ?>">
+
+<div class="row-fluid">
+    <div class="span4">
+        <div class="control-group">
+            <label for="photo" class="control-label" id="laocolor">ຮູບພະນັກງານ<br>(ໃສ່ພາບຕົວຈິງ)</label>
+            <div class="controls">
+                <?php if(isset($this->staff) and !empty($this->staff->photo)){?>
+                    <a target="_blank" title="View" href="<?php if(isset($this->staff) and !empty($this->staff->photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/'.$this->staff->photo);  ?>"><img class="staff-photo" src="<?php if(isset($this->staff) and !empty($this->staff->photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/'.$this->staff->photo);  ?>" /></a>
+                <?php } ?>
+                <div class="clear"></div>
+                <input type="file" id="photo" name="photo" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group"><br>
+                    <label for="del_photo" class="pull-left" id="laocolor">ລົບຮູບພາບ </label>
+                    <input type="checkbox" class="pull-left" name="del_photo" id="del_photo" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="span4">
+        <?php if (isset($this->staff) and $this->staff){?>
+        <div class="control-group">
+            <label for="code" class="control-label" id="laocolor">ລະຫັດພະນັກງານ</label>
+            <div class="controls">
+                <input type="text" id="code" placeholder="Staff Code" name="code" required="required" value="<?php isset($this->staff) and $this->staff and printf($this->staff->code);?>">
+                <input type="hidden" id="code_hidden" placeholder="Enter Code" name="code_hidden" value="<?php isset($this->staff) and $this->staff and printf($this->staff->code);?>">
+            </div>
+        </div>
+        <?php } ?>
+
+        <div class="control-group">
+            <label for="firstname" class="control-label" id="laocolor">ຊື່ແທ້ (ພາສາລາວ)</label>
+            <div class="controls">
+                <input type="text" id="firstname" required placeholder="Enter First name Lao" name="firstname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->firstname);?>">
+            </div>
+            <?php if (isset($this->change_log['firstname'])): ?>
+                <div class="controls approval">
+                    <input class="new_value" value="<?php echo $this->change_log['firstname']['new_value'] ?>" />
+                    <span class="pull-right control_buttons">
+                        <button class="btn btn-mini btn-success approve_btn" type="button"><i class="icon-ok"></i></button>
+                        <button class="btn btn-mini btn-warning reject_btn" type="button"><i class="icon-remove"></i></button>
+                    </span>
+                </div>
+            <?php endif ?>
+        </div>
+
+        <div class="control-group">
+            <label for="lastname" class="control-label" id="laocolor">ນາມສະກຸນ (ພາສາລາວ)</label>
+            <div class="controls">
+                <input type="text" id="lastname" required placeholder="Enter Last name Lao" name="lastname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->lastname);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="firstname_en" class="control-label" id="laocolor">ຊື່ແທ້ (ພາສາອັງກິດ)</label>
+            <div class="controls">
+                <input type="text" id="firstname_en" required placeholder="Enter First name EN" name="firstname_en" value="<?php isset($this->staff) and $this->staff and printf($this->staff->firstname_en);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="lastname_en" class="control-label" id="laocolor">ນາມສະກຸນ (ພາສາອັງກິດ)</label>
+            <div class="controls">
+                <input type="text" id="lastname_en" required placeholder="Enter Last name EN" name="lastname_en" value="<?php isset($this->staff) and $this->staff and printf($this->staff->lastname_en);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="gender_1" class="control-label" id="laocolor">ເພດ</label>
+            <div class="controls">
+                <input type="radio" class="form-control" id="gender_1" name="gender" value="1" <?php if (!isset($this->staff)):?>checked <?php else: isset($this->staff) and $this->staff->gender==1 and printf('checked'); endif;?>><span id="laocolor">ຊາຍ</span>
+                <input type="radio" class="form-control" id="gender_2" name="gender" value="0" <?php isset($this->staff) and $this->staff->gender==0 and printf('checked');?>><span id="laocolor">ຍິງ</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="public_id" class="control-label">Public ID</label>
+            <div class="controls">
+                <input type="text" id="public_id" placeholder="Enter Public ID" name="public_id" value="<?php isset($this->staff) and $this->staff and printf($this->staff->public_id);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="department" class="control-label">Department</label>
+            <div class="controls">
+                <select name="department" id="department" required>
+                    <option value>Choose</option>
+                    <?php if (isset($this->recursiveDeparmentTeamTitle)): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php if (isset($this->staff) and $this->staff and $item_id==$this->staff->department):?>selected<?php endif;?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="team" class="control-label">Team</label>
+            <div class="controls">
+                <select name="team" id="team" required>
+                    <option value>Choose</option>
+                    <?php if ( isset($this->staff) AND isset($this->recursiveDeparmentTeamTitle[$this->staff->department]['children'])): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle[$this->staff->department]['children'] as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php if (isset($this->staff) and $this->staff and $item_id==$this->staff->team):?>selected<?php endif;?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="title" class="control-label">Job Title</label>
+            <div class="controls">
+                <select name="title" id="title" required>
+                    <option value>Choose</option>
+                    <?php if ( isset($this->staff) AND isset($this->recursiveDeparmentTeamTitle[$this->staff->department]['children'][$this->staff->team]['children']) ): ?>
+                        <?php foreach ($this->recursiveDeparmentTeamTitle[$this->staff->department]['children'][$this->staff->team]['children'] as $item_id => $item):?>
+                            <option value="<?php echo $item_id;?>" <?php if (isset($this->staff) and $this->staff and $item_id==$this->staff->title):?>selected<?php endif;?>><?php echo $item['name'];?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            $joined_at_flag = "readonly";
+
+            if ($userStorage->group_id == ADMINISTRATOR_ID) { $joined_at_flag = "class='date'"; }
+        ?>
+
+        <div class="control-group">
+            <label for="joined_at" class="control-label">Joined at</label>
+            <div class="controls">
+                <input type="text" required id="joined_at" placeholder="Enter Joined at" name="joined_at" value="<?php isset($this->staff) and $this->staff->joined_at and printf(date('d/m/Y',strtotime($this->staff->joined_at)));?>" <?php echo $joined_at_flag; ?> >
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="off_date" class="control-label">Off date</label>
+            <div class="controls">
+                <input type="text" class="date" id="off_date" placeholder="Enter Off date" name="off_date" value="<?php isset($this->staff) and $this->staff->off_date and printf(date('d/m/Y',strtotime($this->staff->off_date)));?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="off_type" class="control-label">Off Type</label>
+            <div class="controls">
+                <select name="off_type" id="off_type">
+                    <option value>---</option>
+                    <option value="<?php echo My_Staff_Status_Off::Normal_Unfinished ?>" <?php if (isset($this->staff['off_type']) && $this->staff['off_type'] == My_Staff_Status_Off::Normal_Unfinished) echo "selected" ?>>Normal &gt; Unfinshed File</option>
+                    <option value="<?php echo My_Staff_Status_Off::Normal_Finished ?>" <?php if (isset($this->staff['off_type']) && $this->staff['off_type'] == My_Staff_Status_Off::Normal_Finished) echo "selected" ?>>Normal &gt; Finished File</option>
+                    <option value="<?php echo My_Staff_Status_Off::Abnormal_Unfinished ?>" <?php if (isset($this->staff['off_type']) && $this->staff['off_type'] == My_Staff_Status_Off::Abnormal_Unfinished) echo "selected" ?>>Abnormal &gt; Unfinshed File</option>
+                    <option value="<?php echo My_Staff_Status_Off::Abnormal_Finished ?>" <?php if (isset($this->staff['off_type']) && $this->staff['off_type'] == My_Staff_Status_Off::Abnormal_Finished) echo "selected" ?>>Abnormal &gt; Finished File</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="status" class="control-label">Status</label>
+            <div class="controls">
+                <select name="status" id="status" required>
+                    <option value>---</option>
+                    <option value="<?php echo My_Staff_Status::On ?>" <?php if (isset($this->staff['status']) && $this->staff['status'] == My_Staff_Status::On) echo "selected" ?>>On</option>
+                    <option value="<?php echo My_Staff_Status::Off ?>" <?php if (isset($this->staff['status']) && $this->staff['status'] == My_Staff_Status::Off) echo "selected" ?>>Off</option>
+                    <option value="<?php echo My_Staff_Status::Temporary_Off ?>" <?php if (isset($this->staff['status']) && $this->staff['status'] == My_Staff_Status::Temporary_Off) echo "selected" ?>>Temporary Off</option>
+                    <option value="<?php echo My_Staff_Status::Childbearing ?>" <?php if (isset($this->staff['status']) && $this->staff['status'] == My_Staff_Status::Childbearing) echo "selected" ?>>Childbearing</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="pvi" class="control-label">PVI Card Delivered</label>
+            <div class="controls">
+                <input type="checkbox" id="pvi" name="pvi" value="1" <?php if(isset($this->staff['pvi']) && $this->staff['pvi']) echo "checked" ?>>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="lock" class="control-label">Locked</label>
+            <div class="controls">
+                <input type="checkbox" id="lock" name="lock" value="1" <?php if(isset($this->lock) && $this->lock) echo "checked" ?>>
+                <input type="hidden" value="<?php $this->lock ?>" />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="pc_stand_by" class="control-label">PC Stand By</label>
+            <div class="controls">
+                <input type="checkbox" name="pc_stand_by" id="pc_stand_by" value="1" <?php if (isset($this->staff) and $this->staff->pc_stand_by==1):?> checked="checked" <?php endif;?> />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="follow_locked" class="control-label">Follow Locked</label>
+            <div class="controls">
+                <input type="checkbox" name="follow_locked" id="follow_locked" value="1" <?php if (isset($this->staff) and $this->staff->follow_locked==1):?> checked="checked" <?php endif;?> />
+            </div>
+        </div>
+
+    </div>
+    <!--  -->
+    <div class="span4">
+        <div class="control-group">
+            <label for="area_id" class="control-label" id="laocolor">ເຂດ</label>
+            <div class="controls">
+                <select id="area_id" name="area_id">
+                    <option value id="laocolor">ເລືອກເຂດ</option>
+                    <?php
+                    if (isset($this->areas) && $this->areas) :
+                        foreach ($this->areas as $_key => $_value):
+                    ?>
+                    <option value="<?php echo $_key ;?>" <?php if ($this->area and $this->area->id == $_key):?>selected<?php endif;?>><?php echo $_value;?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="regional_market" class="control-label" id="laocolor" id="laocolor">ແຂວງ</label>
+            <div class="controls">
+                <select id="regional_market" name="regional_market">
+                    <option value id="laocolor">ເລືອກແຂວງ</option>
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                        <option value="<?php echo $regional_market->id;?>" <?php if ($this->staff->regional_market==$regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="is_officer" class="control-label">Is Head Office</label>
+            <div class="controls">
+                <input type="checkbox" name="is_officer" id="is_officer" value="1" <?php if (isset($this->staff) and $this->staff->is_officer==1):?> checked="checked" <?php endif;?> />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="company_id" class="control-label">Company</label>
+            <div class="controls">
+                <select name="company_id" id="company_id" required>
+                    <option value>---</option>
+                    <?php if (isset($this->companies) && $this->companies): ?>
+                        <?php foreach ($this->companies as $key => $value): ?>
+                            <option value="<?php echo $key ?>"
+                                    <?php if(isset($this->staff['company_id']) && $this->staff['company_id']==$key) echo "selected" ?>><?php echo $value ?></option>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="email" class="control-label">Email</label>
+            <div class="controls">
+                <input type="email" autocomplete="off" id="email" placeholder="Enter email" name="email" value="<?php isset($this->staff) and $this->staff and printf($this->staff->email);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="phone_number" class="control-label" id="laocolor">ເບີໂທລະສັບ</label>
+            <div class="controls">
+                <input type="tel" id="phone_number" placeholder="ໃສ່ເບີໂທພະນັກງານ" name="phone_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->phone_number);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="note" class="control-label" id="laocolor">ໃສ່ຄຳອະທິບາຍ</label>
+            <div class="controls">
+                <textarea rows="6" placeholder="ໃສ່ຄຳອະທິບາຍກ່ຽວກັບພະນັກງານ" name="note" id="note"><?php isset($this->staff) and $this->staff and printf($this->staff->note);?></textarea>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="myTags" class="control-label">Tags</label>
+            <div class="controls">
+                <ul id="myTags"><?php
+                    if (isset($this->a_tags) and $this->a_tags):
+                        foreach ($this->a_tags as $ta)
+                            echo '<li>'.$ta.'</li>';
+                    endif;
+                ?></ul>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="group" class="control-label">Group</label>
+            <div class="controls">
+                <select id="group" name="group_id" onchange="checkPCStandBy()">
+                    <option value>----</option>
+                    <?php foreach ($this->groups as $_key => $_value):?>
+                        <option value="<?php echo $_key;?>" <?php if (isset($this->staff['group_id']) and $_key == $this->staff['group_id']):?>selected<?php endif;?>><?php echo $_value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+<?php 
+    // Not Allow Change Password of Adminbkk3
+    if ( $this->staff['id'] != 64 || $userStorage->group_id == ADMINISTRATOR_ID ) { 
+?>
+
+        <div class="control-group">
+            <?php if ( isset($this->staff) and $this->staff ):?>
+                <a href="javascript:void(0);" id="btn-change-pass" title="Change password" class="control-label">Change Password <br> ປ່ຽນລະຫັດຜ່ານ</a>
+                <div class="controls">
+                    <input type="hidden" name="change-pass" id="change-pass" value="0">
+                    <input id="password" type="password" autocomplete="off" placeholder="Password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&<>{}])[A-Za-z\d@$!%*?&<>{}]{8,}$" class="hidden">
+                </div>
+            <?php else: ?>
+                <label for="password" class="control-label">ລະຫັດຜ່ານ</label>
+                <div class="controls">
+                    <input id="password" type="password" autocomplete="off" placeholder="Password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&<>{}])[A-Za-z\d@$!%*?&<>{}]{8,}$">
+                </div>
+            <?php endif; ?>
+        </div>
+
+<?php } ?>
+
+        <div id="message" style="display:block;">
+            <p style="color:red; font-weight: bold;">New Password must contain the following <br/>(ລະຫັດຜ່ານຕ້ອງປະກອບມີຂໍ້ມູນດັ່ງນີ້)</p>
+            <p id="letter" class="invalid">A <b>lowercase </b> letter a-z (ຕົວພິມນ້ອຍ)</p>
+            <p id="capital" class="invalid">A <b>uppercase </b> letter A-Z (ຕົວພິມໃຫຍ່)</p>
+            <p id="number" class="invalid">A <b>number</b> (ຕົວເລກ 0-9)</p>
+            <p id="length" class="invalid">Minimum <b>8 characters (ລະຫັດຕ້ອງມີຢ່າງນ້ອຍ 8 ຕົວ)</b></p>
+            <p id="sign" class="invalid">Special Character ຕ້ອງມີເຄື່ອງໝາຍພິເສດ ( @$!%*?&<>{} )</b></p>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        
+     });
+
+    var myInput = document.getElementById("password");
+    var letter  = document.getElementById("letter");
+    var capital = document.getElementById("capital");
+    var number  = document.getElementById("number");
+    var length  = document.getElementById("length");
+    var sign    = document.getElementById("sign");
+
+/*
+    // When the user clicks on the password field, show the message box
+    myInput.onfocus = function() {
+        document.getElementById("message").style.display = "block";
+    }
+
+    // When the user clicks outside of the password field, hide the message box
+    myInput.onblur = function() {
+        document.getElementById("message").style.display = "none";
+    }
+*/
+    // When the user starts to type something inside the password field
+    myInput.onkeyup = function() {
+
+        var num = $('.num').val();
+
+        // Validate lowercase letters
+        var lowerCaseLetters = /[a-z]/g;
+            if(myInput.value.match(lowerCaseLetters)) {  
+            letter.classList.remove("invalid");
+            letter.classList.add("valid");
+            var d1 = 1;
+        } else {
+            letter.classList.remove("valid");
+            letter.classList.add("invalid");
+            var d1 = 0;
+        }
+          
+        // Validate capital letters
+        var upperCaseLetters = /[A-Z]/g;
+            if(myInput.value.match(upperCaseLetters)) {  
+            capital.classList.remove("invalid");
+            capital.classList.add("valid");
+            var d2 = 1;
+        } else {
+            capital.classList.remove("valid");
+            capital.classList.add("invalid");
+            var d2 = 0;
+        }
+
+        // Validate numbers
+        var numbers = /[0-9]/g;
+            if(myInput.value.match(numbers)) {  
+            number.classList.remove("invalid");
+            number.classList.add("valid");
+            var d3 = 1;
+        } else {
+            number.classList.remove("valid");
+            number.classList.add("invalid");
+            var d3 = 0;
+        }
+          
+        // Validate length
+        if(myInput.value.length >= 8) {
+            length.classList.remove("invalid");
+            length.classList.add("valid");
+            var d4 = 1;
+        } else {
+            length.classList.remove("valid");
+            length.classList.add("invalid");
+            var d4 = 0;
+        }
+
+        var special_character = /[@$!%*?&<>{}]/g;
+        if(myInput.value.match(special_character)) {  
+            sign.classList.remove("invalid");
+            sign.classList.add("valid");
+            var d5 = 1;
+        } else {
+            sign.classList.remove("valid");
+            sign.classList.add("invalid");
+            $('#buttom').prop( "disabled", "disabled" );
+            var d5 = 0;
+        }
+
+        if (d1 == 1 && d2 == 1 && d3 == 1 && d4 == 1 && d5 == 1) {
+            
+
+        } else {
+
+
+        }
+
+    }
+
+</script>

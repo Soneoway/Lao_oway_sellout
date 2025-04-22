@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">Summary</h3>
+</div>
+<div class="modal-body">
+  <ol>
+    <?php if (  isset( $this->sales )): ?>
+      <?php foreach ($this->sales as $key => $value): ?>
+        <li>
+          <strong><?php echo $value['brand_name'] ?> <?php echo $value['model']." [".$value['color']."]"; ?></strong> | <small><?php echo $value['timing_date'] ?></small>
+          <ul>
+            <?php if( isset($value['imei']) && $value['imei'] ): ?><li> imei : <?php echo $value['imei'] ?><?php endif; ?></li>
+
+          </ul>
+        </li>
+      <?php endforeach ?>
+    <?php endif ?>
+  </ol>
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

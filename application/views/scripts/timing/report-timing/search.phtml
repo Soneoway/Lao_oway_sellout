@@ -1,0 +1,215 @@
+<form class="form-search form-horizontal" method="get" action="/timing/report-timing/report-timing">
+    <div class="row">
+        <div class="span5">
+
+            <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            $group_id = $userStorage->group_id;
+            ?>
+            <?php 
+            $permission_list = array(ADMINISTRATOR_ID);
+            if (in_array($group_id, $permission_list)) { 
+                ?>
+
+                <div class="control-group">
+                    <label for="area_id" class="span2">Area</label>
+                    <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                        <?php
+                        if ($this->areas) :
+                            foreach ($this->areas as $area):
+                                ?>
+                                <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                                <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+
+            <?php } ?>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+
+    <?php 
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $group_id = $userStorage->group_id;
+    ?>
+    <?php 
+    $permission_list = array(ADMINISTRATOR_ID);
+    if (in_array($group_id, $permission_list)) { 
+        ?>
+        <button type="submit" class="btn btn-primary" name="export" value="1">Export All Sellout</button>
+        <button type="submit" class="btn btn-primary" name="export" value="2">Export Area Sellout</button>
+	    <button type="submit" class="btn btn-success" name="export" value="3">Daily Report</button>
+
+    <?php } ?>
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+
+    $(document).ready(function () {
+        multi();
+
+        $('#market_type').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $('#market_type').after('<span class="loading"></span>');
+            var _self = $('#market_type');
+            var market_type_id = $('#market_type').val();
+            var area_id = '<?php echo $area_permission; ?>';
+
+            $.get("/manage/load-market-name",
+            {
+                market_type_id: market_type_id, 
+                area_id: area_id 
+            }
+            ,function(data,status){
+                    //alert(data);
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+
+                    var obj = $.parseJSON( data );
+                    $('#market_name').find('option').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#market_name').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#district').change(function(){
+            $('.loading').remove();
+            $('button, .btn, input').prop('disabled', true);
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var regional_market = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-sales-team",
+                {district: regional_market}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('#store').multiselect("destroy").multiselect(options);
+
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                region: region
+            }
+            ,function(data,status){
+                $('#district').find('option').remove();
+                $('#store').find('option').remove();
+
+                try {
+                    if (data) {
+                        var obj = $.parseJSON( data );
+
+                        for (var i = 0; i < obj.length; i++) {
+                            $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                        }
+
+                        $('#district,#store').multiselect("destroy").multiselect(options);
+                    }
+
+                } catch(err) {
+
+                } finally {
+                    $('.loading').remove();
+                    $('form').unbind('submit');
+                    $('form button, form input, form select').prop('disabled', false);
+                }
+            });
+        });
+    });
+</script> 

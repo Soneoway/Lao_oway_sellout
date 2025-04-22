@@ -1,0 +1,116 @@
+<form class="form-search form-horizontal" method="get" action="/manage/oppo-area-target/oppo-area-target">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="year_month">Year - Month : </label>
+                <div class="controls">
+                    <div class="input-append">
+                    <input name="month_year" id="month_year" class="date-picker"
+                           value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>" required="required">
+                    <button type="submit" class="btn btn-primary">Submit</button></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas_list) :
+                        foreach ($this->areas_list as $area_list):
+                            ?>
+                            <option value="<?php echo $area_list['id'];?>" <?php if (isset($this->params['area']) and ( (is_array($this->params['area']) && in_array($area_list['id'], $this->params['area']) || $id==$this->params['area'])) ):?>selected<?php endif;?>><?php echo $area_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div> 
+            
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12" style="text-align:center">
+
+            <?php  
+                $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+                // echo "<button type='submit' name='export' value='1' class='btn btn-success'>Export OverViewTarget</button> ";
+                echo "<button type='submit' name='export' value='8' class='btn btn-success' >Export RGM Target</button> ";
+                echo "<button type='submit' name='export' value='13' class='btn btn-primary'>Export RM Target</button> ";
+                echo "<button type='submit' name='export' value='2' class='btn btn-danger'>Export Sale Target</button> ";
+                echo "<button type='submit' name='export' value='6' class='btn btn-success'>Export Store Target</button> ";
+                echo "<button type='submit' style='margin-left: 5px' name='export' value='11' class='btn btn-primary'> Export Trainer Target</button>";
+                // echo "<button type='submit' style='margin-left: 5px' name='export' value='12' class='btn btn-primary'> Export Sale MKT Target</button>";
+                // echo "<button type='submit' name='export' value='3' class='btn btn-success'>Export PC Target</button> ";
+                echo "<br/><br/>";
+            ?>
+ 
+        </div>
+        
+    </div>
+
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<!-- <style>
+    .year-month-calendar {
+        display: none;
+    }
+</style> -->
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        multi();
+
+        $('#search_bar').trigger('click');
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+    });
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,67 @@
+<div class="page-header">
+    <h1>List Staff <b style="font-family:phetsarath ot;">ຈຳນວນພະນັກງານທັງໝົດ</b> </h1>
+    <?php if ($this->access('staff', 'list-basic-record')){?>
+        <!-- <a href="/staff/list-basic-record" target="_blank" class="btn btn-success pull-right" title="List Basic Record">List Basic Record To Approve</a> -->
+    <?php } ?>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('staff/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <?php
+        echo $this->render('staff/partials/list.phtml');
+    ?>
+</div>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/jquery-ui-1.8.12.custom.css"/>
+<script>
+    options = {
+            selectAllText: 'Select All',
+            includeSelectAllOption: true,
+            includeSelectAllIfMoreThan: 3,
+            disableIfEmpty: true
+        };
+        
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    });
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+</script>
+<?php echo $this->confirm();?>
+<?php echo $this->load('combobox');?>

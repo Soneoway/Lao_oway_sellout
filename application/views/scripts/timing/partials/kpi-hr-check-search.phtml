@@ -1,0 +1,72 @@
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+
+<form class="form-horizontal" method="get" action="<?php echo HOST ?>timing/kpi-hr-check">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="from">From</label>
+                <div class="controls">
+                    <input type="text" id="from" name="from" class="date" value="<?php if(isset($this->params['from'])) echo $this->params['from'] ?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="to">To</label>
+                <div class="controls">
+                    <input type="text" id="to" name="to" class="date" value="<?php if(isset($this->params['to'])) echo $this->params['to'] ?>">
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="control-group">
+                <label class="control-label" for="staff_name">Staff Name/Email/Code</label>
+                <div class="controls">
+                    <input type="text" id="staff_name">
+                    <select name="staff_id" id="staff_id" multiple size="5">
+                        <option value>---</option>
+                        <?php if(isset($this->staffs) && $this->staffs): ?>
+                            <?php foreach ($this->staffs as $key => $value): 
+                                $text = $value['name'] 
+                                    . (!empty($value['email']) ? (' | ' . str_replace(EMAIL_SUFFIX, '', $value['email'])):'') 
+                                    . (!empty($value['code']) ? (' | '  . $value['code']) : ''); ?>
+                                <option value="<?php echo $key ?>" 
+                                    title="<?php echo $text ?>"
+                                    <?php if(isset($this->params['staff_id']) && $this->params['staff_id']==$key) 
+                                        echo "selected" ?>><?php 
+                                    echo $text
+                                ?></option>
+                            <?php endforeach ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+    try { initSearchOption(); } catch(err) {console.log(err.message)}
+});
+    
+function initSearchOption(){
+    var timeout;
+    $("#staff_name").on("keyup", function () {
+        var userInput = $("#staff_name").val();
+        window.clearTimeout(timeout);
+        timeout = window.setTimeout(function() {
+            showOnlyOptionsSimilarToText($("#staff_id"), userInput, true);
+        }, 500);
+
+    });
+}
+</script>

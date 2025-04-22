@@ -1,0 +1,281 @@
+<form class="form-search form-horizontal" method="get" action="/timing/distributor-doi/distributor-doi">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="s_code" class="span2" style="color:blue; font-size: 14px;">ລະຫັດຮ້ານ / Store Code :</label>
+                <input id="s_code" name="s_code" type="text" placeholder="LAxxxxxx" class="input-medium search-query form-control" value="<?php isset($this->params['s_code']) and printf($this->params['s_code']);?>">
+            </div>
+            <div class="control-group">
+                <label for="s_name" class="span2" style="color:blue; font-size: 14px;">ຊື່ຮ້ານ / Store Name :</label>
+                <input style="font-family: noto sans lao;" id="s_name" name="s_name" type="text" placeholder="ໃສ່ຊື່ຮ້ານ" class="input-medium search-query form-control" value="<?php isset($this->params['s_name']) and printf($this->params['s_name']);?>">
+            </div>
+
+            <!-- <div class="control-group">
+                <label for="brand_id" class="span2" style="color:blue; font-size: 14px;"> Brand | ຍີ່ຫໍ້ :</label>
+                <select id="brand_id" name="brand_id[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php foreach($this->brands as $item) : ?>
+                        <option value="<?php echo $item['id'];?>" <?php if (isset($this->params['brand']) and ( (is_array($this->params['brand']) && in_array($item['id'], $this->params['brand']) || $item['id']==$this->params['brand'])) ):?>selected<?php endif;?>><?php echo $item['name'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div> -->
+
+
+            <div class="control-group">
+                <label for="good_id" class="span2" style="color:blue; font-size: 14px;"> ລຸ້ນ / Product Model :</label>
+                <select id="good_id" name="good_id[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good_id']) and ( (is_array($this->params['good_id']) && in_array($good_list['id'], $this->params['good_id']) || $good_list['id']==$this->params['good_id'])) ):?>selected<?php endif;?>><?php echo $good_list['brand_name'] ?> <?php echo $good_list['name'];?></option>
+                            <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="color_id" class="span2" style="color:blue; font-size: 14px;">ສີ / Product Color :</label>
+                <select id="color_id" name="color_id[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php
+                    $data = $this->colors;
+                    if ($this->colors) :
+                        foreach ($this->colors as $color_list):
+                            ?>
+                            <option value="<?php echo $color_list['id'];?>" <?php if (isset($this->params['color_id']) and ( (is_array($this->params['color_id']) && in_array($color_list['id'], $this->params['color_id']) || $color_list['id']==$this->params['color_id'])) ):?>selected<?php endif;?>><?php echo $color_list['name'];?></option>
+                            <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+        <div class="span6">
+
+            <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+            if ($userStorage->group_id == ADMINISTRATOR_ID || $userStorage->group_id == 52 || $userStorage->group_id == 44 || $userStorage->group_id == 60 || $userStorage->group_id == 5 || $userStorage->group_id == 28 || $userStorage->group_id == 46): 
+                ?>
+                <div class="control-group">
+                    <label for="warehouse_id" class="span3" style="color:blue; font-size: 16px;">ສາງຕົວເເທນ / Warehouse :</label>
+                    <select name="warehouse_id" id="warehouse_id" class="span3">
+                        <option value="">Choose</option>
+                        <?php if ($this->warehouses): foreach ($this->warehouses as $item):?>
+                            <option value="<?php echo $item['id'];?>" <?php if (isset($this->params['warehouse_id']) and $item['id']==$this->params['warehouse_id']):?> selected<?php endif;?>><?php echo $item['name'];?></option>
+                        <?php endforeach; endif;?>
+                    </select>
+                </div>
+            <?php endif;?>
+
+
+            <div class="control-group">
+                <label for="cat_id" class="span3" style="color:blue; font-size: 16px;"> ປະເພດ / Category :</label>
+                <div>
+                    <select class="span3" name="cat_id">
+                        <option value="11" <?php if(isset($this->params['cat_id']) and $this->params['cat_id'] == 11):?> selected <?php endif; ?> > Phone</option>
+                        <option value="12" <?php if(isset($this->params['cat_id']) and $this->params['cat_id'] == 12):?> selected <?php endif; ?>> IoT </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="status" class="span3" style="color:blue; font-size: 16px;"> ສະຖານະ / Inventory Type :</label>
+                <select style="font-family: noto sans lao;" class="span3" name="status" id="status">
+                    <option style="font-family: noto sans lao;" value="1" <?php if (isset($this->params['status']) and 1 ==$this->params['status']):?> selected<?php endif;?>> Not Activate ບໍ່ທັນເອັກຕິເວດ</option>
+                    <option style="font-family: noto sans lao;" value="2" <?php if (isset($this->params['status']) and 2==$this->params['status']):?> selected<?php endif;?>> Not Verification ບໍ່ທັນລາຍງານຍອດ</option>
+                    <option style="font-family: noto sans lao;" value="3"<?php if(isset($this->params['status']) and 3==$this->params['status']):?> selected <?php endif;?>> Activated ເອັກຕິເວດແລ້ວ</option>
+                </select>
+            </div>
+
+            <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            if ($userStorage->group_id == ADMINISTRATOR_ID || $userStorage->group_id == 46 || $userStorage->group_id == 45 || $userStorage->group_id == 44 || $userStorage->group_id == 42 || $userStorage->group_id == 36 || $userStorage->group_id == 30 || $userStorage->group_id == 28 || $userStorage->group_id == 7 || $userStorage->group_id == 5 || $userStorage->id == 10975):
+                ?>
+                <div class="control-group">
+                    <label for="area_id" class="span3" style="color:blue; font-size: 16px;">ເຂດ / Area :</label>
+                    <select id="area_id" name="area_id[]" class="js-example-basic-multiple" multiple="multiple">
+                        <?php
+                        if ($this->areas) :
+                            foreach ($this->areas as $area):
+                                ?>
+                                <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                                <?php
+                            endforeach;
+
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            <?php endif;?>
+
+<!--             <?php if ($userStorage->group_id == ADMINISTRATOR_ID) : ?>
+                <div class="control-group">
+                    <label for="distributor_status" class="span3" style="color:blue; font-size: 16px;">Distributor Status : </label>
+                    <select id="distributor_status" name="distributor_status" class="span3">
+                        <option value="1" <?php if (isset($this->params['distributor_status']) and 1 ==$this->params['distributor_status']):?> selected<?php endif;?>> Enable </option>
+                        <option value="2" <?php if (isset($this->params['distributor_status']) and 2 ==$this->params['distributor_status']):?> selected<?php endif;?>> Disable </option>
+                    </select>
+                </div>
+            <?php endif; ?> -->
+
+        </div>
+    </div>
+
+    <?php
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+    $now = date('Y-m-d H:i:s');
+    $threshold_01 = date('Y-m-d 23:00:00');
+    $threshold_02 = date('Y-m-d 07:00:00');
+
+    if ( ((strtotime($now) <= strtotime($threshold_01)) || (strtotime($now) >= strtotime($threshold_02)) ) 
+        || in_array($userStorage->group_id , array(ADMINISTRATOR_ID,BOARD_ID)) || $userStorage->code == '5800892' ) {
+
+        echo "<button type='submit' class='btn btn-primary'><span style='font-size: 18px; font-family:'Noto sans lao''>Search</span></button>";
+    echo "&nbsp;&nbsp;";
+    echo "<button type='reset' class='btn btn-warning'>Reset</button>";
+    echo "&nbsp;&nbsp;";
+    echo "<button type='submit' name='export' value='1' class='btn btn-success'>Export </button>";
+    echo "&nbsp;&nbsp;";
+    echo "<button type='submit' name='export' value='3' class='btn btn-success'>Export By Model</button>";
+    echo "&nbsp;&nbsp;";
+
+    if(in_array($userStorage->group_id, array(ADMINISTRATOR_ID,60,46))){
+        echo "<button type='submit' name='export' value='2' class='btn btn-success'> Export By IMEI </button>";
+    }
+
+} else {
+    echo "<h4><font color='red'>ສາມາດໃຊ້ງານໄດ້ຕັ້ງແຕ່ 07:00 ຫາ 23:00 ເທົ່ານັ້ນ!</font></h4><br><h4><font color='red'>Can do this function from 07:00 to 23:00 Only!</font></h4>";
+}
+?>
+
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+
+<script type="text/javascript">
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    // Multi-Select
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $('.date').datepicker({ dateFormat: "dd/mm/yy" });
+
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('#grand_area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var grand_area_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-area",
+                {grand_area_id: grand_area_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#area_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#area_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#area_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#brand_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var brand_id = $(this).val();
+            $.get("/tool/get-product",
+                {brand_id: brand_id}
+                ,function(data,status){
+                    var data = $.parseJSON( data );
+                    var obj = data.brands;
+
+                    $("#good_id").empty();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#good_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['brand_name']+' '+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+        $('#good_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var good_id = $(this).val();
+            
+            // $('.btn, input').prop('readonly', true);
+            // $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/hr-report/load-good-color",
+                {good_id: good_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#color_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#color_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    // $('#color_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+    });
+
+</script>

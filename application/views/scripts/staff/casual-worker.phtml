@@ -1,0 +1,218 @@
+<style>
+    textarea {
+        resize: none;
+    }
+
+    .add_casual select,
+    .add_casual textarea {
+        width: 75%;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Casual Worker</h1>
+</div>
+
+<div class="row-fluid">
+    <div class="span6">
+        <div class="accordion" id="searchAcc">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#searchAcc" href="#collSearch">
+                        <i class="icon-search"></i> Search in this list
+                    </a>
+                </div>
+                <div id="collSearch" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                            echo $this->render('staff/partials/search-casual.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="span6">
+        <div class="accordion" id="addnewAcc">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#addnewAcc" href="#collAdd">
+                        <i class="icon-user"></i> Assign Staff as a Casual Worker
+                    </a>
+                </div>
+                <div id="collAdd" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                            echo $this->render('staff/partials/assign-casual.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="table-responsive">
+    <?php
+        echo $this->render('staff/partials/casual.phtml');
+    ?>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search_btn').click(search);
+        $('#assign_btn').click(assign);
+        $('.switch_btn').click(switch_status);
+
+        $( "#keyword" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                
+                search(event);
+                return false;
+            }
+        });
+    });
+
+    function search(e) {
+        _self = $('#search_btn');
+        keyword = $('#keyword').val().trim();
+
+        if (!keyword || keyword.length == 0) return false;
+
+        $('.loading').remove();
+        _self.after('<span class="loading"></span>');
+
+        $('button, input, select, textarea').prop('disabled', true);
+
+        $.ajax({
+            url: '<?php echo HOST ?>ajax/search-staff-by-keyword',
+            type: 'POST',
+            dataType: 'html',
+            data: {keyword: keyword}
+        })
+        .done(function(data) {
+            $('#result').html(data);
+            console.log("success");
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('.loading').remove();
+            $('button, input, select, textarea').prop('disabled', false);
+            console.log("complete");
+        });
+        
+    }
+
+    function assign(e) {
+        _self = $('#assign_btn');
+        staff_id = $('#result option:selected').val();
+        area_id = $('#area_id option:selected').val();
+        note = $('#note').val().trim();
+
+        if (!staff_id || staff_id == 0 || !area_id || area_id == 0)
+            return false;
+
+        $('.loading').remove();
+        $('#result_message').text('');
+        _self.after('<span class="loading"></span>');
+
+        $('button, input, select, textarea').prop('disabled', true);
+
+        $.ajax({
+            url: '<?php echo HOST ?>ajax/assign-staff-as-casual',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                staff_id : staff_id,
+                area_id : area_id,
+                note : note
+            },
+        })
+        .done(function(data) {
+            try {
+                if (data && typeof data.result != "undefined" && data.result==1) {
+                    $('#result').val('');
+                    $('#area_id').val('');
+                    $('#note').val('');
+                }
+
+                if (data && typeof data.message != "undefined") {
+                    $('#result_message').text(data.message);
+                }
+            } catch (err) {
+
+            } finally {
+                $('.loading').remove();
+                $('button, input, select, textarea').prop('disabled', false);
+            }
+
+            console.log("success");
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+        
+    }
+
+    function switch_status(e) {
+        target = $(e.target);
+
+        if (!target.hasClass('switch_btn'))
+            _self = target.parent();
+        else
+            _self = target;
+
+        id = _self.data('id');
+
+        if (!id) return false;
+
+        $('.loading').remove();
+        _self.after('<span class="loading"></span>');
+
+        $('button, input, select, textarea').prop('disabled', true);
+
+        $.ajax({
+             url: '<?php echo HOST ?>ajax/switch-casual-status',
+             type: 'POST',
+             dataType: 'json',
+             data: {id : id},
+         })
+         .done(function(data) {
+            try {
+                if (data && typeof data.result != "undefined" && data.result == 1) {
+
+                    if (data.status == 1) {
+                        _self.html('<i class="icon-stop"> Set Off</i>');
+                        $('[data-status="'+id+'"]').text('On');
+                    } else {
+                        _self.html('<i class="icon-play"> Set On</i>');
+                        $('[data-status="'+id+'"]').text('Off');
+                    }
+                } else {
+                    console.log(data.message);
+                }
+            } catch(err) {
+                console.log(err.message)
+            } finally {
+                $('.loading').remove();
+                $('button, input, select, textarea').prop('disabled', false);
+            }
+            console.log("success");
+         })
+         .fail(function() {
+             console.log("error");
+         })
+         .always(function() {
+             console.log("complete");
+         });
+          
+    }
+</script>

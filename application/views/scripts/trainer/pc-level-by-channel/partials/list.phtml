@@ -1,0 +1,74 @@
+<?php
+    if (isset($this->pc_level_list) and $this->pc_level_list) {
+        $table_title = "Report By Channel (Online)";
+        foreach ($this->pc_level_list as $value) {
+            ?>
+            <div align="center"><h2><?php echo $table_title; ?></h2></div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>
+                        <div align="center">Type</div>
+                    </th>
+                    <th colspan="2">
+                        <div align="center">Senior</div>
+                    </th>
+                    <th colspan="2">
+                        <div align="center">Advance</div>
+                    </th>
+                    <th colspan="2">
+                        <div align="center">Master</div>
+                    </th>
+                    <th colspan="2">
+                        <div align="center">All Level PC</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <?php
+                $data = $value;
+
+                for ($i = 0; $i < count($data); $i++) {
+
+                    $sum_pc_level = $data[$i]['level_senior'] + $data[$i]['level_advance'] + $data[$i]['level_master'];
+
+                    $share_01 = round(($data[$i]['level_senior'] / $sum_pc_level) * 100, 1);
+                    $share_02 = round(($data[$i]['level_advance'] / $sum_pc_level) * 100, 1);
+                    $share_03 = round(($data[$i]['level_master'] / $sum_pc_level) * 100, 1);
+
+                    $ratio = (is_nan($share_01) ? 0 : round(($share_01 / 10), 1)) . " : " . (is_nan($share_02) ? 0 : round(($share_02 / 10), 1)) . " : " . (is_nan($share_03) ? 0 : round(($share_03 / 10), 1));
+
+                    echo "<tr>";
+                    echo "<td width='20%'><div align='center'>" . $data[$i]['org_type'] . "</div></td>";
+                    echo "<td width='10%'><div align='right'>" . $data[$i]['level_senior'] . "</div></td>";
+                    echo "<td width='10%'><div align='right'>" . (is_nan($share_01) ? 0 : $share_01) . "%</div></td>";
+                    echo "<td width='10%'><div align='right'>" . $data[$i]['level_advance'] . "</div></td>";
+                    echo "<td width='10%'><div align='right'>" . (is_nan($share_02) ? 0 : $share_02) . "%</div></td>";
+                    echo "<td width='10%'><div align='right'>" . $data[$i]['level_master'] . "</div></td>";
+                    echo "<td width='10%'><div align='right'>" . (is_nan($share_03) ? 0 : $share_03) . "%</div></td>";
+                    echo "<td width='10%'><div align='right'>" . $sum_pc_level . "</div></td>";
+                    echo "<td width='10%'><div align='right'>" . $ratio . "</div></td>";
+                    echo "</tr>";
+                }
+                ?>
+
+                </tbody>
+            </table>
+
+            <?php
+            $table_title = "Report By Channel (Online) *More than 1 shop";
+        }
+    }
+?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script>
+
+    $(document).ready(function () {
+    
+    });
+    
+</script>

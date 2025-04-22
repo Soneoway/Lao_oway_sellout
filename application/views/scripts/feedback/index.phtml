@@ -1,0 +1,167 @@
+<div class="page-header">
+    <h1>Feedback</h1>
+    <?PHP $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    	if (in_array($userStorage->group_id, array(SALES_ID,PGPB_ID))): ?>
+    <span class="pull-right"><a href="feedback/create" class="btn btn-success" ><i class="icon-plus"></i></a></span>
+    <?PHP endif; ?>
+</div>
+<?php
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+        
+?>
+<style type="text/css">
+	.not-active {
+   pointer-events: none;
+   cursor: default;
+   color: #E5E5E5;
+
+}
+td{
+	text-align: center;
+}
+</style>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('feedback/partials/feedback_search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?PHP  
+
+function readerName($id,$staff){
+				
+                	$read_name =	explode(',', $id);
+                	$read_ ='';
+                	for ($i=0; $i < count($read_name); $i++) { 
+                		$read_ .= $staff[$read_name[$i]].' / ';
+                	}
+                	return substr($read_, 0, -3);
+                	
+	} ?>
+<div class="pull-right">
+    <!-- <strong>Total Imei: <?php echo $this->total_quantity ?></strong> -->
+</div>
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <!-- ?php echo $this->sorting(array(
+                        '#',
+                        'title'       => 'Title',
+                        'created_at'       => 'Created At',
+                        'update_at'       => 'Update At',
+                        'Mark Read',
+
+                        'action'             
+                ),
+            $this->url, $this->current_col, $this->desc); ?> -->
+
+            	<td>#</td>
+            	<td>Title</td>
+            	<td>Store</td>
+            	<?PHP if (in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID))): ?>
+            	<td>Area</td>
+            	<td>Created By</td>
+                <td>Group</td>
+            	<?PHP endif; ?>
+            	<td>Created At</td>
+            	<td>Update At</td>
+            	<td>Mark as read by</td>
+            	<?PHP if (!in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID,ASM_ID))): ?>
+            	<td>action</td>
+            	<?PHP endif; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->feedback) and $this->feedback)
+                $n = $this->offset + 1;
+                foreach ($this->feedback as $feed):
+                	
+                 ?>
+            <tr>
+                <td><?php echo $n++; ?></td>
+                <td><a href="feedback/view?id=<?php echo $feed['id']; ?>"><?php echo $feed['title']; ?></a></td>
+                <td><?php echo $feed['store_name'] ?></td>
+                <?PHP if (in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID))): ?>
+            	<td><?php echo $feed['area']; ?></td>
+            	<td><?php echo $feed['name']; ?></td>
+                <td><?php echo $feed['group_name']; ?></td>
+            	<?PHP endif; ?>
+                <td><center><?php echo date('d/m/Y H:i:s', strtotime($feed['created_at'])); ?></center></td>
+                <td><center><?php echo isset($feed['update_at'])?date('d/m/Y H:i:s', strtotime($feed['update_at'])):''; ?></center></td>
+                <td><?PHP echo isset($feed['read_by'])?readerName($feed['read_by'],$this->staff):'' ?></td>
+               <?PHP if (!in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID,ASM_ID))): ?>
+                	
+                <td><center>
+                	<?PHP if ($feed['read_mark']==1):?>
+                		<a href="feedback/create?id=<?php echo $feed['id']; ?>" class="not-active"><i class="icon-edit"></i></a>
+                	<?PHP else: ?>
+                		<a href="feedback/create?id=<?php echo $feed['id']; ?>"><i class="icon-edit"></i></a>
+                	<?PHP endif; ?>
+                	<?PHP if (in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID))): ?>
+                		<a href="" onclick="delete_feed(<?=$feed['id']?>)"><i class="icon-remove"></i></a>
+                	<?PHP endif; ?>
+                	</center>
+                </td>
+                <?PHP endif; ?>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+    
+    });
+    function delete_feed(id){
+    	if (confirm('Delete Feedback')==true){
+    		window.location.assign("/feedback/delete-feed?id="+id);
+    	}
+          
+    }
+</script>
+<?php echo $this->load('combobox');?>

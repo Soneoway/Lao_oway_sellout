@@ -1,0 +1,45 @@
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">New PC Follow Result. (ครั้งที่ <?php echo $this->params['round']; ?>)</h3>
+</div>
+<div class="modal-body">
+<table border=1 width="100%">
+  <tr>
+    <th align="center" width="85%">Question</th>
+    <th align="center" width="15%">Status</th>
+  </tr>
+  <?php 
+    $data = $this->result_list;
+
+    foreach ($data as $key => $item) {
+        echo "<tr>";
+        echo    "<td colspan='2' bgcolor='#fff5a3' style='padding-left: 5px;'>$key</td>";
+        echo "</tr>";
+        foreach ($item as $k => $val) {
+            $row_num = $k+1;
+            $status = ($val['answer'] == 'Y') ? '<strong style="color: #00aa00">PASS</strong>' : '<strong style="color: #ea1800">NOT PASS</strong>';
+            echo "<tr>";
+            echo    "<td style='padding-left: 20px;'>$row_num. {$val['questions']}</td>";
+            echo    "<td align='center'>$status</td>";
+            echo "</tr>";
+        }
+    }
+
+//    for ($i=0;$i<count($data);$i++) {
+//
+//      echo "<tr >";
+//      echo    "<td align=\"center\">".$data[$i]['area_name']."</td>";
+//      echo    "<td align=\"center\">".$data[$i]['staff_code']."</td>";
+//      echo    "<td style=\"padding-left:10px;\"><a title=\"View\" target=\"_blank\" href=\"".HOST."trainer/pc-level-detail?staff_id=".$data[$i]['staff_id']."\">".$data[$i]['staff_name']."</a></td>";
+//      echo    "<td align=\"center\">".$data[$i]['pc_stand_by']."</td>";
+//      echo    "<td align=\"center\">".$data[$i]['level_status']."</td>";
+//      echo "</tr>";
+//
+//    }
+  ?>
+</table>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

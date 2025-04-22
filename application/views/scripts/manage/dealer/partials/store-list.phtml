@@ -1,0 +1,77 @@
+<div class="row-fluid">
+    <div class="span6">
+        <div class="accordion" id="search">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#search" href="#searchCollapse">
+                        <span><i class="icon-search"></i></span> Search in this list
+                    </a>
+                </div>
+                <div id="searchCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/dealer/partials/search-store.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span6">
+        <div class="accordion" id="addmore">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#addmore" href="#addmoreCollapse">
+                        <span><i class="icon-plus-sign"></i></span> Add more stores
+                    </a>
+                </div>
+                <div id="addmoreCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/dealer/partials/add-store.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered numbering">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Store Name</th>
+            <th>Province</th>
+            <th>Area</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody class="store_list">
+        <?php if ($this->stores):?>
+        <?php foreach ($this->stores as $k=>$store):  ?>
+            <tr class="store"
+                data-id="<?php echo $store['id'] ?>"
+                data-name="<?php echo $store['name'] ?>" 
+                data-area="<?php if(isset($this->regions[$store['regional_market']]['area_id']) 
+                                    && $this->regions[$store['regional_market']]['area_id']) 
+                                    echo $this->regions[$store['regional_market']]['area_id'] ?>" 
+                data-region="<?php echo $store['regional_market'] ?>">
+
+                <td></td>
+                <td>
+                    <?php if (isset($store['del']) && $store['del']) echo "<del>" ?>
+                        <?php echo $store['name'] ?>
+                    <?php if (isset($store['del']) && $store['del']) echo "</del>" ?>
+                </td>
+
+                <td><?php if (isset($this->regions[$store['regional_market']]) && $this->regions[$store['regional_market']]) 
+                                echo $this->regions[$store['regional_market']]['name'] ?>
+                            </td>
+                <td><?php if (isset($this->areas[$this->regions[$store['regional_market']]['area_id']]) && $this->areas[$this->regions[$store['regional_market']]['area_id']]) 
+                                echo $this->areas[$this->regions[$store['regional_market']]['area_id']] ?></td>
+                <td><button class="btn btn-default btn-mini btn_remove">Remove</button></td>
+            </tr>
+        <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>

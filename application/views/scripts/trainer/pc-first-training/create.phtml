@@ -1,0 +1,125 @@
+<div class="page-header">
+    <h1>Staff Details</h1>
+</div>
+
+<?php 
+    $staff_list = $this->staff_list; 
+    //print_r($staff_list); 
+
+    $date = strtotime($staff_list['check_in']);
+    
+    if (strpos($staff_list['filepic'], 'http://apply.oppo.in.th/') !== false) {
+        $img_path = $staff_list['filepic'];
+    } else {
+        $img_path = API_URI."images/oppo_pc_first_training/".date('Y', $date)."/".date('Y-m', $date)."/".date('Y-m-d', $date)."/".$staff_list['filepic'];
+    }
+?>
+<form role="form" action="<?php echo HOST.'trainer/pc-first-training-save';?>" method="post">
+
+<div class="row">
+        <div class="span6">
+
+            <p><span><strong>- Personal Info -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Public ID</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['public_id']) ? $staff_list['public_id'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name EN</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_name_en']) ? $staff_list['staff_name_en'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Staff Name TH</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_name_th']) ? $staff_list['staff_name_th'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Gender</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['gender_name']) ? $staff_list['gender_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Date of Birth</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['dob']) ? $staff_list['dob'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Email</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['email']) ? $staff_list['email'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Phone Number</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['phone_number']) ? $staff_list['phone_number'] : "-"; ?></td>
+                </tr>
+
+            </table>
+
+            <br/>
+
+            <p><span><strong>- Job Info -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Area</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['area_name']) ? $staff_list['area_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Group</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['group_name']) ? $staff_list['group_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Check In</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['check_in']) ? $staff_list['check_in'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="120px">Shirt Size</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['shirt_size']) ? $staff_list['shirt_size'] : "-"; ?></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><span><strong>- Creator Info -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="120px">Created By</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($staff_list['created_by']) ? $staff_list['created_by'] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120px">Created Date</td>
+                    <td style="padding-left: 5px;">: <?php 
+                            echo isset($staff_list['created_at']) ? $staff_list['created_at'] : "-"; 
+                        ?>
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+
+        <div class="span6">
+            <p><span><strong>- Picture -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr><td></td></tr>
+                <tr><td><img src="<?php echo $img_path ?>" alt="Staff_Pic" height="270" width="270"></td></tr>
+            </table>
+        </div>
+
+</div>
+
+<br/>
+
+<input type="hidden" name="pft_id" id="pft_id" value="<?php echo $staff_list['pft_id']; ?>">
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+<button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

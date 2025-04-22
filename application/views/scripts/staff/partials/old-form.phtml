@@ -1,0 +1,323 @@
+<div class="row">
+
+        <form role="form" id="form" action="<?php echo HOST.'staff/create';?>" method="post" class="form-horizontal" enctype="multipart/form-data">
+            <div class="row">
+                <div class="span6">
+                    <div class="control-group">
+                        <label for="photo" class="span2">Staff Photo</label>
+                        <div class="span3">
+                            <img class="staff-photo" src="<?php if(isset($this->staff) and !empty($this->staff->photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/'.$this->staff->photo);  ?>" />
+                            <div class="clear"></div>
+                            <input type="file" id="photo" name="photo" />
+                            <div class="clear"></div>
+                            <div class="control-group">
+                                <label for="del_photo" class="pull-left">Delete Photo</label>
+                                <input type="checkbox" class="pull-left" name="del_photo" id="del_photo" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="code" class="span2">Staff code</label>
+                        <input type="text" class="form-control span3" id="code" placeholder="Enter Code" name="code" required="required" value="<?php isset($this->staff) and $this->staff and printf($this->staff->code);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="firstname" class="span2">First name</label>
+                        <input type="text" class="form-control span3" id="firstname" placeholder="Enter First name" name="firstname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->firstname);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="lastname" class="span2">Last name</label>
+                        <input type="text" class="form-control span3" id="lastname" placeholder="Enter Last name" name="lastname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->lastname);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="contract_type" class="span2">Contract type</label>
+                        <select name="contract_type" id="contract_type" class="span3">
+                            <option value="">Choose</option>
+                            <?php foreach ($this->contract_types as $item):?>
+                                <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_type):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="contract_signed_at" class="span2">Contract signed date</label>
+                        <input type="text" class="form-control date span3" id="contract_signed_at" placeholder="Enter Contract signed date" name="contract_signed_at" value="<?php isset($this->staff) and $this->staff->contract_signed_at and printf(date('d/m/Y',strtotime($this->staff->contract_signed_at)));?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="contract_term" class="span2">Contract term</label>
+                        <select name="contract_term" id="contract_term" class="span3">
+                            <option value="">Choose</option>
+                            <?php foreach ($this->contract_terms as $item):?>
+                                <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_term):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+                    
+                     <div class="control-group">
+                        <label for="print_time" class="span2">Contract print time</label>
+                        <input type="text" class="form-control span3" id="print_time" name="print_time" value="<?php if(isset($this->staff) and $this->staff->print_time) echo $this->staff->print_time; else echo intval(0);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="contract_expired_at" class="span2">Contract expired date</label>
+                        <input type="text" class="form-control date span3" id="contract_expired_at" placeholder="Enter Contract expired at" name="contract_expired_at" value="<?php isset($this->staff) and $this->staff->contract_expired_at and printf(date('d/m/Y',strtotime($this->staff->contract_expired_at)));?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="department" class="span2">Department</label>
+                        <select name="department" id="department" class="span3">
+                            <option value>Choose</option>
+                            
+                            <?php if (isset($this->departments)): ?>
+                                <?php foreach ($this->departments as $item):?>
+                                    <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->department):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                                <?php endforeach;?>
+                            <?php endif ?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="team" class="span2">Team</label>
+                        <!--<input type="text" class="form-control span3" id="team" placeholder="Enter Team" name="team" value="<?php /*isset($this->staff) and $this->staff and printf($this->staff->team);*/?>">-->
+                        <select name="team" id="team" class="span3">
+                            <option value>Choose</option>
+
+                            <?php if (isset($this->teams)): ?>
+                                <?php foreach ($this->teams as $key => $value):?>
+                                    <option value="<?php echo $key;?>" <?php if (isset($this->staff) and $this->staff and $key==$this->staff->team):?>selected<?php endif;?>><?php echo $value;?></option>
+                                <?php endforeach;?>
+                            <?php endif ?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="title" class="span2">Job Title</label>
+                        <input type="text" class="form-control span3" id="title" placeholder="Enter Last name" name="title" value="<?php isset($this->staff) and $this->staff and printf($this->staff->title);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="phone_number" class="span2">Phone number</label>
+                        <input type="tel" class="form-control span3" id="phone_number" placeholder="Enter Phone number" name="phone_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->phone_number);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="joined_at" class="span2">Joined at</label>
+                        <input type="text" class="form-control date span3" id="joined_at" placeholder="Enter Joined at" name="joined_at" value="<?php isset($this->staff) and $this->staff->joined_at and printf(date('d/m/Y',strtotime($this->staff->joined_at)));?>">
+                    </div>
+                    <div class="control-group">
+                        <label for="off_date" class="span2">Off date</label>
+                        <input type="text" class="form-control date span3" id="off_date" placeholder="Enter Off date" name="off_date" value="<?php isset($this->staff) and $this->staff->off_date and printf(date('d/m/Y',strtotime($this->staff->off_date)));?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="gender_1" class="span2">Gender</label>
+                        <input type="radio" class="form-control" id="gender_1" name="gender" value="1" <?php if (!isset($this->staff)):?>checked <?php else: isset($this->staff) and $this->staff->gender==1 and printf('checked'); endif;?>><span>Male</span>
+                        <input type="radio" class="form-control" id="gender_2" name="gender" value="0" <?php isset($this->staff) and $this->staff->gender==0 and printf('checked');?>><span>Female</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="dob" class="span2">Date of birth</label>
+                        <input type="text" class="form-control date span3" id="dob" placeholder="Enter Date of birth" name="dob" value="<?php isset($this->staff) and $this->staff->dob and printf($this->staff->dob);?>">
+                    </div>
+
+                    <div class="control-group" class="span2">
+                        <label for="note" class="span2">Note</label>
+                        <textarea class="span3" style="height: 134px;" name="note" id="note"><?php isset($this->staff) and $this->staff and printf($this->staff->note);?></textarea>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="company_id" class="span2">Company</label>
+                        <select name="company_id" id="company_id" class="form-control span3">
+                            <option value>---</option>
+                            <?php if (isset($this->companies) && $this->companies): ?>
+                                <?php foreach ($this->companies as $key => $value): ?>
+                                    <option value="<?php echo $key ?>"
+                                            <?php if(isset($this->staff['company_id']) && $this->staff['company_id']==$key) echo "selected" ?>><?php echo $value ?></option>
+                                <?php endforeach ?>
+                            <?php endif ?>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="span6">
+                    <div class="control-group">
+                        <label for="email" class="span2">Email</label>
+                        <input type="email" autocomplete="off" class="form-control span3" id="email" placeholder="Enter email" name="email" value="<?php isset($this->staff) and $this->staff and printf($this->staff->email);?>">
+                    </div>
+                    <div class="control-group">
+                        <?php if ( isset($this->staff) and $this->staff ):?>
+                            <a href="javascript:void(0);" id="btn-change-pass" title="Change password" class="span2">Change Password</a>
+                            <input type="hidden" name="change-pass" id="change-pass" value="0">
+                            <input type="password" autocomplete="off" class="form-control hidden span3" id="exampleInputPassword1" placeholder="Password" name="password">
+                        <?php else: ?>
+                            <label for="password" class="span2">Password</label>
+                            <input id="password" type="password" autocomplete="off" class="form-control span3" id="exampleInputPassword1" placeholder="Password" name="password">
+                        <?php endif; ?>
+                    </div>
+                    <div class="control-group">
+                        <label for="exampleInputGroup" class="span2">Group</label>
+                        <select id="exampleInputGroup" class="span3" name="group_id">
+                            <option>----</option>
+                            <?php foreach ($this->groups as $item):?>
+                                <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->group_id):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="area_id" class="span2">Area</label>
+                        <select id="area_id" name="area_id" class="span3">
+                            <option value="">Choose</option>
+                            <?php
+                            if ($this->areas) :
+                                foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if ($this->area and $this->area->id==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                            <?php
+                                endforeach;
+                            endif;
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="regional_market" class="span2">Province</label>
+                        <select id="regional_market" name="regional_market" class="span3">
+                            <option value="">Choose</option>
+                            <?php
+                            if ($this->regional_markets) :
+                                foreach ($this->regional_markets as $regional_market):?>
+                                <option value="<?php echo $regional_market->id;?>" <?php if ($this->staff->regional_market==$regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                            <?php
+                                endforeach;
+                            endif;
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="is_officer" class="span2">Is Head Office</label>
+                        <input type="checkbox" name="is_officer" id="is_officer" value="1" <?php if (isset($this->staff) and $this->staff->is_officer==1):?> checked="checked" <?php endif;?> />
+                    </div>
+
+                    <div class="control-group">
+                        <label for="level" class="span2">Level</label>
+                        <input type="text" class="form-control span3" id="level" placeholder="Enter level" name="level" value="<?php isset($this->staff) and $this->staff and printf($this->staff->level);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="certificate" class="span2">Certificate</label>
+                        <input type="text" class="form-control span3" id="certificate" placeholder="Enter certificate" name="certificate" value="<?php isset($this->staff) and $this->staff and printf($this->staff->certificate);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="temporary_address" class="span2">Temporary Address</label>
+                        <input type="text" class="form-control span3" id="temporary_address" placeholder="Enter address" name="temporary_address" value="<?php isset($this->staff) and $this->staff and printf($this->staff->temporary_address);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="address" class="span2">ID Card Address</label>
+                        <input type="text" class="form-control span3" id="address" placeholder="Enter address" name="address" value="<?php isset($this->staff) and $this->staff and printf($this->staff->address);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="permanent_address" class="span2">Permanent Address</label>
+                        <input type="text" class="form-control span3" id="permanent_address" placeholder="Enter Permanent address" name="permanent_address" value="<?php isset($this->staff) and $this->staff and printf($this->staff->permanent_address);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="birth_place" class="span2">Birth place</label>
+                        <input type="text" class="form-control span3" id="birth_place" placeholder="Enter Birth place" name="birth_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->birth_place);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="native_place" class="span2">Native place</label>
+                        <input type="text" class="form-control span3" id="native_place" placeholder="Enter Native place" name="native_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->native_place);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="ID_number" class="span2">ID number</label>
+                        <input type="text" class="form-control span3" id="ID_number" placeholder="Enter ID number" name="ID_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_number);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="ID_place" class="span2">ID place</label>
+                        <input type="text" class="form-control span3" id="ID_place" placeholder="Enter ID place" name="ID_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_place);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="ID_date" class="span2">ID date</label>
+                        <input type="text" class="form-control date span3" id="ID_date" placeholder="Enter ID date" name="ID_date" value="<?php isset($this->staff) and $this->staff->ID_date and printf(date('d/m/Y',strtotime($this->staff->ID_date)));?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="nationality" class="span2">Nationality</label>
+                        <select name="nationality" id="nationality" class="span3">
+                            <option value="">Choose</option>
+                            <?php foreach ($this->nationalities as $item):?>
+                                <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->nationality):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="religion" class="span2">Religion</label>
+                        <select name="religion" id="religion" class="span3">
+                            <option value="">Choose</option>
+                            <?php foreach ($this->religions as $item):?>
+                                <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->religion):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="social_insurance_time" class="span2">Social Insurance Time</label>
+                        <input type="text" class="form-control span3" id="social_insurance_time" placeholder="Enter social insurance time" name="social_insurance_time" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_time);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="social_insurance_number" class="span2">Social Insurance Number</label>
+                        <input type="text" class="form-control span3" id="social_insurance_number" placeholder="Enter social insurance number" name="social_insurance_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_number);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="personal_tax" class="span2">Personal Tax</label>
+                        <input type="text" class="form-control span3" id="personal_tax" placeholder="Enter personal tax" name="personal_tax" value="<?php isset($this->staff) and $this->staff and printf($this->staff->personal_tax);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="family_allowances_registered" class="span2">Family Allowances Registered</label>
+                        <input type="text" class="form-control span3" id="family_allowances_registered" placeholder="Enter social insurance time" name="family_allowances_registered" value="<?php isset($this->staff) and $this->staff and printf($this->staff->family_allowances_registered);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="myTags" class="span2">Tags</label>
+                        <ul class="form-control span3" id="myTags"><?php
+                            if (isset($this->a_tags) and $this->a_tags):
+                                foreach ($this->a_tags as $ta)
+                                    echo '<li>'.$ta.'</li>';
+                            endif;
+                        ?></ul>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="control-group">
+                    <input type="hidden" name="id" id="id" value="<?php isset($this->staff) and $this->staff and printf($this->staff->id);?>">
+                    <div class="span2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+                        <button type="button" class="btn btn-danger go-back">Go back</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+</div>

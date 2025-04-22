@@ -1,0 +1,53 @@
+
+
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">Store Control</h3>
+</div>
+<div class="modal-body">
+<table border=1 width="100%">
+  <tr>
+    <th align="center" width="10%">Code</th>
+    <th align="center" width="30%">Staff Name</th>
+    <th align="center" width="5%">Group</th>
+    <th align="center" width="15%">Off Date</th>
+    <th align="center" width="15%">Start Date</th>
+    <th align="center" width="15%">End Date</th>
+  </tr>
+  <?php 
+    $sc_log = $this->sc_log;
+    for ($i=0;$i<count($sc_log);$i++) {
+
+      if ($sc_log[$i]['off_date']) {
+        $off_tmp = explode("-", $sc_log[$i]['off_date']);
+        $off_date = $off_tmp[2]."/".$off_tmp[1]."/".$off_tmp[0];
+      } else { $off_date = ""; }
+
+      if ($sc_log[$i]['from_date']) {
+        $from_tmp1 = explode(" ", $sc_log[$i]['from_date']);
+        $from_tmp2 = explode("-", $from_tmp1[0]);
+        $from_date = $from_tmp2[2]."/".$from_tmp2[1]."/".$from_tmp2[0]." ".$from_tmp1[1];
+      } else { $from_date = ""; }
+
+      if ($sc_log[$i]['to_date']) {
+        $to_tmp1 = explode(" ", $sc_log[$i]['to_date']);
+        $to_tmp2 = explode("-", $to_tmp1[0]);
+        $to_date = $to_tmp2[2]."/".$to_tmp2[1]."/".$to_tmp2[0]." ".$to_tmp1[1];
+      } else { $to_date = ""; }
+
+      echo "<tr >";
+      echo    "<td align=\"center\">".$sc_log[$i]['staff_code']."</td>";
+      echo    "<td>".$sc_log[$i]['staff_name']."</td>";
+      echo    "<td align=\"center\">".$sc_log[$i]['staff_group']."</td>";
+      echo    "<td align=\"center\">".$off_date."</td>";
+      echo    "<td align=\"center\">".$from_date."</td>";
+      echo    "<td align=\"center\">".$to_date."</td>";
+      echo "</tr>";
+    } 
+  ?>
+</table>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

@@ -1,0 +1,861 @@
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<style> 
+.col_half { width: 49%; }
+.col_third { width: 32%; }
+.col_fourth { width: 25%; height: 50px; }
+.col_fifth { width: 18.4%; }
+.col_sixth { width: 15%; }
+.col_three_fourth { width: 74.5%;}
+.col_twothird{ width: 66%;}
+.col_half,
+.col_third,
+.col_twothird,
+.col_fourth,
+.col_three_fourth,
+.col_fifth{
+    position: relative;
+    display:inline;
+    display: inline-block;
+    float: left;
+    margin-right: 2%;
+    margin-bottom: 20px;
+}
+.end { margin-right: 0 !important; }
+/* Column Grids End */
+
+.wrapper { display: flex; justify-content: center;}
+.counter1 { background-color: rgba(43, 27, 234); border-radius: 5px;}
+.counter2 { background-color: rgb(26, 176, 13); border-radius: 5px;}
+.counter3 { background-color: rgb(234, 29, 29); border-radius: 5px;}
+.count-title {color: #fff; font-weight: normal; text-align: center; }
+.count-text {color: #fff; font: 1em normal Arial,sans-serif; font-size: 16px; font-weight: normal;  margin-top: 5px; margin-bottom: 0; text-align: center; }
+.fa-2x { margin: 0 auto; float: none; display: table; color: #4ad1e5; }
+
+/**
+ * Tabs
+ */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; // make sure it wraps
+}
+.tabs label {
+  order: 1; // Put the labels first
+  display: block;
+  padding: 1rem 2rem;
+  margin-right: 0.2rem;
+  cursor: pointer;
+  background: #fff;
+  font-weight: bold;
+  transition: background ease 0.2s;
+}
+.tabs .tab {
+  order: 99; // Put the tabs last
+  flex-grow: 1;
+  width: 100%;
+  display: none;
+  padding: 1rem;
+  background: #fff;
+}
+.tabs input[type="radio"] {
+  display: none;
+}
+.tabs input[type="radio"]:checked + label {
+  background: #9cf2b994;
+}
+.tabs input[type="radio"]:checked + label + .tab {
+  display: block;
+}
+
+@media (max-width: 45em) {
+  .tabs .tab,
+  .tabs label {
+    order: initial;
+  }
+  .tabs label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+}
+
+/**
+ * Generic Styling
+*/
+
+
+</style>
+
+<?php if (isset($this->chartTimingMonth) and $this->chartTimingMonth)
+  foreach ($this->chartTimingMonth as $chartMonth):
+      $area[] = $chartMonth['area_name'];
+
+      $realme_m[] = !empty($chartMonth['realme']) ? $chartMonth['realme'] : '0';
+      $oppo_m[] = !empty($chartMonth['oppo']) ? $chartMonth['oppo'] : '0';
+
+      $sumrealme_m += !empty($chartMonth['realme']) ? $chartMonth['realme'] : '0';
+      $sumoppo_m += !empty($chartMonth['oppo']) ? $chartMonth['oppo'] : '0';
+
+      $realme_activate_m[] = !empty($chartMonth['realme_activated']) ? $chartMonth['realme_activated'] : '0';
+      $oppo_activate_m[] = !empty($chartMonth['oppo_activated']) ? $chartMonth['oppo_activated'] : '0';
+
+      $sumrealme_activate_m += !empty($chartMonth['realme_activated']) ? $chartMonth['realme_activated'] : '0';
+      $sumoppo_activate_m += !empty($chartMonth['oppo_activated']) ? $chartMonth['oppo_activated'] : '0';
+
+      $realme_not_activated_m[] = !empty($chartMonth['realme_not_activated']) ? $chartMonth['realme_not_activated'] : '0';
+      $oppo_not_activated_m[] = !empty($chartMonth['oppo_not_activated']) ? $chartMonth['oppo_not_activated'] : '0';
+
+      $sumrealme_not_activated_m += !empty($chartMonth['realme_not_activated']) ? $chartMonth['realme_not_activated'] : '0';
+      $sumoppo_not_activated_m += !empty($chartMonth['oppo_not_activated']) ? $chartMonth['oppo_not_activated'] : '0';
+
+  endforeach;
+
+  $count_sellout = $sumrealme_m + $sumoppo_m;
+  $count_activate_m = $sumrealme_activate_m + $sumoppo_activate_m;
+  $count_not_activate_m = $sumrealme_not_activated_m + $sumoppo_not_activated_m;
+
+  $realme_sellout_m = $realme_m;
+  $oppo_sellout_m = $oppo_m;
+
+  $count_m = array_map(function (...$arrays) {
+      return array_sum($arrays);
+  }, $realme_sellout_m, $oppo_sellout_m);
+
+  $realme_activate_m = $realme_activate_m;
+  $oppo_activate_m = $oppo_activate_m;
+
+  // sum realme sellout activate and oppo sellout activate
+  $activate_m = array_map(function (...$arrays){
+    return array_sum($arrays);
+  },$realme_activate_m,$oppo_activate_m);
+
+  $realme_not_activated_m = $realme_not_activated_m;
+  $oppo_not_activated_m = $oppo_not_activated_m;
+
+  // sum realme sellout not activate and oppo sellout not activate
+  $notactivate_m = array_map(function (...$arrays){
+    return array_sum($arrays);
+  },$realme_not_activated_m,$oppo_not_activated_m);
+
+
+  if (isset($this->chartTimingWeek) and $this->chartTimingWeek)
+  foreach ($this->chartTimingWeek as $chartWeek):
+      $area2[] = $chartWeek['area_name'];
+      $count2[] = !empty($chartWeek['sellout']) ? $chartWeek['sellout'] : '0';
+      $activate2[] = !empty($chartWeek['activated']) ? $chartWeek['activated'] : '0';
+      $not_activate2[] = !empty($chartWeek['not_activated']) ? $chartWeek['not_activated'] : '0';
+
+      $sumcount2 += !empty($chartWeek['sellout']) ? $chartWeek['sellout'] : '0';
+      $sumactivate2 += !empty($chartWeek['activated']) ? $chartWeek['activated'] : '0';
+      $sumnot_activate2 += !empty($chartWeek['not_activated']) ? $chartWeek['not_activated'] : '0';
+  endforeach;
+
+  if (isset($this->chartTimingDay) and $this->chartTimingDay)
+  foreach ($this->chartTimingDay as $chartDay):
+      $area3[] = $chartDay['area_name'];
+
+      $realme[] = !empty($chartDay['realme']) ? $chartDay['realme'] : '0';
+      $oppo[] = !empty($chartDay['oppo']) ? $chartDay['oppo'] : '0';
+
+      $sumrealme3 += !empty($chartDay['realme']) ? $chartDay['realme'] : '0';
+      $sumoppo3 += !empty($chartDay['oppo']) ? $chartDay['oppo'] : '0';
+
+      $realme_activate[] = !empty($chartDay['realme_activated']) ? $chartDay['realme_activated'] : '0';
+      $oppo_activate[] = !empty($chartDay['oppo_activated']) ? $chartDay['oppo_activated'] : '0';
+
+      $sumrealme_activate += !empty($chartDay['realme_activated']) ? $chartDay['realme_activated'] : '0';
+      $sumoppo_activate += !empty($chartDay['oppo_activated']) ? $chartDay['oppo_activated'] : '0';
+
+      $realme_not_activated[] = !empty($chartDay['realme_not_activated']) ? $chartDay['realme_not_activated'] : '0';
+      $oppo_not_activated[] = !empty($chartDay['oppo_not_activated']) ? $chartDay['oppo_not_activated'] : '0';
+
+      $sumrealme_not_activated += !empty($chartDay['realme_not_activated']) ? $chartDay['realme_not_activated'] : '0';
+      $sumoppo_not_activated += !empty($chartDay['oppo_not_activated']) ? $chartDay['oppo_not_activated'] : '0';
+
+  endforeach;
+
+  // sum data
+  $count_text = $sumrealme3 + $sumoppo3;
+  $count_activate = $sumrealme_activate + $sumoppo_activate;
+  $count_not_activate = $sumrealme_not_activated + $sumoppo_not_activated;
+
+  $realme_sellout = $realme;
+  $oppo_sellout = $oppo;
+
+  // sum realme and oppo sellout by area
+  $count3 = array_map(function (...$arrays) {
+      return array_sum($arrays);
+  }, $realme_sellout, $oppo_sellout);
+
+  $realme_activate = $realme_activate;
+  $oppo_activate = $oppo_activate;
+
+  // sum realme sellout activate and oppo sellout activate
+  $activate = array_map(function (...$arrays){
+    return array_sum($arrays);
+  },$realme_activate,$oppo_activate);
+
+  $realme_not_activated = $realme_not_activated;
+  $oppo_not_activated = $oppo_not_activated;
+
+  // sum realme sellout not activate and oppo sellout not activate
+  $notactivate = array_map(function (...$arrays){
+    return array_sum($arrays);
+  },$realme_not_activated,$oppo_not_activated);
+
+?>
+
+<!-- <div class="page-header">
+    <h1>Dashboard</h1>
+</div> -->
+<br>
+<div class="tabs">
+  <input type="radio" name="tabs" id="tabone" checked="checked">
+  <label for="tabone">Today</label>
+  <div class="tab">
+
+      <div class="wrapper">
+          <div class="counter1 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;" class="timer count-title count-number" data-to="<?php echo $count_text?>" data-speed="1500"></b>
+             <span class="count-text"> Timing Total</span>
+          </div>
+
+          <div class="counter2 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;" class="timer count-title count-number" data-to="<?php echo $count_activate?>" data-speed="1500"></b>
+            <span class="count-text"> Activated</span>
+          </div>
+
+          <div class="counter3 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;" class="timer count-title count-number" data-to="<?php echo $count_not_activate?>" data-speed="1500"></b>
+            <span class="count-text"> Not Activated</span>
+          </div>
+      </div>
+      <div class="row-fluid">
+          <div class="span12">
+              <h2 style="font-family: Phetsarath OT; padding-left: 50px;">Total Timing Today by Area.</h2>
+              <canvas id="myChart3"></canvas>
+          </div>
+      </div>
+    
+  </div>
+
+  <input type="radio" name="tabs" id="tabthree">
+  <label for="tabthree">This Month</label>
+  <div class="tab">
+      <div class="wrapper">
+          <div class="counter1 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;"  class="timer count-title count-number" data-to="<?php echo $count_sellout?>" data-speed="1500"></b>
+             <span class="count-text "> Timing Total</span>
+          </div>
+
+          <div class="counter2 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;"  class="timer count-title count-number" data-to="<?php echo $count_activate_m?>" data-speed="1500"></b>
+            <span class="count-text "> Activated</span>
+          </div>
+
+          <div class="counter3 col_fourth">
+            <b style="font-size:30px; font-weight:bold; text-align:center; margin-left:30%;"  class="timer count-title count-number" data-to="<?php echo $count_not_activate_m?>" data-speed="1500"></b>
+            <span class="count-text "> Not Activated</span>
+          </div>
+      </div>
+      
+      <div class="row-fluid">
+          <div class="span12">
+              <h2 style="font-family: Phetsarath OT; padding-left: 50px;">Total Timing This Month by Area</h2>
+              <canvas id="myChart"></canvas>
+          </div>
+      </div>
+    
+  </div>
+</div>
+
+<br>
+<br><br>
+
+<script type="text/javascript">
+(function ($) {
+ "use strict";
+  var ctx = document.getElementById("myChart");
+  var myChart  = new Chart(ctx, {
+    type: 'bar',
+    backgroundColor: ['#000'],
+    data: {
+      labels: <?php echo json_encode($area); ?>,
+      datasets: [{
+        data: <?php echo json_encode($count_m); ?>,
+        label: ['Total Timing'],
+        backgroundColor: [
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+
+        ],
+        borderColor: [
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+        ],
+        borderWidth: 1
+      },{
+        data: <?php echo json_encode($activate_m); ?>,
+        label: ['Activated'],
+        backgroundColor: [
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+        ],
+        borderColor: [
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+        ],
+        borderWidth: 1
+      },{
+        data: <?php echo json_encode($notactivate_m); ?>,
+        label: ['Not Activated'],
+        backgroundColor: [
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+    
+        ],
+        borderColor: [
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+        
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      legend: {
+          display: true,
+          position: 'bottom',
+     },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true
+          }
+        }]
+      }
+    }
+  });   
+})(jQuery);
+
+// (function ($) {
+//  "use strict";
+//   var ctx = document.getElementById("myChart2");
+//   var myChart  = new Chart(ctx, {
+//     type: 'bar',
+//     backgroundColor: ['#000'],
+//     data: {
+//       labels: <?php echo json_encode($area2); ?>,
+//       datasets: [{
+//         data: <?php echo json_encode($count2); ?>,
+//         label: ['Total Timing'],
+//         backgroundColor: [
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+
+//         ],
+//         borderColor: [
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//                 'rgba(43, 27, 234, 1)',
+//         ],
+//         borderWidth: 1
+//       },{
+//         data: <?php echo json_encode($activate2); ?>,
+//         label: ['Activated'],
+//         backgroundColor: [
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//         ],
+//         borderColor: [
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgb(26, 176, 13, 1)',
+//         ],
+//         borderWidth: 1
+//       },{
+//         data: <?php echo json_encode($not_activate2); ?>,
+//         label: ['Not Activated'],
+//         backgroundColor: [
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+    
+//         ],
+//         borderColor: [
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+//           'rgb(234, 29, 29, 1)',
+        
+//         ],
+//         borderWidth: 1
+//       }]
+//     },
+//     options: {
+//       legend: {
+//           display: true,
+//           position: 'bottom',
+//      },
+//       scales: {
+//         yAxes: [{
+//           ticks: {
+//             beginAtZero:true
+//           }
+//         }]
+//       }
+//     }
+//   });   
+// })(jQuery);
+
+(function ($) {
+ "use strict";
+  var ctx = document.getElementById("myChart3");
+  var myChart  = new Chart(ctx, {
+    type: 'bar',
+    backgroundColor: ['#000'],
+    data: {
+      labels: <?php echo json_encode($area3); ?>,
+      datasets: [{
+        data: <?php  echo json_encode($count3); ?>,
+        label: ['Total Timing'],
+        backgroundColor: [
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+
+        ],
+        borderColor: [
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+                'rgba(43, 27, 234, 1)',
+        ],
+        borderWidth: 1
+      },{
+        data: <?php echo json_encode($activate); ?>,
+        label: ['Activated'],
+        backgroundColor: [
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+        ],
+        borderColor: [
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+                'rgb(26, 176, 13, 1)',
+        ],
+        borderWidth: 1
+      },{
+        data: <?php echo json_encode($notactivate); ?>,
+        label: ['Not Activated'],
+        backgroundColor: [
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+    
+        ],
+        borderColor: [
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+          'rgb(234, 29, 29, 1)',
+        
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      legend: {
+          display: true,
+          position: 'bottom',
+     },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true
+          }
+        }]
+      }
+    }
+  });   
+})(jQuery);
+
+// (function ($) {
+//  "use strict";
+//   var ctx = document.getElementById("myChart4");
+//   var myChart  = new Chart(ctx, {
+//     type: 'horizontalBar',
+//     backgroundColor: ['#000'],
+//     data: {
+//       labels: <?php echo json_encode($area)?>,
+//       datasets: [{
+//         data: <?php echo json_encode($countchartMonth); ?>,
+//         label: ['chartMonths'],
+//         backgroundColor: [
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+//                 'rgba( 108, 108, 108, 0.4)',
+
+//         ],
+//         borderColor: [
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//                 'rgba(108, 108, 108, 1)',
+//         ],
+//         borderWidth: 1
+//       },{
+//         data: <?php echo json_encode($countpc); ?>,
+//         label: ['PC'],
+//         backgroundColor: [
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//                 'rgba(246, 185, 21, 0.4)',
+//         ],
+//         borderColor: [
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//         ],
+//         borderWidth: 1
+//       }]
+//     },
+//     options: {
+//       legend: {
+//           display: true,
+//           position: 'right',
+//      },
+//        scales: {
+//             xAxes: [{
+//                 stacked: true
+//             }],
+//             yAxes: [{
+//                 stacked: true
+//             }]
+//         }
+//     }
+//   });   
+// })(jQuery);
+
+// (function ($) {
+//  "use strict";
+//   var ctx = document.getElementById("myChart3");
+//   var myChart  = new Chart(ctx, {
+//     type: 'doughnut',
+//     backgroundColor: ['#000'],
+//     data: {
+//       labels: ['chartMonth Total', 'PC Total'],
+//       datasets: [{
+//         data: [<?php echo $sumchartMonth;?>, <?php echo $sumpc;?>],
+//         label: ['ຈຳນວນ'],
+//         backgroundColor: [
+//                 'rgba(75, 192, 120, 0.6)',
+//                 'rgba(246, 185, 21, 0.6)',
+//         ],
+//         borderColor: [
+//                 'rgb(26, 176, 13, 1)',
+//                 'rgba(246, 185, 21, 1)',
+//         ],
+//         borderWidth: 1
+//       }]
+//     },
+//     options: {
+//       legend: {
+//           display: true,
+//           position: 'bottom',
+//      },
+//       scales: {
+//         yAxes: [{
+//           ticks: {
+//             beginAtZero:true
+//           }
+//         }]
+//       }
+//     }
+//   });   
+// })(jQuery); 
+
+(function ($) {
+    $.fn.countTo = function (options) {
+        options = options || {};
+        
+        return $(this).each(function () {
+            // set options for current element
+            var settings = $.extend({}, $.fn.countTo.defaults, {
+                from:            $(this).data('from'),
+                to:              $(this).data('to'),
+                speed:           $(this).data('speed'),
+                refreshInterval: $(this).data('refresh-interval'),
+                decimals:        $(this).data('decimals')
+            }, options);
+            
+            // how many times to update the value, and how much to increment the value on each update
+            var loops = Math.ceil(settings.speed / settings.refreshInterval),
+                increment = (settings.to - settings.from) / loops;
+            
+            // references & variables that will change with each update
+            var self = this,
+                $self = $(this),
+                loopCount = 0,
+                value = settings.from,
+                data = $self.data('countTo') || {};
+            
+            $self.data('countTo', data);
+            
+            // if an existing interval can be found, clear it first
+            if (data.interval) {
+                clearInterval(data.interval);
+            }
+            data.interval = setInterval(updateTimer, settings.refreshInterval);
+            
+            // initialize the element with the starting value
+            render(value);
+            
+            function updateTimer() {
+                value += increment;
+                loopCount++;
+                
+                render(value);
+                
+                if (typeof(settings.onUpdate) == 'function') {
+                    settings.onUpdate.call(self, value);
+                }
+                
+                if (loopCount >= loops) {
+                    // remove the interval
+                    $self.removeData('countTo');
+                    clearInterval(data.interval);
+                    value = settings.to;
+                    
+                    if (typeof(settings.onComplete) == 'function') {
+                        settings.onComplete.call(self, value);
+                    }
+                }
+            }
+            
+            function render(value) {
+                var formattedValue = settings.formatter.call(self, value, settings);
+                $self.html(formattedValue);
+            }
+        });
+    };
+    
+    $.fn.countTo.defaults = {
+        from: 0,               // the number the element should start at
+        to: 0,                 // the number the element should end at
+        speed: 1000,           // how long it should take to count between the target numbers
+        refreshInterval: 100,  // how often the element should be updated
+        decimals: 0,           // the number of decimal places to show
+        formatter: formatter,  // handler for formatting the value before rendering
+        onUpdate: null,        // callback method for every time the element is updated
+        onComplete: null       // callback method for when the element finishes updating
+    };
+    
+    function formatter(value, settings) {
+        return value.toFixed(settings.decimals);
+    }
+}(jQuery));
+
+jQuery(function ($) {
+  // custom formatting example
+  $('.count-number').data('countToOptions', {
+    formatter: function (value, options) {
+      return value.toFixed(options.decimals).replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+    }
+  });
+  
+  // start all the timers
+  $('.timer').each(count);  
+  
+  function count(options) {
+    var $this = $(this);
+    options = $.extend({}, options || {}, $this.data('countToOptions') || {});
+    $this.countTo(options);
+  }
+});
+</script>

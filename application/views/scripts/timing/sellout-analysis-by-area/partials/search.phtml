@@ -1,0 +1,150 @@
+<form class="form-search form-horizontal" method="get" action="/timing/sellout-analysis-by-area/sellout-analysis-by-area" onsubmit="return validateSearch()">
+    <div class="row">
+        
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="report_type" class="span2">Report Type</label>
+                <select id="report_type" name="report_type" class="span3">
+                    <?php
+
+                    if ($this->report_type) :
+                        foreach ($this->report_type as $report_type):
+                            ?>
+                            <option value="<?php echo $report_type['id'];?>" <?php if (isset($this->params['report_type']) and ( (is_array($this->params['report_type']) && in_array($report_type['id'], $this->params['report_type']) || $report_type['id']==$this->params['report_type'])) ):?>selected<?php endif;?>><?php echo $report_type['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['area_id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['area_id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['area_name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="product_id" class="span2">Model</label>
+                <select id="product_id" name="product_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list->id;?>" <?php if (isset($this->params['product_id']) and ( (is_array($this->params['product_id']) && in_array($good_list['id'], $this->params['product_id']) || $good_list['id']==$this->params['product_id'])) ):?>selected<?php endif;?>><?php echo $good_list->name;?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>" required>
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>" required>
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <!-- <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button> -->
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        if ($('#report_type').val() == 1) {
+
+            // end - start returns difference in milliseconds 
+            var diff = new Date(date_02 - date_01);
+
+            // get days
+            var days = (diff/1000/60/60/24) + 1;
+
+            if (days > 31) {
+                alert("Date Range Not Allow more than 31 Days [Selected Date Range is " + days + " Days!]");
+                return false;
+            }
+
+        } else {
+
+            var tmp = end.substring(6,10) + '-' + end.substring(3,5) + '-30';
+            var date_03 = new Date(tmp);
+
+            var diff = new Date(date_03 - date_01);
+
+            var months = Math.round(diff/1000/60/60/24/30);
+            
+            if (months > 12) {
+                alert("Month Range Not Allow more than 12 Months [Selected Month Range is " + months + " Months!]");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    
+    });
+</script>

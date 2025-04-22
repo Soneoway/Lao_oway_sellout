@@ -1,0 +1,45 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'code'         => 'Code',
+                    'name'         => 'Name',
+                    'email'        => 'Email',
+                    'phone_number' => 'Phone No',
+                    'area'         => 'Area',
+                    'province'     => 'Province',
+                    'area_id'      => 'Assigned In',
+                    'assigned_at'  => 'Assigned At',
+                    'status'       => 'Status',
+                    'Action'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isset($this->staffs) && $this->staffs): ?>
+            <?php foreach ($this->staffs as $key => $value): ?>
+                <tr>
+                    <td>
+                        <?php $inc = $this->offset + $key + 1;
+                                echo $inc; ?>
+                    </td>
+                    <td><?php echo $value['code'] ?></td>
+                    <td><?php echo $value['firstname'] . ' ' . $value['lastname'] ?></td>
+                    <td><?php echo str_replace(EMAIL_SUFFIX, '@', $value['email']) ?></td>
+                    <td><?php echo $value['phone_number'] ?></td>
+                    <td><?php if (isset($this->areas[ $this->regions[ $value['regional_market'] ]['area_id'] ])) echo $this->areas[ $this->regions[ $value['regional_market'] ]['area_id'] ] ?></td>
+                    <td><?php if (isset($this->regions[ $value['regional_market'] ]['name'])) echo $this->regions[ $value['regional_market'] ]['name'] ?></td>
+                    <td><?php if (isset($this->areas[ $value['area_id'] ])) echo $this->areas[ $value['area_id'] ] ?></td>
+                    
+                    <td><?php echo date('Y-m-d H:i:s', $value['assigned_at']) ?></td>
+                    <td><span data-status="<?php echo $value['id'] ?>"><?php echo ($value['status'] ? 'On' : 'Off') ?></span></td>
+                    <td><button class="btn btn-default btn-mini switch_btn" 
+                            data-id="<?php echo $value['id'] ?>"
+                            type="button"><i class="icon-<?= $value['status'] ? 'stop' : 'play' ?>"></i> <?= $value['status'] ? 'Set Off' : 'Set On' ?></button></td>
+                </tr>
+            <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>

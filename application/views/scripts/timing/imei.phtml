@@ -1,0 +1,101 @@
+<div class="page-header">
+    <h1>Check IMEI</h1>
+</div>
+<style>
+	textarea {
+		resize: none;
+	}
+</style>
+
+<?php $userStorage = Zend_Auth::getInstance()->getStorage()->read(); ?>
+
+<div class="row-fluid">
+    <form role="form" id="timing_form" action="<?php echo HOST.'timing/check-imei-export';?>" method="post" class="row-fluid">
+        <div class="span4">
+        	<p>Put IMEI, 1 IMEI per line</p>
+        	<textarea name="imei" id="imei" cols="20" rows="10"></textarea>
+        </div>
+        <div class="clearfix"></div>
+        <button id="valid_btn" type="button" class="btn btn-primary">Check</button>
+        <button id="customer_btn" type="button" class="btn btn-danger">Customer</button>
+
+        <button id="export" type="submit" class="btn btn-success">Export CSV</button>
+        <?php if ($userStorage->group_id == ADMINISTRATOR_ID): ?>
+        	<button id="del_btn" type="button" class="btn btn-success">Delete Timing Sale</button>
+        <?php endif; ?>
+        <!--
+        <button id="export_btn" type="submit" class="btn btn-success" name="imeiexport" value="1" formaction="http://whtest.oppo.in.th/centerreport" >Export Excel</button>
+        <button id="export_btn" type="submit" class="btn btn-success" name="imeiexportcustomer" value="1" formaction="http://whtest.oppo.in.th/centerreport" >Export Customer</button>
+		-->
+		<span></span>
+    </form>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div id="result">
+            
+        </div>
+    </div>
+</div>
+<script>
+	$(document).ready(function(){
+		$('#valid_btn').click(function(){
+			_self = $(this);
+			_self.nextAll('span').addClass('loading');
+			imei = $('#imei').val();
+			$.post(
+				"<?php echo HOST . 'timing/check-imei'?>",
+				{
+					value : imei,
+					is_check : 1
+				},
+				function(data){
+					$('#result').html( data );
+
+					_self.nextAll('span').removeClass('loading');
+			});
+		});
+
+		$('#del_btn').click(function(){
+			var r = confirm("Delete Imei From Timing Sale, Click OK to Confirm!");
+
+			if (r == true) {	 
+				_self = $(this);
+				_self.nextAll('span').addClass('loading');
+				imei = $('#imei').val();
+				$.post(
+					"<?php echo HOST . 'timing/check-imei'?>",
+					{
+						value : imei,
+						is_check : 1,
+						del : 1
+					},
+					function(data){
+						$('#result').html( data );
+
+						_self.nextAll('span').removeClass('loading');
+				});
+			}		
+
+		});
+
+		$('#customer_btn').click(function(){
+			_self = $(this);
+			_self.nextAll('span').addClass('loading');
+			imei = $('#imei').val();
+			$.post(
+				"<?php echo HOST . 'timing/get-imei-customer'?>",
+				{
+					value : imei,
+					is_check : 1
+				},
+				function(data){
+					$('#result').html( data );
+
+					_self.nextAll('span').removeClass('loading');
+			});
+		});
+
+	});
+</script>

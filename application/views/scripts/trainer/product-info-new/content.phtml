@@ -1,0 +1,104 @@
+<style>
+    .modal {
+        width: 1024px;
+        margin: -23% 0 0 -520px;
+    }
+
+    .modal-body {
+        max-height: 700px;
+    }
+</style>
+
+<div class="page-header">
+    <?php if (isset($this->info) and $this->info):
+        $title = 'Edit';
+    else:
+        $title = 'Create';
+    endif; ?>
+    <h1><?php echo $title; ?> Product Info Content</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+// print_r($this->info);
+?>
+<div class="row">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/product-info-new-content-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="name">Name</label>
+                        <input type="hidden" id="title_id" name="title_id" value="<?php if (isset($this->info)): echo $this->info->title_id; else: echo $_GET['title_id']; endif; ?>">
+                        <input type="text" class="span6" id="name" name="name" required="required"
+                               value="<?php if (isset($this->info)): echo $this->info->name; endif; ?>">
+                    </div>
+                </div>
+            </div>
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="form-group">
+                        <label>Display</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="P" <?php if (isset($this->info) && ($this->info->enable == 'P')): echo "checked";
+                                else: echo "checked"; endif; ?>>Preview
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="Y" <?php if (isset($this->info) && ($this->info->enable == 'Y')): echo "checked"; endif; ?>>Enable
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="N" <?php if (isset($this->info) && ($this->info->enable == 'N')): echo "checked"; endif; ?>>Disable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <hr>
+                <div class="span12">
+                    <textarea id="content" name="content" ><?php if (isset($this->info)): echo $this->info->content; endif; ?></textarea>
+                </div>
+
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->info) and $this->info and printf($this->info->id); ?>">
+            <div class="clearfix">
+                <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em">
+                    <!--                    <button type="button" class="btn btn-inverse go-back">Go Back</button>-->
+                    <button id="add_btn" class="btn btn-primary" type="submit">Submit</button>
+                </div>
+                <div class="clearfix">
+        </form>
+    </div>
+</div>
+
+<script src="<?php echo HOST ?>js/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        config = {};
+        config.skin = 'office2013';
+        config.height = 400;
+        config.extraPlugins = 'imageuploader,videoembed,pdfembed,youtube';
+        CKEDITOR.replace('content', config);
+
+        $('.go-back').click(function (e) {
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

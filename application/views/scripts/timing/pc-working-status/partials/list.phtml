@@ -1,0 +1,69 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Area</div></th>
+        <th><div align="center">Channel</div></th>
+        <th><div align="center">Current PC</div></th>
+        <th><div align="center">Leaving</div></th>
+        <th><div align="center">Resigned</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->pc_resingnation) and $this->pc_resingnation )
+        foreach ($this->pc_resingnation as $key => $value):
+            //Pass data to modal
+            $pass_data = "{area_name:'{$value['area_name']}', area_id:'{$value['area_id']}', org_id:'{$value['org_id']}', channel:'{$value['channel']}'}";
+            ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $key + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $value['area_name']; ?></td>
+                <td><?php echo $value['channel'];?></td>
+                <td><div align="right"><span class="badge badge-default" onclick="getCurrentPc(1, <?php echo $pass_data; ?>)"><?php echo $value['cnt_pc'];?></span></div></td>
+                <td><div align="right"><span class="badge badge-default" onclick="getCurrentPc(2, <?php echo $pass_data; ?>)"><?php echo $value['cnt_request_resign'];?></span></div></td>
+                <td><div align="right"><span class="badge badge-default" onclick="getCurrentPc(3, <?php echo $pass_data; ?>)"><?php echo $value['cnt_resign'];?></span></div></td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade"></div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    function getCurrentPc(type, params) {
+        $modal = $('#modal');
+        $('body').modalmanager('loading');
+
+        $.post('<?php echo HOST ?>timing/pc-working-status-detail',
+            {
+                type : type,
+                area_id : params.area_id,
+                org_id : params.org_id,
+                channel : params.channel,
+                from : '<?php echo $this->params['from']; ?>',
+                to : '<?php echo $this->params['to']; ?>'
+            },
+            function(data){
+                $modal.html(data);
+                $modal.modal();
+                $modal.find('h3').append(' <small>&bull; '+params.area_name+'&bull; '+params.channel+'</small>');
+            });
+    }
+</script>
+

@@ -1,0 +1,100 @@
+<style type="text/css">
+    .stock_sum,
+    .stock_model,
+    .stock_store {
+        font-weight: bold;
+    }
+
+    .stock_sum {
+        color: red;
+    }
+
+    .stock_model {
+        color: blue;
+    }
+
+    .stock_store {
+        color: green;
+    }
+</style>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<div class="page-header">
+	<h1>Stock ในร้าน <small>โดย PC</small></h1>
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                ค้นหา
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('statistics/partials/stock_search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting($this->heads,
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+    	<tr>
+    		<td colspan="3">รวม</td>
+            <td class="stock_sum"><?php echo $this->sum ?></td>
+    		<?php foreach ($this->good_colors as $good): ?>
+    			<td class="stock_model">
+    				<?php if (isset( $this->stock_by_model[ $good['good_id'] ][ $good['color_id'] ] )) {
+    					echo $this->stock_by_model[ $good['good_id'] ][ $good['color_id'] ];
+    				} ?>
+    			</td>
+    		<?php endforeach ?>
+    	</tr>
+        <?php
+        $inc = $this->offset + 1;
+        if (isset($this->stocks_arr) and $this->stocks_arr)
+            foreach ($this->stocks_arr as $store_id => $stock): ?>
+     	<tr>
+     		<td>
+                <?php
+                    
+                    echo $inc++;
+                ?>
+            </td>
+            
+            <td><?php echo $stock['area'] ?></td>
+            <td><?php if( isset( $this->stores[ $store_id ] ) ) echo $this->stores[ $store_id ] ?></td>
+            
+            <td class="stock_store"><?php if( isset( $this->stock_by_store[ $store_id ] ) ) echo $this->stock_by_store[ $store_id ] ?></td>
+            
+            <?php foreach ($this->good_colors as $good): ?> 
+
+            	<td>
+            		<?php if(isset($stock['stock'][ $good['good_id'] ][ $good['color_id'] ]['number'])) echo $stock['stock'][ $good['good_id'] ][ $good['color_id'] ]['number'] ?>
+            	</td>
+            <?php endforeach ?>
+            
+     	</tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script>
+	// $(document).ready(function() {
+	// 	$('.number').tooltip({
+	// 		placement: 'bottom'
+	// 	});
+	// });
+</script>

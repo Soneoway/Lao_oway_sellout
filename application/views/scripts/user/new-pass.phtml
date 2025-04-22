@@ -1,0 +1,58 @@
+<div class="account-container">
+
+    <div class="content clearfix">
+        <form action="/user/new-pass" method="post">
+
+            <h1>Set new password</h1>
+
+            <div class="login-fields">
+
+                <?php
+                if (isset($this->messages) and $this->messages) :
+                    foreach ($this->messages as $message): ?>
+                    <div class="alert alert-error">
+                        <?php echo $message;?>
+                    </div>
+                    <?php endforeach;
+                endif;?>
+
+                <?php
+                if (isset($this->messages_success) and $this->messages_success) :
+                    foreach ($this->messages_success as $message): ?>
+                    <div class="alert alert-success">
+                        <?php echo $message;?>
+                    </div>
+                    <?php endforeach;
+                endif;?>
+
+                <p>Please provide your new password</p>
+
+
+                <div class="field">
+                    <label for="input04">New Password</label>
+                    <input type="password" id="input04" name="new-password" class="login password-field" required="required" autocomplete="off" onchange="form.input05.pattern = this.value;" placeholder="Type your new password">
+                </div>
+
+                <div class="field">
+                    <label for="input05">Confirm Password</label>
+                    <input type="password" id="input05" name="confirm-password" class="login password-field" required="required" autocomplete="off" placeholder="Re-type again your new password">
+                </div>
+            </div> <!-- /login-fields -->
+
+            <div class="login-actions">
+
+                <input type="hidden" name="code" id="code" value="<?php echo $this->code;?>" />
+
+                <button type="submit" class="button btn btn-success btn-large">Submit</button>
+
+            </div> <!-- .actions -->
+
+        </form>
+
+    </div> <!-- /content -->
+
+</div> <!-- /account-container -->
+
+<div class="login-extra">
+    <a href="/user/login">Login</a>
+</div> <!-- /login-extra -->

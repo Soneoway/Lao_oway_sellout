@@ -1,0 +1,191 @@
+<form class="form-search form-horizontal" method="get" action="/time">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="name" class="span2">Name</label>
+                <input id="name" name="name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+            
+            <div class="control-group">
+                <label for="code" class="span2">Staff code</label>
+                <input id="code" name="code" type="text" class="input-large search-query form-control" value="<?php isset($this->params['code']) and printf($this->params['code']);?>">
+            </div>
+            
+
+            <div class="control-group">
+                <label for="email" class="span2">Email</label>
+                <input id="email" name="email" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['email']) and printf($this->params['email']);?>">
+            </div>
+
+            
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id" class="span3">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and $this->params['area_id']==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market" class="span3">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and $this->params['regional_market']==$regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="district" class="span2">District</label>
+                <select id="district" name="district" class="span3">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->districts) :
+                        foreach ($this->districts as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['district']) and $this->params['district']==$regional_market->id):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="from_date" class="span2">From Date</label>
+                <input type="text" class="form-control search-query date span2" id="from_date" name="from_date" value="<?php isset($this->params['from_date']) and printf($this->params['from_date']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="to_date" class="span2">To Date</label>
+                <input type="text" class="form-control search-query date span2" id="to_date" name="to_date" value="<?php isset($this->params['to_date']) and printf($this->params['to_date']);?>">
+            </div>
+         
+            
+              <div class="control-group">
+                <label for="team" class="span2">Team</label>
+                <select id="team" name="team" class="span3">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->team) :
+                        foreach ($this->team as $k=>$v):?>
+                            <option value="<?php echo $k;?>" <?php if (isset($this->params['team']) and $this->params['team']==$k):?>selected<?php endif;?>><?php echo $v;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="off" class="span2">Type</label>
+                  <select name="off" id="off" class="span2">
+                        <option value="">Choose</option>
+                        <option value="2" <?php if(isset($this->params['off']) and $this->params['off']== 2) echo 'selected' ?> >Work</option>
+                        <option value="1" <?php if(isset($this->params['off']) and $this->params['off']== 1) echo 'selected' ?> >Off</option>
+                   </select>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-success">Export</button>
+</form>
+<script>
+    $(document).ready(function () {
+        $('#area_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option:not(:first)').remove();
+                    $('#district').find('option:not(:first)').remove();
+                    $('#store').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    $('.loading').remove();
+                });
+        });
+
+        $('#district').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var district = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-sales-team",
+                {district: district}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option:not(:first)').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option:not(:first)').remove();
+                    $('#store').find('option:not(:first)').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                            
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }                        
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                    }
+                });
+        });
+
+		$('#short_btn').popover({
+        	placement: 'bottom',
+        	trigger: 'hover'
+        });
+    });
+</script>

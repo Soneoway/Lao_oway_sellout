@@ -1,0 +1,59 @@
+<style>
+    td:nth-child(10),
+    td:nth-child(11) {
+        background: rgb(255, 228, 228);
+    }
+</style>
+<div class="page-header">
+    <h1>IMEIs export to Dealer <small><?php if (isset($this->dealer_name) && $this->dealer_name) echo $this->dealer_name ?></small></h1>
+</div>
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <?php echo $this->sorting(array(
+                    '#',
+                    'IMEI SN',
+                    'Model',
+                    'Color',
+                    'OUT Date',
+                    'Activated Date',
+                    'Sell SN',
+                    'Return SN',
+                    'Warehouse Dealer',
+                    'Center Dealer',
+                    'Center Store',
+                ),
+            $this->url, $this->current_col, $this->desc); ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->imeis) and $this->imeis)
+                $inc = $this->offset + 1;
+                foreach ($this->imeis as $imei): ?>
+            <tr>
+                <td>
+                    <?php
+                        echo $inc++;
+                    ?>
+                </td>
+                <td><?php echo $imei['imei'];?></td>
+                <td><?php echo $imei['model'];?></td>
+                <td><?php echo $imei['color'];?></td>
+                <td><?php echo $imei['out_date'];?></td>
+                <td><?php echo $imei['activated_date'];?></td>
+                <td><?php echo $imei['sales_sn'];?></td>
+                <td><?php echo $imei['return_sn'];?></td>
+                <td><?php echo $imei['wh_d_title'];?></td>
+                <td><?php echo $imei['center_d_title'];?></td>
+                <td><?php echo $imei['store_name'];?></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>    
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

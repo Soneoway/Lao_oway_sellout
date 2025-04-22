@@ -1,0 +1,90 @@
+<div class="page-header">
+    <h1>List Invoice SellOut</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a id="search_bar" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('timing/partials/search-invoice.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle;"><div align="center">No.</div></th>
+        <th style="vertical-align: middle;"><div align="center">SN Number</div></th>
+        <th style="vertical-align: middle;"><div align="center">Store Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">Model</div></th>
+        <th style="vertical-align: middle;"><div align="center">Color</div></th>
+        <th style="vertical-align: middle;"><div align="center">Imei</div></th>
+        <th style="vertical-align: middle;"><div align="center">Custromer Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">Phone Number</div></th>
+        <th style="vertical-align: middle;"><div align="center">Create by</div></th>
+        <th style="vertical-align: middle;"><div align="center">DateTime</div></th>
+         <th style="vertical-align: middle;"><div align="center">Action</div></th>
+     </tr>
+    </thead>
+    <tbody>
+        <?php 
+            if ($this->list) {
+                $data = $this->list;
+
+                for ($i=0;$i<count($data);$i++) {
+
+                    $color = '';
+                    if ( $data[$i]['indicator'] < 0 ) { $color = "red"; } 
+
+                    $cnt = $this->offset + $i + 1;
+
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['sn']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['store_name']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['product_name']."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['good_color']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['imei']."</div></td>";              
+                    echo    "<td><div align='center'>".$data[$i]['customers']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['phone_number']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['sale_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['create_at']."</div></td>";
+                    echo    "<td>
+                    <a href='/timing/print-invoice?id=".$data[$i]['id']."&sn=".$data[$i]['sn']."' class='icon-print'></a> 
+                    <a onclick='return confirm(\"ທ່ານຕ້ອງການລົບບິນນີ້ຫຼືບໍ?\")' href='/timing/delete-invoice?id=".$data[$i]['id']."' class='icon-trash'></a>
+                    </td>";
+                    echo "</tr>";
+
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>

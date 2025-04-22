@@ -1,0 +1,57 @@
+<?php
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+if (!$userStorage) exit; // chặn trường hợp không có quyền/đăng nhập
+
+if (!isset($userStorage->last_login) || !$userStorage->last_login):
+    $showed_modal = isset($_SESSION['showed_modal']) ? $_SESSION['showed_modal'] : null;
+    if (!$showed_modal) :
+        $_SESSION['showed_modal'] = 1;
+        ?>
+        <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+        <script>
+            $(function() {
+                $( "#dialog-modal" ).dialog({
+                    height: 140,
+                    modal: true
+                });
+            });
+        </script>
+        <div id="dialog-modal" title="Change your password">
+            <p>Please change your password <a style="color: #008866" href="/user/change-pass">HERE</a> to make sure your account be protected.</p>
+        </div>
+    <?php
+    endif;
+endif;?>
+
+
+<?php if (isset($this->to_display_notifications) && count($this->to_display_notifications) > 0): ?>
+    <div id="modal_auto" class="modal hide fade notification_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="myModalLabel">Notification</h3>
+		</div>
+		<div class="modal-body">
+			<ul class="notification_modal_list">
+				<?php foreach ($this->to_display_notifications as $key => $value): ?>
+				   <li>
+                    <a href="<?php echo HOST ?>user/notification-view?id=<?php echo $value['id'] ?>" title="<?php echo strip_tags($value['title']) ?>">
+                        <p class="notification_modal_title"><?php echo My_String::excerpt($value['title'], 85) ?></p>
+                        <p><?php echo $value['content']; ?> <span class="notification_modal_post_time">- <?php if(isset($value['created_at']) && $value['created_at']) echo date('d/m/Y H:i:s', strtotime($value['created_at']));?></span></p>
+                    </a>
+                </li>
+				<?php endforeach ?>
+			</ul>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function(){
+			$modal_auto = $('#modal_auto');
+			$modal_auto.modal({backdrop: 'static'});
+        });
+	</script>
+<?php endif ?>

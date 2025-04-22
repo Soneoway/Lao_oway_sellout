@@ -1,0 +1,58 @@
+<style>
+	textarea.note_text {
+		width: 100%;
+		resize: none;
+	}
+</style>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h3 id="myModalLabel">Staff Note <small>&bullet; <?php echo $this->name . ' - '. $this->code ?></small></h3>
+</div>
+<div class="modal-body">
+	<textarea class="note_text" name="note_text" id="note_text" rows="10"><?php if ( isset($this->note) && strlen(trim($this->note)) > 0 ) echo $this->note ?></textarea>
+</div>
+<div class="modal-footer">
+	<input type="hidden" name="note_id" id="note_id" value="<?php echo $this->id ?>" />
+	<button class="btn btn-info" id="btn_save_note" aria-hidden="true">Save</button><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>
+<script>
+
+	$('#btn_save_note').click(function() {
+	    $modal.modal('loading');
+
+	    var id = $('#note_id').val();
+	    var note = $('#note_text').val();
+
+		$.post('<?php echo HOST ?>ajax/staff-note-save',
+            {
+				id   : id,
+				note : note
+            },
+            function(data){
+
+                if (data == '1') {
+                	$modal
+						.modal('loading')
+						.find('.modal-body')
+				        .prepend('<div class="alert alert-info fade in">' +
+				          'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+				        '</div>');
+
+			        $('#'+label_id).addClass('label-important');
+
+			        setTimeout(function() {
+			        	$modal.modal('hide');
+			        	$modal
+							.find('.alert').remove();
+			        }, 1500);
+                } else {
+                	$modal
+						.modal('loading')
+						.find('.modal-body')
+				        .prepend('<div class="alert alert-error fade in">' +
+				          'Error!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+				        '</div>');
+                }
+        });
+	});
+</script>

@@ -1,0 +1,199 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+				'#', 
+				'name'              => 'Name',
+				's.regional_market' => 'Province',
+				's.phone_number'    => 'Phone Number',
+				's.email'           => 'Email',
+				'Date',
+                'p.team'            => 'Team',
+				'p.status'          => 'Status',
+				'Note',
+				'Action'
+                ),
+            $this->url, $this->current_col, $this->desc); 
+            
+            ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (isset($this->timings) and $this->timings)
+            foreach ($this->timings as $k=>$timing): ?>
+        <tr style="<?Php if(isset($timing) and $timing['team'] == TRAINING_TEAM) echo 'background: rgb(239, 244, 180);' ?>">
+            <td class="check_imei" data-timing-id="<?php echo $timing['id'] ?>">
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td>
+                <?php echo $timing['firstname'].' '.$timing['lastname'];?>
+            </td>
+            <td><?php if(isset($this->regional_market_all) && isset($this->regional_market_all[$timing['regional_market']])) echo $this->regional_market_all[$timing['regional_market']];?></td>
+            <td><?php echo $timing['phone_number'];?></td>
+            <td><?php @list($email, $domain) = @explode('@',$timing['email']); echo $email;?></td>           
+            <td><?php if(isset($timing['date_approved']) and isset( $this->date_norm ))
+                        echo $timing['date_approved'] . ' / ' . $this->date_norm[$this->month] ; ?></td>
+            <td><?php if(isset($this->team) and $this->team ) echo $this->team[$timing['team']]; ?></td>
+            <td><?php if ($timing['date_approved'] == $timing['total_date']): ?><span class="label label-success">Approved</span><?php else: ?><span class="label">Pending</span><?php endif;?></td>
+            <td class="relative">
+            	<?php if (isset($timing['note']) && $timing['note']): ?>
+            		<span 
+            			class="label <?php if(isset($timing['note_updated']) && $timing['note_updated'] ) echo 'label-warning'; else echo 'label-info'; ?> note_label" 
+            			title="Click to view" 
+            			data-note="<?php if(isset($timing['note']) && $timing['note']) echo $timing['note'] ?>" 
+            			data-timing-id="<?php if(isset($timing['id']) && $timing['id']) echo $timing['id'] ?>"><?php if(isset($timing['note_updated']) && $timing['note_updated'] ) echo 'New ' ?>Note</span>
+					<?php if (isset($timing['note_read']) && $timing['note_read']): ?>
+						<i class="icon-eye-open"></i>
+					<?php endif ?>
+        		<?php else: ?>
+            		<span class="label note_label" title="Click to view" data-note="" data-timing-id="<?php if(isset($timing['id']) && $timing['id']) echo $timing['id'] ?>">Add Note</span>
+            	<?php endif; ?>
+            </td>
+            <td class="">
+            <a title="View" href="/time/create-month?id=<?php echo $timing['staff_id'];?>&month=<?php if(isset($this->params['month'])) echo $this->params['month'];?>"> <i class="icon-edit"></i></a>
+
+                <?php if ($this->access('timing', 'approve')): ?>
+                    
+                    <?php if ($timing['status']!=1): ?>
+                    <a class="approve" title="Approve" href="/time/approve?id=<?php echo $timing['staff_id'];?>"> <i class="icon-ok"></i></a>
+                    <?php else : ?>
+                        <i class="icon-ok"></i>
+                    <?php endif;?>
+
+                <?php endif ?>
+                
+            </td>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h3 id="myModalLabel">Timing Note</h3>
+	</div>
+	<div class="modal-body">
+		<div class="control-group">
+			<div class="controls">
+				<textarea disabled="disabled" name="note_content" id="note_content" class="form-control note_content" rows="10"></textarea>
+			</div>
+		</div>
+		<div class="control-group">
+			<label for="note">Add a note</label>
+			<div class="controls">
+				<textarea name="note" id="note" class="form-control note_content" rows="4"></textarea>
+				<input type="hidden" name="note_id" id="note_id" value="" />
+			</div>
+		</div>
+		
+	</div>
+	<div class="modal-footer">
+	  <button class="btn btn-success" id="btn_save" aria-hidden="true">Save</button><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	</div>
+</div>
+
+<div id="timing_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<script type="text/javascript">
+    $modal = $('#modal');
+	$timing_modal = $('#timing_modal');
+	
+	$('.note_label').click(function(){
+	    var _self = $(this);
+
+	    $('body').modalmanager('loading');
+	    $('#note_content').html(_self.data('note'));
+	    $('#note_id').val(_self.data('timing-id'));
+	    $modal.modal('loading');
+
+	    $.post('<?php echo HOST ?>/time/update-note',
+            {
+				id   : $('#note_id').val(),
+				read : 1
+            },
+            function(data){
+        		$modal.modal();
+        		$modal.modal('loading');
+
+        		if (_self.hasClass('label-info') || _self.hasClass('label-warning')) {
+        			_self.next('.icon-eye-open').remove();
+        			_self.after('<i class="icon-eye-open"></i>');
+        			_self.removeClass('label-warning').addClass('label-info').html('Note');
+        		}
+    		}
+    	);
+	});
+
+	$('#btn_save').click(function(){
+		var _note_text = $('#note').val().trim();
+		if (_note_text.length == 0) {
+			$modal.modal('hide');
+		} else {
+			$modal.modal('loading');
+			$.post('<?php echo HOST ?>/time/update-note',
+	            {
+					id   : $('#note_id').val(),
+					note : _note_text
+	            },
+	            function(data){
+	            	if (data == 1) {
+	            		$('#note_content').append("\n"+_note_text);
+	            		$('#note').val('');
+						$modal
+							.modal('loading')
+							.find('.modal-body')
+					        .prepend('<div class="alert alert-info fade in">' +
+					          'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+					        '</div>');
+	            	} else {
+            			$modal
+                            .modal('loading')
+							.find('.modal-body')
+					        .prepend('<div class="alert alert-error fade in">' +
+					          'Update failed! Try again.<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+					        '</div>');
+	            	}
+	                
+        		}
+        	);
+		}		
+	});
+
+
+	$('.approve').click(function (e){
+		e.preventDefault();
+		var _self = $(this);
+		$.post( _self.attr('href'), function( data ) {
+			if (data==0){
+				_self.parent().prev().prev().html('<span class="label label-success">Approved</span>');
+				_self.replaceWith('<i class="icon-ok">');
+			}  else if (data == -1) {
+            	alert('Bạn không có quyền Approve!');
+
+            } else if (data == 3) {
+            	alert('Báo cáo không tồn tại!');
+
+            } else if (data == 4) {
+
+            	alert('Bạn không phải người quản lý của PG/PB tại thời điểm báo cáo!');
+            }
+		});
+	});
+
+	$('.product_count').tooltip();
+
+</script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>
+

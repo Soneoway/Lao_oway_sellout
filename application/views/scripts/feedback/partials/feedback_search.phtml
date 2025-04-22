@@ -1,0 +1,78 @@
+<form class="form-search form-horizontal" method="post" action="/feedback">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="store_name" class="span2">Store Name</label>
+                <input id="store_name" name="store_name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['store_name']) and printf($this->params['store_name']);?>">
+            </div>
+            <?PHP $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+                if (in_array($userStorage->group_id, array(ADMINISTRATOR_ID,BOARD_ID))): ?>
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            <?PHP endif; ?>
+        </div>
+
+        <div class="span5">
+            
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+           
+        </div>
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+  
+    <br /><br />
+
+
+	
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+
+    $(document).ready(function () {
+        multi();
+
+        
+    });
+</script> 

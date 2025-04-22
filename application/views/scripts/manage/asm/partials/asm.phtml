@@ -1,0 +1,59 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Area</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php $k = 1;
+
+            if (isset($this->list) and $this->list)
+                foreach ($this->list as $_asm_id => $_asm): ?>
+            <tr>
+                <td>
+                    <?php
+                    echo $k++;
+                    ?>
+                </td>
+                <td><a title="Edit" href="<?php echo HOST ?>manage/asm-edit?id=<?php echo $_asm_id;?>"><?php echo $_asm['firstname'] . ' ' . $_asm['lastname']  ?></a></td>
+                <td><?php echo str_replace(EMAIL_SUFFIX, '', $_asm['email']) ?></td>
+                <td><?php 
+                    if (isset($_asm['area']) && $_asm['area'])
+
+                        for ($i=0;$i<count($_asm['area']);$i++) {
+
+                            if (isset( $this->areas[ $_asm['area'][$i] ] ) && $this->areas[ $_asm['area'][$i] ]) {
+                                
+                                if ($this->group == RM_ID) {
+
+                                    if ($_asm['partner'][$i] == 1) { 
+                                        $area_name = $this->areas[ $_asm['area'][$i] ]." <span class='label label-success'>Partner</span>"; }
+                                    else { 
+                                        $area_name = $this->areas[ $_asm['area'][$i] ]; 
+                                    }
+
+                                } else {
+                                    $area_name = $this->areas[ $_asm['area'][$i] ];
+                                }
+
+                                echo '<p>' . $area_name . '</p>';
+
+                            } elseif (isset( $this->regions[ $_asm['area'][$i] ] ) && $this->regions[ $_asm['area'][$i] ]) {
+
+                                echo '<p><i>' . $this->regions[ $_asm['area'][$i] ] . '</i></p>';
+
+                            }
+
+                        }
+
+                 ?></td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>

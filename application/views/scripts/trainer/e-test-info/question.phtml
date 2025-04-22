@@ -1,0 +1,98 @@
+<div class="page-header">
+    <?php if (isset($this->data) and $this->data):
+        $title = 'Edit';
+    else:
+        $title = 'Create';
+    endif; ?>
+    <h1><?php echo $title; ?> Question</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+
+//    echo '<pre>';
+// print_r($this->data); die;
+?>
+<div class="row">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/e-test-info-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="questions">Question : </label>
+                        <input type="text" class="span6" id="questions" name="questions" required="required"
+                               value="<?php if (isset($this->data)): echo $this->data->questions; endif; ?>">
+                    </div>
+                </div>
+            </div>
+            <div class="span6">
+            </div>
+            <div class="clearfix"></div>
+
+            <!-- Choice List -->
+            <div class="span12">
+                <h2>Choice List :</h2>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center;" width="5%">No.</th>
+                        <th style="text-align: center;" width="85%">Choice</th>
+                        <th style="text-align: center;" width="10%">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $db = Zend_Registry::get('db');
+
+                    $query = $db->select()
+                        ->from(array('qc' => 'questions_choice'))
+                        ->where('qc.question_id = ?', $this->data->id)
+                        ->order('qc.id', 'ASC');
+                    $questions = $db->fetchAll($query);
+
+                    if ($questions) {
+                        $i = 1;
+                        foreach ($questions as $value) { ?>
+                            <tr>
+                                <td style="text-align: center;"><?php echo $i; ?></td>
+                                <td><?php echo $value['answer']; ?></td>
+                                <td title="View" style="text-align: center;">
+                                    <a title="Edit" href="/trainer/e-test-info-question?id=<?php echo $value['id']; ?>"
+                                       style="padding-right: 0.4em;"><i class="icon-edit"></i></a>&nbsp;
+                                    <a title="Delete" href="/trainer/e-test-info-question?id=<?php echo $value['id']; ?>" onclick="return confirm('Are you sure to remove?');"><i class="icon-trash"></i></a>
+                                </td>
+                            </tr>
+                    <?php
+                            $i++;
+                        }
+                    }
+                    ?>
+
+                    </tbody>
+                </table>
+            </div>
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->data) and $this->data and printf($this->data->id); ?>">
+            <div class="clearfix">
+                <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em">
+                    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+                    <button id="add_btn" class="btn btn-primary" type="submit">Save E-Test</button>
+                </div>
+                <div class="clearfix">
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

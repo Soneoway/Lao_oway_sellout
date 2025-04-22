@@ -1,0 +1,640 @@
+<style>
+    body, button, input, option,span{
+        font-family: phetsarath ot;
+    }
+</style>
+ <?php 
+    $today = date('d/m/Y');
+?> 
+
+<div class="page-header">
+    <h2>Pre-Order ເຄື່ອງສັ່ງຈອງ</h2>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<style>
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+    #email_modal textarea {
+    	resize: none;
+    }
+
+    .stock {
+    	margin-bottom: 20px;
+    	padding: 10px;
+		background: white;
+    }
+
+</style>
+
+<style>
+    .customCalendar,
+    .customCalendar div,
+    .customCalendar span {
+        background-color: green; /* background color */
+        border-color: green;     /* border color */
+        color: yellow;           /* text color */
+    }
+</style>
+
+<div class="row-fluid">
+    <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+    <form role="form" id="timing_form" action="<?php echo HOST.'timing/save-preorder';?>" method="post" target="ifrmSave" class="row-fluid">
+        <div class="span3">
+            <label class="label label-info" style="padding-top: 10px; font-size: 18px; margin-bottom: 30px; background-color: #673ab7;">ຂໍ້ມູນພະນັກງານ</label>
+            <div class="control-group">
+                <label>
+                    <strong style="font-size: 16px">ລະຫັດພະນັກງານ : </strong>
+                    <span style="font-size: 18px;"><?php if (isset($this->staff)): echo $this->staff->code; endif;?></span>
+                </label>
+                </div>
+
+            <div class="control-group">
+                <strong style="font-size: 16px">ຊື່ : </strong>
+                     <span style="font-size: 18px;"><?php if (isset($this->staff)): echo $this->staff->firstname.' '.$this->staff->lastname; endif;?></span>
+                 </label>
+            </div>
+             <div class="control-group">
+                <label for="date" style="color: #673ab7; font-size: 16px; font-weight: bold">ວັນທີຂາຍ:</label>
+                <input placeholder="ວັນ/ເດືອນ/ປີ" type="text" readonly="readonly" class="form-control span3 cursorok" id="date" name="date" required="required" value="<?php echo $today;?>">
+            </div>
+
+            <input type="hidden" name="shift" value="1">	
+            <input type="hidden" name="timepicker_start" value="09:00">	
+            <input type="hidden" name="timepicker_end" value="23:00">	
+	
+            <div class="control-group">
+                <label for="store" style="color: #673ab7; font-size: 16px; font-weight: bold">Store:</label>
+                <select name="store" id="store" required="required" class="span3 chk_store" onChange="check_store();">
+                    <option value="">ກະລຸນາເລືອກຮ້ານຄ້າ</option>
+                    <?php if (isset($this->stores) && $this->stores): ?>
+                        <?php foreach ($this->stores as $store):?>
+                            <option value="<?php echo $store->id;?>" <?php if (isset($this->timing) and $this->timing->store==$store->id):?> selected="selected"
+                            <?php endif;?>>
+                                <?php echo $store->name;?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+            
+        </div>
+
+        <div class="span9">
+                    <div class="row-fluid div-sale">
+                        <div class="span4">
+                            <label class="label label-info" style="padding-top: 10px; font-size: 18px; margin-bottom: 30px; background-color: #673ab7;">ຂໍ້ມູນສິນຄ້າ</label>
+                            <div class="control-group">
+                                <select class="product form-control span3" required="required" name="product">
+                                    <option value>ເລືອກລຸ້ນ</option>
+                                    <?php foreach ($this->goods as $good) :?>
+                                        <option value="<?php echo $good->id;?>" <?php if ($timing_sale[ 'product_id']==$good->id):?> selected="selected"
+                                        <?php endif;?>>
+                                            <?php echo $good->name;?></option>
+                                    <?php endforeach;?>
+                                </select>
+
+                                <select class="model form-control span3" required="required" name="model">
+                                    <option value>ເລືອກສີ</option>
+                                    <?php foreach ($timing_sale[ 'models'] as $good_color) :?>
+                                        <option value="<?php echo $good_color->id;?>" <?php if ($timing_sale[ 'model_id']==$good_color->id):?> selected="selected"
+                                        <?php endif;?>>
+                                            <?php echo $good_color->name;?></option>
+                                    <?php endforeach;?>
+                                </select>
+
+                            </div>
+
+                            <div class="control-group">
+                                <input type="radio" name="deposit_money" value="1" checked> &nbsp;&nbsp; ຈ່າຍເງິນມັດຈຳ &nbsp;&nbsp;</input>
+                                <input type="radio" name="deposit_money" value="2" > &nbsp;&nbsp;ບໍ່ຈ່າຍເງິນມັດຈຳ</input>
+                            </div>
+                        </div>
+
+                        <div class="span4">
+                            <label class="label label-info" style="padding-top: 10px; font-size: 18px; margin-bottom: 30px; background-color: #673ab7;">ຂໍ້ມູນລຸກຄ້າ</label>
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <font color="red"></font><input type="text" name="customer_name" required  placeholder="ຊື່ລູກຄ້າ" class="span3">
+                                        <p class="help-block"></p>
+                                    </div>
+                                    <div class="control-group">
+                                       <font color="red"></font> <input type="tel" pattern="[0][0-9]{7,10}" name="phone_number" required placeholder="ເບີໂທລະສັບ" class="span3">
+                                        <p class="help-block"></p>
+                                    </div>
+                                    <div class="control-group">
+                                        <font color="red"></font>
+                                        <select class="form-control span3" required name="gender">
+                                            <option value="">ກະລຸນາເລືອກເພດ</option>
+                                            <option value="M">ເພດຊາຍ</option>
+                                            <option value="F">ເພດຍິງ</option>
+                                            <option value="O">ອື່ນໆ</option>
+                                        </select>
+                                        <p class="help-block"></p>
+                                    </div>
+                                    <div class="control-group">
+                                        <font color="red"></font>
+                                        <select class="form-control span3" required name="age">
+                                            <option value="">ຊ່ວງອາຍຸ</option>
+                                            <option value="1-15"> 1 - 15 ປີ </option>
+                                            <option value="15-25"> 15 - 25 ປີ </option>
+                                            <option value="25-35"> 25 - 35 ປີ </option>
+                                            <option value="35-45"> 35 - 45 ປີ </option>
+                                            <option value="45>"> ຫຼາຍກວ່າ 45 ປີ </option>
+                                        </select>
+
+                                        <p class="help-block"></p>
+                                    </div>
+                                   
+                                </div>
+									
+                            </div>
+                            
+                        </div>
+                    </div>
+			 
+        </div>
+        <div class="clearfix"></div>
+		<center>
+        <button id="btn_submit" type="submit" class="btn btn-primary" style="background-color: #8f0784;">ຢືນຍັນການສັ່ງຈອງ</button>
+		</center>
+        </div>
+
+    </form>
+
+  
+
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Summary</h3>
+    </div>
+    <div class="modal-body">
+        <ol class="infos-body">
+
+        </ol>
+    </div>
+</div>
+
+
+<link rel="stylesheet" type="text/css" href="/js/file-uploader/fileuploader.css"/>
+<script src="/js/file-uploader/fileuploader.js" type="text/javascript"></script>
+
+<script language="javascript" type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script type="text/javascript" src="/js/file-validator.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+
+<script type="text/javascript">
+
+$("input:radio").on('click', function() {
+  var $box = $(this);
+  if ($box.is(":checked")) {
+    var group = "input:radio[id='" + $box.attr("id") + "']";
+    $(group).prop("checked", false);
+    $box.prop("checked", true);
+  } else {
+    $box.prop("checked", false);
+  }
+});
+
+    function createUploader(selector){
+
+        selector.find('.file-uploader').each(function (){
+            var _self = $(this);
+            var uploader = new qq.FileUploader({
+                element: _self[0],
+                action: '/timing/upload',
+                multiple: false,
+                // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                sizeLimit: 20 * 1024 * 1024,
+                onProgress: function(id, fileName, loaded, total){
+                    $('.fix-msg').addClass('show');
+
+                    $('#btn_submit').attr('disabled', 'disabled');
+                    $("form").submit(function (e) {
+                            e.preventDefault();
+                    });
+
+                    $(window).on('beforeunload', function() {
+                        return 'Please wait your upload proccess complete!';
+                    });
+                },
+                onComplete: function(id, fileName, responseJSON){
+                    if ( responseJSON.success==true ){
+                        _self.next().val( responseJSON.uniqid + '_located_' + fileName );
+                    }
+
+                    $("#btn_submit").removeAttr("disabled");
+
+                    $("form").unbind('submit');
+
+                    window.onbeforeunload = null;
+
+                    $('.fix-msg').removeClass('show');
+                },
+                onCancel: function(id, fileName){},
+                onError: function(id, fileName, xhr){}
+            });
+        });
+    }
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#timing_form button[type=submit]').prop('disabled', false);
+        return;
+    }
+
+
+    var model_arr = $.parseJSON('<?php echo $this->good_colors; ?>');
+
+    $(function () { $("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); } );
+
+    function initChangeProduct(){
+        $( '.product' ).change(function (){
+            var _self = $(this);
+            var product_id = $(this).val();
+            var obj = model_arr[product_id];
+            var next_model = _self.parent().next().children('.model');
+
+            if (typeof next_model.attr('class') == 'undefined')
+                var next_model = _self.next();
+
+            next_model.find('option:not(:first)').remove();
+            for (var i = 0; i < obj.length; i++) {
+                next_model.append('<option value="'+obj[i]['id']+'">'+obj[i]['model']+'</option>');
+            }
+        });
+    }
+
+    function initAddSale(){
+
+        $( '.add-sale' ).click(function (){
+
+            var selected_store = $('option:selected', $('.chk_store')).attr('data-bs');
+            var show_warrant = 'style="display:none;"';
+            if ( selected_store == 1 ) { show_warrant = 'style="display:block;"' }
+
+            /*<select class="form-control span3 chk_warrant" required="required" id="chk_warrant[]" name="chk_warrant[]" onChange="check_warrant();" '+show_warrant +'><option value="">เลือกการประกันจอแตก</option><option value="1">Yes</option><option value="0">No</option></select>*/
+
+            var sale_cp = $('<div class="row-fluid div-sale"> <div class="span4"> <label class="label label-info">Product</label> <div class="control-group"><input type="text" pattern="[a-zA-Z0-9]{15,17}" name="imei[]" placeholder="ໃສ່ເລກ IMEI" class="span3" required="required" /> <select class="model form-control span3 chk_warrant" required="required" id="pre_order_status[]" name="pre_order_status[]" onChange="check_warrant();"> <option value="">ກາລຸນາເລືອກການ Pre Order</option> <option value="0">No</option> </select>  <input type="text" class="warrant" pattern="[a-zA-Z0-9]{10}" id="warrant_no[]" name="warrant_no[]" style="display:none;" readonly="readonly" placeholder="VIP Card Number"/> <p class="alert alert-error error-imei" style="display: none"></p> <p class="help-block"></p> <button type="button" class="btn-danger remove-sale"><i class="icon-minus"></i></button></div> </div> <div class="span8"> <label>ລູກຄ້າ</label> <div class="row-fluid"> <div class="span6"> <div class="control-group"><font color="red">***</font> <input type="text" name="customer_name[]" required placeholder="ຊື່ລູກຄ້າ" class="span3" /> <p class="help-block"></p> </div> <div class="control-group"><font color="red">***</font> <input type="tel" pattern="[0][0-9]{7,10}" name="phone_number[]" required placeholder="ເບີໂທລະສັບ" class="span3" /> <p class="help-block"></p></div><input type="hidden" name="customer_ids[]"> </div> </div> </div>');
+
+            //var sale_cp = $('<div class="row-fluid div-sale"> <div class="span4"> <label class="label label-info">Product</label> <div class="control-group"> <input type="text" pattern="[0-9]{15}" name="imei[]" placeholder="IMEI" class="span3" required="required" /> <p class="alert alert-error error-imei" style="display: none"></p> <p class="help-block"></p> <button type="button" class="btn-danger remove-sale"><i class="icon-minus"></i></button></div> </div> <div class="span8"> <label>ลูกค้า</label> <div class="row-fluid"> <div class="span6"> <div class="control-group"><font color="red">***</font> <input type="text" name="customer_name[]" required placeholder="ชื่อลูกค้า" class="span3" /> <p class="help-block"></p> </div> <div class="control-group"><font color="red">***</font> <input type="tel" pattern="[0][0-9]{7,10}" name="phone_number[]" required placeholder="เบอร์มือถือ" class="span3" /> <p class="help-block"></p> </div> </div> <input type="hidden" name="customer_ids[]"> </div> </div> </div>');
+
+            sale_cp.insertBefore($(this).parent());
+
+            createUploader($(this).parent().prev());
+
+            initChangeProduct();
+
+            initRemoveSale();
+
+            $(function () { $("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); } );
+
+            return false;
+        });
+
+    }
+
+    function initRemoveSale(){
+        $( '.remove-sale' ).click(function (){
+            $(this).parent().parent().parent().remove();
+
+            return false;
+        });
+    }
+
+    function initSendNotify () {
+    	$('body').on('click', '.send_notify', function() {
+    		createUploaderIMEI($('#email_modal'));
+    		$('#email_modal').find(".modal-body .alert").remove();
+
+			_self     = $(this);
+			_imei     = _self.data('imei');
+			_date     = $('#date').val();
+			_shift    = $('#shift').val();
+			_store    = $('#store').val();
+			_case     = _self.data('case');
+			_staff_first     = _self.data('staff-first');
+			_checksum = _self.data('checksum');
+			_timing_sales_id = _self.data('timing-sales-id');
+
+			// $('#date').attr('required', 'required');
+			// $('#shift').attr('required', 'required');
+			// $('#store').attr('required', 'required');
+
+    		$('#inputIMEI').val(_imei);
+    		$('#inputDate').val(_date);
+            $('#inputStore').html($('#store').html())
+    		$('#inputStore').val(_store);
+    		$('#staffFirst').val(_staff_first);
+    		$('#inputCase').val(_case);
+    		$('#checksum').val(_checksum);
+    		$('#inputShift').val(_shift);
+    		$('#timing_sales_id').val(_timing_sales_id);
+        	$('#email_modal').modal();
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        init_get_store();
+
+        createUploader($('body'));
+
+        initChangeProduct();
+
+        initAddSale();
+
+        initRemoveSale();
+        initSendNotify();      
+        format_imei();  
+
+        $('#send_imei_btn').click(function() {
+        	$('#email_modal').find(".modal-body .alert").remove();
+        	$('#email_modal').find(".modal-body").append('<div class="alert alert-warning fade in">Sending...</div>');
+        });
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+        $('#inputDate').datetimepicker({
+            weekStart: 1,
+            clear: true,
+            minView: '2',
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+	    });
+
+        $('#timepicker_start').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpStartSelect
+        });
+        $('#timepicker_end').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpEndSelect
+        });
+
+        $('#shift').change(function(){
+        	var option = $(this).find('option:selected');
+            $('#timepicker_start').val(option.data('start'));
+            $('#timepicker_end').val(option.data('end'));
+        });
+
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/timing/events?id=<?php
+                    if (isset($this->timing) and $this->timing->staff_id!=$this->user_id)
+                        echo $this->timing->staff_id;
+                    else
+                        echo $this->user_id;
+                ?>"
+        });
+
+		$('form#timing_form').bind('submit',function(e){
+        	$('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+
+		<?php if ( ! ( isset($this->timing) and $this->timing ) ): ?>
+        get_report_stock();
+        <?php endif; ?>
+
+        check_tgdd();
+
+        $('#store').on('change', check_tgdd);
+    });
+
+    function check_warrant() {
+
+        $('.chk_warrant').change(function() {
+
+            var _self = $(this);
+            var next_model = _self.parent().find('.warrant');
+            // alert(_self.val());
+            // alert(next_model.val());
+
+            if (_self.val() == 1) { 
+                next_model.removeAttr('readonly');
+                next_model.attr('required','required');
+                next_model.css('display','block');
+            } else { 
+                next_model.val('');
+                next_model.removeAttr('required');
+                next_model.attr('readonly','readonly');
+                next_model.css('display','none'); 
+            } 
+
+        });
+        
+    }
+
+    function check_store() {
+        
+        $('.chk_store').change(function() {
+
+            var _self = $(this);
+            var selected_store = $('option:selected', _self).attr('data-bs');
+
+            var next_model = _self.parent().parent().parent().find('.chk_warrant');
+            var next_model2 = _self.parent().parent().parent().find('.warrant');
+            //alert(next_model.val());
+
+            if (selected_store == 1) {
+
+
+                // next_model.removeAttr('disabled');
+                // next_model.attr('required','required');
+                // next_model.css('display','block');
+                
+            } else {
+
+                // next_model.removeAttr('required');
+                // next_model.attr('disabled','disabled');
+                // next_model.css('display','none'); 
+
+                next_model.val('');
+                next_model2.val('');
+
+                next_model2.removeAttr('required');
+                next_model2.attr('readonly','readonly');
+                next_model2.css('display','none'); 
+                
+            }
+
+        });
+        
+    }
+
+    function check_tgdd(e) {
+        store_name = $('#store').find('option:selected').text().trim();
+
+        if ( store_name.match(/^TGDĐ/) ) {
+            alert_tgdd();
+        } else {
+            $('.alert').remove();
+        }
+    }
+
+    function alert_tgdd() {
+        palert('ระบบจะลบ IMEI ในการเข้าร่วมที่ร้าน TGDD IMEI จะถูกป้อนโดยอัตโนมัติเข้าสู่ระบบที่จุดเริ่มต้นของเดือนถัดไปตามรายการที่โพสต์ใน บริษัท เนื่องจาก TGDD. <a href="<?php echo HOST ?>user/notification-view?id=6" target="_blank">ดูประกาศ</a>');
+        alert('ระบบจะลบ IMEI ในการเข้าร่วมที่ร้าน TGDD IMEI จะถูกป้อนโดยอัตโนมัติเข้าสู่ระบบที่จุดเริ่มต้นของเดือนถัดไปตามรายการที่โพสต์ใน บริษัท เนื่องจาก TGDD.');
+    }
+
+    // when start time change, update minimum for end timepicker
+    function tpStartSelect( time, endTimePickerInst ) {
+        $('#timepicker_end').timepicker('option', {
+            minTime: {
+                hour: endTimePickerInst.hours,
+                minute: endTimePickerInst.minutes
+            }
+        });
+    }
+
+    // when end time change, update maximum for start timepicker
+    function tpEndSelect( time, startTimePickerInst ) {
+        $('#timepicker_start').timepicker('option', {
+            maxTime: {
+                hour: startTimePickerInst.hours,
+                minute: startTimePickerInst.minutes
+            }
+        });
+    }
+
+     <?php if ( ! ( isset($this->timing) and $this->timing ) ): ?>
+    function get_report_stock() {
+    	setTimeout(function() {
+    		$.post('<?php echo HOST."partition/stock" ?>', {}, function(data) {
+    			$('#stock_report').html(data);
+    		});
+    	}, 500);
+    }
+    <?php endif; ?> 
+
+    function format_imei() {
+    	$('input[name="imei[]"]').keyup(function() {
+    		_self = $(this);
+    		imei = _self.val().trim();
+    		_self.val(imei);
+    	});
+    }
+
+    function init_get_store() {
+        get_store('<?php echo $today;?>');
+    }
+
+    function get_store(date) {
+        $('form#timing_form button[type=submit]').prop('disabled', true);
+        $('#store').html('<option value>Loading...<option>');
+
+        $.post('<?php echo HOST . "ajax/get-store" ?>', {
+            timing_time: date
+        }, function(data) {
+            $('form#timing_form button[type=submit]').prop('disabled', false);
+            $('#store').html(data);
+
+            if ( $('#store option').length == 1 ) {
+                $('#store').prop('disabled', true);
+            } else {
+                $('#store').prop('disabled', false);
+            }
+        });
+    }
+
+    function get_store_notify(date) {
+        $('form#timing_form button[type=submit]').prop('disabled', true);
+        $('#inputStore').html('<option value>Loading...<option>');
+
+        $.post('<?php echo HOST . "ajax/get-store" ?>', {
+            timing_time: date
+        }, function(data) {
+            $('form#timing_form button[type=submit]').prop('disabled', false);
+            $('#inputStore').html(data);
+
+            if ( $('#inputStore option').length == 1 ) {
+                $('#inputStore').prop('disabled', true);
+            } else {
+                $('#inputStore').prop('disabled', false);
+            }
+        });
+    }
+</script>
+
+<!-- <?php
+    echo $this->render('timing/partials/fixed-msg.phtml');
+?> -->

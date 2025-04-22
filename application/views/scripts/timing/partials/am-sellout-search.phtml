@@ -1,0 +1,291 @@
+<form class="form-search form-horizontal" method="get" action="/timing/am-sellout">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="by" class="span2">By</label>
+                 <select id="by" name="by" class="span3 multiselect" onchange="select_type(this.value);">
+                     <option value="1" <?php if (isset($this->params['by']) and ($this->params['by'] == 1)):?>selected<?php endif;?>>Sell-in</option>
+                     <option value="2" <?php if (isset($this->params['by']) and ($this->params['by'] == 2)):?>selected<?php endif;?>>Sell-out</option>
+                 </select>
+            </div>
+            <!-- /////////////////////////////Type/////////////////////////////////// -->
+            <div class="control-group sellin">
+                <label for="distributor_type" class="span2">Distributor Type</label>
+                <select id="distributor_type" name="distributor_type" class="span3 multiselect">
+                    <option value="">None selected</option>
+                    <?php
+
+                    if ($this->distributor_type) :
+                        foreach ($this->distributor_type as $distributor_type):
+                            ?>
+                            <option value="<?php echo $distributor_type["org_id"];?>" <?php if (isset($this->params['distributor_type']) and ( (is_array($this->params['distributor_type']) && in_array($distributor_type['org_id'], $this->params['distributor_type']) || $distributor_type['org_id']==$this->params['distributor_type'])) ):?>selected<?php endif;?>><?php echo $distributor_type["org_name"];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group sellout">
+                <label for="type" class="span2">Store Type</label>
+                <select id="type" name="type" class="span3 multiselect">
+                    <option value="">None selected</option>
+                    <?php
+
+                    if ($this->org) :
+                        foreach ($this->org as $org):
+                            ?>
+                            <option value="<?php echo $org["org_id"];?>" <?php if (isset($this->params['type']) and ( (is_array($this->params['type']) && in_array($org['org_id'], $this->params['type']) || $org['org_id']==$this->params['type'])) ):?>selected<?php endif;?>><?php echo $org["org_name"];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+             <!-- /////////////////////////////Type/////////////////////////////////// -->
+              <!-- /////////////////////////////ID/////////////////////////////////// -->
+	       <div class="control-group sellin">
+                <label for="distributor_id" class="span2">Distributor ID</label>
+                <input id="distributor_id" name="distributor_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['distributor_id']) and printf($this->params['distributor_id']);?>">
+            </div>
+             <div class="control-group sellout">
+                <label for="store_id" class="span2">Store ID</label>
+                <input id="store_id" name="store_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['store_id']) and printf($this->params['store_id']);?>">
+            </div>
+             <!-- /////////////////////////////ID/////////////////////////////////// -->
+             <!-- /////////////////////////////name/////////////////////////////////// -->
+        
+            <div class="control-group sellin">
+                <label for="distributore_name" class="span2">Distributor Name</label>
+                <input id="distributor_name" name="distributor_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['distributor_name']) and printf($this->params['distributor_name']);?>">
+            </div> 
+             <div class="control-group sellout">
+                <label for="store_name" class="span2">Store Name</label>
+                <input id="store_name" name="store_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['store_name']) and printf($this->params['store_name']);?>">
+            </div>   
+             <!-- /////////////////////////////name/////////////////////////////////// -->
+             
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" onchange="limit_date(this.value)" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date2 span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="district" class="span2">District</label>
+                <select id="district" name="district[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->districts) :
+                        foreach ($this->districts as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['district']) and ( (is_array($this->params['district']) && in_array($regional_market['id'], $this->params['district']) || $regional_market['id']==$this->params['district'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+var by = findGetParameter("by");
+    var type = 1;
+    if(by != null){
+        type = by;
+       
+    }
+
+     select_type(type);
+
+function select_type(data){
+    
+
+    if(data == 1){
+        $(".sellin").show();
+        $(".sellout").hide();
+   }else{
+        $(".sellin").hide();
+        $(".sellout").show();
+   }
+
+   
+}
+
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+   
+
+
+    
+
+    $(document).ready(function () {
+   
+        $('.date').datepicker({ 
+            dateFormat: "yy-mm-dd"        
+        });
+        var from =  $("#from").val();
+        limit_date(from);
+         
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        $('#area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                     $('button').prop('disabled', false);
+                    $('#regional_market, #district, #store').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+             $('button, .btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option').remove();
+                    $('#store').find('option').remove();
+                    
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+                            
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }
+
+                            $('#district,#store').multiselect("destroy").multiselect(options);
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                         $('button, .btn, input').prop('readonly', false);
+                        $('button').prop('disabled', false);
+                    }
+                });
+        });            
+    });
+
+     function limit_date(firstdate){
+         $(".date2").datepicker("destroy");
+            firstdate = firstdate.split("-");
+            var date = new Date(parseInt(firstdate[0]),parseInt(firstdate[1])-1,parseInt(firstdate[2]));
+              var date2 = new Date().setDate(date.getDate()+30);
+               var day = date.getDate();
+              var monthIndex = date.getMonth()+1;
+              var year = date.getFullYear();
+                var endDate = new Date(year, monthIndex,day);
+                // alert(date)
+            $('.date2').datepicker({ 
+                dateFormat: "yy-mm-dd",
+                minDate:date,
+                maxDate:endDate           
+            });   
+
+    }
+</script>

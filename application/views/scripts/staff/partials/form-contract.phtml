@@ -1,0 +1,79 @@
+<div class="row-fluid">
+    <div class="span6">
+        <div class="control-group">
+            <label for="contract_type" class="control-label">Contract type</label>
+            <div class="controls">
+                <select name="contract_type" id="contract_type">
+                    <option value>Choose</option>
+                    <?php foreach ($this->contract_types as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_type):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="contract_signed_at" class="control-label">Contract signed date</label>
+            <div class="controls">
+                <input type="text" class="date" id="contract_signed_at" placeholder="Enter Contract signed date" name="contract_signed_at" value="<?php isset($this->staff) and $this->staff->contract_signed_at and printf(date('d/m/Y',strtotime($this->staff->contract_signed_at)));?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="contract_term" class="control-label">Contract term</label>
+            <div class="controls">
+                <select name="contract_term" id="contract_term">
+                    <option value>Choose</option>
+                    <?php foreach ($this->contract_terms as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_term):?>selected<?php endif;?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+         <div class="control-group">
+            <label for="print_time" class="control-label">Contract print time</label>
+            <div class="controls">
+                <input type="text" id="print_time" name="print_time" value="<?php if(isset($this->staff) and $this->staff->print_time) echo $this->staff->print_time; else echo intval(0);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="contract_expired_at" class="control-label">Contract expired date</label>
+            <div class="controls">
+                <input type="text" class="date" id="contract_expired_at" placeholder="Enter Contract expired at" name="contract_expired_at" value="<?php isset($this->staff) and $this->staff->contract_expired_at and printf(date('d/m/Y',strtotime($this->staff->contract_expired_at)));?>">
+            </div>
+        </div>
+    </div>
+    <!--  -->
+    <div class="span6">
+        <div class="control-group">
+            <label for="social_insurance_time" class="control-label">Social Insurance Time</label>
+            <div class="controls">
+                <input type="text" id="social_insurance_time" placeholder="Enter social insurance time" name="social_insurance_time" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_time);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="social_insurance_number" class="control-label">Social Insurance Number</label>
+            <div class="controls">
+                <input type="text" id="social_insurance_number" placeholder="Enter social insurance number" name="social_insurance_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_number);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="personal_tax" class="control-label">Personal Tax</label>
+            <div class="controls">
+                <input type="text" id="personal_tax" placeholder="Enter personal tax" name="personal_tax" value="<?php isset($this->staff) and $this->staff and printf($this->staff->personal_tax);?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="family_allowances_registered" class="control-label">Family Allowances Registered</label>
+            <div class="controls">
+                <input type="text" id="family_allowances_registered" placeholder="Enter social insurance time" name="family_allowances_registered" value="<?php isset($this->staff) and $this->staff and printf($this->staff->family_allowances_registered);?>">
+            </div>
+        </div>
+    </div>
+</div>
+

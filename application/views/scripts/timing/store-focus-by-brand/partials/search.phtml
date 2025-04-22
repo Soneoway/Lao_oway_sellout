@@ -1,0 +1,84 @@
+<form class="form-search form-horizontal" method="get" action="/timing/store-focus-by-brand/store-focus-by-brand" onsubmit="return validateSearch()">
+    <div class="row">
+        
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>" required>
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>" required>
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <!-- <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button> -->
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        // end - start returns difference in milliseconds 
+        var diff = new Date(date_02 - date_01);
+
+        // get days
+        var days = (diff/1000/60/60/24) + 1;
+
+        if (days > 14) {
+            alert("Date Range Not Allow more than 14 Days [Selected Date Range is " + days + " Days!]");
+            return false;
+        }
+
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+    
+    });
+</script>

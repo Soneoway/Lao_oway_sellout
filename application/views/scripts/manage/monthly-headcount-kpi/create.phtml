@@ -1,0 +1,534 @@
+<div class="page-header">
+    <h1>Monthly KPI Headcount Details</h1>
+</div>
+
+<form id="mh_form" role="form" action="<?php echo HOST.'manage/monthly-headcount-kpi-save';?>" method="post" onsubmit="return validateSave()">
+
+<div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="staff_code" class="span2">Staff Code</label>
+                <input id="staff_code" name="staff_code" type="text" class="input-medium search-query form-control" value="">
+            </div>
+
+            <div class="control-group" align="right">
+                <label class="span4"><font color="red">** Press Enter Staff Code to get Info! **</font></label>
+            </div>
+
+            <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control" value="">
+            </div>
+
+            <div class="control-group">
+                <label for="staff_nickname" class="span2">Nick Name</label>
+                <input id="staff_nickname" name="staff_nickname" type="text" class="input-medium search-query form-control" value="">
+            </div>
+
+            <div class="control-group">
+                <label for="staff_group" class="span2">Group</label>
+                <input id="staff_group" name="staff_group" type="text" class="input-medium search-query form-control" value="">
+            </div>
+
+            <div class="control-group">
+                <label for="phone_number" class="span2">Phone Number</label>
+                <input id="phone_number" name="phone_number" type="text" class="input-medium search-query form-control" value="" >
+            </div>
+
+        </div>
+
+        <div class="span5">
+            
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id" class="span3" >
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->area_id) and $this->area_id==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="rd_id" class="span2">RD</label>
+                <select id="rd_id" name="rd_id" class="span3" >
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->rd_list) :
+                        foreach ($this->rd_list as $rd_list):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($mn_details['area_id']) and $mn_details['area_id']==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="span2" for="year_month">Month - Year</label>
+                <input name="month_year" id="month_year" class="input-medium search-query date-picker ui-datepicker-calendar" value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('F Y') ?>" required="required" />
+            </div>
+
+            <div class="control-group">
+                <label for="remark" class="span2">Remark</label>
+                <input id="remark" name="remark" type="text" class="input-medium search-query form-control" value="" >
+            </div>
+
+        </div>
+
+</div>
+
+<br/>
+
+<input type="hidden" name="mn_id" id="mn_id" value="<?php echo $mn_details['id']; ?>">
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+<button type="button" class="btn btn-success" id="btn_add" name="btn_add" value="1">Add Staff</button> 
+
+<br/> <br/>
+
+<?php 
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $now = date('Y-m-d H:i:s');
+    $admin_date = date('Y-m-19 18:00:00');
+
+    if (  $now <= $admin_date  || in_array($userStorage->group_id , array(ADMINISTRATOR_ID,HR_RECRUITMENT)) ) {
+        echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+    } 
+
+?>
+
+<button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+<br/><br/>
+
+<table class="table table-bordered" id='staff_list'>
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Staff Code</div></th>
+        <th><div align='center'>Staff Name</div></th>
+        <th><div align='center'>Nick Name</div></th>
+        <th><div align='center'>Group</div></th>
+        <th><div align='center'>Phone Number</div></th>
+        <th><div align='center'>Area</div></th>
+        <th><div align='center'>RD Code</div></th>
+        <th><div align='center'>RD Name</div></th>
+        <th><div align='center'>Month Year</div></th>
+        <th><div align='center'>Remark</div></th>
+        <th><div align='center'>Action</div></th>
+    </tr>
+    </thead>
+    <tbody class="staff_list">
+
+        <?php 
+
+            if ( in_array($userStorage->group_id, array(ADMINISTRATOR_ID, HR_RECRUITMENT) ) ) {
+
+                if (!empty($this->monthly_kpi_headcount_detail)) {
+                    $mhd_details = $this->monthly_kpi_headcount_detail; 
+                    // print_r($mhd_details);
+
+                    for ($i=0;$i<count($mhd_details);$i++) {
+
+                        $cnt = $i + 1;
+                        echo "<tr class='staff' data-id='".$mhd_details[$i]['staff_code']."' >";
+                        echo    "<td><div align='center'>".$cnt."
+                                    <input type='hidden' class='span1' name='txt_mhl_id[]' id='txt_mhl_id[]' value='".$mhd_details[$i]['id']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span1' name='txt_staff_code[]' id='txt_staff_code[]' value='".$mhd_details[$i]['staff_code']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_staff_name[]' id='txt_staff_name[]' value='".$mhd_details[$i]['staff_name']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span1' name='txt_staff_nickname[]' id='txt_staff_nickname[]' value='".$mhd_details[$i]['staff_nickname']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_staff_group[]' id='txt_staff_group[]' value='".$mhd_details[$i]['staff_group']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_phone_number[]' id='txt_phone_number[]' value='".$mhd_details[$i]['phone_number']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_area_name[]' id='txt_area_name[]' value='".$mhd_details[$i]['area_name']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span1' name='txt_rd_code[]' id='txt_rd_code[]' value='".$mhd_details[$i]['rd_code']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_rd_name[]' id='txt_rd_name[]' value='".$mhd_details[$i]['rd_name']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_month_year[]' id='txt_month_year[]' value='".$mhd_details[$i]['month_year']."'>
+                                </div></td>";
+                        echo    "<td><div align='center'>
+                                    <input type='text' class='span2' name='txt_remark[]' id='txt_remark[]' value='".$mhd_details[$i]['remark']."'>
+                                </div></td>";      
+                        echo    "<td>
+                                    <div align='center'><button class='btn btn-warning btn-mini btn_remove'>Remove</button><input type='hidden' id='staff' name='staff[]' value='".$mhd_details[$i]['staff_code']."' /></div>
+                                </td>";
+                        echo "</tr>";
+
+                    }
+                }
+
+            } else {
+
+                if (!empty($this->monthly_kpi_headcount_detail)) {
+                    $mhd_details = $this->monthly_kpi_headcount_detail; 
+                    // print_r($mhd_details);
+
+                    for ($i=0;$i<count($mhd_details);$i++) {
+
+                        $cnt = $i + 1;
+                        echo "<tr class='staff' data-id='".$mhd_details[$i]['staff_code']."' >";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['staff_code']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['staff_name']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['staff_nickname']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['staff_group']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['phone_number']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['area_name']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['rd_code']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['rd_name']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['month_year']."</div></td>";
+                        echo    "<td><div align='center'>".$mhd_details[$i]['remark']."</div></td>";
+                        echo    "<td>
+                                    <input type='hidden' name='txt_mhl_id[]' id='txt_mhl_id[]' value='".$mhd_details[$i]['id']."'>
+                                    <input type='hidden' name='txt_staff_code[]' id='txt_staff_code[]' value='".$mhd_details[$i]['staff_code']."'>
+                                    <input type='hidden' name='txt_staff_name[]' id='txt_staff_name[]' value='".$mhd_details[$i]['staff_name']."'>
+                                    <input type='hidden' name='txt_staff_nickname[]' id='txt_staff_nickname[]' value='".$mhd_details[$i]['staff_nickname']."'>
+                                    <input type='hidden' name='txt_staff_group[]' id='txt_staff_group[]' value='".$mhd_details[$i]['staff_group']."'>
+                                    <input type='hidden' name='txt_phone_number[]' id='txt_phone_number[]' value='".$mhd_details[$i]['phone_number']."'>
+                                    <input type='hidden' name='txt_area_name[]' id='txt_area_name[]' value='".$mhd_details[$i]['area_name']."'>
+                                    <input type='hidden' name='txt_rd_code[]' id='txt_rd_code[]' value='".$mhd_details[$i]['rd_code']."'>
+                                    <input type='hidden' name='txt_rd_name[]' id='txt_rd_name[]' value='".$mhd_details[$i]['rd_name']."'>
+                                    <input type='hidden' name='txt_month_year[]' id='txt_month_year[]' value='".$mhd_details[$i]['month_year']."'>
+                                    <input type='hidden' name='txt_remark[]' id='txt_remark[]' value='".$mhd_details[$i]['remark']."'>
+                                    <div align='center'><button class='btn btn-warning btn-mini btn_remove'>Remove</button><input type='hidden' id='staff' name='staff[]' value='".$mhd_details[$i]['staff_code']."' /></div>
+                                </td>";
+                        echo "</tr>";
+
+                    }
+                }
+
+            }
+
+        ?>
+
+    </tbody>
+</table>
+
+</form>
+
+<?php 
+    $area_list = $area_temp = $area_temp2 = array();
+    $area_temp = $this->areas->ToArray();
+
+    foreach ($area_temp as $key => $value) { $area_temp2[] = $value['id']; }
+    $area_list = json_encode($area_temp2);
+?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<!-- <style> .ui-datepicker-calendar { display: none; } </style> -->
+
+<script type="text/javascript">
+
+    var area_id = '<?php echo $this->area_id; ?>';
+    if ( area_id != '' ) { getRdByAreaId(area_id); remove_staff(); }
+    
+    function getRdByAreaId($area_id) {
+
+        $('.loading').remove();
+        $(this).after('<span class="loading"></span>');
+        var area_id = $area_id;
+
+        $('button, .btn, input').prop('disabled', true);
+        $.get("/staff/load-rd",
+            {area_id: area_id}
+            ,function(data,status){
+                $('#rd_id').empty();
+
+                var obj = $.parseJSON( data );
+                for (var i = 0; i < obj.length; i++) {
+                    $('#rd_id').append('<option data-code="'+obj[i]['staff_code']+'" value="'+obj[i]['staff_id']+'">'+obj[i]['staff_name']+'</option>');
+                }
+
+                $('button, .btn, input').prop('disabled', false);
+                
+                $('.loading').remove();
+            });
+
+    }
+
+    function is_exists(id) {
+        _des = $('.staff_list');
+        items = _des.children('.staff');
+
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function remove_staff() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+
+            // $('#btn_submit').prop("disabled", false);
+        });
+    }
+
+    function validateSave() {
+
+        if ( $("#staff_list > tbody > tr").length < 1 ) {
+
+            alert("Please Input At Least 1 Staff!");
+            return false;
+        }
+
+        var confirmbox = confirm("Confirm to Save!");
+        if (confirmbox == true) { return true; } 
+        return false;
+
+    }
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+        $('#mh_form').on('keyup keypress', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode === 13) { 
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Calendar Year-Month
+        $('.date-picker').datepicker({
+
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+
+            onClose: function() {
+                var iMonth = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var iYear = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+
+                $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+            },
+
+            beforeShow: function() {
+                if ((selDate = $(this).val()).length > 0) {
+                    iYear = selDate.substring(selDate.length - 4, selDate.length);
+                    iMonth = jQuery.inArray(selDate.substring(0, selDate.length - 5),
+                    $(this).datepicker('option', 'monthNames'));
+                    $(this).datepicker('option', 'defaultDate', new Date(iYear, iMonth, 1));
+                    $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+                }
+            }
+        });
+
+        $('#btn_add').click(function(){
+
+            // Get Data 
+            var staff_code = $('#staff_code').val();
+            var staff_name = $('#staff_name').val();
+            var staff_group = $('#staff_group').val();
+            var staff_nickname = $('#staff_nickname').val();
+            var phone_number = $('#phone_number').val();
+            var month_year = $('#month_year').val();
+
+            var area_name = $('#area_id option:selected').text();
+            var rd_code = $('#rd_id option:selected').data('code');
+            var rd_name = $('#rd_id option:selected').text();
+
+            var remark = $('#remark').val();
+
+            // Validate 
+            if (    staff_code == '' || staff_name == '' || staff_group == '' || phone_number == '' || month_year == '' || 
+                    area_name == 'Choose' || rd_name == 'Choose' || area_name == '' || rd_name == '' || staff_nickname == '' 
+                ) 
+            { 
+                alert("Please Input All Info before Add to List!");
+            } else {
+
+                if ( ! is_exists( staff_code ) ) {
+
+                    elm = '<tr class="staff" data-id="'+ staff_code +'" >'
+                                + '<td><div align="center">-</div></td>'
+                                + '<td><div align="center">'+ staff_code +'</div></td>'
+                                + '<td><div align="center">'+ staff_name +'</div></td>'
+                                + '<td><div align="center">'+ staff_nickname +'</div></td>'
+                                + '<td><div align="center">'+ staff_group +'</div></td>'
+                                + '<td><div align="center">'+ phone_number +'</div></td>'
+                                + '<td><div align="center">'+ area_name +'</div></td>'
+                                + '<td><div align="center">'+ rd_code +'</div></td>'
+                                + '<td><div align="center">'+ rd_name +'</div></td>'
+                                + '<td><div align="center">'+ month_year +'</div></td>'
+                                + '<td><div align="center">'+ remark +'</div></td>';
+
+                    // Data for Input 
+                    elm += '<td>';
+                    elm += '<input type="hidden" name="txt_mhl_id[]" id="txt_mhl_id[]" value="0">';
+                    elm += '<input type="hidden" name="txt_staff_code[]" id="txt_staff_code[]" value="'+ staff_code +'">';
+                    elm += '<input type="hidden" name="txt_staff_name[]" id="txt_staff_name[]" value="'+ staff_name +'">';
+                    elm += '<input type="hidden" name="txt_staff_nickname[]" id="txt_staff_nickname[]" value="'+ staff_nickname +'">';
+                    elm += '<input type="hidden" name="txt_staff_group[]" id="txt_staff_group[]" value="'+ staff_group +'">';
+                    elm += '<input type="hidden" name="txt_phone_number[]" id="txt_phone_number[]" value="'+ phone_number +'">';
+                    elm += '<input type="hidden" name="txt_area_name[]" id="txt_area_name[]" value="'+ area_name +'">';
+                    elm += '<input type="hidden" name="txt_rd_code[]" id="txt_rd_code[]" value="'+ rd_code +'">';
+                    elm += '<input type="hidden" name="txt_rd_name[]" id="txt_rd_name[]" value="'+ rd_name +'">';
+                    elm += '<input type="hidden" name="txt_month_year[]" id="txt_month_year[]" value="'+ month_year +'">';
+                    elm += '<input type="hidden" name="txt_remark[]" id="txt_remark[]" value="'+ remark +'">';
+                    elm += '<div align="center"><button class="btn btn-warning btn-mini btn_remove">Remove</button><input type="hidden" id="staff" name="staff[]" value="'+ staff_code +'" /></div>';
+                    elm += '</td></tr>';
+
+                    $('.staff_list').append(elm);
+
+                } else {
+
+                    alert("This Staff Arealdy in List!");
+
+                }
+
+                $('#staff_code').val('');
+                $('#staff_name').val('');
+                $('#staff_nickname').val('');
+                $('#staff_group').val('');
+                $('#phone_number').val('');
+                $('#remark').val('');
+
+                $('#area_id').val('');
+                $('#rd_id').val('');
+
+            }
+
+            // $('#area_id').removeAttr('required');
+            remove_staff();
+        
+        });
+
+        $('#staff_code').keypress(function(event){
+
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            var area_arr = '<?php echo $area_list; ?>';
+            var area_list = JSON.parse(area_arr);
+
+            if(keycode == '13'){
+
+                // alert('You pressed a "Enter" key at Staff Code');   
+                var _self = $(this);
+                var staff_code = $(this).val();
+
+                $.get("/staff/api-get-staff-info",
+                {staff_code: staff_code}
+                ,function(data,status){
+
+                    if ( data == 'false' ) {
+
+                        alert("No Staff Code In Catt System!"); 
+                        
+                        $('#staff_code').val('');
+                        $('#staff_name').val('');
+                        $('#staff_nickname').val('');
+                        $('#staff_group').val('');
+                        $('#phone_number').val('');
+                        $('#remark').val('');
+
+                        $('#area_id').val('');
+                        $('#rd_id').val('');
+
+                        $('#staff_code').focus();
+
+                    } else {
+
+                        var obj = $.parseJSON( data );
+
+                        if ( ! is_exists( obj['staff_code'] ) ) {
+
+                            if ( ! area_list.includes( obj['area_id'] ) ) {
+
+                                alert("This Staff belong to Area : " + obj['area_name'] + "!");
+
+                                $('#staff_code').val('');
+                                $('#staff_name').val('');
+                                $('#staff_nickname').val('');
+                                $('#staff_group').val('');
+                                $('#phone_number').val('');
+                                $('#remark').val('');
+
+                                $('#area_id').val('');
+                                $('#rd_id').val('');
+
+                                $('#staff_code').focus();
+
+                            } else {
+
+                                $('#staff_name').val(obj['firstname']+' '+obj['lastname']);
+                                $('#staff_group').val(obj['group_name']);
+                                $('#phone_number').val(obj['tel_number']);
+                                $('#area_id').val(obj['area_id']);
+
+                                getRdByAreaId(obj['area_id']);
+
+                                $('#btn_add').focus();
+
+                            }
+
+                        } else {
+
+                            alert("This Staff Arealdy in List!"); 
+                        
+                            $('#staff_code').val('');
+                            $('#staff_name').val('');
+                            $('#staff_nickname').val('');
+                            $('#staff_group').val('');
+                            $('#phone_number').val('');
+                            $('#remark').val('');
+
+                            $('#area_id').val('');
+                            $('#rd_id').val('');
+
+                            $('#staff_code').focus();
+
+                        }
+
+                    }
+
+                    
+                });
+
+            }
+
+        });
+
+        $('#area_id').change(function(){
+            var area_id = $(this).val();
+            getRdByAreaId(area_id);
+        });
+
+
+    });
+
+</script>

@@ -1,0 +1,17 @@
+<?php
+$id = $this->getRequest()->getParam('id');
+if ($id) {
+    $QModel = new Application_Model_CustomerSurvey();
+    $rowset = $QModel->find($id);
+    $info = $rowset->current();
+
+    $this->view->info = $info;
+}
+
+$flashMessenger = $this->_helper->flashMessenger;
+$messages = $flashMessenger->setNamespace('error')->getMessages();
+$this->view->messages = $messages;
+//back url
+$this->view->back_url = $this->getRequest()->getServer('HTTP_REFERER');
+
+$this->_helper->viewRenderer->setRender('/manage-customer-survey/create');

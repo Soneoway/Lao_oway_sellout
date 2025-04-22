@@ -1,0 +1,48 @@
+<div class="page-header">
+    <h1>KPI Settings</h1>
+</div>
+<div class="row">
+	<div class="span12">
+		<?php
+		    if (isset($this->messages_success) and $this->messages_success)
+		        foreach ($this->messages_success as $message):
+		            echo '<div class="alert alert-success">'.$message.'</div>';
+		        endforeach;
+
+		    if (isset($this->messages) and $this->messages)
+		        foreach ($this->messages as $message):
+		            echo '<div class="alert alert-error">'.$message.'</div>';
+		        endforeach;
+		?>
+	</div>
+</div>
+<?php if ($this->access('hr-report', 'settings-create')): ?>
+    <div class="row">
+    	<div class="span12">
+    		<p class="pull-right"><a href="<?php echo HOST ?>hr-report/settings-create" class="btn btn-success btn-mini"><i class="icon-plus"></i> Add New</a></p>
+    	</div>
+    </div>
+<?php endif ?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('hr-report/partials/settings-search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <?php
+        echo $this->render('hr-report/partials/settings-list.phtml');
+    ?>
+</div>

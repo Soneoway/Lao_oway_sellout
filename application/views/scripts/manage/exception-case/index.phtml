@@ -1,0 +1,51 @@
+<div class="page-header">
+    <form action="/manage/exception-case-create" method="get">
+        <h1>List Exception case</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->exceptions) and $this->exceptions)
+                foreach ($this->exceptions as $k=>$exception): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $exception['name'];?></td>
+                <td><?php echo ($exception['status']==1 ? 'Enabled' : 'Disabled');?></td>
+                <td class="">
+                    <a title="Edit" href="/manage/exception-case-create?id=<?php echo $exception['id'];?>"> <i class="icon-edit"></i></a>
+                    <a title="Delete" class="confirmLink" href="/manage/exception-case-del?id=<?php echo $exception['id'];?>"> <i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>

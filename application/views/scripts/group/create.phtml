@@ -1,0 +1,84 @@
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.checkboxtree.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.checkboxtree.css"/>
+
+<div class="page-header">
+    <?php if (isset($this->group) and $this->group):?>
+        <h1>Edit Group</h1>
+    <?php else:?>
+        <h1>Create Group</h1>
+    <?php endif;?>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<form role="form" action="<?php echo HOST.'/group/save';?>" method="post">
+    <div class="form-group">
+        <label for="exampleInputId">ID</label>
+        <input type="number" name="gid" id="gid" value="<?php isset($this->group) and $this->group and printf($this->group->id);?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputName">Name</label>
+        <input type="text" class="form-control" id="exampleInputName" placeholder="Enter Name" name="name" required="required" value="<?php isset($this->group) and $this->group and printf($this->group->name);?>">
+    </div>
+
+    <div class="form-group">
+        <label for="default_page">Default page</label>
+        <input type="text" class="form-control" id="default_page" name="default_page" value="<?php isset($this->group) and $this->group and printf($this->group->default_page);?>">
+    </div>
+
+    <div class="form-group">
+        <label for="tree2">Menus</label>
+
+        <ul id="tree2">
+            <?php
+            echo $this->menus;
+            ?>
+        </ul>
+    </div>
+
+    <div class="form-group">
+        <label for="tree1">Accesses</label>
+
+        <ul id="tree1">
+            <?php
+            $checked = array();
+            foreach ($this->acl as $module=>$item):?>
+            <li>
+                <input type="checkbox" name="access[<?php echo $module;?>]"><label><?php echo $module;?></label>
+                <ul>
+                    <?php foreach ($item as $controller=>$item_2):?>
+                    <li><input type="checkbox" name="access[<?php echo $module;?>][<?php echo $controller;?>]"><label><?php echo $controller;?></label>
+                        <ul>
+                            <?php foreach ($item_2 as $action):?>
+                            <li><input id="<?php echo $module;?>_<?php echo $controller;?>_<?php echo $action;?>" type="checkbox" name="access[<?php echo $module;?>][<?php echo $controller;?>][<?php echo $action;?>]"><label><?php echo $action;?></label></li>
+
+                            <?php
+                            if ($this->group_accesses and in_array($module.'::'.$controller.'::'.$action, $this->group_accesses)):
+                                $checked[] = $module.'_'.$controller.'_'.$action;
+                            endif;
+                            ?>
+                            <?php endforeach;?>
+                        </ul>
+                    </li>
+                    <?php endforeach;?>
+                </ul>
+            </li>
+            <?php endforeach;?>
+        </ul>
+    </div>
+
+    <input type="hidden" name="id" id="id" value="<?php isset($this->group) and $this->group and printf($this->group->id);?>">
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<script>
+    $('#tree1, #tree2').checkboxTree();
+    <?php foreach ($checked as $i):?>
+    $('#tree1').checkboxTree('check', $('#<?php echo $i;?>'));
+    <?php endforeach;?>
+</script>

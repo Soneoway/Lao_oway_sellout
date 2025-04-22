@@ -1,0 +1,64 @@
+<div class="page-header">
+    <?php if (isset($this->nationality) and $this->nationality):?>
+        <h1>Edit Feedback</h1>
+    <?php else:?>
+        <h1>Create Feedback</h1>
+    <?php endif;?>
+</div>
+
+<?php 
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<style type="text/css">
+    input,textarea{width: 500px;}
+</style>
+
+<form id="feedback_form" role="form" action="<?php echo HOST.'feedback/save';?>" method="post" onsubmit="checkTitle()">
+
+    <div class="form-group">
+        <label for="name">Store</label>
+        <select id="store_id" class="form-control" required name="store_id">
+       <?PHP
+            foreach ($this->store_id as $store):?>
+            <option value="<?php echo $store['store_id'];?>"  <?php if (isset($this->feedback['store_id']) and $this->feedback['store_id']==$store['store_id']):?>selected<?php endif;?>><?php echo $store['store_name'];?></option>
+        <?php
+        endforeach;
+     ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="name">Title</label>
+        <input type="text" class="form-control" id="title" name="title" required value="<?php if (isset($this->feedback)): echo $this->feedback['title']; endif;?>">
+    </div>
+    <div class="form-group">
+        <label for="name">Content</label>
+        <textarea name="content"  rows="12" required id="content"><?php if (isset($this->feedback)): echo $this->feedback['content']; endif;?></textarea>
+       
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url);?>">
+    <input type="hidden" name="id" id="id" value="<?php isset($this->feedback) and $this->feedback and printf($this->feedback['id']);?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+    });
+
+    function checkTitle() {
+        var val = $.trim($('#title').val());
+        if (val === '') { 
+            alert("กรุณากรอกข้อมูล Title ค่ะ!"); 
+            $('#title').val(""); 
+            event.preventDefault(); 
+        }
+    }
+</script>

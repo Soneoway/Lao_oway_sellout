@@ -1,0 +1,36 @@
+<div class="page-header">
+    <h1>Contract Printing Revision <small>List</small></h1>
+</div>
+
+<p><a href="<?php echo $this->back_url?>" class="btn btn-default"><i class="icon-arrow-left"></i> Back</a></p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Time',
+                    'Info',
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isset($this->logs) && $this->logs): ?>
+            <?php foreach ($this->logs as $_key => $_log): ?>
+            <tr>
+                <td><?php echo ($this->offset + $_key + 1) ?></td>
+                <td><a href="<?php echo HOST ?>staff/contract-revision?id=<?php echo $_log['id'] ?>"
+                    target="_blank"><?php 
+                    if(isset($_log['time'])) echo date('d/m/Y H:i:s', strtotime($_log['time'])) ?></a></td>
+                <td><?php echo $_log['info'] ?></td>
+            </tr>
+            <?php endforeach ?>
+        <?php endif ?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+

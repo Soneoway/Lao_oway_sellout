@@ -1,0 +1,476 @@
+<form id="analytics_form" class="form-search form-horizontal" method="get" action="/timing/analytics">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="name" class="span2">ຊື່ພະນັກງານ | Staff Name :</label>
+                <input id="name" name="name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+            
+            <div class="control-group">
+                <label for="staff_code" class="span2">ລະຫັດພະນັກງານ | Staff Code :</label>
+                <input type="text" class="form-control search-query span2" id="staff_code" name="staff_code" value="<?php isset($this->params['staff_code']) and printf($this->params['staff_code']);?>">
+            </div>
+
+            <!-- <div class="control-group">
+                <label for="tel" class="span2">Tel</label>
+                <input type="text" class="form-control search-query span2" id="phone_number" name="phone_number" value="<?php isset($this->params['phone_number']) and printf($this->params['phone_number']);?>">
+            </div> -->
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area | ເຂດ : </label>
+                <select id="area_id" name="area_id[]" class="js-example-basic-multiple search-query " multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province | ເເຂວງ : </label>
+                <select id="regional_market" name="regional_market[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php
+                    if ($this->regional_markets) :
+                        foreach ($this->regional_markets as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+          <!--   <div class="control-group">
+                <label for="district" class="span2">District</label>
+                <select id="district" name="district[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php
+                    if ($this->districts) :
+                        foreach ($this->districts as $regional_market):?>
+                            <option value="<?php echo $regional_market->id;?>" <?php if (isset($this->params['district']) and ( (is_array($this->params['district']) && in_array($regional_market['id'], $this->params['district']) || $regional_market['id']==$this->params['district'])) ):?>selected<?php endif;?>><?php echo $regional_market->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+            <div class="control-group">
+                <label for="store" class="span2">ຮ້ານຄ້າ | Store :</label>
+                <select id="store" name="store[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php
+                    if ($this->stores) :
+                        foreach ($this->stores as $store):?>
+                            <option value="<?php echo $store->id;?>" <?php if (isset($this->params['store']) and ( (is_array($this->params['store']) && in_array($store['id'], $this->params['store']) || $store['id']==$this->params['store'])) ):?>selected<?php endif;?>><?php echo $store->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+            
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">ຄົ້ນກາຈາກວັນທີ | From :</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">ຫາວັນທີ | To :</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+        <!--     <div class="control-group">
+                <label for="store_type" class="span2">Store Type</label>
+                <select id="store_type" name="store_type[]" class="js-example-basic-multiple" multiple="multiple">
+                    <?php 
+                    if ($this->store_type) :
+                        foreach ($this->store_type as $store_type):
+                    ?>
+                            <option value="<?php echo $store_type['org_id'];?>" <?php if (isset($this->params['store_type']) and ( (is_array($this->params['store_type']) && in_array($store_type['org_id'], $this->params['store_type']) || $store_type['org_id']==$this->params['store_type'])) ):?>selected<?php endif;?>><?php echo $store_type['org_name'];?></option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div> -->
+
+           <!--  <div class="control-group">
+                <label for="chk_tme" class="span2">Exclude TME</label>
+                <div>
+                    <input type="checkbox" name="chk_tme" id="chk_tme" value="3" <?php if (isset($this->params) and $this->params['chk_tme']==3):?> checked="checked" <?php endif;?> />
+                </div>  
+            </div> -->
+
+             <!-- <div class="control-group">
+                <label for="cat_id" class="span2" style="color: blue; font-size: 16px; font-style: bold;">Categories</label>
+                <div>
+                    <input type="checkbox" name="phone" id="phone" value="11" <?php if(isset($this->params) and $this->params['phone']==11):?> checked="checked"<?php endif; ?> /><span style="padding-left: 5px; padding-top: 3px; color: green; font-size: 16px; font-style: bold">Phone</span>
+                    &nbsp;&nbsp;
+                    <input type="checkbox" name="iot" id="iot" value="15" <?php if(isset($this->params) and $this->params['iot']==15):?> checked="checked"<?php endif; ?> /><span style="padding-left: 5px; padding-top: 3px; color: red; font-size: 16px; font-style: bold">IoT</span>
+                </div>
+            </div> -->
+
+            <div class="control-group">
+                <label for="brand_id" class="span2"><span style="font-size: 16px; font-style: bold;">Brand | ຍີ່ຫໍ້ :</span></label>
+                <select id="brand_id" name="brand_id[]" class="js-example-basic-multiple span3" multiple="multiple">
+                    <?php foreach($this->brands as $item) : ?>
+                      <option value="<?php echo $item['id'] ?>" <?php if (isset($this->params['brand']) and ( (is_array($this->params['brand']) && in_array($item['id'], $this->params['brand']) || $item['id']==$this->params['brand'])) ):?>selected<?php endif;?>><?php echo $item['name'] ?>
+                      </option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="good" class="span2"><span style="font-size: 16px; font-style: bold;">Products | ລຸ້ນ :</span></label>
+                <select id="good" name="good[]" class="js-example-basic-multiple span3" multiple="multiple">
+                   <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good']) and ( (is_array($this->params['good']) && in_array($good_list['id'], $this->params['good']) || $good_list['id']==$this->params['good'])) ):?>selected<?php endif;?>><?php echo $good_list['brand_name'] ?> <?php echo $good_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+            
+            <?php 
+                $options = array(
+                    'Not Actived','Actived'
+                );
+             ?>
+
+            <div class="control-group">
+                <label for="actived" class="span2"><span style="font-size: 16px; font-style: bold;">ສະຖານະການເປິດນຳໃຊ້ : </span></label>
+                <select id="actived" name="actived" class="span3">
+                    <option selected></option>
+                <?php if ($options):
+                    foreach ($options as $option): ?>   
+                        <option value="<?php echo $option;?>" <?php if ($option==$this->params['actived']):?> selected <?php endif;?>><?php echo $option;?></option>
+                <?php endforeach;       
+                    endif; ?>
+                </select>
+            </div>
+
+<!--             <div class="control-group">
+                <label for="actived" class="span2"> ບໍລິສັດ | Commpany : </label>
+                <select id="company" name="company" class="span3">
+                    <option value=""></option>
+                    <option value="1" <?php if($this->params['company'] == 1): ?> selected <?php endif; ?>> OPPO </option>
+                    <option value="2" <?php if($this->params['company'] == 2): ?> selected <?php endif; ?>> Realme </option>
+                </select>
+            </div> -->
+            
+            <div class="control-group">
+                <label for="position" class="span2"> ຕຳເເໜ່ງ | Position :</label>
+                <select id="position" name="position" class="span3">
+                    <option value="">All Position</option>
+                    <option value="1" <?php if($this->params['position'] == 1) : ?> selected <?php endif; ?>> PC </option>
+                    <option value="2" <?php if($this->params['position'] == 2) : ?> selected <?php endif; ?>> Sales </option>
+                    <option value="3" <?php if($this->params['position'] == 3) : ?> selected <?php endif; ?>> ASM </option>
+                </select>
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <button type="submit" class="btn btn-primary"><span style="font-size: 18px; font-family:'Noto sans lao'">Search</span></button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+
+    <?php 
+        $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+        $group_id = $userStorage->group_id;
+
+        if ($this->access('sales-report', 'timing-detail')): 
+    ?>
+        <!-- <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>sales-report/timing-detail" class="btn btn-info">Export By PC OLD</button> -->
+
+        <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>sales-report/timing-detail" class="btn btn-primary">Export By PC</button>
+
+    <?php 
+        $permission_list = array(ADMINISTRATOR_ID, BOARD_ID, RM_ID, RMSTANDBY_ID);
+        if (in_array($group_id, $permission_list)) { 
+    ?>
+        <button type="submit" name="export" value="3" formaction="<?php echo HOST ?>sales-report/timing-detail" class="btn btn-success">Focus PC</button>
+    <?php } ?>
+<!--
+    <?php 
+        $permission_list = array(ADMINISTRATOR_ID, SALES_EXT_ID, SALES_ADMIN_ID, 39);
+        if (in_array($group_id, $permission_list)) { 
+    ?>
+        <button type="submit" name="export" value="4" formaction="<?php echo HOST ?>sales-report/timing-detail" class="btn btn-success">ABM COM.</button>
+    <?php } ?>
+
+    <?php endif ?>
+-->
+    <br /><br />
+
+    <?php if ($this->access('hr-report', 'pg-kpi')): ?>
+        <!-- <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>hr-report/pg-kpi" class="btn btn-success">KPI PC By Model</button> -->
+        <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>hr-report/pg-kpi" class="btn btn-success">KPI PC By Target</button>
+
+        <button type="submit" name="export" value="14" formaction="<?php echo HOST ?>hr-report/pg-kpi" class="btn btn-success">PC Level Report</button>
+
+        <button type="submit" name="export" value="3" formaction="<?php echo HOST ?>hr-report/pg-kpi" class="btn btn-success">KPI PC By Store Target</button>
+        <!--
+        <button type="submit" name="export" value="4" formaction="<?php echo HOST ?>hr-report/pg-kpi" class="btn btn-success">KPI PC By Target [F1s]</button> -->
+
+        <?php 
+            $permission_list = array(ADMINISTRATOR_ID, BOARD_ID, HR_ID);
+            if (in_array($group_id, $permission_list)) { 
+        ?>
+            <br /><br />
+            <legend></legend>
+
+            <div class="row">
+                <div class="span6">
+                    <span class="label label-success">PC Commission</span> <br/><br/>
+
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/pc-com', 0);" class="btn btn-success">COM - PC - Web</button> 
+                    <button type="submit" name="export" value="5" formaction="<?php echo HOST ?>hr-report/pc-com" class="btn btn-success">COM - PC - Export</button> 
+
+                    <br /><br />
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/pc-com-total', 2);" class="btn btn-success">COM - PC - Web - Total UPC</button> 
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/pc-com-total', 3);" class="btn btn-success">COM - PC - Web - Total BKK</button> 
+
+                    <br /><br />
+                    <button type="submit" name="export" value="6" formaction="<?php echo HOST ?>hr-report/pc-com-total" class="btn btn-success">COM - PC - Export - Total UPC</button> 
+                    <button type="submit" name="export" value="7" formaction="<?php echo HOST ?>hr-report/pc-com-total" class="btn btn-success">COM - PC - Export - Total BKK</button> 
+
+                </div>
+                <div class="span5">
+                    <span class="label label-warning">BM Commission</span> <br/><br/>
+
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/bm-dealer-com', 0);" class="btn btn-warning">COM - BM Dealer - Web</button> 
+                    <button type="submit" name="export" value="17" formaction="<?php echo HOST ?>hr-report/bm-dealer-com" class="btn btn-warning">COM - BM Dealer - Export</button> 
+
+                    <br /><br />
+
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/bm-oppo-com', 0);" class="btn btn-warning">COM - BM OPPO - Web</button> 
+                    <button type="submit" name="export" value="18" formaction="<?php echo HOST ?>hr-report/bm-oppo-com" class="btn btn-warning">COM - BM OPPO - Export</button> 
+                </div>
+
+            </div>  
+        <?php } ?>
+
+    <?php endif ?>
+
+    <?php if ($this->access('hr-report', 'sale-kpi')): ?>
+    <br /><br />
+    <legend></legend>
+
+    <!-- <div class="row">
+        <div class="span6">
+            <span class="label label-success">Sale Commission</span> <br/><br/>
+          
+            <button type="submit" name="export" value="3" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">Commission Sale</button>
+           
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/sale-bkk-com-2017', 1);" class="btn btn-success">COM - SALE - Web</button> 
+            <button type="submit" name="export" value="9" formaction="<?php echo HOST ?>hr-report/sale-bkk-com-2017" class="btn btn-success">COM - SALE - Export</button> 
+
+            <br /><br />
+            <button type="submit" name="export" value="10" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-success">COM - SALE - Total UPC</button> 
+            <button type="submit" name="export" value="11" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-success">COM - SALE - Total BKK</button> 
+
+            <br /><br />
+            <button type="submit" name="export" value="12" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-success">COM - ASM - Total UPC</button> 
+            <button type="submit" name="export" value="13" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-success">COM - ASM - Total BKK</button> 
+
+        </div>
+        <div class="span5">
+      
+            <span class="label label-warning">Sellin</span> <br/><br/>
+
+            <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/sale-sellin-com', 1);" class="btn btn-warning">COM - SALE - Web</button> 
+            <button type="submit" name="export" value="14" formaction="<?php echo HOST ?>hr-report/sale-sellin-com" class="btn btn-warning">COM - SALE - Export</button> 
+
+            <br /><br />
+            <button type="submit" name="export" value="15" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-warning">COM - SALE - Total UPC</button> 
+            <button type="submit" name="export" value="16" formaction="<?php echo HOST ?>hr-report/com-total" class="btn btn-warning">COM - SALE - Total BKK</button> 
+ 
+        </div>
+    </div>   -->
+    
+    <!--
+        <br /><br />
+
+        <div class="accordion" id="accordion3">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapseThree">
+                    Sale Comission 2016
+                </a>
+            </div>
+            <div id="collapseThree" class="accordion-body collapse" style="height: 0px;">
+                <div class="accordion-inner">
+
+                    
+                    <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">BKK-ORG Sale</button> 
+                    <button type="submit" name="export" value="4" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">Commission EOL</button>
+                    <button type="submit" name="export" value="2" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">BKK Sale</button>
+                    
+
+                    <button type="submit" name="export" value="6" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">BKK Sale [Scan]</button>
+                    <button type="submit" name="export" value="5" formaction="<?php echo HOST ?>hr-report/sale-kpi" class="btn btn-success">Commission Sale [Scan]</button>
+
+                    <br /><br />
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/sale-upc-com', 1);" class="btn btn-success">COM - SALE UPC - Web</button> 
+                    <button type="submit" name="export" value="7" formaction="<?php echo HOST ?>hr-report/sale-upc-com" class="btn btn-success">COM - SALE UPC - Export</button> 
+
+                    <br /><br />
+                    <button type="button" name="export" onClick="openNewWindow('<?php echo HOST ?>hr-report/sale-bkk-com', 1);" class="btn btn-success">COM - SALE BKK - Web</button> 
+                    <button type="submit" name="export" value="8" formaction="<?php echo HOST ?>hr-report/sale-bkk-com" class="btn btn-success">COM - SALE BKK - Export</button> 
+
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <?php endif ?>
+
+    <input type="hidden" id="export_flag" name="export_flag" value="" />
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+
+    $(".js-example-basic-multiple").select2();
+
+    function openNewWindow(path, type) {
+
+        var cnt_area = 0;
+        if ( $("#area_id").val() ) { cnt_area = $("#area_id").val().length; }
+        if (type == 1 && cnt_area != 1 ) { alert("สามารถเลือกได้เพียง Area เดียวค่ะ!"); return false; } 
+
+        if (type == 2) { $('#export_flag').val(1); }
+        if (type == 3) { $('#export_flag').val(2); }
+
+        $('#analytics_form').attr('action', path);
+        $('#analytics_form').attr('target', '_blank');
+        $('#analytics_form').submit();
+
+        $('#analytics_form').attr('action', '/timing/analytics');
+        $('#analytics_form').removeAttr("target");
+
+    }
+
+    $(document).ready(function () {
+
+        $('#brand_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var brand_id = $(this).val();
+            $.get("/tool/get-product",
+                {brand_id: brand_id}
+                ,function(data,status){
+                    var data = $.parseJSON( data );
+                    var obj = data.brands;
+
+                    $("#good").empty();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#good').append('<option value="'+obj[i]['id']+'">'+obj[i]['brand_name']+' '+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+        $('#area_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option:not(:first)').remove();
+                    $('#store').find('option:not(:first)').remove();
+                    $('#district').find('option:not(:first)').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+
+        $('#regional_market').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var regional_market = $(this).val();
+            $.get("<?php echo HOST ?>staff/load-sales-by-provience",
+
+                {regional_market: regional_market}
+                ,function(data,status){
+                    var obj         = $.parseJSON( data );
+                    var stores      = obj.stores;
+
+                    $('#store').find('option:not(:first)').remove();
+                    for (var i = 0; i < stores.length; i++) {
+                        $('#store').append('<option value="'+stores[i]['id']+'">'+stores[i]['name']+'</option>');
+                    }
+
+                    $('.loading').remove();
+                });
+        });
+
+
+
+        $('#regional_market').change(function(){
+            $('form').bind('submit',function(e){e.preventDefault();});
+            $('form button, form input, form select').prop('disabled', true);
+            $('.loading').remove();
+
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var region = $(this).val();
+            $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+                    region: region
+                }
+                ,function(data,status){
+                    $('#district').find('option:not(:first)').remove();
+                    $('#store').find('option:not(:first)').remove();
+
+                    try {
+                        if (data) {
+                            var obj = $.parseJSON( data );
+
+                            for (var i = 0; i < obj.length; i++) {
+                                $('#district').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                            }
+                        }
+
+                    } catch(err) {
+
+                    } finally {
+                        $('.loading').remove();
+                        $('form').unbind('submit');
+                        $('form button, form input, form select').prop('disabled', false);
+                    }
+                });
+        });
+    });
+</script>

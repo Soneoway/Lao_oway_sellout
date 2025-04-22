@@ -1,0 +1,5 @@
+<?php if (isset($this->id) && $this->id): ?>
+    Công ty đã có hồ sơ nhân viên <a href="<?php echo HOST ?>staff/create?id=<?php echo $this->id ?>" target="_blank"><?php 
+                                echo $this->firstname . ' ' . $this->lastname .' ( '.$this->staff_code.' )'?></a>
+        <?php if (isset($this->email)) echo ' ['. $this->email .']'; ?> với số CMND này.
+<?php endif ?>

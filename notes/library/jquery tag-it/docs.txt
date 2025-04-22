@@ -1,0 +1,3 @@
+Tag-it: a jQuery UI plugin
+
+https://github.com/aehlke/tag-it/blob/master/README.markdown

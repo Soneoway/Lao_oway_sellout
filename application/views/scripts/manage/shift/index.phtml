@@ -1,0 +1,47 @@
+<div class="page-header">
+    <form action="/manage/shift-create" method="get">
+        <h1>List Shift</h1>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<?php
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>In Use</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->shifts) and $this->shifts)
+                foreach ($this->shifts as $k=>$shift): ?>
+            <tr>
+                <td><?php echo $shift['name'];?></td>
+                <td><?php if (isset($shift['status']) && $shift['status'] == 1) echo '<span class="icon-ok"></span>'; else echo '<span class="icon-remove"></span>'; ?></td>
+                <td class="">
+                    <a title="Edit" href="/manage/shift-create?id=<?php echo $k;?>"> <i class="icon-edit"></i></a>
+                    <a title="Delete" class="confirmLink" href="/manage/shift-del?id=<?php echo $k;?>"> <i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>

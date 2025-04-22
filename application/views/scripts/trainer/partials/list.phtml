@@ -1,0 +1,241 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+        '#',
+        'code'         =>'Code',
+        'lastname'     =>'Name',
+        'email'        =>'Email',
+        'department',
+        'team',
+        'title',
+        'joined_at'    =>'Joined',
+        'phone_number' =>'Phone No',
+        'point'        =>'Point',
+        'status'       =>'Status',
+        'Action'
+    ),
+    $this->url, $this->sort, $this->desc); ?>
+</tr>
+</thead>
+<tbody>
+<?php
+if (isset($this->staffs) and $this->staffs): ?>
+    <?php foreach ($this->staffs as $k=>$staff): ?>
+        <tr>
+            <td>
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td><?php echo $staff['code'];?></td>
+            <td><?php echo $staff['firstname'].' '.$staff['lastname'];?></td>
+            <td <?php if (!$staff['email']):?> style="background-color: coral"<?php endif;?>><?php echo $staff['email'];?></td>
+            <td><?php echo (isset($this->recursiveDepartmentTeamTitle[$staff['department']]['name']) ? $this->recursiveDepartmentTeamTitle[$staff['department']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDepartmentTeamTitle[$staff['department']]['children'][$staff['team']]['name']) ? $this->recursiveDepartmentTeamTitle[$staff['department']]['children'][$staff['team']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDepartmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name']) ? $this->recursiveDepartmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name'] : '');?></td>
+            <td><?php echo ($staff['joined_at'] ? date('d/m/Y', strtotime($staff['joined_at'])) : '');?></td>
+            <td><?php echo $staff['phone_number'];?></td>
+            <td>
+                <?php  $point =  (isset($staff['point']) and $staff['point']) ? $staff['point']:'' ;?>
+                <?php if($point and $point >79):?>
+                    <div style="color: #3b6e22"><b><?php echo $point?></b></div>
+                <?php endif;?>
+                <?php if($point and $point <80 and $point >59):?>
+                    <div style="color:#ffff00"><b><?php echo $point?></b></div>
+                <?php endif;?>
+                <?php if($point and $point <60):?>
+                    <div style="color:red"><b><?php echo $point?></b></div>
+                <?php endif;?>
+            </td>
+            <td><?php echo ( $staff['status']== 1 ? 'Enabled' : 'Disabled' );?></td>
+            <td>
+                <?php if($this->access('trainer', 'edit-profile')): ?>
+                    <?php if ($staff['status']== 1):?>
+                       <a title="Edit Profile" href="<?php echo HOST ?>trainer/edit-profile?staff_id=<?php echo $staff['id'];?>" <?php if(isset($staff['staff_trainer']) and ($staff['staff_trainer']) and  isset($staff['facebook_link']) and ($staff['facebook_link'])):?>class="label label-info "> <?php else:?> class="label label-important"><?php endif;?><i class="icon-hand-right"></i></a>
+                    <?php endif;?>
+                <?php endif;?>
+                <?php if($this->access('trainer', 'point')): ?>
+                    <?php if ($staff['status']== 1 ):?>
+                        <a title="Management Point" href="<?php echo HOST ?>trainer/point?staff_id=<?php echo $staff['id'];?>" <?php if(isset($staff['point']) and ($staff['point'])):?>class="label label-info "> <?php else:?>class="label label-important"><?php endif;?><i class="icon-plus"></i></a>
+                    <?php endif;?>
+                <?php endif;?>
+                <?php if($this->access('trainer', 'reward-warning')): ?>
+                    <?php if ($staff['status']== 1):?>
+                        <a title="Reward Warning" href="<?php echo HOST ?>trainer/reward-warning?staff_id=<?php echo $staff['id'];?>" <?php if(isset($staff['content_reward_warning']) and ($staff['content_reward_warning'])):?>class="label label-info"> <?php else:?>class="label label-important"><?php endif;?><i class="icon-book"></i></a>
+                    <?php endif;?>
+                <?php endif;?>
+                <?php if($this->access('trainer', 'get-info-pg-sale')): ?>
+                    <?php if ($staff['status']== 1):?>
+                        <a title="All Information" href="javascript:void(0);" data-toggle='modal' rel="<?php echo (isset($staff['id']))? $staff['id']:''?>" class="label label-success information_pg_sale"><i class="icon-info"></i></a>
+                    <?php endif;?>
+                <?php endif;?>
+                <!-- Modal -->
+                <div id="<?php echo (isset($staff['id']))? $staff['id']:''?>_modal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Information PG SALE</h4>
+                            </div>
+                            <div class="modal-body" id="content_modal">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-4"><div id="facebook"></div></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4"><label id="knowledge"></label></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4"><label id="skill"></label></div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4"><label id="attitude"></label></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4"><div id="modal_point"></div></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4" id="reward_warning"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+    <?php endforeach;?>
+<?php endif;?>
+
+</tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script src="/public/js/jquery.blockUI.js" type="text/javascript"></script>
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>
+<script>
+    $(document).ready(function(){
+        getInfoPGSALE();
+    });
+    function getInfoPGSALE()
+    {
+        $('.information_pg_sale').click(function()
+        {
+            var staff_id = $(this).attr('rel');
+            initWaiting();
+            $.ajax
+            ({
+                url : '/trainer/get-info-pg-sale',
+                type : 'POST',
+                data : {'staff_id': staff_id},
+                async: false,
+                dataType: "json",
+                success : function (result)
+                {
+                    if(result.facebook_id)
+                    {
+                        var init_facebookID = result.facebook_id;
+                        if(init_facebookID != null || init_facebookID != undefined )
+                        {
+                            FB.api('/'+init_facebookID.trim(), function(response) {
+                                if(response)
+                                {
+                                    $('#'+staff_id+'_modal').find('#facebook').empty();
+                                    $('#'+staff_id+'_modal').find('#facebook').append('<table class="table"><tr><td class="span2" colspan="2"><img src="https://graph.facebook.com/'+init_facebookID.trim()+'/picture?type=large&return_ssl_results=1" /></td></tr></table>');
+                                    $('#'+staff_id+'_modal').find('#facebook').append('<table class="table"><tr><td class="span1"><b>Name:</b></td><td class="span2">'+response.name+'</td></tr></table>');
+                                    $('#'+staff_id+'_modal').find('#facebook').append('<table class="table"><tr><td class="span1"><b>Gender:</b></td><td class="span2">'+response.gender+'</td></tr></table>');
+                                }
+                            });
+                        }
+                    }
+
+                    var knowledge = result.knowledge ? result.knowledge : '';
+                    var skill     = result.skill ? result.skill : '';
+                    var attitude  = result.attitude ? result.attitude :'';
+
+                    if(knowledge)
+                    {
+                        $('#'+staff_id+'_modal').find('#knowledge').empty();
+                        $('#'+staff_id+'_modal').find('#knowledge').append('<table class="table"><tr><td class="span1"><b>Knowledge:</b></td><td class="span2">'+knowledge+'</td></tr></table>');
+                    }
+                    if(skill)
+                    {
+                        $('#'+staff_id+'_modal').find('#skill').empty();
+                        $('#'+staff_id+'_modal').find('#skill').append('<table class="table"><tr><td class="span1"><b>Skill:</b></td><td class="span2">'+skill+'</td></tr></table>');
+                    }
+
+                    if(attitude)
+                    {
+                        $('#'+staff_id+'_modal').find('#attitude').empty();
+                        $('#'+staff_id+'_modal').find('#attitude').append('<table class="table"><tr><td class="span1"><b>Attitude:</b></td><td class="span2">'+attitude+'</td></tr></table>');
+                    }
+
+
+                    if(result.point != undefined )
+                    {
+                        $('#'+staff_id+'_modal').find('#modal_point').empty();
+                        $('#'+staff_id+'_modal').find('#modal_point').html('<table class="table table-bordered"><tr><td class="span1">Point</td><td class="span1">Month</td><td class="span1">Year</td></tr></table>');
+
+                        for(i=0; i < result.point['point'].length; i++)
+                        {
+                            $('#'+staff_id+'_modal').find('#modal_point').append('<table class="table"><tr><td class="span1">'+result.point['point'][i]+'</td><td class="span1">'+result.point['month'][i]+'</td><td class="span1">'+result.point['year'][i]+'</td></tr></table');
+                        }
+                    }
+
+                    if(result.reward_warning != undefined )
+                    {
+                        $('#'+staff_id+'_modal').find('#reward_warning').empty();
+                        $('#'+staff_id+'_modal').find('#reward_warning').html('<table class="table table-bordered"><tr><td class="span2">Type</td><td class="span1">Month</td><td class="span1">Year</td><td>Content</td></tr></table>');
+
+                        for(i=0; i < result.reward_warning['type'].length; i++)
+                        {
+                            $('#'+staff_id+'_modal').find('#reward_warning').append('<table class="table"><tr><td class="span2">'+result.reward_warning['type'][i]+'</td><td class="span1">'+result.reward_warning['month'][i]+'</td><td class="span1">'+result.reward_warning['year'][i]+'</td><td><div class="span2">'+result.reward_warning['content'][i]+'</div></td></tr></table>');
+                        }
+                    }
+
+                    unblockUI();
+
+                    $('#'+staff_id+'_modal').modal();
+
+                },
+                error : function ()
+                {
+                    console.log('loi');
+                }
+            });
+
+        });
+
+
+    }
+    function unblockUI(){
+        $.unblockUI();
+    }
+    function initWaiting(){
+        $.blockUI({ css: {
+            border: 'none',
+            padding: '15px',
+            backgroundColor: '#000',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .5,
+            color: '#fff'
+        } });
+    }
+
+</script>

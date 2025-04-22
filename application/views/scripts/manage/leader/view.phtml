@@ -1,0 +1,530 @@
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/bootstrap-datetimepicker.min.css" />
+<style>
+    .numbering {
+    counter-reset: rowNumber;
+    }
+
+    .numbering tbody tr {
+        counter-increment: rowNumber;
+    }
+
+    .numbering tbody tr td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+
+    .input-append .date {
+        width: 50%;
+    }
+
+    .edit_date {
+        min-width: 180px;
+    }
+
+    .edit_date input {
+        min-width: 70px;
+    }
+
+    .edit_lbl {
+        cursor: pointer;
+    }
+
+    .modified {
+        background: #fed !important;
+    }
+
+    .table td:nth-child(2) {
+        width: 35%;
+    }
+
+    .table td:nth-child(3) {
+        width: 10%;
+    }
+
+    .table td:nth-child(4) {
+        width: 10%;
+    }
+
+    .table td:nth-child(5) {
+        width: 10%;
+    }
+
+    #a_storeresult {
+        width: 100%;
+    }
+
+    .input-append {
+        display: inline-block;
+        float: left;
+        margin-left: 20px !important;
+        width: 50% !important;
+    }
+
+    .input-append .form-control {
+        width: 70%;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Bind Stores to Leader <small><?php echo $this->staff['firstname'] . ' ' .$this->staff['lastname'] . ' | ' . $this->email($this->staff['email']) ?></small></h1>
+</div>
+<?php if ($this->access('manage', 'leader-save')): ?>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form action="<?php echo HOST ?>manage/leader-save" method="post" id="form" class="form-inline" target="ifrmSave">
+    <input type="hidden" name="store_ids" id="store_ids">
+    <input type="hidden" name="joined_dates" id="joined_dates">
+    <input type="hidden" name="id" id="id" value="<?php echo $this->staff['id'] ?>">
+    <button class="btn btn-primary" type="button" id="btn_save">Save</button>
+    <button class="btn btn-warning" type="button" onclick="window.location='<?php echo HOST ?>manage/leader'">Go Back</button>
+</form>
+<?php endif; ?>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="accordion" id="search">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#search" href="#searchCollapse">
+                        <span><i class="icon-search"></i></span> Search in this list
+                    </a>
+                </div>
+                <div id="searchCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/leader/partials/search-this-list.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <?php if ($this->access('manage', 'leader-save')): ?>
+    <div class="span12">
+        <div class="accordion" id="addmore">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#addmore" href="#addmoreCollapse">
+                        <span><i class="icon-plus-sign"></i></span> Add more stores
+                    </a>
+                </div>
+                <div id="addmoreCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/leader/partials/search-store-to-add.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+</div>
+<table class="table table-bordered numbering">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Store Name</th>
+            <th>Area</th>
+            <th>Province</th>
+            <th>Joined At</th>
+            <th>Action</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody class="store_list">
+        <?php if ($this->store_leaders):?>
+        <?php foreach ($this->store_leaders as $k => $store):  ?>
+            <tr class="store"
+                data-id="<?php echo $store['store_id'] ?>"
+                data-name="<?php echo $store['store_name'] ?>" 
+                data-area="<?php echo $store['area_id'] ?>" 
+                data-region="<?php echo $store['region_id'] ?>">
+                <td></td>
+                <td><?php echo $store['store_name'] ?></td>
+                <td><?php echo $store['area_name'] ?></td>
+                <td><?php echo $store['region_name'] ?></td>
+                <td>
+                    <p>
+                        <span class="joindate"><?php if (isset($store['joined_at']) && $store['joined_at']) echo date('Y-m-d', $store['joined_at']) ?></span>
+                        <?php // <span class="label label-info edit_lbl">Edit</span> ?>
+                    </p>
+                    <?php /*
+                    <div class="input-append span3 edit_date" style="display:none;">
+                        <input class="date" type="text" data-store-id="<?php echo $store['store_id'] ?>" value="<?php echo date('Y-m-d',$store['joined_at']);?>">
+                        <button class="btn btn-success btn_save_date" type="button"><span class="icon-ok"></span></button>
+                        <button class="btn btn-default btn_cancel_date" type="button"><span class="icon-remove"></span></button>
+                    </div>*/ ?>
+                </td>
+                <td>
+
+                    <?php if ($store['status'] == 1): ?>
+                        <?php if ($this->access('ajax', 'remove-leader')): ?>
+                            <button class="btn btn-danger btn-mini btn_asm_remove"
+                                data-id="<?php echo $store['pid'] ?>" 
+                                data-log-id="<?php echo $store['log_id'] ?>">Remove</button>
+                        <?php else: ?>
+                            <button class="btn btn-danger btn-mini btn_remove">Remove</button>
+                        <?php endif ?>
+                    <?php elseif($store['status'] == 0): ?>
+                        <?php if ($this->access('ajax', 'approve-leader')): ?>
+                            <button class="btn btn-primary btn-mini btn_approve"
+                                data-id="<?php echo $store['pid'] ?>" 
+                                data-log-id="<?php echo $store['log_id'] ?>">Approve</button>  
+                            <button class="btn btn-inverse btn-mini btn_reject"
+                                data-id="<?php echo $store['pid'] ?>" 
+                                data-log-id="<?php echo $store['log_id'] ?>">Reject</button>  
+                        <?php else: ?>
+                            <button class="btn btn-default btn-mini" disabled>Pending...</button>  
+                        <?php endif ?>
+                    <?php endif ?>
+                </td>
+                <td class="ajax_status"></td>
+            </tr>
+        <?php endforeach ?>
+        <?php endif ?>
+    </tbody>
+</table>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-datetimepicker.min.js"></script>
+<script>
+    btns = '.btn_remove, .btn_reject, .btn_approve, #btn_save, #btn_bind, #btn_cancel, .btn_asm_remove';
+    old_val = '';
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('button').prop('disabled', false);
+        return;
+    }
+
+    $(document).ready(function() {
+        search_filter();
+        remove_store();
+        $('.edit_lbl').click(init_edit);
+
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+        $( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                
+                search_store(this);
+                return false;
+            }
+        });
+
+        $('#a_storename_btn').click(function() {
+            search_store(this);
+        });
+
+        $('#btn_bind').click(function(){
+            _self = $('#a_storeresult');
+            item = _self.children('option:selected');
+
+            for (var i = 0; i < item.length; i++) {
+                if ( ! is_exists( $(item[i]).data('id') ) ) {
+                    new_date = new Date().toJSON().slice(0,10);
+                    elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" data-name="'+$(item[i]).data('name')+'" data-area="'+$(item[i]).data('area')+'" data-region="'+$(item[i]).data('region')+'">'
+                            + '<td></td>'
+                            + '<td>'+$(item[i]).data('name')+'</td>'
+                            + '<td>'+$(item[i]).data('region-name')+'</td>'
+                            + '<td>'+$(item[i]).data('area-name')+'</td>'
+                            + '<td>\
+                                    <p>\
+                                        <span class="joindate">'+new_date+'</span>\
+                                        <span class="label label-info edit_lbl">Edit</span>\
+                                    </p>\
+                                    <div class="input-append span3 edit_date" style="display:none;">\
+                                        <input class="date" type="text"  data-store-id="'+$(item[i]).data('id')+'" value="'+new_date+'">\
+                                        <button class="btn btn-success btn_save_date" type="button"><span class="icon-ok"></span></button>\
+                                        <button class="btn btn-default btn_cancel_date" type="button"><span class="icon-remove"></span></button>\
+                                    </div>\
+                                </td>'
+                            + '<td><button class="btn btn-warning btn-mini btn_remove">Remove</button></td>\
+                                <td></td>'
+                            + '</tr>';
+
+                    $('.store_list').append(elm);
+                }
+            }
+
+            $('.edit_lbl').click(init_edit);
+            search_filter();
+            remove_store();
+        });
+
+        $('#btn_save').click(function(){
+            $('button').prop('disabled', true);
+
+            var store = $('.store');
+            id_str = '';
+            
+            for(var i = 0; i < store.length; i++) {
+                id_str += $(store[i]).data('id') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#store_ids').val(id_str);
+
+            joineddate = {};
+            $('.date').each(function(index, elm){
+                joineddate[$(elm).data('store-id')] = $(elm).val();
+            });
+            
+            $('#joined_dates').val(JSON.stringify(joineddate));
+
+            $('#form').submit();
+        });
+
+        <?php if($this->access('ajax', 'approve-leader')): ?>
+        $('.btn_approve').click(approveLeader);
+        <?php endif; ?>
+        <?php if($this->access('ajax', 'reject-leader')): ?>
+        $('.btn_reject').click(rejectLeader);
+        <?php endif; ?>
+        <?php if($this->access('ajax', 'remove-leader')): ?>
+        $('.btn_asm_remove').click(removeLeader);
+        <?php endif; ?>
+    });
+
+    function search_store(elm) {
+        $('button, input, select').prop('disabled', true);
+                
+        area_id    = $('#a_area').val();
+        region_id  = $('#a_province').val();
+        store_name = $('#a_storename').val();
+
+        $('.loading').remove();
+        var _self = $(elm);
+        var targetUrl = '<?php echo HOST."ajax/get-store-for-leader" ?>';
+
+        //get ajax content
+        var aj = $('.load-ajax');
+        if (aj.length && (area_id || region_id || store_name)){
+            _self.parents('.control-group').append("<span class=\'loading\'></span>");
+
+            $.post(targetUrl, {
+                area_id : area_id,
+                region_id : region_id,
+                store_name : store_name,
+            }, function(data){
+                $('button, input, select').prop('disabled', false);
+                aj.html(data);                            
+                $('.loading').remove();
+            });
+        } else {
+            $('button, input, select').prop('disabled', false);
+        }
+    }
+
+    function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function search_filter() {
+        $('#btn_f_search').click(function() {
+            area      = $('#f_area').val();
+            region    = $('#f_province').val();
+            storename = $('#f_storename').val();
+            $('.store').show();
+
+            $('.store').each(function() {
+                _self = $(this);
+                if (area && _self.data('area') != area) 
+                    _self.hide();
+
+                if (region && _self.data('region') != region) 
+                    _self.hide();
+
+                var reg = new RegExp(storename, 'gi');
+                if (storename && !_self.data('name').match(reg)) 
+                    _self.hide();
+            });
+        });
+
+        $('#btn_f_reset').click(function() {
+            $('#f_area').val('');
+            $('#f_province').val('');
+            $('#f_storename').val('');
+            $('.store').show();
+        });
+    }
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+        });
+    }
+
+    function init_edit() {
+        $self = $(this);
+        $(btns).prop('disabled', true);
+
+        $self.parent('p').nextAll('.edit_date').show();
+        old_val = $self.parent('p').nextAll('.edit_date').find('.date').val();
+        $self.prev('.joindate').hide();
+        $self.hide();
+        
+        $('.date').datetimepicker({
+            format : 'yyyy-mm-dd',
+            autoclose : true,
+            minView : 2
+        });
+
+        $('.edit_lbl').unbind('click');
+
+        $self.parent('p').next('.edit_date').find('.btn_save_date').click(function() {
+            $self = $(this);
+            
+            value = $self.prev('.date').val();
+            $self.parent('.edit_date').prev('p').find('.joindate').text(value);
+            $self.parent('.edit_date').prev('p').find('.joindate, .edit_lbl').show();
+
+            if (value != old_val)
+                $self.parents('td').addClass('modified');
+
+            $('.edit_lbl').bind('click', init_edit);
+            $(btns).prop('disabled', false);
+            $self.parent('.edit_date').hide();
+        });
+
+        $self.parent('p').next('.edit_date').find('.btn_cancel_date').click(function() {
+            $self = $(this);
+            $self.parent('.edit_date').prev('p').find('.joindate, .edit_lbl').show();
+            $('.edit_lbl').bind('click', init_edit);
+            $(btns).prop('disabled', false);
+            $self.parent('.edit_date').hide();
+        });
+    }
+
+    <?php if($this->access('ajax', 'approve-leader')): ?>
+    function approveLeader() {
+        $self = $(this);
+        $(btns).prop('disabled', true);
+        $('.loading').remove();
+        $status = $self.parents('td').next('.ajax_status');
+        $status.html('<span class="loading"></span>');
+
+        pid = $self.data('id');
+        log_id = $self.data('log-id');
+
+        $.post('<?php echo HOST ?>ajax/approve-leader', {
+            pid : pid,
+            log_id : log_id
+        }, function(data) {
+            try {
+                data = $.parseJSON(data);
+
+                if ("undefined" != typeof data.code && data.code == 1) {
+                    $status.html("Approved");
+                    
+                    $self.next('.btn_reject').remove();
+                    $self.remove();
+                } else if ("undefined" != typeof data.code 
+                        && "undefined" != typeof data.error) {
+                    $status.html("ERROR ["+data.code+"] " + data.error);
+                }
+            } catch(err) {
+                $status.html(err.message);
+            } finally {
+                $('.loading').remove();
+                $(btns).prop('disabled', false);
+            }
+        });
+
+        
+        
+    }
+    <?php endif; ?>
+
+    <?php if($this->access('ajax', 'reject-leader')): ?>
+    function rejectLeader() {
+        $self = $(this);
+        $(btns).prop('disabled', true);
+        $('.loading').remove();
+        $status = $self.parents('td').next('.ajax_status');
+        $status.html('<span class="loading"></span>');
+
+        pid = $self.data('id');
+        log_id = $self.data('log-id');
+
+        $.post('<?php echo HOST ?>ajax/reject-leader', {
+            pid : pid,
+            log_id : log_id
+        }, function(data) {
+            try {
+                data = $.parseJSON(data);
+
+                if ("undefined" != typeof data.code && data.code == 1) {
+                    $status.html("Rejected");
+
+                    $self.prev('.btn_approve').remove();
+                    $self.remove();
+                } else if ("undefined" != typeof data.code 
+                        && "undefined" != typeof data.error) {
+                    $status.html("ERROR ["+data.code+"] " + data.error);
+                }
+            } catch(err) {
+                $status.html(err.message);
+            } finally {
+                $('.loading').remove();
+                $(btns).prop('disabled', false);
+            }
+        });
+
+        
+        
+    }
+    <?php endif; ?>
+
+    <?php if($this->access('ajax', 'remove-leader')): ?>
+    function removeLeader() {
+        $self = $(this);
+        $(btns).prop('disabled', true);
+        $('.loading').remove();
+        $status = $self.parents('td').next('.ajax_status');
+        $status.html('<span class="loading"></span>');
+
+        pid = $self.data('id');
+        log_id = $self.data('log-id');
+
+        $.post('<?php echo HOST ?>ajax/remove-leader', {
+            pid : pid,
+            log_id : log_id
+        }, function(data) {
+            try {
+                data = $.parseJSON(data);
+
+                if ("undefined" != typeof data.code && data.code == 1) {
+                    $status.html("Removed");
+                    $self.remove();
+                } else if ("undefined" != typeof data.code 
+                        && "undefined" != typeof data.error) {
+                    $status.html("ERROR ["+data.code+"] " + data.error);
+                }
+            } catch(err) {
+                $status.html(err.message);
+            } finally {
+                $('.loading').remove();
+                $(btns).prop('disabled', false);
+            }
+        });
+
+        
+        
+    }
+    <?php endif; ?>
+</script>

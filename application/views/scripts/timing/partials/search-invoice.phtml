@@ -1,0 +1,140 @@
+<style type="text/css">
+    *{
+        font-family: Phetsarath OT;
+    }
+</style>
+<form class="form-search form-horizontal" method="get" action="#">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="sn" class="span2">SN </label>
+                <input id="sn" name="sn" placeholder="ຄົ້ນຫາດ້ວຍເລກລະຫັດບິນ" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['sn']) and printf($this->params['sn']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="imei" class="span2"> Imei </label>
+                <textarea name="imei" placeholder="ຄົ້ນຫາດ້ວຍເລກ IMEI" id="imei" cols="20" rows="10"><?php echo$this->params['imei'] ?></textarea>
+            </div>
+        </div>
+        <div class="span5">
+             <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="id" class="span2">Store ID</label>
+                <input id="id" name="id" placeholder="ຄົ້ນຫາດ້ວຍລະຫັດຮ້ານ" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['id']) and printf($this->params['id']);?>">
+            </div>
+            <div class="control-group">
+                <label for="name" class="span2">Store Name</label>
+                <input id="name" name="name" placeholder="ຄົ້ນຫາດ້ວຍຊື່ຮ້ານ" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+
+           </div>
+       </div>
+
+    <div style="padding-left: 200px">
+        <button type="submit" class="btn btn-success" name="search" >Search</button>
+    </div>
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    // Multi-Select
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $('.date').datepicker({ dateFormat: "dd/mm/yy" });
+
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('#grand_area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var grand_area_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-area",
+                {grand_area_id: grand_area_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#area_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#area_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#area_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#good_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var good_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/hr-report/load-good-color",
+                {good_id: good_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#color_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#color_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#color_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+    });
+
+</script>

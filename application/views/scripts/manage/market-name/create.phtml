@@ -1,0 +1,83 @@
+<div class="page-header">
+    <h1>Market Name Details</h1>
+</div>
+
+<form role="form" action="<?php echo HOST.'manage/market-name-save';?>" method="post">
+
+<div class="row">
+        <div class="span5">
+
+            <?php 
+                if ($this->market_name_detail) { 
+                    $mn_details = $this->market_name_detail;
+            ?>
+                <div class="control-group">
+                    <label for="market_name_id" class="span2">Market Name ID : </label>
+                    <?php echo $mn_details['id']; ?>
+                </div>
+
+            <?php } ?>
+
+            <div class="control-group">
+                <label for="market_name" class="span2">Market Name</label>
+                <input id="market_name" name="market_name" type="text" class="input-medium search-query form-control" value="<?php isset($mn_details['name']) and printf($mn_details['name']);?>" required="required" >
+            </div>
+
+        </div>
+
+        <div class="span5">
+            
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id" class="span3" required="required">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($mn_details['area_id']) and $mn_details['area_id']==$area->id):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="market_type" class="span2">Market Type</label>
+                <select id="market_type" name="market_type" class="span3" required="required">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->market_type) :
+                        foreach ($this->market_type as $market_type):
+                            ?>
+                            <option value="<?php echo $market_type->id;?>" <?php if (isset($mn_details['market_type_id']) and $mn_details['market_type_id']==$market_type->id):?>selected<?php endif;?>><?php echo $market_type->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+</div>
+
+<br/>
+
+<input type="hidden" name="mn_id" id="mn_id" value="<?php echo $mn_details['id']; ?>">
+<input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+<button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="1">Save</button>
+<button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

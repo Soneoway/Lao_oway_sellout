@@ -1,0 +1,145 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'code'         =>'Code',
+                    'lastname'     =>'Name',
+                    'email'        =>'Email',
+                    'Department',
+                    'Team',
+                    'Title',
+                    'joined_at'    =>'Joined',
+                    'phone_number' =>'Phone No',
+                    'Is Approved',
+                    'Action'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $arrApproved = array(
+            -1 => 'Rejected',
+            0 => 'Pending',
+            1 => 'Approved',
+        );
+        if (isset($this->staffs) and $this->staffs)
+            foreach ($this->staffs as $k=>$staff): ?>
+        <tr <?php
+            if ($staff['contract_expired_at']):
+            $datetime1 = new DateTime($staff['contract_expired_at']);
+            $today = new DateTime();
+            $interval = $datetime1->diff($today, false);
+            $interval = $interval->invert ? $interval->days : -$interval->days;
+            if ($interval<=14):?>style="background-color: cornsilk" title="Contract is going to be out of date at <?php echo ($staff['contract_expired_at'] ? date('d/m/Y', strtotime($staff['contract_expired_at'])) : '');?>" <?php endif;endif;?>>
+            <td>
+                <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                ?>
+            </td>
+            <td><?php echo $staff['code'];?></td>
+            <td><?php echo $staff['firstname'].' '.$staff['lastname'];?></td>
+            <td <?php if (!$staff['email']):?> style="background-color: coral"<?php endif;?>><?php echo $staff['email'];?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['name'] : '');?></td>
+            <td><?php echo (isset($this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name']) ? $this->recursiveDeparmentTeamTitle[$staff['department']]['children'][$staff['team']]['children'][$staff['title']]['name'] : '');?></td>
+            <td><?php echo ($staff['joined_at'] ? date('d/m/Y', strtotime($staff['joined_at'])) : '');?></td>
+            <td><?php echo $staff['phone_number'];?></td>
+            <?php if (isset($this->is_list_basic_record) and $this->is_list_basic_record) {?>
+                <td><?php echo ( isset($arrApproved[$staff['is_approved']]) ? $arrApproved[$staff['is_approved']] : '' );?></td>
+                <td class="">
+                    <?php if ($this->access('staff', 'view-basic')): ?>
+                        <a title="View Basic Info" href="<?php echo '/staff/view-basic?id='.$staff['id'];?>"> <i class="icon-eye-open"></i></a>
+                    <?php endif;?>
+                    <?php if ($this->access('staff', 'create-basic')): ?>
+                        <a title="Create Basic Info" href="<?php echo '/staff/create-basic?id='.$staff['id'];?>"> <i class="icon-edit-sign"></i></a>
+                    <?php endif;?>
+                    <?php if ($this->access('staff', 'approve-basic')){ ?>
+                        <?php if ($staff['is_approved']==0){ ?>
+                            <a title="Approve Basic Info" href="<?php echo '/staff/approve-basic?id='.$staff['id'];?>"> <i class="icon-ok"></i></a>
+                        <?php }?>
+                    <?php }?>
+                    <?php if (
+                        $this->access('staff', 'upload-photo')
+                        and $staff['code']
+                    ){ ?>
+                        <a title="Upload photo" href="<?php echo '/staff/upload-photo?staff_id='.$staff['staff_id'];?>"> <i class="icon-picture"></i></a>
+                    <?php }?>
+                </td>
+            <?php } else { ?>
+                <td><?php echo ( isset($arrApproved[$staff['staff_temp_is_approved']]) ? $arrApproved[$staff['staff_temp_is_approved']] : '' );?></td>
+                <td class="">
+                    <?php if ($this->access('staff', 'create-basic')): ?>
+                        <?php if ($staff['staff_temp_id']){?>
+                            <a title="Create Basic Info" href="<?php echo '/staff/create-basic?id='.$staff['staff_temp_id'];?>"> <i class="icon-edit-sign"></i></a>
+                        <?php } else {?>
+                            <a title="Create Basic Info" href="<?php echo '/staff/create-basic?staff_id='.$staff['id'];?>"> <i class="icon-edit-sign"></i></a>
+                        <?php }?>
+                    <?php endif;?>
+                    <?php if ($this->access('staff', 'approve-basic')){ ?>
+                        <?php if ($staff['staff_temp_id'] and $staff['staff_temp_is_approved']==0){ ?>
+                            <a title="Approve Basic Info" href="<?php echo '/staff/approve-basic?id='.$staff['staff_temp_id'];?>"> <i class="icon-ok"></i></a>
+                        <?php }?>
+                    <?php }?>
+                    <?php if ($this->access('staff', 'upload-photo')){ ?>
+                        <a title="Upload photo" href="<?php echo '/staff/upload-photo?staff_id='.$staff['id'];?>"> <i class="icon-picture"></i></a>
+                    <?php }?>
+                </td>
+            <?php } ?>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript">
+	$modal = $('#modal');
+	
+	$('.note_label').click(function(){
+	    var _self = $(this);
+
+	    $('body').modalmanager('loading');
+	    $('#note_content').html(_self.data('note'));
+	    $('#note_id').val(_self.data('id'));
+       
+	    $modal.modal('loading');
+        noteid=_self.data('id');
+
+        $.ajaxSetup({
+            cache: true
+        });
+
+	    $.post('<?php echo HOST ?>/staff/quick-edit',
+                {
+                    id            : noteid,
+                   	back_url : '<?php echo HOST.$this->current_url; ?>'
+                },
+                function(data){
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+	});
+    
+    
+    </script>
+  
+    <script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<?php echo $this->confirm();?>
+<?php echo $this->load();?>

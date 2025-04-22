@@ -1,0 +1,105 @@
+<style type="text/css">
+    .text-center {
+        text-align: center;
+    }
+
+    .timing_sales_list li {
+        list-style-type: none;
+        padding: 20px 10px;
+    }
+
+    .timing_sales_list li:nth-child(2n) {
+        background: #F2F6FF;
+    }
+
+    .timing_sales_list li p {
+        margin: 0;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Timing Details <small>Remove Reports</small></h3>
+</div>
+<div class="modal-body">
+    <div class="row-fluid">
+        <div class="span12 text-center">Staff Name: <strong><?php if( isset( $this->staffs[ $this->timing['staff_id'] ] ) ) echo $this->staffs[ $this->timing['staff_id'] ] ?></strong></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span3">Shift: <?php if( isset( $this->shift[ $this->timing['shift'] ] ) ) echo $this->shift[ $this->timing['shift'] ]['name'] ?></div>
+        <div class="span3">Date: <?php echo date('d/m/Y', strtotime($this->timing['from'])) ?></div>
+        <div class="span2">Start Time: <?php echo date('H:i', strtotime($this->timing['from'])) ?></div>
+        <div class="span2">End Time: <?php echo date('H:i', strtotime($this->timing['to'])) ?></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">Store: <?php if( isset( $this->stores[ $this->timing['store'] ] ) ) echo $this->stores[ $this->timing['store'] ]  ?></div>
+    </div>
+    <legend><small>Sell list</small></legend>
+    <?php if (isset($this->timing_sales) && $this->timing_sales): ?>
+        <ul class="timing_sales_list">
+        <?php foreach ($this->timing_sales as $sales): ?>
+            <li>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <p><strong><?php echo $sales['imei'] ?></strong></p>
+                        <p>
+                            <?php if( isset( $this->goods[ $sales['product_id'] ] ) ) echo $this->goods[ $sales['product_id'] ] ?>
+                            <?php if( isset( $this->models[ $sales['model_id'] ] ) ) echo '/'. $this->models[ $sales['model_id'] ] ?>
+                        </p>
+                    </div>
+                    <div class="span4">
+                        <p><strong><?php if( isset( $this->customers[ $sales['customer_id'] ] ) ) echo $this->customers[ $sales['customer_id'] ]['name'] ?></strong></p>
+                        <p><?php if( isset( $this->customers[ $sales['customer_id'] ] ) ) echo $this->customers[ $sales['customer_id'] ]['phone_number'] ?></p>
+                        <p><?php if( isset( $this->customers[ $sales['customer_id'] ] ) ) echo $this->customers[ $sales['customer_id'] ]['address'] ?></p>
+                    </div>
+                    <div class="span3">
+                        <?php if (isset($this->ina_list[$sales['id']])):?>
+                            <span style="color:red">Not Activated!</span>
+                            <button class="btn btn-mini btn-info remove_timing_sales_btn" data-timing-sales-id="<?php echo $sales['id'] ?>">Remove this</button>
+                        <?php endif;?>
+                    </div>
+                </div>
+            </li>
+        <?php endforeach ?>
+        </ul>
+    <?php endif ?>
+</div>
+<div class="modal-footer">
+    <!--<button class="btn btn-success" id="btn_save" aria-hidden="true">Save</button>-->
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.remove_timing_sales_btn').click(function() {
+            _self = $(this);
+            $timing_modal.modal('loading');
+            timing_sales_id = _self.data('timing-sales-id');
+
+            $('.modal-body .alert').remove();
+
+            $.post('<?php echo HOST ?>ajax/remove-timing-sales', {
+                timing_sales_id: timing_sales_id
+            }, function(data) {
+                data = $.parseJSON(data);
+
+                $timing_modal.modal('loading');
+
+                if (data.code == 1) { //success
+
+                    $('.modal-body').prepend('<div class="alert alert-success">Remove Successfully</div>');
+                    _self.parents('li').fadeOut();
+                    _self.parents('li').remove();
+                } else if (data.code==-1) {
+                    $('.modal-body').prepend('<div class="alert alert-error">Invalid ID</div>');
+                } else if (data.code==-2) {
+                    $('.modal-body').prepend('<div class="alert alert-error">Sales not Exists</div>');
+                } else if (data.code==-3) {
+                    $('.modal-body').prepend('<div class="alert alert-error">Timing not Exists</div>');
+                } else if (data.code==-4) {
+                    $('.modal-body').prepend('<div class="alert alert-error">You have no role here</div>');
+                }
+            });
+        });
+    });
+</script>

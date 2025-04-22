@@ -1,0 +1,38 @@
+<form class="form-horizontal" onsubmit="return false;">
+    <div class="control-group">
+        <label class="control-label" for="f_area">Area</label>
+        <div class="controls">
+            <select name="f_area" id="f_area">
+                <option value>---</option>
+                <?php if (isset($this->areas) && $this->areas): ?>
+                    <?php foreach ($this->areas as $key => $value): ?>
+                        <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="f_province">Province</label>
+        <div class="controls">
+            <select name="f_province" id="f_province">
+                <option value>---</option>
+                <?php if (isset($this->regions) && $this->regions): ?>
+                    <?php foreach ($this->regions as $key => $value): ?>
+                        <option value="<?php echo $key ?>"><?php echo $value['name'] ?></option>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="f_storename">Store Name</label>
+        <div class="controls">
+            <input type="text" id="f_storename" name="f_storename" placeholder="Enter Store Name">
+        </div>
+    </div>
+    <div class="control-group">
+        <button type="button" id="btn_f_search" class="btn btn-info pull-right">Search</button>
+        <button type="button" id="btn_f_reset" class="btn btn-warning">Reset</button>
+    </div>
+</form>

@@ -1,0 +1,114 @@
+<?php
+/* xu ly noi dung :)*/
+$v = $this->v;
+
+$this->luong = $this->l;
+
+ ?><p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;
+</span></span>Tổng tiền lương đã bao gồm phụ cấp trách nhiệm: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['base_salary'] ?>  đồng/tháng trong đó: <o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-top:0in;margin-right:0in;margin-bottom:2.0pt;
+margin-left:1.0in;text-indent:-.25in;line-height:18.0pt;mso-line-height-rule:
+exactly;mso-list:l1 level2 lfo2;tab-stops:list 1.0in"><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol">•<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in">Lương cơ bản: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['base_salary'] ?>  đồng/tháng; </span><o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;
+</span></span>Phụ cấp khác chưa bao gồm trong lương (các khoản này có thể thay đổi tùy thuộc vào tình hình kinh doanh thực tế của công ty):<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-top:0in;margin-right:0in;margin-bottom:2.0pt;
+margin-left:1.0in;text-indent:-.25in;line-height:18.0pt;mso-line-height-rule:
+exactly;mso-list:l1 level2 lfo2;tab-stops:list 1.0in"><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol">•<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in">Phụ cấp cơm trưa: </span><b><?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_1'] ?></b><b><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in"> </span></b><span style="border:none windowtext 1.0pt;mso-border-alt:none windowtext 0in;
+padding:0in">đồng/người/tháng;</span><o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-top:0in;margin-right:0in;margin-bottom:6.0pt;
+margin-left:1.0in;text-indent:-.25in;line-height:10.0pt;mso-line-height-rule:
+exactly;mso-list:l1 level2 lfo2;tab-stops:list 1.0in"><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol">•<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in">Phụ cấp xăng xe: </span><b><?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_2'] ?></b><b><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in"> </span></b><span style="border:none windowtext 1.0pt;mso-border-alt:none windowtext 0in;
+padding:0in">đồng/người/tháng;</span><o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-top:0in;margin-right:0in;margin-bottom:6.0pt;
+margin-left:1.0in;text-indent:-.25in;line-height:10.0pt;mso-line-height-rule:
+exactly;mso-list:l1 level2 lfo2;tab-stops:list 1.0in"><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol">•<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in">Phụ cấp điện thoại: </span><b><?php if(isset($this->luong)) echo $this->luong[$v['id']]['allowance_3'] ?></b><b><span style="border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0in;padding:0in"> </span></b><span style="border:none windowtext 1.0pt;mso-border-alt:none windowtext 0in;
+padding:0in">đồng/người/tháng;</span><o:p></o:p></p>
+
+
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:16.0pt;mso-line-height-rule:exactly;mso-list:l0 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Thưởng theo doanh số hàng tháng (nếu có);<o:p></o:p></p>
+
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:16.0pt;mso-line-height-rule:exactly;mso-list:l0 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Hình thức trả lương, thưởng:&nbsp; Chuyển khoản/tiền mặt ;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Được trả lương và thưởng doanh số (nếu có) vào
+ngày 10 hàng tháng;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Tiền thưởng hàng năm: <span lang="VI">T</span>ùy thuộc tình hình kinh doanh và chính
+sách mỗi năm của công ty;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ nâng lương:&nbsp; Theo quy định công ty;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Được trang bị bảo hộ lao động: theo nhu cầu công
+việc;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ nghỉ ngơi (nghỉ hàng tuần, phép năm, lễ
+tết …): Theo qui định của nhà nước: (1 năm nghỉ 12 ngày phép và nghỉ lễ, tết,…)
+Căn cứ theo Mục 2 và Mục 3 Chương VII BLLĐ 2012;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>BHXH, BHYT, BHTN: Mức đóng được tính dựa trên
+lương cơ bản theo tỉ lệ như sau:<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;tab-stops:207.0pt 4.5in">+
+Người sử dụng lao động trích nộp 18% BHXH, 3% BHYT và 1% BHTN;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;tab-stops:207.0pt 4.5in">+
+Người lao động trích nộp 8% BHXH, 1.5% BHYT, và 1% BHTN;<o:p></o:p></p>
+
+<p class="MsoNormal" style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l0 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chế độ đào tạo: Theo tình hình thực tế của công
+ty.<o:p></o:p></p>
+
+

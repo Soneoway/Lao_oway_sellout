@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTP_REFERER} !^http://sellout.oppolaos.com/ [NC]
+RewriteRule ^.*$ - [F,L]

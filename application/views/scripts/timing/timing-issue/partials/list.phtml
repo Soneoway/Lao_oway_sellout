@@ -1,0 +1,163 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Timing Date</th>
+        <th>Staff Code</th>
+        <th>Staff Name</th>
+        <!-- <th>Group</th> -->
+        <th>Area</th>
+        <!-- <th>Store ID</th> -->
+        <th>Store Name</th>
+        <th>Imei</th>
+        <th>Old</th>
+        <th>Issue Type</th>
+        <th>Issue Status</th>
+        <th>Timing Status</th>
+        <th>Actoin</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if (isset($this->timing_issue) and $this->timing_issue)
+        foreach ($this->timing_issue as $k=>$timing_issue): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $timing_issue['request_timing_date']; ?></td>
+                <td><?php echo $timing_issue['staff_code'];?></td>
+                <td><?php echo $timing_issue['staff_name'];?></td>
+                <!-- <td><?php echo $timing_issue['staff_group'];?></td> -->
+                <td><?php echo $timing_issue['area_name'];?></td>
+                <!-- <td><?php echo $timing_issue['st_id'];?></td> -->
+                <td><?php echo $timing_issue['st_name'];?></td>
+                <td><?php echo $timing_issue['imei'];?></td>
+                <td>
+                    <?php 
+                        if ($timing_issue['old_data'] == 1) { echo "Yes"; } 
+                        else { echo "No"; }
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        switch ($timing_issue['issue_type']) {
+                            case 1 : echo "Imei Not Exists";                break;
+                            case 2 : echo "Store Not Exists";               break;
+                            case 3 : echo "Distributor Not Exists";         break;
+                            case 4 : echo "Store Type / Distributor Type";  break;
+                            case 5 : echo "Store Chain 1 Not Exists";       break;
+                            case 6 : echo "Mapping Distributor";            break;
+                            case 7 : echo "IMEI APK / Demo";                break;
+                            case 8 : echo "IMEI Seven-Eleven";              break;
+                            case 9 : echo "IMEI Grade B";                   break;
+                            default : echo "-";                             break; 
+                        }
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        switch ($timing_issue['status_id']) {
+                            case 0 : echo "<span class='label label-info'>Waiting</span>";          break;
+                            case 1 : echo "<span class='label label-success'>Finish</span>";        break;
+                            case 2 : echo "<span class='label label-important'>Reject</span>";      break;
+                            case 3 : echo "<span class='label label-warning'>In Progress</span>";   break;
+                            default : echo "-"; break; 
+                        }
+                    ?>
+                </td>
+                <td style="font-family: phetsarath ot;">
+                    <?php 
+
+                        if ($timing_issue['status_id'] == 1 || $timing_issue['status_id'] == 2) {
+                            echo "-";
+                        } else {
+                            $QTiming = new Application_Model_Timing();
+                            $checkImei = $QTiming->checkImeiDealer($timing_issue['imei'], $timing_issue['st_id']);
+                            
+                            if ($checkImei == 0) { echo "ລາຍງານຍອດໄດ້"; } 
+                            else { echo "ລໍຖ້າດຳເນີນການ"; }
+                        }
+                        
+                    ?>
+                </td>
+
+                <td>
+                    <a title="View" href="/timing/timing-issue-edit?id=<?php echo $timing_issue['ti_id'];?>"> <i class="icon-eye-open"></i></a>
+                    <a title="Remark" href="#" ><i class="icon-edit" data-ti-id="<?php echo $timing_issue['ti_id'];?>"></i></a>
+                    
+                    <!--
+                    <?php if ($this->access('manage', 'store-del') && ( !isset($store['del']) || !$store['del'] ) ): ?>
+                        <a title="Delete" class="confirmLink" href="/manage/store-del?id=<?php echo $store['id'];?>"> <i class="icon-trash"></i></a>
+                    <?php endif ?>
+                    -->
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+
+    function saveRemark(status_id) {
+
+        var ti_id       = $('#modal_ti_id').val();
+        var remark      = $('#modal_remark').val();
+
+        $.post('<?php echo HOST ?>timing/timing-issue-remark-save',
+        {
+            ti_id       : ti_id,
+            remark      : remark,
+            status_id   : status_id
+        },
+        function(data){
+            //alert("Update Successful!");
+            location.reload();
+            //refreshMarketName();
+        });
+    }
+
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.icon-edit').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>timing/timing-issue-remark',
+                {
+                    ti_id : _self.data('ti-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(7)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    
+</script>
+
+<?php //echo $this->load();?>

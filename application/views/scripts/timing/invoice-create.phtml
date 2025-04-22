@@ -1,0 +1,535 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    body, button, input, option,span{
+        font-family: phetsarath ot;
+    }
+</style>
+ <?php 
+    $today = date('d/m/Y');
+    $check_status ="checked";
+?> 
+
+<div class="page-header">
+        <h1>ສ້າງບິນຂາຍ</h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<style>
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+    #email_modal textarea {
+    	resize: none;
+    }
+
+    .stock {
+    	margin-bottom: 20px;
+    	padding: 10px;
+		background: white;
+    }
+</style>
+
+<style>
+    option,select{
+        font-family: phetsarath ot;
+    }
+    .customCalendar,
+    .customCalendar div,
+    .customCalendar span {
+        background-color: green; /* background color */
+        border-color: green;     /* border color */
+        color: yellow;           /* text color */
+    }
+</style>
+
+<div class="row-fluid">
+    <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+        <form role="form" id="form" action="<?php echo HOST.'timing/save-invoice';?>" method="post" class="row-fluid">
+        <div class="span3">
+
+             <div class="control-group">
+                <label for="date">ວັນທີອອກບິນ</label>
+                <input placeholder="ວັນ/ເດືອນ/ປີ" type="text" readonly="readonly" class="form-control span3 cursorok" id="date" name="date" required="required" value="<?php echo $today;?>">
+            </div>
+
+            <input type="hidden" name="shift" value="1">	
+            <input type="hidden" name="timepicker_start" value="09:00">	
+            <input type="hidden" name="timepicker_end" value="23:00">	
+	
+            <div class="control-group">
+                <select name="store" id="store" required="required" class="span3 chk_store" onChange="check_store();">
+                    <option value="">ກະລຸນາເລືອກຮ້ານຄ້າ</option>
+                    <?php if (isset($this->stores) && $this->stores): ?>
+                        <?php foreach ($this->stores as $store):?>
+                            <option value="<?php echo $store->id;?>" <?php if (isset($this->timing) and $this->timing->store==$store->id):?> selected="selected"
+                            <?php endif;?>>
+                                <?php echo $store->name;?></option>
+                        <?php endforeach;?>
+                    <?php endif ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Imei</label>
+                <input pattern="[0A-9Z]{13,17}" type="text" name="imei" placeholder="ໃສ່ເລກ IMEI" class="span3">
+            </div>
+            
+        </div>
+                    <div class="span3">
+                        <label>ຂໍ້ມູນລູກຄ້າ</label>
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <div class="control-group">
+                                  <input type="text" name="customer_name" required placeholder="ຊື່ລູກຄ້າ" class="span3" />
+                                    <p class="help-block"></p>
+                                </div>
+                                <div class="control-group">
+                                 <input type="text" pattern="[0][0-9]{7,10}" name="phone_number" required placeholder="ເບີໂທລະສັບ" class="span3" />
+                                    <p class="help-block"></p>
+                                </div>
+
+                                <div class="control-group">
+                                      <label class="">ສ່ວນຫຼູດ <span style="color: red">*</span>
+                                        <select class="span3" name="discount">
+                                            <option value="0">ບໍ່ມີສ່ວນຫຼຸດ</option>
+                                            <option value="5">ສ່ວນຫຼຸດ 5%</option>
+                                            <option value="7.5">ສ່ວນຫຼຸດ 7.5%</option>
+                                            <option value="10">ສ່ວນຫຼຸດ 10%</option>
+                                            <option value="15">ສ່ວນຫຼຸດ 15%</option>
+                                            <option value="20">ສ່ວນຫຼຸດ 20%</option>
+                                            <option value="30">ສ່ວນຫຼຸດ 30%</option>
+                                            <option value="40">ສ່ວນຫຼຸດ 40%</option>
+                                            <option value="50">ສ່ວນຫຼຸດ 50%</option>
+                                            <option value="60">ສ່ວນຫຼຸດ 60%</option>
+                                            <option value="70">ສ່ວນຫຼຸດ 70%</option>
+                                            <option value="80">ສ່ວນຫຼຸດ 80%</option>
+                                            <option value="90">ສ່ວນຫຼຸດ 90%</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                         <div class="span6" >
+                        <input type="checkbox" id="payment" class="payment" name="payment" value=""<?php echo $check_status ?>>&nbsp; <span style="color: blue; font-size: 16px;">ຈ່າຍສົດ</span></input>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" id="payment" class="payment" name="payment" value="1">&nbsp; <span style="color: blue; font-size: 16px;">ຜ່ອນຈ່າຍ </span></input>
+                    </div>
+
+                    </div>
+			 
+        </div>  
+        <div class="clearfix"></div>
+            <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url ) echo $this->back_url;?>">
+            <button id="btn_submit" type="submit" class="btn btn-primary">ສ້າງບິນ</button>
+            <button type="button" class="btn btn-danger go-back">ຍົກເລີກ</button>
+
+        </div>
+        <br>
+
+    </form>
+
+</div>
+<link rel="stylesheet" type="text/css" href="/js/file-uploader/fileuploader.css"/>
+<script src="/js/file-uploader/fileuploader.js" type="text/javascript"></script>
+
+<script language="javascript" type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script type="text/javascript" src="/js/file-validator.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.full.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="/js/action_sweetalert.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+$(function () {
+  $('#good_id').select2()
+});
+
+    function createUploader(selector){
+
+        selector.find('.file-uploader').each(function (){
+            var _self = $(this);
+            var uploader = new qq.FileUploader({
+                element: _self[0],
+                action: '/timing/upload',
+                multiple: false,
+                // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                sizeLimit: 20 * 1024 * 1024,
+                onProgress: function(id, fileName, loaded, total){
+                    $('.fix-msg').addClass('show');
+
+                    $('#btn_submit').attr('disabled', 'disabled');
+                    $("form").submit(function (e) {
+                            e.preventDefault();
+                    });
+
+                    $(window).on('beforeunload', function() {
+                        return 'Please wait your upload proccess complete!';
+                    });
+                },
+                onComplete: function(id, fileName, responseJSON){
+                    if ( responseJSON.success==true ){
+                        _self.next().val( responseJSON.uniqid + '_located_' + fileName );
+                    }
+
+                    $("#btn_submit").removeAttr("disabled");
+
+                    $("form").unbind('submit');
+
+                    window.onbeforeunload = null;
+
+                    $('.fix-msg').removeClass('show');
+                },
+                onCancel: function(id, fileName){},
+                onError: function(id, fileName, xhr){}
+            });
+        });
+    }
+
+    function initSendNotify () {
+    	$('body').on('click', '.send_notify', function() {
+    		createUploaderIMEI($('#email_modal'));
+    		$('#email_modal').find(".modal-body .alert").remove();
+
+			_self     = $(this);
+			_imei     = _self.data('imei');
+			_date     = $('#date').val();
+			_shift    = $('#shift').val();
+			_store    = $('#store').val();
+			_case     = _self.data('case');
+			_staff_first     = _self.data('staff-first');
+			_checksum = _self.data('checksum');
+			_timing_sales_id = _self.data('timing-sales-id');
+
+			// $('#date').attr('required', 'required');
+			// $('#shift').attr('required', 'required');
+			// $('#store').attr('required', 'required');
+
+    		$('#inputIMEI').val(_imei);
+    		$('#inputDate').val(_date);
+            $('#inputStore').html($('#store').html())
+    		$('#inputStore').val(_store);
+    		$('#staffFirst').val(_staff_first);
+    		$('#inputCase').val(_case);
+    		$('#checksum').val(_checksum);
+    		$('#inputShift').val(_shift);
+    		$('#timing_sales_id').val(_timing_sales_id);
+        	$('#email_modal').modal();
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("input:checkbox").on('click', function() {
+  var $box = $(this);
+  if ($box.is(":checked")) {
+    var group = "input:checkbox[id='" + $box.attr("id") + "']";
+    $(group).prop("checked", false);
+    $box.prop("checked", true);
+  } else {
+    $box.prop("checked", false);
+  }
+});
+
+        $('.go-back').click(function(e){
+
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        init_get_store();
+
+        createUploader($('body'));
+
+        initChangeProduct();
+
+        initAddSale();
+
+        initRemoveSale();
+        initSendNotify();      
+        format_imei();  
+
+        $('#send_imei_btn').click(function() {
+        	$('#email_modal').find(".modal-body .alert").remove();
+        	$('#email_modal').find(".modal-body").append('<div class="alert alert-warning fade in">Sending...</div>');
+        });
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+        $('#inputDate').datetimepicker({
+            weekStart: 1,
+            clear: true,
+            minView: '2',
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+	    });
+
+        $('#timepicker_start').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpStartSelect
+        });
+        $('#timepicker_end').timepicker({
+            showCloseButton: true,
+            showNowButton: true,
+            onSelect: tpEndSelect
+        });
+
+        $('#shift').change(function(){
+        	var option = $(this).find('option:selected');
+            $('#timepicker_start').val(option.data('start'));
+            $('#timepicker_end').val(option.data('end'));
+        });
+
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/timing/events?id=<?php
+                    if (isset($this->timing) and $this->timing->staff_id!=$this->user_id)
+                        echo $this->timing->staff_id;
+                    else
+                        echo $this->user_id;
+                ?>"
+        });
+
+		$('form#timing_form').bind('submit',function(e){
+        	$('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+
+		<?php if ( ! ( isset($this->timing) and $this->timing ) ): ?>
+        get_report_stock();
+        <?php endif; ?>
+
+        check_tgdd();
+
+        $('#store').on('change', check_tgdd);
+    });
+
+    function check_warrant() {
+
+        $('.chk_warrant').change(function() {
+
+            var _self = $(this);
+            var next_model = _self.parent().find('.warrant');
+            // alert(_self.val());
+            // alert(next_model.val());
+
+            if (_self.val() == 1) { 
+                next_model.removeAttr('readonly');
+                next_model.attr('required','required');
+                next_model.css('display','block');
+            } else { 
+                next_model.val('');
+                next_model.removeAttr('required');
+                next_model.attr('readonly','readonly');
+                next_model.css('display','none'); 
+            } 
+
+        });
+        
+    }
+
+    function check_store() {
+        
+        $('.chk_store').change(function() {
+
+            var _self = $(this);
+            var selected_store = $('option:selected', _self).attr('data-bs');
+
+            var next_model = _self.parent().parent().parent().find('.chk_warrant');
+            var next_model2 = _self.parent().parent().parent().find('.warrant');
+            //alert(next_model.val());
+
+            if (selected_store == 1) {
+
+
+                // next_model.removeAttr('disabled');
+                // next_model.attr('required','required');
+                // next_model.css('display','block');
+                
+            } else {
+
+                // next_model.removeAttr('required');
+                // next_model.attr('disabled','disabled');
+                // next_model.css('display','none'); 
+
+                next_model.val('');
+                next_model2.val('');
+
+                next_model2.removeAttr('required');
+                next_model2.attr('readonly','readonly');
+                next_model2.css('display','none'); 
+                
+            }
+
+        });
+        
+    }
+
+    function check_tgdd(e) {
+        store_name = $('#store').find('option:selected').text().trim();
+
+        if ( store_name.match(/^TGDĐ/) ) {
+            alert_tgdd();
+        } else {
+            $('.alert').remove();
+        }
+    }
+
+    function alert_tgdd() {
+        palert('ระบบจะลบ IMEI ในการเข้าร่วมที่ร้าน TGDD IMEI จะถูกป้อนโดยอัตโนมัติเข้าสู่ระบบที่จุดเริ่มต้นของเดือนถัดไปตามรายการที่โพสต์ใน บริษัท เนื่องจาก TGDD. <a href="<?php echo HOST ?>user/notification-view?id=6" target="_blank">ดูประกาศ</a>');
+        alert('ระบบจะลบ IMEI ในการเข้าร่วมที่ร้าน TGDD IMEI จะถูกป้อนโดยอัตโนมัติเข้าสู่ระบบที่จุดเริ่มต้นของเดือนถัดไปตามรายการที่โพสต์ใน บริษัท เนื่องจาก TGDD.');
+    }
+
+    // when start time change, update minimum for end timepicker
+    function tpStartSelect( time, endTimePickerInst ) {
+        $('#timepicker_end').timepicker('option', {
+            minTime: {
+                hour: endTimePickerInst.hours,
+                minute: endTimePickerInst.minutes
+            }
+        });
+    }
+
+    // when end time change, update maximum for start timepicker
+    function tpEndSelect( time, startTimePickerInst ) {
+        $('#timepicker_start').timepicker('option', {
+            maxTime: {
+                hour: startTimePickerInst.hours,
+                minute: startTimePickerInst.minutes
+            }
+        });
+    }
+
+     <?php if ( ! ( isset($this->timing) and $this->timing ) ): ?>
+    function get_report_stock() {
+    	setTimeout(function() {
+    		$.post('<?php echo HOST."partition/stock" ?>', {}, function(data) {
+    			$('#stock_report').html(data);
+    		});
+    	}, 500);
+    }
+    <?php endif; ?> 
+
+    function format_imei() {
+    	$('input[name="imei[]"]').keyup(function() {
+    		_self = $(this);
+    		imei = _self.val().trim();
+    		_self.val(imei);
+    	});
+    }
+
+    function init_get_store() {      
+        get_store('<?php echo $today;?>');            
+    }
+
+    function get_store(date) {
+        $('form#timing_form button[type=submit]').prop('disabled', true);
+        $('#store').html('<option value>Loading...<option>');
+
+        $.post('<?php echo HOST . "ajax/get-store" ?>', {
+            timing_time: date
+        }, function(data) {
+            $('form#timing_form button[type=submit]').prop('disabled', false);
+            $('#store').html(data);
+
+            if ( $('#store option').length == 1 ) {
+                $('#store').prop('disabled', true);
+            } else {
+                $('#store').prop('disabled', false);
+            }
+        });
+    }
+
+    function get_store_notify(date) {
+        $('form#timing_form button[type=submit]').prop('disabled', true);
+        $('#inputStore').html('<option value>Loading...<option>');
+
+        $.post('<?php echo HOST . "ajax/get-store" ?>', {
+            timing_time: date
+        }, function(data) {
+            $('form#timing_form button[type=submit]').prop('disabled', false);
+            $('#inputStore').html(data);
+
+            if ( $('#inputStore option').length == 1 ) {
+                $('#inputStore').prop('disabled', true);
+            } else {
+                $('#inputStore').prop('disabled', false);
+            }
+        });
+    }
+</script>
+
+<?php
+    echo $this->render('timing/partials/fixed-msg.phtml');
+?>

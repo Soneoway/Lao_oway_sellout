@@ -1,0 +1,18 @@
+<?php
+/* xu ly noi dung :)*/
+$v = $this->v;
+
+$this->luong = $this->l;
+
+ ?>
+
+<p class="cols2">-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span> Mức lương và phụ cấp mới: <o:p></o:p></p>
+
+<p class="cols2">-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span></span> Tổng lương bao gồm Phụ cấp trách nhiệm và các khoản phụ cấp khác *(nếu có):  <?php if(isset($this->luong)) echo $this->luong[$v['id']]['probation_salary'] ?> đồng/ tháng <o:p></o:p></p>
+<p class="cols2 left2">-<span> Trong đó: <o:p></o:p></p>
+<p class="cols2 left2">.<span> Lương cơ bản là: <?php if(isset($this->luong)) echo $this->luong[$v['id']]['base_salary'] ?> đồng/tháng<o:p></o:p></p>
+<p class="cols2">(Các khoản phụ cấp có thể thay đổi tùy theo tình hình hoạt động kinh doanh thực tế của Công ty)</p>
+
+<p class="cols2 height">-<span>  Thưởng doanh số: theo chính sách KPI tại từng thời điểm của công ty và tính thưởng khi đạt mức KPI trên 350000 đồng/tháng<o:p></o:p></p>

@@ -1,0 +1,73 @@
+<div class="page-header">
+    <h2>
+        INVENTORY ASSET TRAINER
+    </h2>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('trainer/partials/search_inventory_asset.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Name',
+                    'Quantity'
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <?php
+        $count =0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k=>$item):
+                ?>
+
+                <tr>
+                    <td><?php echo $k+1;?></td>
+                    <td><?php echo isset($this->cached_asset[$item['asset_id']]) ? $this->cached_asset[$item['asset_id']]  : '';?></td>
+                    <td><?php echo isset($item['total_quantity']) ? number_format($item['total_quantity'])  : '';?></td>
+                </tr>
+
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+</div>

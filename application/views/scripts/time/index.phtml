@@ -1,0 +1,109 @@
+<div class="page-header">
+    <h1>List Attendance Record by Day</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages_error as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="row-fluid">
+    <div class="span12">
+    
+     <div class="widget widget-nopad " data-toggle="collapse" data-target="#new">
+           <div class="widget-header "> <i class="icon-list-alt"></i>
+                          <h3>Total Timing in Month <i class="icon-ok-sign" rel="tooltip" title="Số ngày chấm công trong tháng" class="tooltip"></i></h3>
+           </div>
+                        <!-- /widget-header -->
+    <div class="widget-content collapse in" id="new">
+                <div class="widget big-stats-container">
+                      <div class="widget-content">
+                            <h6 class="bigstats">Working Day information</h6>   
+                            <div class="container">
+                            <div class="row">
+                            
+                               <div class="span6">
+                                     <label class="control-group span2">Total Timing</label>
+                                     <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['total']; else echo 0; ?></label>
+                                </div>
+                                
+                                <div class="span6">
+                                     <label class="control-group span2">Timing Approved</label>
+                                     <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['day_approve']; else echo 0; ?></label>
+                                </div>
+                                
+                                <div class="span6">
+                                     <label class="control-group span2">Timing not Approved</label>
+                                     <label class="control-group span2"><?php if(isset($this->day) and $this->day) echo $this->day['day_not_approve']; else echo 0; ?></label>
+                                </div>
+                            </div>
+                         </div>    
+      </div>
+    </div>
+</div>
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('time/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <?php
+        echo $this->render('time/partials/list.phtml');
+    ?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+        $("[rel=tooltip]").tooltip({ placement: 'right'});
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $modal = $('#modal');
+
+        $('#short_btn').click(function(){
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>/ajax/pg-short-report',
+                {
+					from : $('#from_date').val().trim(),
+					to : $('#to_date').val().trim()
+                },
+                function(data){
+                    $modal.html(data);
+                    $modal.modal();
+            	}
+            );
+        });
+    });
+
+    
+</script>
+<?php echo $this->load('combobox');?>

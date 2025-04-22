@@ -1,0 +1,36 @@
+<?php if (isset($this->dashboards) && count($this->dashboards) > 0): ?>
+	<div class="row-fluid">
+		<div class="span12">
+			<form class="form-inline" id="search_form">
+				<input type="text" id="search_email" value="" placeholder="Email" />
+				<select name="search_department" id="search_department">
+					<option value="0">-- Select Department --</option>
+					<?php if (isset($this->department) && $this->department): ?>
+						<?php foreach ($this->department as $key => $value): ?>
+							<option value="<?php echo $key ?>"><?php echo $value ?></option>
+						<?php endforeach ?>
+					<?php endif ?>
+				</select>
+				<select name="search_region" id="search_region">
+					<option value="0">-- Select Province --</option>
+					<?php if (isset($this->regionalMarket) && $this->regionalMarket): ?>
+						<?php foreach ($this->regionalMarket as $key => $value): ?>
+							<option value="<?php echo $key ?>"><?php echo $value['name'] ?></option>
+						<?php endforeach ?>
+					<?php endif ?>
+				</select>
+				<select name="search_area" id="search_area">
+					<option value="0">-- Select Area --</option>
+					<?php if (isset($this->area) && $this->area): ?>
+						<?php foreach ($this->area as $key => $value): ?>
+							<option value="<?php echo $key ?>"><?php echo $value ?></option>
+						<?php endforeach ?>
+					<?php endif ?>
+				</select>
+				<button class="btn btn-info" id="btn_search" type="button">Search</button>
+				<button class="btn btn-warning" id="btn_reset" type="button">Reset</button>
+			</form>
+			
+		</div>
+	</div>
+<?php endif ?>

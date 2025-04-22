@@ -1,0 +1,55 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <?php echo $this->sorting(array(
+                '#',
+                'title'      => 'Title',
+                'Content',
+                'Category',
+                'created_at' => 'Created At',
+                'Author',
+                'Action'
+            ),
+            $this->url, $this->sort, $this->desc); ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if (isset($this->informs) and $this->informs)
+        foreach ($this->informs as $k=>$inform): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                    
+                </td>
+                <td>
+                    <?php if (!isset( $inform['status'] ) || !$inform['status'] ) echo "<del>" ?>
+                        <a href="<?php echo HOST ?>manage/inform-view?id=<?php echo $inform['id'];?>"
+                                title="<?php echo $inform['title'] ?>"><?php echo My_String::excerpt($inform['title'], 100) ;?></a>
+                    <?php if (!isset( $inform['status'] ) || !$inform['status'] ) echo "</del>" ?>
+                </td>
+                <td><?php echo My_String::excerpt($inform['content'], 100) ?></td>
+                 <td><?php echo $this->inform_category[$inform['category_id']] ?></td>
+                <td><?php if(isset($inform['created_at']) && $inform['created_at']) echo date('d/m/Y H:i:s', strtotime($inform['created_at']));?></td>
+                <td class="">                  
+                    <?php                                      
+                            if (isset($inform['created_by']) && $inform['created_by'])
+                                echo $this->staff[$inform['created_by']];                     
+                    ?>
+                </td>
+                <td>
+                       <a href="<?php echo HOST ?>manage/inform-create?id=<?php echo $inform['id'];?>" title="<?php echo $inform['title'] ?>">Edit</a>
+                       <a href="<?php echo HOST ?>manage/inform-del?id=<?php echo $inform['id'];?>" title="<?php echo $inform['title'] ?>">Delete</a>
+                </td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<?php echo $this->load();?>

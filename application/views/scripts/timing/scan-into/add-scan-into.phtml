@@ -1,0 +1,64 @@
+<?php $userStorage = Zend_Auth::getInstance()->getStorage()->read(); ?>
+
+
+<div class="page-header">
+   <h1 style="font-family: noto sans lao;">Scan Into Store ສະແກນສະຕ໋ອກເຂົ້າຮ້ານ</h1>
+</div>
+
+<form class="form-horizontal" action="<?php echo HOST ?>timing/save-scan-into" method="post">
+   <div class="row" style="border-style: solid; padding: 30px 10px 30px 10px; border-color: lavender;">
+
+      <div class="span6">
+
+         <div class="control-group">
+            <div class="controls" style="padding-top: 1px;">
+               <p style="font-size: 14px;"> <span style="font-weight: bold;"> Staff Code : </span> <?php echo $userStorage->code ?> </p>
+               <p style="font-size: 14px"> <span style="font-weight: bold;"> Staff Name : </span> <?php echo $userStorage->firstname ?> <?php echo $userStorage->lastname ?> </p>
+            </div>
+         </div>
+
+      </div>
+
+      <div class="span5">
+
+         <div class="control-group">
+            <label for="store_id" class="control-label"> <span style="color: red">*</span> To Store : </label>
+            <div class="controls">
+               <select  style="font-family: noto sans lao;" class="span3" name="store_id" id="store_id" required>
+                  <option  style="font-family: noto sans lao;" value=""> Please Select Store ເລືອກຊື່ຮ້ານ </option>
+
+                  <?php if(isset($this->store) && $this->store) : ?>
+                     <?php foreach ($this->store as $value) : ?>
+                        <option value="<?php echo $value['id'] ?>"><?php echo $value['name'] ?></option>
+                     <?php endforeach; ?>
+                  <?php endif; ?>
+               </select>
+            </div>
+         </div>
+
+         <div class="control-group">
+            <label for="imei_sn" class="control-label"> <span style="color: red">*</span> IMEI Sn : </label>
+            <div class="controls">
+               <input  style="font-family: noto sans lao;" type="text" placeholder="ໃສ່ເລກ IMEI 15 ຕົວເລກ" name="imei_sn" id="imei_sn" class="span3" required pattern="[0-9]{15}">
+            </div>
+         </div>
+
+         <div class="control-group">
+            <label for="remark" class="control-label"> <span style="color: red">*</span> Remark : </label>
+            <div class="controls">
+               <textarea  style="font-family: noto sans lao;" cols="2" rows="3"  placeholder="ໃສ່ໝາຍເຫດ" class="span3" name="remark" id="remark" required></textarea>
+            </div>
+         </div>
+
+      </div>
+
+      <div class="span12" style="display: flex; justify-content: center;">
+         <button type="submit" class="btn btn-success"> Save </button>
+      </div>
+
+   </div>
+</form>
+
+<script type="text/javascript">
+
+</script>

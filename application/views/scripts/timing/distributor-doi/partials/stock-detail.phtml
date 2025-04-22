@@ -1,0 +1,33 @@
+<div class="page-header">
+    <b style="font-size:100%; text-align:center;"><?php echo $this->detail[0]['store_code']; ?> &nbsp;&nbsp; - &nbsp;&nbsp; <?php echo $this->detail[0]['store_name']; ?> &nbsp;&nbsp; <span style="color: green;">[ Total Stock : <?php echo  $this->params['stock']; ?> ]</span></b>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle; font-size:12px;"><div align="center">No.</div></th>
+        <th style="vertical-align: middle; font-size:12px;"><div align="center">Model Name ລຸ້ນ</div></th>
+        <th style="vertical-align: middle; font-size:12px;"><div align="center">Color ສີ</div></th>
+        <th style="vertical-align: middle; font-size:12px;"><div align="center">Quantity ສະຕ໋ອກ</div></th>
+    </tr>
+</thead>
+<tbody>
+    <?php 
+        if ($this->detail) {
+            $data = $this->detail;
+            $brand = $this->brands;
+            $cnt = 1;
+            for ($i=0;$i<count($data);$i++) {
+                echo "<tr>";
+                echo    "<td><div align='center'>".$cnt."</div></td>";
+                echo    "<td style='padding-left:5%;'><div align='left'>".$brand[$data[$i]['brand_id']]." ".$data[$i]['model_name']."</div></td>";
+                echo    "<td><div align='center'>".$data[$i]['color_name']."</div></td>";
+                echo    "<td style='font-size:14px; font-weight:bold; color:blue;'><div align='center'>".$data[$i]['qulity']."</div></td>";
+                echo "</tr>";
+
+                $cnt++;
+            }
+        }
+    ?>
+</tbody>
+</table>

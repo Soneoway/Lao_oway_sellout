@@ -1,0 +1,432 @@
+<?php
+if (isset($this->messages) and $this->messages) foreach ($this->messages as $message):
+	echo '<div class="alert alert-error">'.$message.'</div>';
+endforeach; ?>
+<form role="form" id="form" action="<?php echo HOST.'staff/create';?>" method="post" class="form-horizontal" enctype="multipart/form-data">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h3>Staff Information</h3>
+</div>
+<div class="modal-body">
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#pane1" data-toggle="tab">Basic Info</a></li>
+			<li><a href="#pane2" data-toggle="tab">Personal Info</a></li>
+			<li><a href="#pane3" data-toggle="tab">Education</a></li>
+			<li><a href="#pane4" data-toggle="tab">Insurance</a></li>
+		</ul>
+	</div>
+	<div class="tab-content">
+		<div id="pane1" class="tab-pane active">
+			<div class="row">
+				<div class="span12">
+
+					<div class="control-group">
+						<label for="photo" class="span2">Staff Photo</label>
+						<div class="span3">
+							<img class="staff-photo" src="<?php if(isset($this->staff) and !empty($this->staff->photo)) printf(HOST.'photo/staff/'.$this->staff->id.'/'.$this->staff->photo); ?>" />
+							<div class="clear">
+							</div>
+							<input type="file" id="photo" name="photo"/>
+							<div class="clear">
+							</div>
+							<div class="control-group">
+								<label for="del_photo" class="pull-left">Delete Photo</label>
+								<input type="checkbox" class="pull-left" name="del_photo" id="del_photo"/>
+							</div>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label for="code" class="span2">Staff code</label>
+						<input type="text" class="form-control span3" id="code" placeholder="Enter Code" name="code" required="required" value="<?php isset($this->staff) and $this->staff and printf($this->staff->code);?>">
+					</div>
+
+					<div class="control-group">
+						<label for="firstname" class="span2">First name</label>
+						<input type="text" class="form-control span3" id="firstname" placeholder="Enter First name" name="firstname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->firstname);?>">
+					</div>
+					<div class="control-group">
+						<label for="lastname" class="span2">Last name</label>
+						<input type="text" class="form-control span3" id="lastname" placeholder="Enter Last name" name="lastname" value="<?php isset($this->staff) and $this->staff and printf($this->staff->lastname);?>">
+					</div>
+				
+					<div class="control-group">
+						<label for="email" class="span2">Email</label>
+						<input type="email" autocomplete="off" class="form-control span3" id="email" 
+							placeholder="Enter email" name="email" value="<?php isset($this->staff) and $this->staff and printf($this->staff->email);?>">
+					</div>
+					
+					<div class="control-group">
+						<label for="department" class="span2">Department</label>
+						<select name="department" id="department" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->departments as $item):?>
+							<option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->department):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+
+					<div class="control-group">
+						<label for="team" class="span2">Team</label>
+						<select name="team" id="team" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->teams as $item):?>
+							<option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->team):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					
+					<div class="control-group">
+						<label for="title" class="span2">Job Title</label>
+						<input type="text" class="form-control span3" id="title" placeholder="Enter Last name" name="title" value="<?php isset($this->staff) and $this->staff and printf($this->staff->title);?>"> 
+					</div>
+					
+					<div class="control-group">
+						<label for="joined_at" class="span2">Joined at</label>
+						<input type="text" class="form-control date span3" id="joined_at" placeholder="Enter Joined at" name="joined_at" value="<?php isset($this->staff) and $this->staff->joined_at and printf(date('d/m/Y',strtotime($this->staff->joined_at)));?>">
+					</div>
+					<div class="control-group">
+						<label for="off_date" class="span2">Off date</label>
+						<input type="text" class="form-control date span3" id="off_date" placeholder="Enter Off date" name="off_date" value="<?php isset($this->staff) and $this->staff->off_date and printf(date('d/m/Y',strtotime($this->staff->off_date)));?>">
+					</div>
+
+					<div class="control-group">
+						<label for="exampleInputGroup" class="span2">Group</label>
+						<select id="exampleInputGroup" class="span3" name="group_id">
+							<option>----</option>
+							<?php foreach ($this->groups as $item):?>
+							<option value="<?php echo $item->id;?>" 
+								<?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->group_id):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="control-group">
+						<label for="area_id" class="span2">Area</label>
+						<select id="area_id" name="area_id" class="span3">
+							<option value="">Choose</option>
+							<?php
+		                        if ($this->areas) : foreach ($this->areas as $area): ?>
+							<option value="<?php echo $area->id;?>" <?php if ($this->area and $this->area->id==$area->id):?>selected<?php endif;?>
+							><?php echo $area->name;?></option>
+							<?php
+		                            endforeach;
+		                        endif;
+		                        ?>
+						</select>
+					</div>
+					<div class="control-group">
+						<label for="regional_market" class="span2">Province</label>
+						<select id="regional_market" name="regional_market" class="span3">
+							<option value="">Choose</option>
+							<?php
+		                        if ($this->regional_markets) : foreach ($this->regional_markets as $regional_market):?>
+							<option value="<?php echo $regional_market->id;?>" 
+									<?php if ($this->staff->regional_market==$regional_market->id):?>selected<?php endif;?>
+							><?php echo $regional_market->name;?></option>
+							<?php
+		                            endforeach;
+		                        endif;
+		                        ?>
+						</select>
+					</div>
+
+                    <div class="control-group">
+                        <label for="is_officer" class="span2">Is Head Office</label>
+                        <input type="checkbox" name="is_officer" id="is_officer" value="1" <?php if (isset($this->staff) and $this->staff->is_officer==1):?> checked="checked" <?php endif;?> />
+                    </div>
+
+					<div class="control-group">
+						<label for="phone_number" class="span2">Phone number</label>
+						<input type="tel" class="form-control span3" id="phone_number" placeholder="Enter Phone number" name="phone_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->phone_number);?>">
+					</div>
+
+					<div class="control-group">
+						<label for="change-pass" class="span2">Password</label>
+						<?php if ( isset($this->staff) and $this->staff ):?> <a href="javascript:void(0);" 
+							id="btn-change-pass" title="Change password" class="span2">Change Password</a>
+						<input type="hidden" name="change-pass" id="change-pass" value="0">
+						<input type="password" autocomplete="off" class="form-control hidden span3" 
+							id="exampleInputPassword1" placeholder="Password" name="password">
+						<?php else: ?>
+						<label for="password" class="span2">Password</label>
+						<input id="password" type="password" autocomplete="off" class="form-control span3" 
+							id="exampleInputPassword1" placeholder="Password" name="password">
+						<?php endif; ?>
+						<div class="clearfix"></div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div id="pane2" class="tab-pane">
+			<div class="row">
+				<div class="span12">
+					
+					
+					<div class="control-group">
+						<label for="gender_1" class="span2">Gender</label>
+						<input type="radio" class="form-control" id="gender_1" name="gender" value="1" 
+							<?php if (!isset($this->staff)):?>checked <?php else: isset($this->staff) and $this->staff->gender==1 and printf('checked'); endif;?>><span>Male</span>
+						<input type="radio" class="form-control" id="gender_2" name="gender" value="0" 
+							<?php isset($this->staff) and $this->staff->gender==0 and printf('checked');?>><span>Female</span>
+					</div>
+					<div class="control-group">
+						<label for="dob" class="span2">Date of birth</label>
+						<input type="text" class="form-control date span3" id="dob" placeholder="Enter Date of birth" 
+							name="dob" value="<?php isset($this->staff) and $this->staff->dob and printf($this->staff->dob);?>">
+					</div>
+					
+					<div class="control-group">
+						<label for="address" class="span2">Address</label>
+						<input type="text" class="form-control span3" id="address" placeholder="Enter address" 
+							name="address" value="<?php isset($this->staff) and $this->staff and printf($this->staff->address);?>">
+					</div>
+					<div class="control-group">
+						<label for="permanent_address" class="span2">Permanent Address</label>
+						<input type="text" class="form-control span3" id="permanent_address" placeholder="Enter Permanent address" 
+							name="permanent_address" value="<?php isset($this->staff) and $this->staff and printf($this->staff->permanent_address);?>">
+					</div>
+					<div class="control-group">
+						<label for="birth_place" class="span2">Birth place</label>
+						<input type="text" class="form-control span3" id="birth_place" placeholder="Enter Birth place" 
+							name="birth_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->birth_place);?>">
+					</div>
+					<div class="control-group">
+						<label for="native_place" class="span2">Native place</label>
+						<input type="text" class="form-control span3" id="native_place" placeholder="Enter Native place" 
+							name="native_place" value="<?php isset($this->staff) and $this->staff and printf($this->staff->native_place);?>">
+					</div>
+					<div class="control-group">
+						<label for="ID_number" class="span2">ID number</label>
+						<input type="text" class="form-control span3" id="ID_number" placeholder="Enter ID number" name="ID_number" 
+							value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_number);?>">
+					</div>
+					<div class="control-group">
+						<label for="ID_place" class="span2">ID place</label>
+						<input type="text" class="form-control span3" id="ID_place" placeholder="Enter ID place" name="ID_place" 
+							value="<?php isset($this->staff) and $this->staff and printf($this->staff->ID_place);?>">
+					</div>
+					<div class="control-group">
+						<label for="ID_date" class="span2">ID date</label>
+						<input type="text" class="form-control date span3" id="ID_date" placeholder="Enter ID date" name="ID_date" 
+							value="<?php isset($this->staff) and $this->staff->ID_date and printf(date('d/m/Y',strtotime($this->staff->ID_date)));?>">
+					</div>
+					<div class="control-group">
+						<label for="nationality" class="span2">Nationality</label>
+						<select name="nationality" id="nationality" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->nationalities as $item):?>
+							<option value="<?php echo $item->id;?>" 
+								<?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->nationality):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="control-group">
+						<label for="religion" class="span2">Religion</label>
+						<select name="religion" id="religion" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->religions as $item):?>
+							<option value="<?php echo $item->id;?>" 
+								<?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->religion):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+
+					<div class="control-group" class="span2">
+						<label for="note" class="span2">Note</label>
+						<textarea class="span3" style="height: 194px;" 
+							name="note" id="note"><?php isset($this->staff) and $this->staff and printf($this->staff->note);?></textarea>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div id="pane3" class="tab-pane">
+			<div class="row">
+				<div class="span12">
+					<div class="control-group">
+						<label for="level" class="span2">Level</label>
+						<input type="text" class="form-control span3" id="level" placeholder="Enter level" name="level" 
+							value="<?php isset($this->staff) and $this->staff and printf($this->staff->level);?>">
+					</div>
+					<div class="control-group">
+						<label for="certificate" class="span2">Certificate</label>
+						<input type="text" class="form-control span3" id="certificate" placeholder="Enter certificate" 
+							name="certificate" value="<?php isset($this->staff) and $this->staff and printf($this->staff->certificate);?>">
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+		<div id="pane4" class="tab-pane">
+			<div class="row">
+				<div class="span12">
+					<div class="control-group">
+						<label for="contract_type" class="span2">Contract type</label>
+						<select name="contract_type" id="contract_type" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->contract_types as $item):?>
+							<option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_type):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="control-group">
+						<label for="contract_signed_at" class="span2">Contract signed date</label>
+						<input type="text" class="form-control date span3" id="contract_signed_at" placeholder="Enter Contract signed date" name="contract_signed_at" value="<?php isset($this->staff) and $this->staff->contract_signed_at and printf(date('d/m/Y',strtotime($this->staff->contract_signed_at)));?>">
+					</div>
+					<div class="control-group">
+						<label for="contract_term" class="span2">Contract term</label>
+						<select name="contract_term" id="contract_term" class="span3">
+							<option value="">Choose</option>
+							<?php foreach ($this->contract_terms as $item):?>
+							<option value="<?php echo $item->id;?>" <?php if (isset($this->staff) and $this->staff and $item->id==$this->staff->contract_term):?>selected<?php endif;?>
+							><?php echo $item->name;?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="control-group">
+						<label for="contract_expired_at" class="span2">Contract expired date</label>
+						<input type="text" class="form-control date span3" id="contract_expired_at" placeholder="Enter Contract expired at" name="contract_expired_at" value="<?php isset($this->staff) and $this->staff->contract_expired_at and printf(date('d/m/Y',strtotime($this->staff->contract_expired_at)));?>">
+					</div>
+
+					<div class="control-group">
+                        <label for="social_insurance_time" class="span2">Social Insurance Time</label>
+                        <input type="text" class="form-control span3" id="social_insurance_time" placeholder="Enter social insurance time" name="social_insurance_time" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_time);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="social_insurance_number" class="span2">Social Insurance Number</label>
+                        <input type="text" class="form-control span3" id="social_insurance_number" placeholder="Enter social insurance number" name="social_insurance_number" value="<?php isset($this->staff) and $this->staff and printf($this->staff->social_insurance_number);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="personal_tax" class="span2">Personal Tax</label>
+                        <input type="text" class="form-control span3" id="personal_tax" placeholder="Enter personal tax" name="personal_tax" value="<?php isset($this->staff) and $this->staff and printf($this->staff->personal_tax);?>">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="family_allowances_registered" class="span2">Family Allowances Registered</label>
+                        <input type="text" class="form-control span3" id="family_allowances_registered" placeholder="Enter social insurance time" name="family_allowances_registered" value="<?php isset($this->staff) and $this->staff and printf($this->staff->family_allowances_registered);?>">
+                    </div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<input type="hidden" name="id" id="id" value="<?php isset($this->staff) and $this->staff and printf($this->staff->id);?>">
+	<input type="hidden" name="back_url" id="back_url" 
+		value="<?php if ( isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+	<input type="hidden" name="note_id" id="note_id" value=""/>
+	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	<button type="button" id="btn_save" class="btn btn-primary">Save changes</button>
+</div>
+</form>
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/bootstrap-datetimepicker.min.css"/>
+<script language="javascript" type="text/javascript" src="<?php echo HOST ?>js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+$.fn.extend({
+    ajax_validate : function(url, param, form) { // param: [{name:'param_name', element: form_element}, {name:'param_name', element: form_element}]    
+        _self = $(this);
+        is_checking = false;
+        _self.blur(function(e){
+            if (is_checking || _self.val()=='') return;
+            is_checking = true;
+            _s = $(e.target);
+            var get_url = '';
+            get_url = url;
+            get_url += '?';
+            for (var i = 0; i < param.length; i++) {
+                get_url += param[i].name + '=' + param[i].element.val() + '&';
+            };
+            if (_s.next('.loading').length == 0) {
+                _s.after('<span class="loading"></span>');
+                _s.parent().removeClass('error');
+                _s.nextAll('.help-inline').remove();
+            }
+            $.get(get_url, function(data,status){
+                _s.nextAll('.loading').remove();
+                if (data == 1 || data == -1) {
+                    _s.parent().addClass('error');
+                    _s.after('<span class="help-inline">Invalid</span>');
+                    form.bind("submit", function(){
+                        return false;
+                    });
+                } else {
+                    form.unbind("submit");
+                }
+                is_checking = false;
+            });
+        });
+    }
+});
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+	 	$('#btn_save').click(function()
+	    {
+    		$modal.modalmanager('loading');
+
+			document.getElementById("form").submit();
+			// ('.close').click();
+	    });
+
+  		$('.date').datetimepicker({
+            weekStart: 1,
+            clear: true,
+            minView: '2',
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+	    });
+
+        $('#btn-change-pass').click(function(){
+            $('#exampleInputPassword1').toggleClass('hidden');
+            if ($('#change-pass').val()==1)
+                $('#change-pass').val(0);
+            else
+                $('#change-pass').val(1);
+        });
+
+        var url = "<?php echo HOST.'staff/check' ?>";
+        var codes1 = [
+            {name: 'id', element: $('#id')},
+            {name: 'code', element: $('#code')}
+        ];
+        var codes2 = [
+            {name: 'id', element: $('#id')},
+            {name: 'email', element: $('#email')}
+        ];
+
+        $('#code').ajax_validate(url, codes1, $('#form'));
+        $('#email').ajax_validate(url, codes2, $('#form'));
+        $('#area_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+    });
+</script>
+<?php echo $this->load('combobox');?>

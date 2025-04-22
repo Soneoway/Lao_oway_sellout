@@ -1,0 +1,46 @@
+<div class="row-fluid">
+    <div class="span6">
+        
+        <table class="table table-bordered numbering">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>District</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="store_list">
+                <?php if ($this->districts):?>
+                <?php foreach ($this->districts as $k=>$region):  ?>
+                    <tr class="store"
+                        data-id="<?php echo $region['id'] ?>"
+                        data-name="<?php echo $region['name'] ?>">
+
+                        <td></td>
+                        <td><?php echo $region['name'] ?></td>
+                        <td><button class="btn btn-default btn-mini btn_remove">Remove</button></td>
+                    </tr>
+                <?php endforeach ?>
+                <?php endif ?>
+            </tbody>
+        </table> 
+    </div>
+    <div class="span6">
+       <div class="accordion" id="addmore">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#addmore" href="#addmoreCollapse">
+                        <span><i class="icon-plus-sign"></i></span> Add more district
+                    </a>
+                </div>
+                <div id="addmoreCollapse" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                        <?php
+                        echo $this->render('manage/province/partials/add-district.phtml');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align='center'>No.</div></th>
+        <th><div align='center'>Staff Code</div></th>
+        <th><div align='center'>Staff Name</div></th>
+        <th><div align='center'>Group</div></th>
+        <th><div align='center'>Area</div></th>
+        <th><div align='center'>Off Date</div></th>
+        <th><div align='center'>Change Position</div></th>
+        <th><div align='center'>Actoin</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+        if (isset($this->checkin_list) and $this->checkin_list) {
+
+            foreach ($this->checkin_list as $k=>$checkin_list) {
+
+                $inc = $this->offset + $k + 1;
+
+                echo "<tr>";
+                echo    "<td><div align='center'>".$inc."</div></td>";
+                echo    "<td><div align='center'>".$checkin_list['staff_code']."</div></td>";
+                echo    "<td>".$checkin_list['staff_name']."</td>";
+                echo    "<td><div align='center'>".$checkin_list['staff_group']."</div></td>";
+                echo    "<td><div align='center'>".$checkin_list['area_name']."</div></td>";
+                echo    "<td><div align='center'>".$checkin_list['staff_offdate']."</div></td>";
+                
+                // Check Position History
+                $table_pc = array(PGPB_ID);
+                $table_sale = array(SALES_ID, ASM_ID, ASMSTANDBY_ID, RM_ID, RMSTANDBY_ID, 33, 34, 31);
+                $table_bm = array(ABM_ID, BM_ID);
+                $table_tms = array(37, 38);
+                $table_pcm = array(36, TRAINING_TEAM_ID);
+                $table_admin = array(SALES_ADMIN_ID);
+                $table_am = array(AM_ID);
+
+                $table_group = array(PGPB_ID, SALES_ID, BM_ID, 37, TRAINING_TEAM_ID,SALES_ADMIN_ID,AM_ID);
+
+                if ( in_array($checkin_list['staff_group_id'], $table_pc) ) { 
+                    $tmp_group = array_diff($table_group, $table_pc);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_sale) ) {
+                    $tmp_group = array_diff($table_group, $table_sale);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_bm) ) { 
+                    $tmp_group = array_diff($table_group, $table_bm);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_tms) ) { 
+                    $tmp_group = array_diff($table_group, $table_tms);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_pcm) ) { 
+                    $tmp_group = array_diff($table_group, $table_pcm);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_admin) ) { 
+                    $tmp_group = array_diff($table_group, $table_admin);
+                }
+                if ( in_array($checkin_list['staff_group_id'], $table_am) ) { 
+                    $tmp_group = array_diff($table_group, $table_am);
+                }
+
+                $QStaffCheckInLog = new Application_Model_StaffCheckInLog();
+
+                echo    "<td>";
+                echo        "<div align='center'>";
+
+                foreach ($tmp_group as $key => $value) {
+
+                    $result_table = $QStaffCheckInLog->checkTable($checkin_list['staff_id'], $value);
+
+                    if ( !is_null($result_table['last_action']) ) {
+
+                        $sel_month_year = date("F Y" , strtotime($result_table['last_action']));
+
+                        echo "<a href='".HOST."/time/staff-check-in-report-detail?code=".$checkin_list['staff_code']."&group_id=".$value."&month_year=".$sel_month_year."' target='_blank' title='".$result_table['last_action']."' >".$result_table['table_group']."</a> ";
+
+                    }
+
+                }
+
+                echo        "</div>";
+                echo    "</td>";
+                
+
+                //echo    "<td></td>";
+                echo    "<td>";
+                echo        "<div align='center'>";
+
+                echo            "<a title='View' href='/time/staff-check-in-report-detail?code=".$checkin_list['staff_code']."&group_id=".$checkin_list['staff_group_id']."'>
+                                <i class='icon-eye-open'></i></a>";
+
+                //$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+                //if ( $userStorage->id == 57 ) {
+
+                    echo        "<a title='View' href='/time/staff-check-in-report-print?code=".$checkin_list['staff_code']."&group_id=".$checkin_list['staff_group_id']."'>
+                                <i class='icon-print'></i></a>";
+                //}
+
+                echo        "</div>";
+                echo    "</td>";
+                echo "</tr>";
+            }
+
+        }
+    ?>
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+

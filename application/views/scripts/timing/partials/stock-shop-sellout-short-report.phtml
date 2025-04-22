@@ -1,0 +1,41 @@
+
+
+<div class="modal-header" align="center">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3 id="myModalLabel">Store Name</h3>
+</div>
+<div class="modal-body">
+<table border=1 width="100%">
+  <tr>
+    <th align="center" width="10%">No.</th>
+    <th align="center" width="20%">IMEI</th>
+    <th align="center" width="20%">Model</th>
+    <th align="center" width="20%">Color</th>
+    <th align="center" width="30%">Timing Date</th>
+  </tr>
+  <?php 
+    $imei_detail = $this->sales;
+    for ($i=0;$i<count($imei_detail);$i++) {
+      $cnt = $i + 1;
+      
+      if ($imei_detail[$i]['timing_date']) {
+        $tmp1 = explode(" ", $imei_detail[$i]['timing_date']);
+        $tmp2 = explode("-", $tmp1[0]);
+        $timing_date = $tmp2[2]."/".$tmp2[1]."/".$tmp2[0]." ".$tmp1[1];
+      } else { $timing_date = ""; }
+
+      echo "<tr >";
+      echo    "<td align=\"center\">".$cnt."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['imei_sn']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['model']."</td>";
+      echo    "<td align=\"center\">".$imei_detail[$i]['color']."</td>";
+      echo    "<td align=\"center\">".$timing_date."</td>";
+      echo "</tr>";
+    } 
+  ?>
+</table>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>

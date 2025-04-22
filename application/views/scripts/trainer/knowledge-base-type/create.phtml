@@ -1,0 +1,82 @@
+<div class="page-header">
+    <?php if (isset($this->info) and $this->info):
+        $title = 'Edit';
+    else:
+        $title = 'Create';
+    endif; ?>
+    <h1><?php echo $title; ?> Knowledge Type</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+// print_r($this->info);
+?>
+<div class="row" id="content">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/knowledge-base-type-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="name">Knowledge Type</label>
+                        <input type="text" class="span6" id="name" name="name" required="required"
+                               value="<?php if (isset($this->info)): echo $this->info->name; endif; ?>">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="form-group">
+                        <label>Display</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="Y" <?php if (isset($this->info) && ($this->info->enable == 'Y')): echo "checked";
+                                else: echo "checked"; endif; ?>>Enable
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="N" <?php if (isset($this->info) && ($this->info->enable == 'N')): echo "checked"; endif; ?>>Disable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->info) and $this->info and printf($this->info->id); ?>">
+            <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em;">
+                <button type="button" class="btn btn-inverse go-back">Go Back</button>
+                <?php if (isset($this->info) and $this->info): ?>
+                    <button id="add_btn" class="btn btn-primary" type="submit">Edit Type</button>
+                <?php else: ?>
+                    <button id="add_btn" class="btn btn-primary" type="submit">Add Type
+                    </button>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.navbar').hide();
+        $('.subnavbar-inner').hide();
+        $('.footer').hide();
+        $('body').css('padding-top', 0);
+        $('.main').css('border-bottom', 0);
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

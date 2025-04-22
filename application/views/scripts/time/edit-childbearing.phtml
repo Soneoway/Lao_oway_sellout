@@ -1,0 +1,219 @@
+<style>
+    #staff_id{
+        margin-left: 200px;
+        margin-top: -8px;
+    }
+    input[type='text']{
+        width: 350px;
+    }
+    select{
+        width: 360px !important;
+    }
+    textarea{
+        width: 330px !important;
+    }
+    .date{
+        border-radius: 3px;
+        width: 330px !important;
+    }
+</style>
+<div class="page-header">
+    <h1>Update childbearing: </h1>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+?>
+
+<div class="row-fluid">
+    <?php if(isset($this->time) and $this->time) : ?>
+    <?Php else : ?>
+
+        <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+        <form role="form" id="time_form" action="<?php echo HOST . 'time/create-time-off'; ?>" method="post"  class="row-fluid">
+            <div class="span6">
+                <div class="control-group">
+                    <label for="" class="span2">Staff: </label>
+                    <label for=""><?php echo (isset($this->row) AND $this->row) ? $this->row['staff_name'] : '' ?></label>
+                </div>
+
+                <div class="control-group">
+                    <label for="type" class="span2">Type</label>
+                    <select name="type" id="type" required="require" >
+                        <option value="">--------------------------------</option>
+                        <?php 
+                            $arr = array(
+                                CHILDBEARING => CHILDBEARING_NAME,
+                                CHILDBEARING_KL => CHILDBEARING_KL_NAME
+                            );
+                            foreach ($arr as $key => $value) {
+                        ?>
+                            <option value="<?php echo $key?>" <?php if(isset($this->row['off_type']) AND $this->row['off_type']) echo 'selected=selected'?>>
+                                <?php echo $value?>
+                            </option>
+                        <?php
+                            }
+                        ?>
+                        
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="from_date" class="span2">From Date</label>
+                    <input required="require" autocomplete="off" type="text" class="form-control search-query date span2" id="from_date" name="from_date" value="<?php isset($this->row['from_date']) and printf(date('d/m/Y',strtotime($this->row['from_date'])));?>">
+                </div>
+
+                <div class="control-group">
+                    <label for="to_date" class="span2">To Date</label>
+                    <input  autocomplete="off" type="text" class="form-control search-query date span2" id="to_date" name="to_date" value="<?php echo (isset($this->row['to_date'])  and $this->row['to_date'] and $this->row['to_date'] != '0000-00-00 00:00:00') ? date('d/m/Y',strtotime($this->row['to_date'])) :'' ;?>">
+                </div>
+
+                <div class="control-group">
+                    <label for="reason" class="span2">Reason</label>
+                    <textarea  id="reason" name="reason" type="text" class="input-medium search-query form-control span2" cols="40" rows="5" ><?php echo (isset($this->row['reason']) AND $this->row['reason']) ? $this->row['reason'] : '' ;?></textarea>
+                </div>
+
+                <div class="control-group">
+                    <?php $uri = Zend_Controller_Front::getInstance()->getRequest()->getRequestUri();?>
+                    <input type="hidden" name="back_url" value="<?php echo $uri?>">
+                    <input type="hidden" name="staff_id" value="<?php echo (isset($this->row) AND $this->row) ? $this->row['staff_id'] : ''?>"/>
+                    <input type="hidden" name="id" id="id" value="<?php if ( isset($this->row) and $this->row) echo $this->row['id'];?>">
+                    <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url ) echo $this->back_url;?>">
+                    <button id="btn_submit" type="submit" class="btn btn-primary">Submit</button>
+                    <a class="btn btn-danger" href="/time/list-childbearing">Go back </a>
+                </div>
+            </div>
+            <div class="span6">
+                <div class="control-group">
+                    <ul id="clock">
+                        <li id="sec"></li>
+                        <li id="hour"></li>
+                        <li id="min"></li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    <?php endif; ?>
+</div>
+
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<script type="text/javascript" src="/js/jqBootstrapValidation.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script type="text/javascript" src="/js/file-validator.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/file-validator.css"/>
+
+<script type="text/javascript">
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#timing_form button[type=submit]').prop('disabled', false);
+        return;
+    }
+    $('#work').on('change', function() {
+
+        if(this.value == 1)
+        {
+            $('.train').show();
+        }
+        else
+        {
+            $('.train').hide();
+        }
+
+    });
+
+    $(document).ready(function() {
+        initSearchOption('staff_id','search_staff');
+        $('.train').hide();
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+        $('.go-back').click(function(e){
+
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month'
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/time/event?id=<?php
+                    if (isset($this->timing) and $this->timing->staff_id!=$this->user_id)
+                        echo $this->timing->staff_id;
+                    else
+                        echo $this->user_id;
+                ?>"
+        });
+
+        $('form#timing_form').bind('submit',function(e){
+            $('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+
+        setInterval( function() {
+            var seconds = new Date().getSeconds();
+            var sdegree = seconds * 6;
+            var srotate = "rotate(" + sdegree + "deg)";
+
+            $("#sec").css({"-moz-transform" : srotate, "-webkit-transform" : srotate});
+
+        }, 1000 );
+
+
+        setInterval( function() {
+            var hours = new Date().getHours();
+            var mins = new Date().getMinutes();
+            var hdegree = hours * 30 + (mins / 2);
+            var hrotate = "rotate(" + hdegree + "deg)";
+
+            $("#hour").css({"-moz-transform" : hrotate, "-webkit-transform" : hrotate});
+
+        }, 1000 );
+
+
+        setInterval( function() {
+            var mins = new Date().getMinutes();
+            var mdegree = mins * 6;
+            var mrotate = "rotate(" + mdegree + "deg)";
+
+            $("#min").css({"-moz-transform" : mrotate, "-webkit-transform" : mrotate});
+
+        }, 1000 );
+
+        $('form#time_form').bind('submit',function(e){
+            $('form#time_form button[type=submit]').prop('disabled', true);
+        });
+
+
+    });
+
+</script>

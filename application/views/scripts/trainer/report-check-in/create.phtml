@@ -1,0 +1,599 @@
+<?php
+
+$leave_action = array(
+    '1' => 'Sick Leave',
+    '2' => 'Business Leave',
+    '3' => 'Annual Leave',
+    '4' => 'Day Off',
+    '5' => 'Switch Day Off',
+    '6' => 'Ordination Leave',
+    '7' => 'Maternity Leave',
+);
+
+$status_ap = array(
+    'Y' => '<i class="icon-ok" style="color: #12aa00;"></i>',
+    'N' => '<i class="icon-remove" style="color: #e60400;"></i>',
+    'W' => '<i class="icon-time" style="color: #e6a208;"></i>',
+);
+
+function DateTimeDisplay($Date)
+{
+    $day = substr($Date, 8, 2);
+    $month = substr($Date, 5, 2);
+    $year = substr($Date, 0, 4);
+    $Hour = substr($Date, 11, 2);
+    $Minute = substr($Date, 14, 2);
+    $Second = substr($Date, 17, 2);
+    if ($year == "0000") {
+        $result = "";
+    } else {
+        $result = "$day/$month/$year" . " $Hour:$Minute";
+    }
+    return $result;
+}
+
+function TimeDisplay($Date)
+{
+    $year = substr($Date, 0, 4);
+    $Hour = substr($Date, 11, 2);
+    $Minute = substr($Date, 14, 2);
+    if ($year == "0000") {
+        $result = "";
+    } else {
+        $result = "$Hour:$Minute";
+    }
+    return $result;
+}
+
+function DayOfWeek($date, $style = 0)
+{
+    $arr[0] = 'Sun.';
+    $arr[1] = 'Mon.';
+    $arr[2] = 'Tues.';
+    $arr[3] = 'Wed.';
+    $arr[4] = 'Thurs.';
+    $arr[5] = 'Fri.';
+    $arr[6] = 'Sat.';
+
+    $w = date('w', strtotime($date));
+    if ($style == 1) {
+        $result = $arr[$w];
+    } else {
+        $result = $w;
+    }
+    return $result;
+}
+
+?>
+
+<div class="page-header">
+    <h1>Check In Report</h1>
+</div>
+
+<?php $pc_details = $this->pc_check_in_detail;
+
+     // $check_remark_group = $this->check_group;
+     // // // echo "<pre>";
+     //  print_r( $check_remark_group);
+  
+?>
+
+<div class="row">
+    <div class="span12 form-actions">
+        <form role="form" method="get">
+            <div class="row">
+                <div class="span-6">
+                    <div class="control-group">
+                        <label class="control-label" for="staff_code">Staff Code</label>
+                        <div class="controls">
+                            <input name="staff_code" id="staff_code" type="text"
+                                   value="<?php echo $pc_details['staff_code']; ?>">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="year_month">Year/Month<span
+                                    style="color: #ff0000;">*</span></label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input name="month_year" id="month_year" class="date-picker"
+                                       value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>"
+                                       placeholder="2017-02" required="required">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php
+              
+                if (isset($this->mergeAllData) and $this->mergeAllData) {
+                    ?>
+                    <div class="span-6" style="float:right;">
+                        <a class="btn btn-success" target="_blank"
+                           href="<?php echo HOST ?>trainer/report-check-in-web?id=<?php echo $pc_details['staff_id']; ?>&start_date=<?php echo $_GET['month_year']; ?>">Report
+                            Web</a>
+                        <a class="btn btn btn-success"
+                           href="<?php echo HOST ?>trainer/report-check-in-excel?id=<?php echo $pc_details['staff_id']; ?>&start_date=<?php echo $_GET['month_year']; ?>">Report
+                            Excel</a>
+                    </div>
+                <?php } ?>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="span6">
+    <p><span><strong>Staff Details -</strong></span></p>
+    <table class="table-striped" width="100%" style="margin-bottom: 10px;">
+
+        <tr>
+            <td width="120px">Staff Code</td>
+            <td style="padding-left: 5px;">
+                : <?php echo isset($pc_details['staff_code']) ? $pc_details['staff_code'] : "-"; ?></td>
+        </tr>
+        <tr>
+            <td width="120px">Staff Name</td>
+            <td style="padding-left: 5px;">
+                : <?php echo isset($pc_details['staff_name']) ? $pc_details['staff_name'] : "-"; ?></td>
+        </tr>
+        <tr>
+            <td width="120px">Start Date</td>
+            <td style="padding-left: 5px;">
+                : <?php echo isset($pc_details['joined_at']) ? date("d/m/Y", strtotime($pc_details['joined_at'])) : "-"; ?></td>
+        </tr>
+        <tr>
+            <td width="120px">Created User</td>
+            <td style="padding-left: 5px;">
+                : <?php echo isset($pc_details['created_at']) ? date("d/m/Y", strtotime($pc_details['created_at'])) : "-"; ?></td>
+        </tr>
+        <tr>
+            <td width="120px">First Check In</td>
+            <td style="padding-left: 5px;">
+                : <?php echo isset($pc_details['first_check_in']) ? date("d/m/Y", strtotime($pc_details['first_check_in'])) : "-"; ?></td>
+        </tr>
+        <?php if (isset($pc_details['off_date'])) { ?>
+            <tr>
+                <td width="120px">Off Date</td>
+                <td style="padding-left: 5px;">
+                    : <?php echo isset($pc_details['off_date']) ? date("d/m/Y", strtotime($pc_details['off_date'])) : "-"; ?></td>
+            </tr>
+        <?php } ?>
+    </table>
+</div>
+
+<div class="span6">
+    <?php
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    ?>
+
+    <?php if ($userStorage->group_id == TRAINING_TEAM_ID) { ?>
+        <p><span><strong>- PCM Details -</strong></span></p>
+        <table class="table-striped" width="100%" style="margin-bottom: 10px;">
+            <tr>
+                <td width="120px">Staff Code</td>
+                <td style="padding-left: 5px;">
+                    : <?php echo $userStorage->code; ?></td>
+            </tr>
+            <tr>
+                <td width="120px">PCM Name</td>
+                <td style="padding-left: 5px;">
+                    : <?php echo $userStorage->firstname . ' ' . $userStorage->lastname; ?></td>
+            </tr>
+        </table>
+    <?php } ?>
+</div>
+
+<div class="span12">
+    <div class="row">
+        <div class="span6">
+            <strong><?php echo date_format(date_create($this->params['start_date']), "d/m/Y"); ?> - </strong>
+            <strong><?php echo date_format(date_create($this->params['end_date']), "d/m/Y"); ?> </strong>
+        </div>
+        <div class="span6" align="right">
+            <?php
+            $total_count = array_count_values(array_map(function ($foo) {
+                return $foo['status_ap'];
+            }, $this->mergeAllData));
+            $total_check_in = ((int)$total_count['W'] + (int)$total_count['Y'] + (int)$total_count['N']);
+            $not_check_in = (int)($total_count['O']);
+            ?>
+
+            <strong> Waiting : <?php echo isset($total_count['W']) ? $total_count['W'] : "0"; ?> |</strong>
+            <strong> Approved : <?php echo isset($total_count['Y']) ? $total_count['Y'] : "0"; ?> |</strong>
+            <strong> Rejected : <?php echo isset($total_count['N']) ? $total_count['N'] : "0"; ?> |</strong>
+            <strong> Check in total : <?php echo $total_check_in; ?> |</strong>
+            <strong style="padding-right: 20px;"> Not check in
+                : <?php echo isset($this->params['end_date']) ? $not_check_in : "0"; ?></strong>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th style="width: 8%; text-align: center;">Day</th>
+                <th style="width: 10%; text-align: center;">Day of week</th>
+                <th style="width: 10%; text-align: center;">Area</th>
+                <th style="width: 20%; text-align: center;">[ID] Store Name</th>
+                <th style="width: 8%; text-align: center;">Check in</th>
+                <th style="width: 8%; text-align: center;">Check out</th>
+                <th style="width: 8%; text-align: center;">Approved</th>
+                <th style="width: 10%; text-align: center;">Approved Date</th>
+                <th style="width: 20%; text-align: center;">Remark</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            $n=1;
+            if (isset($this->mergeAllData) and $this->mergeAllData) {
+                foreach ($this->mergeAllData as $k => $mergeAllData):
+                   // echo '<pre>';
+                   // print_r($mergeAllData);
+
+                    if ($mergeAllData['mode_code'] == "CHECKIN" ) { ?>
+                        <tr>
+
+                            <td style="text-align: center;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                            <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                            <td style="text-align: center;"><?php echo $mergeAllData['area_name']; ?></td>
+                            <td style="text-align: center;"><?php echo "[" . $mergeAllData['store_id'] . "]" . $mergeAllData['store_name']; ?></td>
+                            <td style="text-align: center;"><?php echo isset($mergeAllData['t_check_in']) ? TimeDisplay($mergeAllData['t_check_in']) : "-"; ?></td>
+                            <td style="text-align: center;"><?php echo isset($mergeAllData['t_check_out']) ? TimeDisplay($mergeAllData['t_check_out']) : "-"; ?></td>
+                            <td style="text-align: center;"><?php echo $status_ap[$mergeAllData['status_ap']]; ?></td>
+                            <td style="text-align: center;">
+                                <?php echo ($mergeAllData['status_ap'] == 'W') ? "" : DateTimeDisplay($mergeAllData['approve_time']); ?>
+                            </td>
+                            <td>
+                                <?php 
+                    
+                                if (date('Y-m-d', strtotime($mergeAllData['first_check_in'])) == date('Y-m-d', strtotime($mergeAllData['day_week']))
+                                     && date('Y-m-d', strtotime($mergeAllData['day_week'])) == date('Y-m-d', strtotime($pc_details['joined_at']))
+                                )
+                                {
+                                echo $mergeAllData['remark']="เริ่มงานวันแรก" . ' ';
+                                }
+
+                              
+                                 else if (date('Y-m-d', strtotime($mergeAllData['first_check_in'])) < date('Y-m-d', strtotime($pc_details['first_leave'])) && date('Y-m-d', strtotime($mergeAllData['first_check_in'])) == date('Y-m-d', strtotime($mergeAllData['day_week']))) {
+
+                                     echo $mergeAllData['remark']="เข้าระบบครั้งแรก" . ' ';
+                                }
+
+                                // echo $mergeAllData['remark'] . ' '  ;
+
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$mergeAllData['day_week']){
+                                        if ( $mergeAllData['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                        
+                                ?>    
+
+                            </td>
+                        </tr>
+                    <?php } 
+                    else if ($mergeAllData['mode_code'] == "LEAVE") { ?>
+                        <tr>
+                            <td style="text-align: center;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                            <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                            <td colspan="4" style="text-align: center; background-color: #ffe3c3;">
+                                <?php echo $leave_action[$mergeAllData['action_id']] . ' (' . $mergeAllData['leave_remark'] . ")"; ?>
+                            </td>
+                            <td style="text-align: center;">
+                                <?php echo $status_ap[$mergeAllData['status_ap']]; ?>
+                            </td>
+                            <td style="text-align: center;">
+                                <?php echo ($mergeAllData['status_ap'] == 'W') ? "" : DateTimeDisplay($mergeAllData['approve_time']); ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($mergeAllData['action_id'] == 1) {
+
+                                    if ($mergeAllData['certificate_file'] != null) {
+                                        $file_name = $mergeAllData['certificate_file'];
+                                        $path = "http://api.oppo.in.th/images/oppo_pc_new" . "/" . date("Y", strtotime($mergeAllData['certificate_at'])) . "/" . date("Y-m", strtotime($mergeAllData['certificate_at'])) . "/" . date("Y-m-d", strtotime($mergeAllData['certificate_at'])) . "/" . $mergeAllData['certificate_file'];
+                                        echo "<a href='$path' target='_blank'>".$mergeAllData['remark']="ป่วยมีใบแพทย์"."</a> ". ' ';
+                                    } else {
+                                        echo $mergeAllData['remark']="ป่วยไม่มีใบแพทย์" . ' ';
+                                    }
+                                }
+
+                                if (date('Y-m-d', strtotime($mergeAllData['first_check_in'])) == date('Y-m-d', strtotime($mergeAllData['day_week']))
+                                    && date('Y-m-d', strtotime($mergeAllData['day_week'])) == date('Y-m-d', strtotime($pc_details['joined_at']))
+                                ) {
+                                echo $mergeAllData['remark']="เริ่มงานวันแรก" . ' ';
+                                }
+                              
+                                 else if (date('Y-m-d', strtotime($mergeAllData['first_check_in'])) < date('Y-m-d', strtotime($pc_details['first_leave'])) && date('Y-m-d', strtotime($mergeAllData['first_check_in'])) == date('Y-m-d', strtotime($mergeAllData['day_week']))) {
+                                     echo $mergeAllData['remark']="เข้าระบบครั้งแรก" . ' ';
+                                }
+
+                                // echo $mergeAllData['remark'] . ' '  ;
+
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$mergeAllData['day_week']){
+                                        if ( $mergeAllData['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                ?>
+                            </td>
+                        </tr>
+                    <?php } 
+                    else if ($mergeAllData['mode_code'] == "TRAINING") { ?>
+                        <tr>
+                            <td style="text-align: center; background-color: rgba(3, 186, 0, 0.1);"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                            <td style="text-align: center; background-color: rgba(3, 186, 0, 0.1);"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                            <td colspan="4" style="text-align: center; background-color: rgba(3, 186, 0, 0.1);">
+                                อบรมครั้งที่ <?php echo $n; ?>
+                            </td>
+                            <td style="background-color: rgba(3, 186, 0, 0.1);"></td>
+                            <td style="background-color: rgba(3, 186, 0, 0.1);"></td>
+                            <td style="background-color: rgba(3, 186, 0, 0.1);"></td>
+                        </tr>
+                        <?php $n++; ?>
+                    <?php } else { ?>
+                        <?php if (date('Y-m-d', strtotime($mergeAllData['day_week'])) < date("Y-m-d")) {
+                            $dateBegin = date('Y-m-d', strtotime("2001-01-01"));
+                            if (date('Y-m-d', strtotime($mergeAllData['day_week']))> $dateBegin && date('Y-m-d', strtotime($mergeAllData['day_week'])) < date('Y-m-d', strtotime($pc_details['joined_at']))) {
+                                ?>
+                                <tr>
+                                    <td style="text-align: center;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                                    <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <?php
+                                        if (date('Y-m-d', strtotime($mergeAllData['day_week'])) == date('Y-m-d', strtotime($sales_details['joined_at']))) {
+                                           $mergeAllData['remark']= 'เริ่มงานวันแรก';
+                                        }
+
+
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                      if( $check_group['created']==$mergeAllData['day_week']){
+                                        if ( $mergeAllData['remark']=="") {
+                                         echo ''.$check_group['change_group'];
+                                     }
+                                       else
+                                        { echo ','.$check_group['change_group'];
+                                           }
+                                       }
+                                      endforeach;
+                                           }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php
+                            } else if (date('Y-m-d', strtotime($mergeAllData['day_week'])) < date('Y-m-d', strtotime($pc_details['created_at']))) {
+                                ?>
+                                <tr>
+                                    <td style="text-align: center;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                                    <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><?php     
+                                    if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                         
+                                      if( $check_group['created']==$mergeAllData['day_week']){
+                        
+                                      echo  $check_group['change_group'];}
+                                                 
+
+                                      endforeach;
+                                            }?></td>
+                                   
+                                </tr>
+
+                                <?php
+                            } else {
+                                if (isset($pc_details['off_date'])) {
+                                    if (date('Y-m-d', strtotime($mergeAllData['day_week'])) >= date('Y-m-d', strtotime($pc_details['off_date']))) {
+                                        ?>
+
+                                        <tr>
+                                            <td style="text-align: center; background-color: #e3e3e3;">
+                                                <?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?>
+                                            </td>
+                                            <td style="text-align: center; background-color: #e3e3e3;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                            <?php if (date('Y-m-d', strtotime($mergeAllData['day_week'])) == date('Y-m-d', strtotime($pc_details['off_date']))) { ?>
+                                                <td colspan="4" style="text-align: center; background-color: #e3e3e3;">
+                                                    วันที่มีผลลาออก
+                                                    ( <?php echo date('d/m/Y', strtotime($pc_details['off_date'])); ?> )
+                                                </td>
+                                            <?php } else { ?>
+                                                <td style="background-color: #e3e3e3;"></td>
+                                                <td style="background-color: #e3e3e3;"></td>
+                                                <td style="background-color: #e3e3e3;"></td>
+                                                <td style="background-color: #e3e3e3;"></td>
+                                            <?php } ?>
+                                            <td style="background-color: #e3e3e3;"></td>
+                                            <td style="background-color: #e3e3e3;"></td>
+                                            <td style="background-color: #e3e3e3;"></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                     else {
+                                        ?>
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?>
+                                            </td>
+                                            <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                            <td colspan="4" style="text-align: center; background-color: #ffcaca;">
+                                                Not check in
+                                            </td>
+                                            <td style="text-align: center;">-</td>
+                                            <td><?php $pc_details['off_date']; ?></td>
+                                            <td><?php 
+                                        
+                                        if(isset($this->check_group) and $this->check_group ){
+                                            
+                                             foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                             if( $check_group['created']==$mergeAllData['day_week']){
+                        
+                                             echo  $check_group['change_group']; }
+                                            
+                                             endforeach;
+                                            }                           
+                                           ;?>
+                                            
+                                        </td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } 
+
+                                else {
+                                    ?>
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?>
+                                        </td>
+                                        <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                        <td colspan="4" style="text-align: center; background-color: #ffcaca;">
+                                            Not check in
+                                        </td>
+                                        <td style="text-align: center;"> - </td>
+                                        <td><?php $pc_details['off_date']; ?></td>
+                                        <td>   
+                                        <?php 
+                                        echo $mergeAllData['remark']="ขาดงาน" . ' ';
+                                      if(isset($this->check_group) and $this->check_group ){
+                                      foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                      if( $check_group['created']==$mergeAllData['day_week']){
+                        
+                                      echo  ','.$check_group['change_group'];}
+
+                                      endforeach;
+                                            }
+                                    
+                                                                     
+                                           ?>
+                                            
+                                        </td>
+                                        
+                                    </tr>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        <?php } 
+
+                        else {
+                            if (isset($pc_details['off_date'])) { ?>
+                                <tr>
+                                    <td style="text-align: center; background-color: #e3e3e3;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                                    <td style="text-align: center; background-color: #e3e3e3;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                    <td style="background-color: #e3e3e3;"></td>
+                                </tr>
+                            <?php } else { ?>
+                                <tr>
+                                    <td style="text-align: center;"><?php echo date("d/m/Y", strtotime($mergeAllData['day_week'])); ?></td>
+                                    <td style="text-align: center;"><?php echo DayOfWeek($mergeAllData['day_week'], 1); ?></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                     <td><?php 
+                                        
+
+                                        if(isset($this->check_group) and $this->check_group ){
+                                            
+                                             foreach ($this->check_group as $k => $check_group ):
+                                           // echo "Not Null";
+                                             if( $check_group['created']==$mergeAllData['day_week']){
+                        
+                                             echo  $check_group['change_group']; }
+                                            
+                                             endforeach;
+                                            }                           
+                                           ;?>
+                                            
+                                        </td>
+                                </tr>
+                            <?php }
+                        }
+                    } ?>
+                <?php endforeach;
+            } else { ?>
+                <tr>
+                    <td colspan="9" style="text-align: center; height: 10em; background: #f0f0f0; color: red">
+                        Please select month/year
+                    </td>
+                </tr>
+            <?php } ?>
+
+            </tbody>
+        </table>
+    </div>
+
+    <br/>
+
+    <input type="hidden" name="ti_id" id="ti_id" value="<?php echo $pc_details['ti_id']; ?>">
+    <input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+    <br>
+    <br>
+
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen"
+      href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css">
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('.go-back').click(function (e) {
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

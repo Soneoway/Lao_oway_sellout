@@ -1,0 +1,54 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/list-event-report">
+    <div class="row">
+        <div class="span4">
+            <div class="control-group">
+                <label for="date" class="span1">Date</label>
+                <input id="date" name="date" type="text" class="input-medium search-query form-control span2 date" value="<?php isset($this->params['date']) and printf($this->params['date']);?>">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="/trainer/list-event-report" class="btn btn-warning">Reset</a>
+</form>
+<style>
+    .birth{width:12%}
+</style>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script src="../js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="../css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="../css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+
+<script>
+    $(document).ready(function(){
+        $('.date' ).datepicker({ dateFormat: "yy-mm-dd" });
+        getShop();
+    });
+    function getShop()
+    {
+        $('#dealer').change(function(){
+            var dealer_id =  $('#dealer').val();
+            $.ajax
+            ({
+                url : '/trainer/get-shop',
+                type : 'POST',
+                data : {'dealer_id':dealer_id},
+                dataType: 'json',
+                success : function(result)
+                {
+                    $('#store').find('option:not(:first)').remove();
+                    $.each(result, function (i, item) {
+                        $('#store').append('<option value="'+i+'">'+item+'</option>');
+                    });
+                },
+                error: function()
+                {
+                    alert("Not Found !!!");
+                }
+
+            });
+        });
+    }
+</script>

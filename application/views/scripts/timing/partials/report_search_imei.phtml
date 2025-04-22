@@ -1,0 +1,100 @@
+<form class="form-search form-horizontal" method="get" action="/timing/analytics-imei">
+    <div class="row">
+        <div class="span5">
+             <div class="control-group">
+                <label for="warehouse_id" class="span2" style="color: blue; font-kerning: bold">Warehouse</label>
+                <select id="warehouse_id" name="warehouse_id[]" class="multiselect" multiple="multiple">
+                    <?php 
+                    if (isset($this->params['warehouse_id'])){
+                        if ($this->warehouses_cached): 
+                           $i=0;
+                           foreach ($this->warehouses_cached as $id=>$name):?>
+                                <?php 
+                                    $selected='';
+                                    try{
+                                        $key = array_search($id, $this->params['warehouse_id']);
+                                        $warehouse_id = $this->params['warehouse_id'][$key];
+                                        if($warehouse_id==$id){
+                                            $selected='selected';
+                                        }else{
+                                            $selected='';
+                                        }  
+                                    } catch (Exception $e) {
+                                        $selected='';
+                                    }
+      
+                                ?>
+                                <option value="<?php echo $id;?>" <?php echo $selected;?>   >
+                                    <?php echo $name;?>
+                                </option>
+
+                        <?php endforeach; endif;?>
+                    <?php }else{ ?>
+                        <?php if ($this->warehouses_cached): 
+                            foreach ($this->warehouses_cached as $id=>$name):?>
+                            <option value="<?php echo $id;?>">
+                                <?php echo $name;?>
+                            </option>
+                        <?php endforeach; endif;?>
+                    <?php } ?>
+                </select>
+            </div>
+
+             <div class="control-group">
+                <label for="name" class="span2">Model</label>
+                <select id="good_id" name="good_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list->id;?>" <?php if (isset($this->params['good_id']) and ( (is_array($this->params['good_id']) && in_array($good_list['id'], $this->params['good_id']) || $good_list['id']==$this->params['good_id'])) ):?>selected<?php endif;?>><?php echo $good_list->name;?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="date" class="span2">Activate From Date</label>
+                <input type="text" class="form-control search-query date span2" id="activate_from" name="activate_from" value="<?php isset($this->params['activate_from']) and printf($this->params['activate_from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">Activate To Date</label>
+                <input type="text" class="form-control search-query date span2" id="activate_to" name="activate_to" value="<?php isset($this->params['activate_to']) and printf($this->params['activate_to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">Timing From Date</label>
+                <input type="text" class="form-control search-query date span2" id="timing_from" name="timing_from" value="<?php isset($this->params['timing_from']) and printf($this->params['timing_from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">Timing To Date</label>
+                <input type="text" class="form-control search-query date span2" id="timing_to" name="timing_to" value="<?php isset($this->params['timing_to']) and printf($this->params['timing_to']);?>">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <br />
+    <br />
+
+      <?php if ($this->access('sales-report', 'area')): ?>
+        <!--<button type="submit" name="export" value="1" formaction="<?php echo HOST ?>sales-report/area" class="btn btn-info">Export</button>-->
+        <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+        <!-- <button type="submit" name="export" value="2" class="btn btn-primary">Export Not Timing By Model </button> -->
+        <button type="submit" name="export" value="3" class="btn btn-success">Export IMEI Not Timing By Store</button>
+        <button type="submit" name="export" value="4" class="btn btn-success">Export IMEI Not Timing By Warehouse</button>
+    <?php endif ?>
+</form>

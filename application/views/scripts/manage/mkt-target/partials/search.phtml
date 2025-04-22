@@ -1,0 +1,79 @@
+<?php 
+    // print_r($this->params); 
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    $disabled = '';
+    if ( $userStorage->group_id == SALES_ID ) { $disabled = 'disabled'; }
+?>
+<form class="form-search form-horizontal" method="get" action="/manage/mkt-target/mkt-target" onsubmit="return validateSave()">
+
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="control-label" for="year_month">Year - Month : </label>
+                <div class="controls">
+                    <input name="month_year" id="month_year" class="date-picker"
+                           value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('Y-m') ?>" required="required">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<button type="submit" style="margin-left: 250px" class="btn btn-primary">Submit</button>
+
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css"/>
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(".js-example-basic-multiple").select2();
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+    });
+
+    // Calendar Year-Month
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+</script>

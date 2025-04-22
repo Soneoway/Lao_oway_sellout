@@ -1,0 +1,108 @@
+<form class="form-search form-horizontal" method="post" action="/manage/asm-target-save">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th><div align="center">No.</div></th>
+                <!-- <th><div align="center">Area ID</div></th> -->
+                <th><div align="center">Area Name</div></th>
+                <th><div align="center">ASM Code</div></th>
+                <th><div align="center">ASM Name</div></th>
+                <th><div align="center">Target This Month</div></th>
+                <th><div align="center">Hero Target</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            $save_flag = 0;
+            $sum_target = 0;
+            $sum_target_hero = 0;
+
+            if ($this->areas) {
+                $data = $this->areas;
+                $data2 = $this->asm_target;
+                $data3 = $this->asm;
+
+                $sellout_avg = 0;
+                if ( $userStorage->group_id == ADMINISTRATOR_ID) { $disabled = ''; $save_flag = 1; } else { $disabled = 'disabled'; }
+
+                for($i=0;$i<count($data);$i++) { 
+                        $disabled=''; // Disable after 10th 'readonly'
+
+                        // Normal Target
+                    if ( isset($data2[ $data[$i]['area_id'] ]['target']) ) {
+                        $target = "value='".$data2[ $data[$i]['area_id'] ]['target']."' ".$disabled;
+                        $pmt_id = "value='".$data2[ $data[$i]['area_id'] ]['id']."|".$data2[ $data[$i]['area_id'] ]['target']."' ";
+
+                    } else {
+                        $target = "value=''";
+                        $pmt_id = "value=''";
+                        $save_flag = 1;
+                    }
+
+                        // Hero Target
+                    if ( isset($data2[ $data[$i]['area_id'] ]['target_hero']) ) {
+                        $target_hero = "value='".$data2[ $data[$i]['area_id'] ]['target_hero']."' ".$disabled;
+                        $hero_pmt_id = "value='".$data2[ $data[$i]['area_id'] ]['id']."|".$data2[ $data[$i]['area_id'] ]['target_hero']."' ";
+
+                    } else {
+                        $target_hero = "value=''";
+                        $hero_pmt_id = "value=''";
+                        $save_flag = 1;
+                    }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                        // echo    "<td><div align='center'>".$data[$i]['area_id']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['code']."</div></td>";
+                    echo    "<td><div align='left' style='padding-left:30px;'>".$data[$i]['name']."</div></td>";
+
+                    echo    "<td><div align='center'>
+                    <input type='number' required='required' style='text-align:center;' class='target' id='target[".$data[$i]['area_id']."]' name='target[".$data[$i]['area_id']."]' $target /> 
+                    <input type='hidden' required='required' style='text-align:right;' id='pmt_id[".$data[$i]['area_id']."]' name='pmt_id[".$data[$i]['area_id']."]' $pmt_id /> 
+                    </div></td>";
+
+                    echo    "<td><div align='center'>
+                    <input type='number' required='required' style='text-align:center;' class='target_hero' id='target_hero[".$data[$i]['area_id']."]' name='target_hero[".$data[$i]['area_id']."]' $target_hero /> 
+                    <input type='hidden' required='required' style='text-align:right;' id='hero_pmt_id[".$data[$i]['area_id']."]' name='hero_pmt_id[".$data[$i]['area_id']."]' $hero_pmt_id /> 
+                    </div></td>";
+
+                }
+
+            }
+            ?>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['date']; ?>">
+    <?php 
+	$date2 = date('d');
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+    if ($userStorage->group_id == ADMINISTRATOR_ID || $userStorage->group_id == 28 || $userStorage->group_id == 42 ) { 
+	if($date2 < 7){ 
+	?>
+        <button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="1" style="font-size: 20px;">Save</button>
+    <?php 
+	}
+		}
+	?>
+
+ <!--    &nbsp;&nbsp;
+    <h3 style='display: inline-block;'><font color='red'>&nbsp;&nbsp;**WARNING!!! Target can not edit after save</font></h3> -->
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

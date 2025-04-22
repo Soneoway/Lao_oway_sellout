@@ -1,0 +1,91 @@
+<style>
+    .title {
+        margin-bottom: 5px;
+    }
+
+    .attachments .file {
+        margin-bottom: 10px;
+    }
+
+    .attachments .media .thumbnail {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        display: inline-block;
+        padding: 0;
+        margin-right: 10px;
+        text-align: center;
+    }
+
+    .attachments .media img,
+    .attachments .media span {
+        width: 100%;
+    }
+
+    .attachments .media .thumbnail i {
+        font-size: 50px;
+    }
+
+    .attachments {
+        margin-top: 10px;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+
+    .attachments .total {
+        font-weight: bold;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Notification <small><a href="<?php echo HOST ?>user/notification">Back</a></small></h1>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <legend class="title"><?php echo $this->notification['title'] ?></legend>
+        <p class="">
+            <span class="post_time pull-right">Created at: <?php if(isset($this->notification['created_at']) && $this->notification['created_at']) echo date('d/m/Y H:i:s', strtotime($this->notification['created_at']));?></span>
+            <?php if (isset($this->category_string_cache[ $this->notification['category_id'] ]) && $this->category_string_cache[ $this->notification['category_id'] ]): ?>
+            <span class="category badge"><?php echo $this->category_string_cache[ $this->notification['category_id'] ] ?></span>
+        <?php endif; ?>
+        </p>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        <?php echo htmlspecialchars_decode($this->notification['content']) ?>
+    </div>
+</div>
+
+<div class="attachments">
+    <?php if (isset($this->files) && $this->files): ?>
+        <p class="total">Attached files: <?php echo count($this->files) ?></p>
+        <?php foreach ($this->files as $key => $value): ?>
+            <div class="file">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="media">
+                            <?php $hash = hash("sha256", md5($this->userStorage->id) . $value['file_real_name'] . $value['id']); ?>
+                            <?php $src = HOST . 'download/notification?id='. $value['id'] . '&filename='. $value['file_real_name'].'&hash='. $hash ?>
+
+                            <a href="<?php echo $src ?>" class="pull-left thumbnail" title="<?php echo $value['file_display_name'] ?>">
+                                <?php if ( preg_match('/\.(jpg)|(png)|(jpeg)$/', $value['file_real_name']) ): ?>
+                                    <img class="media-object" src="<?php echo $src ?>" alt="<?php echo $value['file_display_name'] ?>">
+                                <?php else: ?>
+                                    <span><i class="icon-file"></i></span>
+                                <?php endif ?>
+                            </a>
+
+                            <div class="media-body">
+                                <?php $filename = substr($value['file_display_name'], 0, 128) ?>
+                                <h4 class="media-heading"><a href="<?php echo $src ?>" title="<?php echo $value['file_display_name'] ?>"><?php echo $filename . (strlen($filename) > 128 ? "..." : "") ?></a></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+        <?php endforeach ?>
+    <?php endif ?>
+</div>

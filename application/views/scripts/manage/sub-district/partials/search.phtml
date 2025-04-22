@@ -1,0 +1,29 @@
+<form action="<?php echo HOST ?>manage/sub-district" class="form-horizontal form-search" method="get">
+    <div class="control-group">
+        <label class="control-label" for="name">Name</label>
+        <div class="controls">
+            <input type="text" name="name" value="<?php if(isset($this->params['name']) && $this->params['name']) echo $this->params['name'] ?>">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="province">District</label>
+        <div class="controls">
+            <select name="district" id="district">
+                <option value>---</option>
+                <?php if (isset($this->districts) && $this->districts): ?>
+                    <?php foreach ($this->districts as $key => $value): ?>
+                        <option value="<?php echo $value['sub_dist_id'] ?>"><?php echo $value['sub_dist_name'] ?></option>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>        
+
+    <div class="control-group">
+        <div class="controls">
+            <button class="btn btn-info">Search</button>
+            <button type="reset" class="btn btn-warning">Reset</button>
+        </div>
+    </div>    
+</form>

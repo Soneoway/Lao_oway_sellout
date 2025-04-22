@@ -1,0 +1,64 @@
+<div class="table-responsive">
+
+<?php 
+    // echo "Type : ".$this->list_type;
+
+    if ($this->list_type == "last") { $sellin = $this->sellin_last; } 
+    else { $sellin = $this->sellin; } 
+
+    // print_r($this->sellin);
+
+?>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th style="vertical-align: middle;"><div align="center">#</div></th>
+      <th style="vertical-align: middle;"><div align="center">Sales Order</th>
+      <th style="vertical-align: middle;"><div align="center">Hero Product</div></th>
+      <th style="vertical-align: middle;"><div align="center">Normal Product</div></th>
+      <th style="vertical-align: middle;"><div align="center">Price</div></th>
+      <th style="vertical-align: middle;"><div align="center">COM.</div></th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php 
+
+      $sum_sellin_hero = $sum_sellin_normal = $sum_price = $sum_com_rate = 0;
+
+      if (isset($sellin) && $sellin) {
+
+        for ($i=0;$i<count($sellin);$i++) {
+
+          $cnt = $i + 1;
+
+          echo "<tr>";
+          echo    "<td><div align='center'>".$cnt."</div></td>";
+          echo    "<td><div align='center'>".$sellin[$i]['sn_ref']."</div></td>";
+          echo    "<td><div align='center'>".$sellin[$i]['sellin_hero']."</div></td>";
+          echo    "<td><div align='center'>".$sellin[$i]['sellin_normal']."</div></td>";
+          echo    "<td><div align='right'>".number_format($sellin[$i]['m_total'],2)."</div></td>";
+          echo    "<td><div align='center'>".number_format($sellin[$i]['com_rate'])."</div></td>";
+          echo "</tr>";
+
+          $sum_sellin_hero    = $sum_sellin_hero + $sellin[$i]['sellin_hero'];
+          $sum_sellin_normal  = $sum_sellin_normal + $sellin[$i]['sellin_normal'];
+          $sum_price          = $sum_price + $sellin[$i]['m_total'];
+          $sum_com_rate       = $sum_com_rate + $sellin[$i]['com_rate'];
+        }
+
+        // Last Row
+        echo "<tr>";
+        echo    "<td colspan='2'><div align='center'>Total</div></td>";
+        echo    "<td><div align='center'>".number_format($sum_sellin_hero)."</div></td>";
+        echo    "<td><div align='center'>".number_format($sum_sellin_normal)."</div></td>";
+        echo    "<td><div align='right'>".number_format($sum_price,2)."</div></td>";
+        echo    "<td><div align='center'>".number_format($sum_com_rate)."</div></td>";
+        echo "</tr>";
+
+      }
+
+    ?>      
+  </tbody>
+</table>
+</div>

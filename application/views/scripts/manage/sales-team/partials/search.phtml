@@ -1,0 +1,75 @@
+<form class="form-search form-horizontal" method="get" action="/manage/sales-team">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label for="name" class="span2">Name</label>
+                <input id="name" name="name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+            <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_name']) and printf($this->params['staff_name']);?>">
+            </div>
+            <div class="control-group">
+                <label for="staff_email" class="span2">Staff Email</label>
+                <input id="staff_email" name="staff_email" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_email']) and printf($this->params['staff_email']);?>">
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id" class="span3">
+                    <option value="">Choose</option>
+                    <?php
+                    if ($this->cached_areas) :
+                        foreach ($this->cached_areas as $key=>$area):
+                            ?>
+                            <option value="<?php echo $key;?>" <?php if (isset($this->params['area_id']) and $this->params['area_id']==$key):?>selected<?php endif;?>><?php echo $area;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2">Province</label>
+                <select id="regional_market" name="regional_market" class="span3">
+                    <option value="">Choose</option>
+                    <?php if (isset($this->regional_markets) && $this->regional_markets && isset($this->params['area_id'])): ?>
+                    	<?php foreach ($this->regional_markets as $key => $value): ?>
+                    		<option value="<?php echo $value['id'] ?>" <?php if(isset($this->params['regional_market']) && $this->params['regional_market'] == $value['id']) echo 'selected="selected"' ?>><?php echo $value['name'] ?></option>
+                    	<?php endforeach ?>
+                    <?php endif ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" id="reset_btn" class="btn btn-warning">Reset</button>
+</form>
+<script>
+    $(document).ready(function () {
+        $('#area_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option:not(:first)').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+        $('#reset_btn').click(function(){
+        	$('input, select').val('');
+        	$('.form-search').submit();
+        });
+    });
+</script>

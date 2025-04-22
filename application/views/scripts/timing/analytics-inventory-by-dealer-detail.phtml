@@ -1,0 +1,128 @@
+<div class="page-header">
+    <h1>Report Inventory By Dealer - Detail</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <form class="form-search form-horizontal" method="get">
+                    <div class="row">
+                        <div class="span5">
+
+                            <div class="control-group">
+                                <label for="product_id" class="span2">Product</label>
+                                <select id="product_id" name="product_id" class="span3">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if (isset($this->goodsCached[PHONE_CAT_ID]['children']) and $this->goodsCached[PHONE_CAT_ID]['children']) {
+                                        foreach ($this->goodsCached[PHONE_CAT_ID]['children'] as $id => $val){ ?>
+                                            <option value="<?php echo $id;?>" <?php if (isset($this->params['product_id']) and $this->params['product_id'] == $id){?> selected<?php }?>><?php echo $val['name'];?></option>
+                                        <?php }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="color" class="span2">Color</label>
+                                <select id="color" name="color" class="span3">
+                                    <option value="">Choose</option>
+                                    <?php
+                                    if (isset($this->params['product_id']) and isset($this->goodsCached[PHONE_CAT_ID]['children'][$this->params['product_id']]['children']) and $this->goodsCached[PHONE_CAT_ID]['children'][$this->params['product_id']]['children']) {
+                                        foreach ($this->goodsCached[PHONE_CAT_ID]['children'][$this->params['product_id']]['children'] as $id => $val){ ?>
+                                            <option value="<?php echo $id;?>" <?php if (isset($this->params['color']) and $this->params['color'] == $id){?> selected<?php }?>><?php echo $val['name'];?></option>
+                                        <?php }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" name="dealer_id" value="<?php echo (isset($this->params['dealer_id']) ? $this->params['dealer_id'] : ''); ?>" />
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="reset" class="btn btn-warning">Reset</button>
+                    <button type="submit" name="export" value="1" class="btn btn-info">Export</button>
+                </form>
+                <script>
+                    $(document).ready(function () {
+                        var $arrProductColor = $.parseJSON('<?php echo json_encode($this->goodsCached[PHONE_CAT_ID]['children'], 1);?>');
+
+                        $('#product_id').change(function(){
+
+                            var $product_id = $(this).val();
+                            $('#color').find('option:not(:first)').remove();
+
+                            $.each($arrProductColor, function(index, item) {
+                                if (index == $product_id){
+                                    $.each(item.children, function(index2, item2) {
+                                        $('#color').append('<option value="'+index2+'">'+item2.name+'</option>');
+                                    });
+                                }
+                            });
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '#',
+                    'Name',
+                    'Product',
+                    'Color',
+                    'Total Sell In',
+                    'Total Activated',
+                    'Inventory',
+                ),
+                $this->url, $this->current_col, $this->desc); ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if (isset($this->result) and $this->result)
+        foreach ($this->result as $item): ?>
+            <tr>
+                <td>
+                    <?php
+                    echo $item['id'];
+                    ?>
+                </td>
+                <td><?php echo isset($this->distributorCached[$item['id']]['title']) ? $this->distributorCached[$item['id']]['title'] : '';?></td>
+                <td><?php echo isset($this->goodsCached[PHONE_CAT_ID]['children'][$item['product_id']]['name']) ? $this->goodsCached[PHONE_CAT_ID]['children'][$item['product_id']]['name'] : '';?></td>
+                <td><?php echo isset($this->goodsCached[PHONE_CAT_ID]['children'][$item['product_id']]['children'][$item['color']]['name']) ? $this->goodsCached[PHONE_CAT_ID]['children'][$item['product_id']]['children'][$item['color']]['name'] : '';?></td>
+                <td><?php echo isset($item['sum_total_sell_in']) ? $item['sum_total_sell_in'] : 0;?></td>
+                <td><?php echo isset($item['sum_total_activated']) ? $item['sum_total_activated'] : 0;?></td>
+                <td><?php
+                    echo (isset($item['sum_total_sell_in']) ? $item['sum_total_sell_in'] : 0) - (isset($item['sum_total_activated']) ? $item['sum_total_activated'] : 0);
+                    ?></td>
+            </tr>
+        <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>

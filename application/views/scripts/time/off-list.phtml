@@ -1,0 +1,134 @@
+
+
+<div class="page-header">
+    <h1>Manage Off Days</h1>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">' . $message . '</div>';
+    endforeach;
+
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+echo $this->render('time/partials/search-off.phtml');
+?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <?php
+echo $this->render('time/partials/list-off.phtml');
+?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+        
+        
+      $(".monthPicker").datepicker({
+            dateFormat: 'mm/yy',
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+
+            onClose: function(dateText, inst) {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).val($.datepicker.formatDate('mm/yy', new Date(year, month, 1)));
+            }
+        });
+
+        $(".monthPicker").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
+        });
+
+        $modal = $('#modal');
+
+        $('#calculate').click(function(){
+            _self = $(this);
+               var progressBar = $('#processBar .bar'),
+               width = 0;
+                
+               progressBar.width(width);
+                
+               var interval = setInterval(function() {
+                
+                    width += 4;
+                
+                    progressBar.css('width', width + '%');
+                
+                    if (width >= 100) {
+                        clearInterval(interval);
+                    }
+                }, 1000);
+
+               $.post('<?php echo HOST ?>/time/off',
+                {
+					month : 4
+                },
+                function(data){
+                  if(data == 1)
+                  {                    
+                     progressBar.css('width', '100%');      
+                     alert('Successful!');    
+                  }
+                  
+                  else if(data == -1)
+                  {
+                      progressBar.css('width', '0%');      
+                      alert('Error when update!');     
+                  }
+            	}
+            );
+        });
+    });
+
+    function openmodal() {   
+      var $dialogContent = $("#event_edit_container");       
+
+      $dialogContent.dialog({
+         modal: true,
+         title: "Test",
+         close: function() {},
+         buttons: {
+          save : function() {},
+          cancel : function() {}
+         }
+      }).show();
+      $("#ui-datepicker-div").css("z-index", "9999");   
+  }
+</script>
+<?php echo $this->load('combobox'); ?>

@@ -1,0 +1,137 @@
+<div class="page-header">
+    <h1>Event Checklist Info</h1>
+</div>
+
+<?php
+$staff_list = $this->staff_list;
+
+$date = strtotime($staff_list['check_in']);
+$img_path = API_URI."images/oppo_pc_first_training/".date('Y', $date)."/".date('Y-m', $date)."/".date('Y-m-d', $date)."/".$staff_list['filepic'];
+?>
+<form role="form" action="<?php echo HOST.'trainer/pc-first-training-save';?>" method="post">
+
+    <div class="row">
+        <div class="span3">
+
+            <p><span><strong>- Information -</strong></span></p>
+            <table class="table-striped" width="100%" >
+                <tr>
+                    <td width="80px">Event</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['event_name']) ? $staff_list['event_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Staff Code</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_code']) ? $staff_list['staff_code'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Staff Name</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['staff_name']) ? $staff_list['staff_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Group</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['group_name']) ? $staff_list['group_name'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Check In</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['check_in']) ? $staff_list['check_in'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Check Out</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['check_out']) ? $staff_list['check_out'] : "-"; ?></td>
+                </tr>
+                <tr>
+                    <td width="80px">Work Day</td>
+                    <td style="padding-left: 5px;">: <?php echo isset($staff_list['work_day']) ? $staff_list['work_day'] : "-"; ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span2">
+            <?php echo "<p><span class='label label-success'>Check In</span> : <i class='icon-ok' style='color: #12aa00;'></i> : ".date('d/m/Y H:i', strtotime($staff_list['check_in']))."</p>"; ?>
+            <table class="table-striped" width="100%" >
+                <tr><td></td></tr>
+                <tr>
+                    <td>
+                        <?php
+                        $path = "http://api.oppo.in.th/images/oppo_pc_new/" . date("Y", strtotime($staff_list['check_in'])) . "/" . date("Y-m", strtotime($staff_list['check_in'])) . "/" . date("Y-m-d", strtotime($staff_list['check_in'])) . "/" . $staff_list['filepic'];
+                        $show_pic = "<a id='single_image' href='" . $path . "'><img src='" . $path . "' width='100%'/></a>";
+                        echo $show_pic;
+                        ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span2">
+            <p><span><strong>- Get Money - </strong></span><?php echo isset($staff_list['events_pay_at']) ? '<i class="icon-ok" style="color: #12aa00;"></i> '.date("d/m/Y H:i", strtotime($staff_list['events_pay_at'])) : ' <span style="color: #F7B240;"><i class="icon-time"></i> Waiting</span>'; ?></p>
+            <table class="table-striped" width="100%" >
+                <tr><td></td></tr>
+                <tr>
+                    <td>
+                        <?php echo isset($staff_list['events_pay_img']) ? getImgPhoto($staff_list['events_pay_img'], $staff_list['events_pay_at']) : ''; ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span2">
+            <p><span><strong>- Get Food 1 - </strong></span><?php echo isset($staff_list['events_lunch_at_1']) ? '<i class="icon-ok" style="color: #12aa00;"></i> '.date("d/m/Y H:i", strtotime($staff_list['events_lunch_at_1'])) : ' <span style="color: #F7B240;"><i class="icon-time"></i> Waiting</span>'; ?></p>
+            <table class="table-striped" width="100%" >
+                <tr><td></td></tr>
+                <tr>
+                    <td>
+                        <?php echo isset($staff_list['events_lunch_img_1']) ? getImgPhoto($staff_list['events_lunch_img_1'], $staff_list['events_lunch_at_1']) : ''; ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="span2">
+            <?php $lunch_img = ($staff_list['events_lunch_img_2'] == $staff_list['events_lunch_img_1']) ? null : $staff_list['events_lunch_at_2']; ?>
+            <p><span><strong>- Get Food 2 - </strong></span><?php echo isset($lunch_img) ? '<i class="icon-ok" style="color: #12aa00;"></i> '.date("d/m/Y H:i", strtotime($staff_list['events_lunch_at_2'])) : ' <span style="color: #F7B240;"><i class="icon-time"></i> Waiting</span>'; ?></p>
+            <table class="table-striped" width="100%" >
+                <tr><td></td></tr>
+                <tr>
+                    <td>
+                        <?php
+                        $lunch_img = ($staff_list['events_lunch_img_2'] == $staff_list['events_lunch_img_1']) ? null : $staff_list['events_lunch_img_2'];
+                        echo isset($lunch_img) ? getImgPhoto($staff_list['events_lunch_img_2'], $staff_list['events_lunch_at_2']) : ''; ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+    <br/>
+
+    <input type="hidden" name="id" id="id" value="<?php echo $staff_list['id']; ?>">
+    <input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+<?php
+
+function getImgPhoto($img_name, $created_at)
+{
+    $path = "http://api.oppo.in.th/images/oppo_event/" . date("Y", strtotime($created_at)) . "/" . date("Y-m", strtotime($created_at)) . "/" . date("Y-m-d", strtotime($created_at)) . "/" . $img_name;
+    $show_pic = "<a id='single_image' href='" . $path . "'><img src='" . $path . "' width='100%'/></a>";
+
+    return $show_pic;
+}
+
+?>
+
+<script type="text/javascript" src="/js/jquery.fancybox-1.3.4.js"></script>
+<link rel="stylesheet" href="/css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+
+        $("a#single_image").fancybox();
+    });
+</script>

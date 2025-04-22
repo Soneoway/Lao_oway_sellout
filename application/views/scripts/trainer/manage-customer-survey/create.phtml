@@ -1,0 +1,78 @@
+<div class="page-header">
+    <?php if (isset($this->info) and $this->info): ?>
+        <h1>Edit</h1>
+    <?php else: ?>
+        <h1>Create</h1>
+    <?php endif; ?>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+// print_r($this->info);
+?>
+<div class="row">
+    <div class="row-fluid">
+        <form role="form" id="form" enctype="multipart/form-data"
+              action="<?php echo HOST . 'trainer/manage-customer-survey-save'; ?>" method="post">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label for="topic">Topic</label>
+                        <input type="text" class="span6" id="topic" name="topic" required="required"
+                               value="<?php if (isset($this->info)): echo $this->info->topic; endif; ?>">
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <label for="url">URL Google Form</label>
+                            <textarea name="url" rows="5" class="span6"
+                                      id="url"><?php if (isset($this->info)): echo $this->info->url; endif; ?></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="form-group">
+                        <label>Display</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="Y" <?php if (isset($this->info) && ($this->info->enable == 'Y')): echo "checked"; endif; ?>>Enable
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enable"
+                                       value="N" <?php if (isset($this->info) && ($this->info->enable == 'N')): echo "checked"; endif; ?>>Disable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="back_url" id="back_url"
+                   value="<?php isset($this->back_url) and $this->back_url and printf($this->back_url); ?>">
+            <input type="hidden" name="id" id="id"
+                   value="<?php isset($this->info) and $this->info and printf($this->info->id); ?>">
+            <div class="clearfix">
+                <div class="span12 control-group" style="padding-bottom: 1em; padding-top: 1em">
+                    <button id="add_btn" class="btn btn-primary" type="submit">Submit</button>
+                    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+                </div>
+                <div class="clearfix">
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    // $('#url').prop('disabled', true);
+
+    $('.go-back').click(function(e){
+        window.location.href = $('#back_url').val();
+        return false;
+    });
+</script>

@@ -1,0 +1,30 @@
+<link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+
+<?php if (isset($this->errors) && $this->errors): ?>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <strong>ERROR!</strong> <?php echo $this->errors ?>
+    </div>
+<?php endif ?>
+
+<?php if (isset($this->result) && $this->result): ?>
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <?php echo $this->result ?>
+    </div>
+<?php endif ?>
+
+<?php if (isset($this->array_invalid) && $this->array_invalid): ?>
+    <h3>Failed list</h3>
+    <ul>
+        <?php foreach ($this->array_invalid as $key => $value): ?>
+            <li><?php echo $value ?></li>
+        <?php endforeach ?>
+    </ul>
+<?php endif ?>
+
+<script>
+    $(document).ready(function() {
+        parent.clear();
+    });
+</script>

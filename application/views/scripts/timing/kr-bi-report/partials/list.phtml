@@ -1,0 +1,467 @@
+<?php 
+    //print_r($this->params);
+
+    $d1 = explode('/', $this->params['from']);
+    $d2 = explode('/', $this->params['to']);
+
+    $from = $d1[2].'-'.$d1[1].'-'.$d1[0];
+    $to = $d2[2].'-'.$d2[1].'-'.$d2[0];
+
+    $start = new DateTime($from);
+    $end   = new DateTime( date("Y-m-30", strtotime($to)) );
+
+    $diff  = $start->diff($end);
+    $period_loop = $diff->format('%y') * 12 + $diff->format('%m') + 1;
+
+    $column_width = round( 90 / ( $period_loop + 1 ), 0);
+
+    $y_max = $y_temp = 0;
+
+    // Data for Chart : Check Compare Last Year
+    if (isset($this->kr_sellout_sum) and $this->kr_sellout_sum) {
+
+        $from_last = date('Y-m-'.$d1[0], strtotime("-1 Years", strtotime($from)));
+
+        $data = $this->kr_sellout_sum;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            $cnt = $i + 1;
+            $data_name = "Data Set 0".$cnt;
+
+            // Data for Chart
+            $series[$i] = array(
+                'text'       => $data_name,
+                // 'line-color' => '#4dbac0',
+                'line-width' => '2px',
+                'shadow'     => 0,
+                'palette'    => $i,
+                'marker'     => array(
+                                    'background-color' => '#fff',
+                                    'size'             => 3,
+                                    'border-width'     => 1,
+                                    // 'border-color'     => '#36a2a8',
+                                    'shadow'           => 0,
+                                ),
+            );
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                // Check Last Month
+                if ( $i == 0 ) {
+                    $month_text = "sellout_".date('M-Y', strtotime("+".$j." Month", strtotime($from)));
+                } else {
+                    $month_text = "sellout_".date('M-Y', strtotime("+".$j." Month", strtotime($from_last)));
+                }
+
+                $series[$i]['values'][$j] = $data[$i][$month_text];
+                if ($data[$i][$month_text] >= $y_temp) { $y_temp = $data[$i][$month_text]; }
+
+            }
+
+        }
+
+    } else {
+
+        $data = $this->kr_sellout;
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for Chart
+            $series[$i] = array(
+                'text'       => 'Data Set',
+                // 'line-color' => '#4dbac0',
+                'line-width' => '2px',
+                'shadow'     => 0,
+                'palette'    => $i,
+                'marker'     => array(
+                                    'background-color' => '#fff',
+                                    'size'             => 3,
+                                    'border-width'     => 1,
+                                    // 'border-color'     => '#36a2a8',
+                                    'shadow'           => 0,
+                                ),
+            );
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                $month_text = "sellout_".date('M-Y', strtotime("+".$j." Month", strtotime($from)));
+
+                $series[$i]['values'][$j] = $data[$i][$month_text];
+                if ($data[$i][$month_text] >= $y_temp) { $y_temp = $data[$i][$month_text]; }
+
+            }
+
+        }
+
+    }
+
+    $y_max = ceil($y_temp/100) * 100;
+    $series = json_encode($series, JSON_NUMERIC_CHECK);
+
+    // Start HTML 
+
+    // Start Graph
+
+    echo "<div id='kr_bi_chart'></div>";
+    echo "<br/>";
+
+    if (isset($this->kr_sellout) and $this->kr_sellout) {
+
+        $data_tmp = $this->kr_sellout;
+        // echo "<pre>"; print_r($data_tmp);
+
+        $data = array();
+
+        foreach ($data_tmp as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                if (strpos($key2, "sellout_") !== false) { $data['sellout'][] = $value2; }
+                if (strpos($key2, "price_") !== false) { $data['price'][] = $value2; }
+            }
+            $data['sellout'][] = $value['sellout'];
+            $data['price'][] = $value['total_price'];
+        }
+
+        // echo "<pre>"; print_r($data);
+
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Topic</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+
+            $month_text = date('M Y', strtotime("+".$i." Month", strtotime($from)));
+
+            echo "<th style='vertical-align:middle;'><div align='center'>".$month_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        foreach ($data as $key => $value) {
+
+            // Data for List
+
+            echo    "<tr>";
+            echo        "<td width='10%'><div align='center'>".ucfirst($key)."</div></td>";
+
+            for ($j=0;$j<=$period_loop;$j++) { echo "<td width='".$column_width."%'><div align='right'>".number_format($value[$j])."</div></td>"; }
+
+            echo    "</tr>";
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+
+    }
+
+    echo "<br/>";
+
+    // Table Sellout Diff & Last Year
+    if (isset($this->kr_sellout_last1) and $this->kr_sellout_last1) {
+
+        $data_last_tmp = $this->kr_sellout_last1;
+        // echo "<pre>"; print_r($data_last);
+
+        $data_last = array();
+
+        foreach ($data_last_tmp as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                if (strpos($key2, "sellout_") !== false) { $data_last['sellout'][] = $value2; }
+                if (strpos($key2, "price_") !== false) { $data_last['price'][] = $value2; }
+            }
+            $data_last['sellout'][] = $value['sellout'];
+            $data_last['price'][] = $value['total_price'];
+        }
+
+        // echo "<pre>"; print_r($data_lasts);
+
+        // Table Sellout Diff
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Topic</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+            $month_text = date('M', strtotime("+".$i." Month", strtotime($from)));
+            echo "<th style='vertical-align:middle;'><div align='center'>".$month_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        $topic_list = array('sellout','price');
+
+        foreach ($topic_list as $key => $value) {
+
+            // Data for List
+
+            echo    "<tr>";
+            echo        "<td width='10%'><div align='center'>".ucfirst($value)."</div></td>";
+
+            for ($j=0;$j<=$period_loop;$j++) {
+
+                if ( $value == 'sellout' ) {
+                    $sellout_diff = round((( $data['sellout'][$j] / $data_last['sellout'][$j] ) - 1) * 100, 0);
+                } else {
+                    $sellout_diff = round((( $data['price'][$j] / $data_last['price'][$j] ) - 1) * 100, 0);
+                }
+
+                $font_color = "color='black'";
+                if ($sellout_diff <= 0) { $font_color = "color='red'"; } 
+                if ($sellout_diff >= 100) { $font_color = "color='green'"; } 
+
+                echo    "<td width='".$column_width."%'><div align='right'><font ".$font_color." >".$sellout_diff."%</font></div></td>";
+
+            }
+/*
+            $total_sellout_diff = round((( $data['sellout']['sellout'] / $data_last[$i]['sellout'] ) - 1) * 100, 0);
+
+            $font_color = "color='black'";
+            if ($total_sellout_diff <= 0) { $font_color = "color='red'"; } 
+            if ($total_sellout_diff >= 100) { $font_color = "color='green'"; } 
+
+            echo        "<td><div align='right'><font ".$font_color." >".$total_sellout_diff."%</font></div></td>";
+*/
+            echo    "</tr>";
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+        echo "<br/>";
+
+        // Table Last Month
+        echo "<table class='table table-bordered'>";
+        echo    "<thead>";
+        echo        "<tr>";
+        echo            "<th style='vertical-align:middle;'><div align='center'>Topic</div></th>";
+
+        for ($i=0;$i<$period_loop;$i++) {
+
+            $month_text = date('M Y', strtotime("+".$i." Month", strtotime($from_last)));
+
+            echo "<th style='vertical-align:middle;' ><div align='center'>".$month_text."</div></th>";
+        }
+
+        echo            "<th style='vertical-align:middle;'><div align='center'>Total</div></th>";
+        echo        "</tr>";
+        echo    "</thead>";
+        echo    "<tbody>";
+
+        foreach ($data_last as $key => $value) {
+
+            // Data for List
+            $cnt = $i + 1;
+
+            echo    "<tr>";
+            echo        "<td width='10%'><div align='center'>".ucfirst($key)."</div></td>";
+
+            for ($j=0;$j<=$period_loop;$j++) { echo "<td width='".$column_width."%'><div align='right'>".number_format($value[$j])."</div></td>"; }
+
+            echo    "</tr>";
+
+        } 
+
+        echo    "</tbody>";
+        echo    "<tfoot>";
+
+        echo    "</tfoot>";
+        echo    "</table>";
+
+    }
+
+?>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
+<script> 
+    zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9","ee6b7db5b51705a13dc2339db3edaf6d"];
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+/*
+        $('.export_details').click(function() {
+            $self = $(this);
+            channel = $self.data('channel');
+            selected_date = $self.data('selected_date');
+            type = $self.data('type');
+
+            loc = '<?php echo HOST ?>timing/ka-sellout?export=2&type='+type+'&channel='+channel+'&selected_date='+selected_date;
+            window.open(loc, '_self');
+        });
+*/
+
+    });
+
+    var period_loop = <?php echo $period_loop; ?>;
+    var from_date = '<?php echo $from; ?>';
+
+    // KA Sellout
+    var y_max = '<?php echo $y_max; ?>';
+    var series = '<?php echo $series; ?>';
+
+    var month_list = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    var x_list = [];
+    var i;
+
+    for (i = 0; i < period_loop; i++) { 
+        var date = new Date(from_date);
+
+        date.setMonth(date.getMonth() + i);
+        var date_text = month_list[(date.getUTCMonth())] + "-" + date.getUTCFullYear();
+
+        x_list.push(date_text);
+    }
+
+    /*https://www.zingchart.com/gallery/chart/#!dashboard-custom-tokens*/
+    zingchart.THEME = "classic";
+
+    var kr_bi_chart_config = {
+        "background-color":"#ecf2f6",
+        "graphset":[
+            {
+                "type":"line",
+                "background-color":"#fff",
+                "border-color":"#dae5ec",
+                "border-width":"1px",
+                "width":"96%",
+                "height":"80%",
+                "x":"2%",
+                "y":"3%",
+                "title":{
+                    "margin-top":"7px",
+                    "margin-left":"12px",
+                    "text":"KR BI Report",
+                    "background-color":"none",
+                    "shadow":0,
+                    "text-align":"center",
+                    "font-family":"Arial",
+                    "font-size":"11px",
+                    "font-color":"#707d94"
+                },
+                "plot":{
+                    "animation":{
+                        "delay":500,
+                        "effect":"ANIMATION_SLIDE_LEFT"
+                    },
+                },
+                "plotarea":{
+                    "margin":"50px 25px 70px 46px"
+                },
+                "scale-y":{
+                    // "values":"0:"+y_max+":100",
+                    "line-color":"none",
+                    "guide":{
+                        "line-style":"solid",
+                        "line-color":"#d2dae2",
+                        "line-width":"1px",
+                        "alpha":0.5
+                    },
+                    "tick":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-right":"5px"
+                    }
+                },
+                "scale-x":{
+                    "line-color":"#d2dae2",
+                    "line-width":"2px",
+                    "values":x_list,
+                    "tick":{
+                        "line-color":"#d2dae2",
+                        "line-width":"1px"
+                    },
+                    "guide":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-top":"5px"
+                    }
+                },
+                "legend":{
+                    "layout":"x6",
+                    "background-color":"none",
+                    "shadow":0,
+                    "margin":"425 auto 0 auto",
+                    "border-width":"0px",
+                    "item":{
+                        "font-color":"#707d94",
+                        "font-family":"Arial",
+                        "padding":"0px",
+                        "margin":"0px",
+                        "font-size":"9px"
+                    },
+                    "marker":{
+                        "show-line":"true",
+                        "type":"match",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "size":4,
+                        "line-width":2,
+                        "padding":"3px"
+                    }
+                },
+                "crosshair-x":{
+                    "lineWidth":1,
+                    "line-color":"#707d94",
+                    "plotLabel":{
+                        "shadow":false,
+                        "font-color":"#000",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px",
+                        "alpha":1
+                    },
+                    "scale-label":{
+                        "font-color":"#ffffff",
+                        "background-color":"#707d94",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px"
+                    }
+                },
+                "tooltip":{
+                    "visible":false
+                },
+                "series":JSON.parse(series) 
+                
+            }
+        ]
+    };
+
+    zingchart.render({ 
+        id : 'kr_bi_chart', 
+        data : kr_bi_chart_config, 
+        height: 500, 
+        width: '100%' 
+    });
+
+</script>

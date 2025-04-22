@@ -1,0 +1,74 @@
+<div class="page-header"><h2><i class="icon-bell"></i> Push Notification</h2></div>
+<?php
+function ActionStatusDisplay($value){
+    if($value=='2'){
+        return '<span class="label label-success"><i class="icon-location-arrow"></i> Sent</span>';
+    }else{
+        return '<span class="label label-warning"><i class="icon-file-text-alt"></i> Drafts</span>';
+    }
+}
+
+echo $page.' '.$store_id;
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('trainer/partials/search_push_notification.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <a title="Create Basic Info" class="btn btn-success" href="/trainer/create-push-notification">Create Push Notification</a><br /><br />
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th style="text-align: center;" width="5%">No.</th>
+            <th style="text-align: center;" width="30%">Title</th>
+            <th style="text-align: center;" width="50%">Message</th>
+            <th style="text-align: center;" width="8%">Status</th>
+            <th style="text-align: center;" width="7%">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        $count =0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k=>$item):
+                ?>
+                <tr>
+                    <td style="text-align: center;"><?php echo $k+1;?></td>
+                    <td><?php echo isset($item['id']) ? $item['title'] : '';?></td>
+                    <td><?php echo isset($item['id']) ? $item['message'] : '';?></td>
+                    <td style="text-align: center;"><?php echo isset($item['id']) ? ActionStatusDisplay($item['action']) : '';?></td>
+                    <td style="text-align: center;">
+                        <a title="Edit" href="/trainer/create-push-notification?id=<?php echo $item['id']; ?>" style="padding-right: 0.5em;"><i class="icon-edit"></i></a>&nbsp;<a title="Edit" href="/trainer/remove-push-notification?id=<?php echo $item['id']; ?>" onclick="return confirm('Are you sure to remove?');"><i class="icon-trash"></i></a>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+
+</div>

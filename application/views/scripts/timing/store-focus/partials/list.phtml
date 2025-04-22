@@ -1,0 +1,43 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Area</div></th>
+        <th><div align="center">Store ID</div></th>
+        <th><div align="center">Store Name</div></th>
+        <th><div align="center">Store Type</div></th>
+        <th><div align="center">OPPO</div></th>
+        <th><div align="center">Huawei</div></th>
+        <th><div align="center">VIVO</div></th>
+        <th><div align="center">Samsung</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if (isset($this->competitor_sellout) and $this->competitor_sellout)
+        foreach ($this->competitor_sellout as $key => $value): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $key + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $value['area_name']; ?></td>
+                <td><div align="center"><?php echo $value['st_id'];?></div></td>
+                <td><?php echo $value['st_name'];?></td>
+                <td><?php echo $value['st_type'];?></td>
+                <td><div align="right"><?php echo $value['sellout_oppo'];?></div></td>
+                <td><div align="right"><?php echo $value['sellout_huawei'];?></div></td>
+                <td><div align="right"><?php echo $value['sellout_vivo'];?></div></td>
+                <td><div align="right"><?php echo $value['sellout_samsung'];?></div></td>
+            </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+

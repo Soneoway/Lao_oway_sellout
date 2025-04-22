@@ -1,0 +1,196 @@
+<style>
+    .target { width:100px; }
+    .target_hero { width:100px; }
+    .target_price { width:100px; }
+
+    /**
+ * Tabs
+ */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; // make sure it wraps
+}
+.tabs label {
+  order: 1; // Put the labels first
+  display: block;
+  padding: 1rem 2rem;
+  margin-right: 0.2rem;
+  cursor: pointer;
+  background: #4655;
+  font-weight: bold;
+  transition: background ease 0.2s;
+}
+.tabs .tab {
+  order: 99; // Put the tabs last
+  flex-grow: 1;
+  width: 100%;
+  display: none;
+  padding: 1rem;
+}
+.tabs input[type="radio"] {
+  display: none;
+}
+.tabs input[type="radio"]:checked + label {
+  background: #e8cd45d6;
+}
+.tabs input[type="radio"]:checked + label + .tab {
+  display: block;
+}
+
+@media (max-width: 45em) {
+  .tabs .tab,
+  .tabs label {
+    order: initial;
+  }
+  .tabs label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+}
+</style>
+
+<?php 
+
+    $save_flag = 0;
+    $now = date('Y-m-d');
+    $rd_date = date('Y-m-02', strtotime($this->params['from']));
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    if ( $userStorage->group_id == ADMINISTRATOR_ID ) { $save_flag = 1; }
+    if ( in_array($userStorage->group_id, array(RM_ID,RMSTANDBY_ID)) ) { if ( $now >= $rd_date) { $save_flag = 1; } }
+?>
+
+<form class="form-search form-horizontal" method="post" action="#">
+    <div class="tabs">
+    <?php 
+
+        if ( isset($this->data_list) && $this->data_list ) {
+
+            $data_list = $this->data_list;
+
+            for ($h=0;$h<count($data_list);$h++) {
+
+              //  echo "<h3>".$data_list[$h]['name']."</h3>";
+
+                echo '<input type="radio" name="tabs" id="'.$data_list[$h]["name"].'">';
+                echo '<label class="span3" for="'.$data_list[$h]["name"].'">'.$data_list[$h]["name"].'</label>';
+                echo '<div class="tab">';
+                echo '<div class="clearfix"></div>';
+
+                if ( strpos($data_list[$h]['name'], "No Sale") != false ) {
+                    $area_id = $data_list[$h]['area_id'];
+                    $sale_id = 0;
+                } else {
+                    $area_id = $data_list[$h]['area_id'];
+                    $sale_id = $data_list[$h]['id'];
+                }
+
+    ?>
+     <div class="row-fluid">
+        <div class="span12">
+        <h2 style="padding-left: 10px;"><?php echo $data_list[$h]["name"] ?></h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <th><div align="center">[Store ID] Store Name</div></th>
+            <th><div align="center"><?php echo $this->params['last_02']; ?></div></th>
+            <th><div align="center"><?php echo $this->params['last_01']; ?></div></th>
+            <th><div align="center">PC</div></th>
+            <th><div align="center">Target This Month</div></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+                $QStoreStaff = new Application_Model_StoreStaff();
+
+                $QTag = new Application_Model_OppoPcTarget();
+
+                $data = $QTag->getLast3MonthBySaleStore($this->params, $sale_id, $area_id);
+                
+                $sum_last_03 = $sum_last_02 = $sum_last_01 = $sum_avg = 0;
+                $sum_pc = $sum_pc_stand_by = 0;
+                $sum_sellout = $sum_price = 0;
+
+                if ( !empty($data) ) {
+
+                    $sellout_avg = 0;
+                    $sum_target_price = 0;
+
+
+                    for($i=0;$i<count($data);$i++) { 
+
+                        $pc_01 = $QStoreStaff->getPC($data[$i]['store_id'], 0);
+                        $pc_02 = $QStoreStaff->getPC($data[$i]['store_id'], 1);
+
+                        $cnt_pc_01 = count($pc_01);
+                        $cnt_pc_02 = count($pc_02);
+
+                        // Check Price Target of each Store 
+                        $target_details = $QTag->TargetByStore($this->params,$data[$i]['store_id']);
+
+                        if($target_details['target_price'] != ''){
+                            $target = "<b style='color:green'>YES</b>";
+                        }else{
+                            $target = "<b style='color:red'>NO</b>";
+                        }
+
+
+                        if($data[$i]['last_02'] != ''){
+                            $text = "<b style='color:green'>YES</b>";
+                        }else{
+                            $text = "<b style='color:red'>NO</b>";
+                        }
+
+                        if($data[$i]['last_01'] != ''){
+                            $subtext = "<b style='color:green'>YES</b>";
+                        }else{
+                            $subtext = "<b style='color:red'>NO</b>";
+                        }
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td width='3%'><div align='center'>".$cnt."</div></td>";
+                        echo    "<td width='34%'><div align='left'>[".$data[$i]['store_id']."] ".$data[$i]['store_name']."</div></td>";
+                      
+                        echo    "<td width='6%'><div align='right' style='color:".$color."'>".$text."</div></td>";
+                        echo    "<td width='6%'><div align='right'>".$subtext."</div></td>";
+
+                        echo "<td width='6%'><div align='center'>".$cnt_pc_01."</div></td>";
+
+                        echo "<td width='10%'><div align='center'>".$target."</div></td>";
+                    }
+
+
+                }
+            ?>
+        </tbody>
+    </table>
+       </div>
+          </div>
+      </div>
+    <?php   } ?>
+
+        <input type="hidden" name="area_id" id="area_id" value='<?php echo json_encode($this->params['area_id']); ?>'>
+        <input type="hidden" name="sale_id" id="sale_id" value='<?php echo json_encode($this->params['sale_id']); ?>'>
+        <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['from']; ?>">
+        </div>
+      <!--   <?php 
+            if ($save_flag == 1) { 
+                echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+            }
+        ?> -->
+
+    <?php } ?>
+
+    
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

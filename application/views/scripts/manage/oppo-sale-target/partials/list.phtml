@@ -1,0 +1,127 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">Area ID</div></th>
+        <th><div align="center">Area Name</div></th>
+        <th><div align="center">Target</div></th>
+        <th><div align="center">Current Sale</div></th>
+        <th><div align="center">RD</div></th>
+        <th><div align="center">Sale Director</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+
+            if ($this->lists) {
+                $params = $this->params;
+                $data = $this->lists;
+
+                // echo "<pre>"; print_r($data);
+
+        		$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+        		
+        		$now = date('Y-m-d H:i:s');
+        		$tmp = explode("-", $params['from']);
+
+        		$allow_range_start = $tmp[0]."-".$tmp[1]."-01 00:00:00";
+        		$allow_range_end = $tmp[0]."-".$tmp[1]."-15 15:00:00";
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    if ($data[$i]['target'] >= $data[$i]['total_target']) { $target = "<font color='green'>".number_format($data[$i]['target'])."</font>"; } 
+                    else { $target = "<font color='red'>".number_format($data[$i]['target'])."</font>"; }
+
+                    if ($data[$i]['sale'] == $data[$i]['total_sale']) { $sale = "<font color='green'>".$data[$i]['sale']."</font>"; } 
+                    else { $sale = "<font color='red'>".$data[$i]['sale']."</font>"; }
+
+                    $target_percent = ( $data[$i]['target'] / $data[$i]['total_target'] ) * 100;
+                    $sale_percent = ( $data[$i]['sale'] / $data[$i]['total_sale'] ) * 100;
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_id']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+
+                    if ( !is_null($data[$i]['total_target']) ) {
+
+                        echo "<td><div align='center'>".$target." / ".number_format($data[$i]['total_target'])." [ ".number_format($target_percent)."% ]</div></td>";
+                        echo "<td><div align='center'>".$sale." / ".$data[$i]['total_sale']." [ ".number_format($sale_percent)."% ]</div></td>";
+
+                        // Reset Store Target of this Area 
+                        $reset_btn = "";
+                        if ($userStorage->group_id == ADMINISTRATOR_ID) {
+                            $reset_btn = "
+                                <a title='Reset Store Target of this Area' href='".HOST."manage/oppo-sale-target-reset-area?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' onclick=\"return confirm('ຢືນຢັນການ Reset Store Target ທັງໝົດຂອງ Area : ".$data[$i]['area_name']."')\">
+                                    <span class='label label-warning'>Reset</span>
+                                </a>";
+                        }
+
+                        // RD Approve 
+                        if ($data[$i]['cnt_rd'] > 0) {
+                            echo "<td><div align='center'><span class='label label-success'>Approved</span></div></td>";
+                        } else {
+                            echo "<td><div align='center'><span class='label label-info'>Waiting</span></div></td>";
+                        }
+
+                        // Sale Director Approve 
+                        if ($data[$i]['cnt_sd'] > 0) {
+                            echo "<td><div align='center'><span class='label label-success'>Approved</span></div></td>";
+                        } else {
+                            echo "<td><div align='center'><span class='label label-info'>Waiting</span></div></td>";
+                        }
+
+            			if ( ($now >= $allow_range_start && $now <= $allow_range_end ) || $userStorage->group_id == ADMINISTRATOR_ID ) {
+            				echo    "<td>
+                                        <div align='center'>
+                                            <a title='Save' href='".HOST."manage/oppo-sale-target-edit?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' >
+                                                <i class='icon-save'></i>
+                                            </a> &nbsp;
+
+    					                   <a title='Print' href='".HOST."manage/oppo-sale-target-print?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' >
+                                                <i class='icon-print'></i>
+                                            </a>
+                                            ".$reset_btn."
+                                        </div>
+                                    </td>";
+                        } else {
+                            /*
+            				echo    "<td>
+                                        <div align='center'>
+                                            <a title='Edit' href='".HOST."manage/oppo-sale-target-edit?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' >
+                                                <i class='icon-edit'></i>
+                                            </a>
+                                        </div>
+                                    </td>";*/
+                    
+                            echo    "<td>
+                                        <div align='center'>
+                                            <a title='Save' href='".HOST."manage/oppo-sale-target-edit?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' >
+                                                <i class='icon-save'></i>
+                                            </a> &nbsp;
+
+                                            <a title='Print' href='".HOST."manage/oppo-sale-target-print?area_id=".$data[$i]['area_id']."&area_name=".$data[$i]['area_name']."&from_date=".$params['from']."&to_date=".$params['to']."' >
+                                                <i class='icon-print'></i>
+                                            </a>
+                                            ".$reset_btn."
+                                        </div>
+                                    </td>";
+                    
+                        }
+			
+                    } else {
+                        echo "<td><div align='center'></div></td>";
+                        echo "<td><div align='center'></div></td>";
+                        echo "<td><div align='center'></div></td>";
+                        echo "<td><div align='center'></div></td>";
+                        echo "<td><div align='center'></div></td>";
+                    }
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>

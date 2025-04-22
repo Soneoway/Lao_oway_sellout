@@ -1,0 +1,205 @@
+<div class="page-header">
+    <h1>Staff <small>Assign to <em><?php if(isset($this->company) && $this->company) echo $this->company['name']  ?></em></small></h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('staff/partials/search-company.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <button class="btn btn-success" id="btn_move" type="button">Move</button>
+    </div>
+</div>
+
+<div class="table-responsive load-ajax">
+    
+</div>
+
+<link rel="stylesheet" type="text/css" href="<?php echo HOST ?>css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+<link href="<?php echo HOST ?>css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="<?php echo HOST ?>css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="<?php echo HOST ?>js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<script src="<?php echo HOST ?>js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    disable_control = 'input, button, select, textarea';
+
+    options = {
+            selectAllText: 'Select All',
+            includeSelectAllOption: true,
+            includeSelectAllIfMoreThan: 3,
+            disableIfEmpty: true
+        };
+        
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('#btn_search').click();
+            return false;
+        });
+
+        multi();
+
+        initTag();
+
+        $('#btn_search').click(search_staf);
+
+        $('#area_id').change(function(){
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var area_id = $(this).val();
+            $('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-province",
+                {area_id: area_id}
+                ,function(data,status){
+                    var obj = $.parseJSON( data );
+                    $('#regional_market').find('option').remove();
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#regional_market').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('button, .btn, input').prop('disabled', false);
+                    $('.multiselect').multiselect("destroy").multiselect(options);
+                    _self.nextAll('.loading').remove();
+                });
+        });
+
+        $('#btn_move').click(move_staff);
+    });
+
+    function move_staff(e) {
+        $(disable_control).prop('disabled', true);
+        $('.loading').remove();
+        $(e.target).after('<span class="loading"></span>');
+
+        ids = [];
+        $('[name="staff[]"]:checked').each(function(index, element) {
+            ids.push($(element).val());
+        });
+
+        $.ajax({
+            url: '<?php echo HOST ?>ajax/move-staff-to-company',
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+                company_id : <?php echo $this->company['id'] ?>,
+                ids : ids
+            },
+        })
+        .done(function(data) {
+            if (typeof data.company_name !== "undefined")
+                $('[name="staff[]"]:checked').each(function(index, element) {
+                    $(element).parent('td').next('td').text(data.company_name);
+                    $(element).prop('checked', false);
+                });
+
+            $('#check_all').prop('checked', false);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('.loading').remove();
+            $(disable_control).prop('disabled', false);
+        });
+        
+    }
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function initTag(){
+
+        $('#myTags').tagit({
+            allowSpaces: true,
+            fieldName: 'tags[]',
+            autocomplete: {
+                delay: 0,
+                minLength: 2,
+                source: "<?php echo HOST;?>ajax/get-tags"
+            }
+        });
+
+    }
+
+    function isNotNull(value) {
+        return typeof value != "undefined" && value !== null && value != 0;
+    }
+
+    function search_staf(e) {
+        $('.loading').remove();
+        $(e.target).after('<span class="loading"></span>');
+        $(disable_control).prop('disabled', true);
+
+        url = '<?php echo HOST ?>staff/company-search';
+
+        name            = $('#name').val();
+        department      = $('#department').val();
+        off             = $('#off').val();
+        team            = $('#team').val();
+        regional_market = $('#regional_market').val();
+        area_id         = $('#area_id').val();
+        email           = $('#email').val();
+        is_officer      = $('#is_officer').val();
+        tags            = $('#tags').val();
+
+        data = {    
+            name            : name,
+            department      : department,
+            off             : off,
+            team            : team,
+            regional_market : regional_market,
+            area_id         : area_id,
+            email           : email,
+            is_officer      : is_officer,
+            tags            : tags
+        };
+
+        for (x in data) {
+            if (data[x] == null || (typeof data[x] != "undefined" && data[x].length == 0) ) {
+                delete data[x];
+            }
+        }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'html',
+            data: data,
+        })
+        .done(function(data) {
+            $(".load-ajax").html(data);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('.loading').remove();
+            $(disable_control).prop('disabled', false);
+        });
+        
+    }
+</script>

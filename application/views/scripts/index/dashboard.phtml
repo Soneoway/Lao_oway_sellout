@@ -1,0 +1,380 @@
+<link rel="stylesheet" href="<?php echo HOST; ?>css/dashboard.css" />
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<style>
+  .span6 label:nth-of-type(1) {
+        font-weight: bold;
+        color: #707370;
+  } 
+  .widget-header {
+      cursor: pointer;
+  }
+/*  body{
+    font-family: phetsarath ot;
+  }*/
+</style>
+<div class="content-container">
+  <!-- <div class="row">
+    <div class="span12">
+      <h1 class="page-header">
+        <small>ສະຖິຕິ</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li class="active">
+          <i class="fa fa-dashboard"></i> 
+        </li>
+      </ol>
+    </div>
+  </div> -->
+  <br>
+
+  <div class="row">
+    <div class="span12">
+    
+      <div class="widget widget-nopad">
+        <div class="widget-header " data-toggle="collapse" data-target="#inform"> 
+          <i class="icon-list-alt"></i>
+          <h3> ຂໍ້ມູນສ່ວນຕົວ <i class="icon-ok-sign" rel="tooltip" title="ຂໍ້ມູນສ່ວນຕົວ" class="tooltip"></i> </h3>
+        </div>
+        <!-- /widget-header -->
+        <div class="widget-content collapse in" id="inform">
+          <div class="widget big-stats-container">
+            <div class="widget-content">
+              <?php
+                echo $this->render('index/partials/widget/basic.phtml', array('staff' => $this->staff));
+              ?>
+            </div>
+            <!-- /widget-content --> 
+          </div>
+        </div>
+      </div>
+
+      <!-- shop list -->
+      <?php 
+
+        if(isset($this->staff['team']) and $this->staff['team'] == SALES_TEAM): 
+          if (in_array($this->staff['group_id'],array(PGPB_ID,PCDB_ID)))  {
+      ?> 
+          <div class="widget widget-nopad"> 
+            <div class="widget-header" data-toggle="collapse" data-target="#usershop2"> 
+              <i class="icon-signal"></i>
+              <h3>ຮ້ານຄ້າ ແລະ ເປົ້າ
+                <i class="icon-ok-sign" rel="tooltip" title="ຮ້ານ" class="tooltip"></i>
+              </h3>
+            </div>
+
+            <div class="widget-content collapse in" id="usershop2">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    echo $this->render('index/partials/widget/shop_pc.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      <?php } else {  ?>
+
+        <div class="widget widget-nopad">
+          <div class="widget-header" data-toggle="collapse" data-target="#usershop"> 
+            <i class="icon-signal"></i>
+            <h3>ຮ້ານຄ້າ
+              <i class="icon-ok-sign" rel="tooltip" title="ຮ້ານ" class="tooltip"></i>
+            </h3>
+          </div>
+          <!-- /widget-header -->
+          <div class="widget-content collapse in" id="usershop">
+            <div class="widget big-stats-container">
+              <div class="widget-content">
+                <?php
+                  echo $this->render('index/partials/widget/shop.phtml', array('staff' => $this->staff));
+                ?>
+              </div>
+              <!-- /widget-content --> 
+            </div>
+          </div>
+        </div>
+
+        <div class="widget widget-nopad">
+          <div class="widget-header" data-toggle="collapse" data-target="#pc_list"> 
+            <i class="icon-signal"></i>
+            <h3>PC List
+              <i class="icon-ok-sign" rel="tooltip" title="pc_list" class="tooltip"></i>
+            </h3>
+          </div>
+          <!-- /widget-header -->
+          <div class="widget-content collapse in" id="pc_list">
+            <div class="widget big-stats-container">
+              <div class="widget-content">
+                <?php
+                  echo $this->render('index/partials/widget/pc_target.phtml', array('staff' => $this->staff));
+                ?>
+              </div>
+              <!-- /widget-content --> 
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="widget widget-nopad">
+          <div class="widget-header" data-toggle="collapse" data-target="#pcdb_list"> 
+            <i class="icon-signal"></i>
+            <h3>PCDB List
+              <i class="icon-ok-sign" rel="tooltip" title="pcdb_list" class="tooltip"></i>
+            </h3>
+          </div>
+          <!-- /widget-header -->
+          <div class="widget-content collapse in" id="pcdb_list">
+            <div class="widget big-stats-container">
+              <div class="widget-content">
+                <?php
+                  echo $this->render('index/partials/widget/pcdb_target.phtml', array('staff' => $this->staff));
+                ?>
+              </div>
+              <!-- /widget-content --> 
+            </div>
+          </div>
+        </div>
+
+      <?php } ?>
+<!--
+      <?php if(isset($this->staff['group_id']) and $this->staff['group_id'] == SALES_ID): ?> 
+
+      <div class="row">
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header" data-toggle="collapse" data-target="#sellin_com"> 
+              <i class="icon-signal"></i>
+              <h3>Sellin COM. ในเดือนนี้
+                <i class="icon-ok-sign" rel="tooltip" title="ยอดขายຮ້ານ" class="tooltip"></i>
+              </h3>
+            </div>
+
+            <div class="widget-content collapse in" id="sellin_com">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    // $this->list_type = 'now';
+                    // echo $this->render('index/partials/widget/sellin_com.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header" data-toggle="collapse" data-target="#sellin_com2"> 
+              <i class="icon-signal"></i>
+              <h3>Sellin COM. ในเดือนที่แล้ว
+                <i class="icon-ok-sign" rel="tooltip" title="ยอดขายຮ້ານ" class="tooltip"></i>
+              </h3>
+            </div>
+            <div class="widget-content collapse in" id="sellin_com2">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    // $this->list_type = 'last';
+                    // echo $this->render('index/partials/widget/sellin_com.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header" data-toggle="collapse" data-target="#solist"> 
+              <i class="icon-signal"></i>
+              <h3>Sale Order ในเดือนนี้
+                <i class="icon-ok-sign" rel="tooltip" title="ยอดขายຮ້ານ" class="tooltip"></i>
+              </h3>
+            </div>
+
+            <div class="widget-content collapse in" id="solist">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    // $this->list_type = 'now';
+                    // echo $this->render('index/partials/widget/so_list.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header" data-toggle="collapse" data-target="#solist2"> 
+              <i class="icon-signal"></i>
+              <h3>Sale Order ในเดือนที่แล้ว
+                <i class="icon-ok-sign" rel="tooltip" title="ยอดขายຮ້ານ" class="tooltip"></i>
+              </h3>
+            </div>
+
+            <div class="widget-content collapse in" id="solist2">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    // $this->list_type = 'last';
+                    // echo $this->render('index/partials/widget/so_list.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <?php endif; ?>
+-->
+
+      <?php if(isset($this->staff['group_id']) and $this->staff['group_id'] == AM_ID): ?> 
+        <div class="widget widget-nopad">
+          <div class="widget-header" data-toggle="collapse" data-target="#amshop"> 
+            <i class="icon-signal"></i>
+            <h3>Sellout By Store 
+              <i class="icon-ok-sign" rel="tooltip" title="ຍອດຂາຍຮ້ານ" class="tooltip"></i>
+            </h3>
+          </div>
+          <!-- /widget-header -->
+          <div class="widget-content collapse in" id="amshop">
+            <div class="widget big-stats-container">
+              <div class="widget-content">
+                <?php
+                  echo $this->render('index/partials/widget/shop_am.phtml', array('staff' => $this->staff));
+                ?>
+              </div>
+              <!-- /widget-content --> 
+            </div>
+          </div>
+        </div>
+
+      <?php endif; ?>
+
+      <?php if(in_array($this->staff['group_id'],array(PGPB_ID,PCDB_ID))): ?> 
+      <div class="row">
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header"  data-toggle="collapse" data-target="#kpi">
+              <i class="icon-signal"></i>
+              <h3> ຍອດຂາຍເດືອນນີ້ 
+                <i class="icon-ok-sign" rel="tooltip" title="ສະແດງແລະຊ້ອນ" class="tooltip"></i> 
+                <!-- <a href="<?php echo HOST ?>timing/kpi-overview" rel="tooltip" title="ເບິ່ງຍອດຂາຍໃນເດືອນນີ້"><i class="icon-fullscreen"></i></a> -->
+              </h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content collapse in" id="kpi" >
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    $this->kpi_type = 'now';
+                    echo $this->render('index/partials/widget/kpi.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+                <!-- /widget-content --> 
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="span6">
+          <div class="widget widget-nopad">
+            <div class="widget-header"  data-toggle="collapse" data-target="#imei">
+              <i class="icon-signal"></i>
+              <h3> ຍອດຂາຍເດືອນທີ່ຜ່ານມາ
+                <i class="icon-ok-sign" rel="tooltip" title="ສະແດງແລະຊ້ອນ" class="tooltip"></i>
+              </h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content collapse in" id="imei" >
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <?php
+                    $this->kpi_type = 'last';
+                    echo $this->render('timing/partials/kpi-hr-check-list.phtml');
+                    //echo $this->render('index/partials/widget/imei.phtml', array('staff' => $this->staff));
+                  ?>
+                </div>
+                <!-- /widget-content --> 
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <?php endif; ?>
+
+      <?php endif; ?>
+
+      <!-- /widget -->
+    </div>
+  </div>
+
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<script>
+
+  $(document).ready(function(){
+
+    $("[rel=tooltip]").tooltip({ placement: 'top'});
+    $(".collapse").collapse();
+   
+    if(isMobile() == false) { $(".collapse").collapse('show'); }
+   
+    $("#inform").collapse('show');
+
+      $modal = $('#modal');
+      $('.badge.badge-default').click(function(){
+        _self = $(this);
+        // var type = _self.data('type')
+        // var tmp = "";
+              
+        // alert('<?php echo HOST ?>'+'timing/kpi-pc-short-report');
+        $('body').modalmanager('loading');
+
+        $.post('<?php echo HOST ?>' + 'timing/kpi-pc-short-report',
+            {
+                gkl_id    : _self.data('gkl-id'),
+                staff_id  : _self.data('staff-id'),
+                kpi_type  : _self.data('kpi-type') 
+            },
+            function(data){
+              //alert(data);
+              $modal.html(data);
+              $modal.modal();
+              var name = _self.parents('tr').children('td:nth-child(2)').html();
+              $modal.find('h3').append(name);
+            });
+      });
+
+
+  });
+
+  
+
+  function isMobile() {
+    if(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i) || navigator.userAgent.match(/IEMobile/i))
+      return true;
+    
+    return false;
+  }
+</script>

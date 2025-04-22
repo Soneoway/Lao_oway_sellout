@@ -1,0 +1,67 @@
+<style>
+	.birthday textarea {
+		resize: none;
+		width: 100%;
+	}
+
+	.birthday input[type=text] {
+		width: 100%;
+	}
+
+	.birthday img {
+		width: 100%;
+	}
+</style>
+<div class="page-header">
+    <h1>Birthday Email Config</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<?php
+    if (isset($this->messages_error) and $this->messages_error)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+?>
+<div class="row-fluid birthday">
+	<div class="span12">
+		<form class="form-horizontal" action="<?php echo HOST.'config/birthday-save' ?>" method="post">
+			<div class="row-fluid">
+				<div class="span7">
+					<div class="control-group">
+						<label class="control-label" for="image"><?php if(isset($this->birthday_image)) echo $this->birthday_image['name'] ?></label>
+						<div class="controls">
+							<input type="text" id="image" name="image" placeholder="Input Image URL" value="<?php if(isset($this->birthday_image['value'])) echo $this->birthday_image['value'] ?>">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"><?php if(isset($this->birthday_wish)) echo $this->birthday_wish['name'] ?></label>
+						<div class="controls">
+							<textarea name="wish" id="wish" rows="10"><?php if(isset($this->birthday_wish['value'])) echo $this->birthday_wish['value'] ?></textarea>
+						</div>
+					</div>					
+				</div>
+
+				<div class="span5">
+					<img id="img" src="<?php if(isset($this->birthday_image['value'])) echo $this->birthday_image['value'] ?>" alt="" />
+				</div>
+			</div>
+			<div class="form-actions">
+				<button class="btn btn-default" type="button">Cancel</button>
+				<button class="btn btn-primary" type="submit">Save</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	$(document).ready(function() {
+		$('#image').change(function() {
+			_self = $(this);
+			$('#img').attr('src', _self.val());
+		});
+	});
+</script>

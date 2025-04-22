@@ -1,0 +1,35 @@
+<div class="page-header">
+    <h1>Your schedule</h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="widget widget-nopad">
+    <div class="widget-header"> <i class="icon-list-alt"></i>
+        <h3> Recent Timing</h3>
+    </div>
+    <!-- /widget-header -->
+    <div class="widget-content">
+        <div id='calendar'>
+        </div>
+    </div>
+    <!-- /widget-content -->
+</div>
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/timing/events"
+        });
+    });
+</script>

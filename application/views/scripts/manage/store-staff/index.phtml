@@ -1,0 +1,179 @@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css ">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<div class="page-header">
+    <form action="/manage/store-staff-create" method="get">
+        <h1>List Store Staff</h1><a href="/manage/store-staff-log">StoreStaffLog</a></small>
+        <span class="pull-right"><button class="btn-success" type="submit"><i class="icon-plus"></i></button></span>
+    </form>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-danger">'.$message.'</div>';
+        endforeach;
+?>
+<?php
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('manage/store-staff/partials/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+<div class="pull-right">
+  <button class="btn btn-danger" onclick="bulk_delete()">DELETE</button>
+</div>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered" id="dataTables">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>ID</th>
+            <th>Store ID</th>
+            <th>Store Name</th>
+            <th>Staff Name</th>
+            <th>Position</th>
+            <th>Province</th>
+            <th><input type="checkbox" id="check-all"></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->storestaffs) and $this->storestaffs)
+                foreach ($this->storestaffs as $k=>$storestaff): 
+                    if($storestaff['leader'] == 0){
+                        $is_leader = "PC";
+                    }else if ($storestaff['leader'] == 1) {
+                        $is_leader = "SALE";
+                    }else if ($storestaff['leader'] == 2) {
+                        $is_leader = "PCM";
+                    }else if ($storestaff['leader'] == 3) {
+                        $is_leader = "STOCK";
+                    }else if ($storestaff['leader'] == 4) {
+                        $is_leader = "ASM";
+                    }else if ($storestaff['leader'] == 5) {
+                        $is_leader = "MKT";
+                    }else{
+                        $is_leader = "Not Found";
+                    }              ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $storestaff['ss_id'];?></td>
+                <td><?php echo $storestaff['st_id'];?></td>
+                <td><?php echo $storestaff['store_name'];?></td>
+                <td>[<?php echo $storestaff['staff_code'];?>] <?php echo $storestaff['staff_name'];?></td>
+                <td><?php echo $is_leader;?></td>
+                <td><?php echo $storestaff['region'];?></td>
+                <td>
+                    <input type="checkbox" class="data-check" value="<?php echo $storestaff['ss_id'];?>">
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<!-- <div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div> -->
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>
+<script>
+    $(document).ready(function () {
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+    });
+</script>
+
+<script>
+    $('#dataTables').DataTable({
+      "aLengthMenu": [[20, 50, 100, 250, -1], [20, 50, 100, 250, "All"]],
+      "pageLength": 20,
+      "language":{
+        "sLengthMenu": "ສະແດງ _MENU_ ຈຳນວນ",
+        "info": "ຢູ່ໜ້າທີ _PAGE_ ຫາ _PAGES_",
+        "infoEmpty":      "ສະແດງໃຫ້ເຫັນ 0 ຫາ 0 ຂອງ 0 ລາຍການ",
+        "infoFiltered":   "( ຈາກ _MAX_ ລາຍການທັງໝົດ )",
+        "search": "<b>ຄົ້ນຫາ</b>",
+        "zeroRecords": "ບໍ່ມີຂໍ້ມູນ",
+        "searchPlaceholder": "ໃສ່ຂໍ້ມູນ",
+        "paginate": {
+          previous: 'ກັບຄືນ',
+          next:     'ຕໍ່ໄປ'
+        }
+      }
+    });
+
+//----------------------------------
+    $("#check-all").click(function () {
+        $(".data-check").prop('checked', $(this).prop('checked'));
+    });
+//----------------------------------
+
+function bulk_delete()
+{
+    var list_id = [];
+    $(".data-check:checked").each(function() {
+            list_id.push(this.value);
+    });
+    if(list_id.length > 0)
+    {
+        Swal.fire({
+        title: '<font style="font-family: phetsarath ot">ທ່ານຕ້ອງການລົບຫຼືບໍ່?</font>',
+        text: "Are you sure select this "+list_id.length+" data?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ed9a03',
+        cancelButtonColor: '#ababab',
+        confirmButtonText: '<font style="font-family: phetsarath ot">ຢືນຢັ້ນ</font>',
+        cancelButtonText: '<font style="font-family: phetsarath ot">ຍົກເລີກ</font>'
+        }).then((result) => {
+        if (result.isConfirmed) {
+                location.reload();
+                $.ajax({
+                    type: "POST",
+                    data: {id:list_id},
+                    url: '/manage/store-staff-delete',
+                    dataType: "JSON",
+                });
+        }else{
+        Swal.fire("Error","no data selected", "error");
+        }
+    });
+
+    }
+    else
+    {
+        Swal.fire("Error","no data selected", "error");
+    }
+}
+</script>

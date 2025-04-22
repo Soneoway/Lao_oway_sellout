@@ -1,0 +1,133 @@
+<form class="form-search form-horizontal" method="get" action="/manage/pc-unpunish/pc-unpunish">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="staff_code" class="span2">Staff Code</label>
+                <input id="staff_code" name="staff_code" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_code']) and printf($this->params['staff_code']);?>">
+            </div>
+            <div class="control-group">
+                <label for="staff_name" class="span2">Staff Name</label>
+                <input id="staff_name" name="staff_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_name']) and printf($this->params['staff_name']);?>">
+            </div>
+
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label class="span2" for="year_month">Month - Year</label>
+                <input name="month_year" id="month_year" class="input-medium search-query date-picker ui-datepicker-calendar" value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : date('F Y') ?>" required="required" />
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area->id;?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area->name;?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="unpunish_id" class="span2">Un-Punish Type</label>
+                <select id="unpunish_id" name="unpunish_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->unpunish_type) :
+                        foreach ($this->unpunish_type as $unpunish_type):
+                            ?>
+                            <option value="<?php echo $unpunish_type['id'];?>" <?php if (isset($this->params['unpunish_id']) and ( (is_array($this->params['unpunish_id']) && in_array($unpunish_type['id'], $this->params['unpunish_id']) || $unpunish_type['id']==$this->params['unpunish_id'])) ):?>selected<?php endif;?>><?php echo $unpunish_type['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export</button>
+
+</form>
+
+<form class="form-search form-horizontal" method="post" action="/staff/import-pc-unpunish" enctype="multipart/form-data">
+    Excel File xlsx:
+    <input type="file" name="file" id="file" required>
+    <input type="hidden" id="txt_month_year" name="txt_month_year" value="<?php echo isset($_GET['month_year']) ? date('Y-m-01', strtotime($_GET['month_year'])) : date('Y-m-01') ?>" >
+    <button type="submit" class="btn btn-primary">Import</button>
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<style> .ui-datepicker-calendar { display: none; } </style>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        // Calendar Year-Month
+        $('.date-picker').datepicker({
+
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+
+            onClose: function() {
+                var iMonth = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var iYear = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+
+                $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+
+                var current_datetime = new Date(iYear, iMonth, 1);
+                var formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate()
+                $('#txt_month_year').val(formatted_date);
+            },
+
+            beforeShow: function() {
+                if ((selDate = $(this).val()).length > 0) {
+                    iYear = selDate.substring(selDate.length - 4, selDate.length);
+                    iMonth = jQuery.inArray(selDate.substring(0, selDate.length - 5),
+                    $(this).datepicker('option', 'monthNames'));
+                    $(this).datepicker('option', 'defaultDate', new Date(iYear, iMonth, 1));
+                    $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+
+                    var current_datetime = new Date(iYear, iMonth, 1);
+                    var formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate()
+                    $('#txt_month_year').val(formatted_date);
+                }
+            }
+        });
+        
+    });
+</script>

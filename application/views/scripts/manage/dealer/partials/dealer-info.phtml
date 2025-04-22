@@ -1,0 +1,18 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Company Name</th>
+            <th>Contact Name</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><?php if(isset($this->distributor['title']) && $this->distributor['title']) echo $this->distributor['title'] ?></td>
+            <td><?php if(isset($this->distributor['unames']) && $this->distributor['unames']) echo $this->distributor['unames'] ?></td>
+            <td><?php if(isset($this->distributor['name']) && $this->distributor['name']) echo $this->distributor['name'] ?></td>
+            <td><?php if(isset($this->distributor['add_tax']) && $this->distributor['add_tax']) echo $this->distributor['add_tax'] ?></td>
+        </tr>
+    </tbody>
+</table>

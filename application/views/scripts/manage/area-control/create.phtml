@@ -1,0 +1,108 @@
+<style type="text/css">
+    .remove_area_btn,
+    .remove_region_btn {
+        margin-bottom: 9px;
+    }
+</style>
+<div class="page-header">
+    <h1>Create Area Control</h1>
+</div>
+<form action="<?php echo HOST ?>manage/area-control-insert" method="post">
+<div class="row-fluid">
+    <div class="span4">
+        <div class="control-group">
+        <label id="area_anchor">SUB AREA</label>
+            <select name="sub_area_id" class="form-control" required>
+                <option value>---</option>
+                <?php if (isset($this->sub_area) && $this->sub_area): ?>
+                    <?php foreach ($this->sub_area as $value): ?>
+                        <option value="<?php echo $value['area_id'] ?>"><?php echo $value['area_name'] ?></option>
+                    <?php endforeach ?>
+                <?php endif ?>
+            </select>
+        </div>
+    </div>
+    
+    <div class="span4">
+        <div class="control-group">
+            <label id="region_anchor">SUB DISTRICT</label>
+                <div class="region_select">
+                    <select name="sub_district_id[]" class="form-control" required>
+                        <option value>---</option>
+                        <?php if (isset($this->sub_district) && $this->sub_district): ?>
+                            <?php foreach ($this->sub_district as $value): ?>
+                                <option value="<?php echo $value['dis_id'] ?>"><?php echo $value['dis_name'] ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                    </select>
+                    <button type="button" class="btn btn-default remove_region_btn new">&times;</button>
+                </div>
+        </div>
+        <div class="control-group">
+            <button class="btn btn-default" id="add_region_btn" type="button">Add more</button>
+        </div>
+    </div>
+    
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" onclick="window.location='<?php echo HOST ?>manage/area-control'">Cancel</button>
+        </div>
+    </div>
+</div>
+</form>
+
+<script type="text/javascript">
+    
+    select_region = 
+'<div class="region_select">'+
+    '<select name="sub_district_id[]" class="form-control">'+
+        '<option value>---</option>'+
+        '<?php if (isset($this->sub_district) && $this->sub_district): ?>'+
+            '<?php foreach ($this->sub_district as $value): ?>'+
+                '<option value="<?php echo $value['dis_id'] ?>"><?php echo $value['dis_name'] ?></option>'+
+            '<?php endforeach ?>'+
+        '<?php endif ?>'+
+    '</select>'+
+    ' <button type="button" class="btn btn-default remove_region_btn new">&times;</button>'+
+'</div>';
+
+    $(document).ready(function() {
+        $('#add_area_btn').click(function() {
+            $('#area_anchor').parent('.control-group').append(select_area);
+            init_area_remove();
+        });
+
+        $('#add_region_btn').click(function() {
+            $('#region_anchor').parent('.control-group').append(select_region);
+            init_region_remove();
+        });
+
+        init_area_remove();
+        init_region_remove();
+
+    });
+
+    function chk_partner(element) {
+        if(element.checked) {  $(element).siblings('.txt_partner').val('1'); } 
+        else { $(element).siblings('.txt_partner').val('0'); }
+    }
+
+    function init_area_remove() {
+        $('.remove_area_btn.new').click(function() {
+            $(this).parent('.area_select').remove();
+        });
+
+        $('.remove_area_btn.new').removeClass('new');
+    }
+
+    function init_region_remove() {
+        $('.remove_region_btn.new').click(function() {
+            $(this).parent('.region_select').remove();
+        });
+
+        $('.remove_region_btn.new').removeClass('new');
+    }
+</script>

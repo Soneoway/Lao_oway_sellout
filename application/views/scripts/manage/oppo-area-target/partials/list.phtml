@@ -1,0 +1,192 @@
+<?php
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<div class="page-header">
+    <div class="row">
+        <!-- <div class="span6">
+            <h1>Total Target By Area</h1>
+        </div> -->
+        <div class="span12" align="center" >
+            <h2 style="text-align:center">
+                <b id='area_target' name='area_target' > <?php echo $sum_target; ?> </b>&nbsp; <b> | &nbsp;</b>
+                <b id='area_target_hero' name='area_target_hero' ></b> | &nbsp;</b>
+                <b style="color:teal;">Hero Product : <?php echo $this->getheroproduct['hero_product_name']; ?></b>
+            </h2>
+        </div>
+    </div>
+</div>
+
+<form class="form-search form-horizontal" method="post" action="/manage/oppo-area-target-save">
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <th><div align="center">Area ID</div></th>
+            <th><div align="center">Area</div></th>
+
+            <th colspan="2">
+                <div align="center"><?php echo $this->params['last_03']; ?><br><i style="font-size: 8px; color:red">Target</i> | <i style="font-size: 8px; color:green">Sales</i></div>
+            </th>
+
+            <th colspan="2">
+                <div align="center"><?php echo $this->params['last_02']; ?><br><i style="font-size: 8px; color:red">Target</i> | <i style="font-size: 8px; color:green">Sales</i></div>
+            </th>
+
+            <th colspan="2">
+                <div align="center"><?php echo $this->params['last_01']; ?><br><i style="font-size: 8px; color:red">Target</i> | <i style="font-size: 8px; color:green">Sales</i></div>
+            </th>
+
+            <th><div align="center">Average</div><br><i style="font-size: 9px; color:darkslategrey;">Sales 3 Months</i></th>
+            <th><div align="center">Sellout</div></th>
+            <th><div align="center">General Target</div></th>
+            <th><div align="center">Hero Target</div></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+                
+                $save_flag = 0;
+                $sum_target = 0;
+                $sum_target_hero = 0;
+
+                if ($this->areas) {
+                    $data = $this->areas;
+                    $data2 = $this->areas_target;
+                    $data3 = $this->sellout;
+
+                    $sellout_avg = 0;
+                    if ( $userStorage->group_id == ADMINISTRATOR_ID) { $disabled = ''; $save_flag = 1; } else { $disabled = 'disabled'; }
+
+                    for($i=0;$i<count($data);$i++) { 
+                        $disabled='readonly';
+
+                        // Normal Target
+                        if ( isset($data2[ $data[$i]['id'] ]['target']) ) {
+                            $target = "value='".$data2[ $data[$i]['id'] ]['target']."' ".$disabled;
+                            $oat_id = "value='".$data2[ $data[$i]['id'] ]['id']."|".$data2[ $data[$i]['id'] ]['target']."' ";
+
+                            $sum_target = $sum_target + $data2[ $data[$i]['id'] ]['target'];
+                        } else {
+                            $target = "value=''";
+                            $oat_id = "value=''";
+                            $save_flag = 1;
+                        }
+
+                        // Hero Target
+                        if ( isset($data2[ $data[$i]['id'] ]['target_hero']) ) {
+                            $target_hero = "value='".$data2[ $data[$i]['id'] ]['target_hero']."' ".$disabled;
+                            $hero_oat_id = "value='".$data2[ $data[$i]['id'] ]['id']."|".$data2[ $data[$i]['id'] ]['target_hero']."' ";
+
+                            $sum_target_hero = $sum_target_hero + $data2[ $data[$i]['id'] ]['target_hero'];
+                        } else {
+                            $target_hero = "value=''";
+                            $hero_oat_id = "value=''";
+                            $save_flag = 1;
+                        }
+
+                        $sellout_avg = ($data3[ $data[$i]['id'] ]['sellout_last_03'] + $data3[ $data[$i]['id'] ]['sellout_last_02'] + $data3[ $data[$i]['id'] ]['sellout_last_01'] ) / 3;
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['id']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['name']."</div></td>";
+                        
+                        echo    "<td><div align='center' style='color : red'>".number_format($data3[ $data[$i]['id'] ]['last_03'])."</div></td>"; // Target
+
+                        echo    "<td><div align='center' style='color : green'>".number_format($data3[ $data[$i]['id'] ]['sellout_last_03'])."</div></td>"; // Sellout
+
+                        echo    "<td><div align='center' style='color : red'>".number_format($data3[ $data[$i]['id'] ]['last_02'])."</div></td>"; // Target
+
+                        echo    "<td><div align='center' style='color : green'>".number_format($data3[ $data[$i]['id'] ]['sellout_last_02'])."</div></td>"; // Sellout
+
+                        echo    "<td><div align='center' style='color : red'>".number_format($data3[ $data[$i]['id'] ]['last_01'])."</div></td>"; // Target
+
+                        echo    "<td><div align='center' style='color : green'>".number_format($data3[ $data[$i]['id'] ]['sellout_last_01'])."</div></td>"; // Sellout
+
+                        echo    "<td><div align='center' style='text-align:center; font-weight:bold;'>".number_format($sellout_avg)."</div></td>";
+                        echo    "<td><div align='center' style='text-align:center; font-weight:bold;'>".number_format($data3[ $data[$i]['id'] ]['sellout'])."</div></td>";
+
+                        echo    "<td><div align='center'>
+                                    <input type='number' required='required' style='text-align:center; font-weight:bold;' class='target' id='target[".$data[$i]['id']."]' name='target[".$data[$i]['id']."]' $target /> 
+                                    <input type='hidden' style='text-align:right;' id='oat_id[".$data[$i]['id']."]' name='oat_id[".$data[$i]['id']."]' $oat_id /> 
+                                </div></td>";
+
+                        echo    "<td><div align='center'>
+                                    <input type='number' required='required' style='text-align:center; font-weight:bold;' class='target_hero' id='target_hero[".$data[$i]['id']."]' name='target_hero[".$data[$i]['id']."]' $target_hero /> 
+                                    <input type='hidden' style='text-align:right;' id='hero_oat_id[".$data[$i]['id']."]' name='hero_oat_id[".$data[$i]['id']."]' $hero_oat_id /> 
+                                </div></td>";
+
+                    }
+
+                }
+            ?>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['date']; ?>">
+
+    <?php if ($save_flag == 1) { ?>
+        <button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="1" style="font-size: 20px;">Save</button>
+    <?php } ?>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <!-- <b style="color: red; font-size: 18px;">After Save Can Not Edit Target, Please Check Before First !</b><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <b style="color: red; font-size: 18px; font-family: phetsarath ot;">(ຫຼັງຈາກບັນທຶກຂໍ້ມູນແລ້ວ ຈະບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນໄດ້. ກະລຸນາກວດສອບໃຫ້ລະອຽດກ່ອນ !)</b> -->
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Check for First Load
+        var target_sum = <?php echo $sum_target; ?>;
+        var target_hero_sum = <?php echo $sum_target_hero; ?>;
+        var target_max = 6500; //area target amount
+
+        if ( target_sum >= target_max) {
+            $('#area_target').html("<font color='green'> General Target : " + target_sum.toLocaleString() + "</font>");
+        } else {
+            $('#area_target').html("<font color='green'> General Target : " + target_sum.toLocaleString() + "</font> ");
+        }
+
+	$('#area_target_hero').innerHTML = target_hero_sum;
+
+        $('#area_target_hero').html("<font color='blue'> Hero Target : " + target_hero_sum.toLocaleString() + "</font> ");
+        
+        // Check for Input Number [Normal Target]
+        $(".target").keyup(function(){
+            var sum = 0;
+
+            $(".target").each(function(){
+                sum += +$(this).val();
+            });
+
+            if ( sum >= target_max) {
+                $('#area_target').html("<font color='green'>"+ sum.toLocaleString() + "</font> / " + target_max.toLocaleString());
+            } else {
+                $('#area_target').html("<font color='red'>"+ sum.toLocaleString() + "</font> / " + target_max.toLocaleString());
+            }
+
+        });
+
+        // Check for Input Number [Hero Target]
+        $(".target_hero").keyup(function(){
+            var sum_hero = 0;
+
+            $(".target_hero").each(function(){
+                sum_hero += +$(this).val();
+            });
+
+            $('#area_target_hero').html("Hero Target : " + sum_hero.toLocaleString());
+
+        });
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,41 @@
+<?php $order = $this->order; if($order and isset($order))  foreach($order as $key => $value):?>
+    <div class="row-order-detail">
+        <table class="table table-responsive">
+            <tr>
+                <?php if($key ==0):?>
+                    <td class="span1">Date</td>
+                    <td class="span3">
+                        <input type="text" name="date" class="date" disabled value="<?php echo (isset($this->date) and $this->date)? $this->date:'' ?>"/>
+                    </td>
+                <?php endif;?>
+                <td class="span2">
+                    Type Asset
+                </td>
+                <td class="span4" <?php echo ($key !=0)? 'colspan="3"':null?>>
+                    <div class="span4">
+                        <select id="asset" name="asset[]" disabled>
+                            <option value="">Please select</option>
+                            <?php if($this->type_asset) foreach($this->type_asset as $k => $val):?>
+                                <option value="<?php echo $k;?>" <?php if(isset($value['asset_id']) and $value['asset_id'] == $k):?> selected <?php endif;?>> <?php echo $val;?></option>
+                            <?php endforeach;?>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="span1">Quantity</td>
+                <td class="span3">
+                    <input type="number" name="quantity[]" disabled value="<?php echo (isset($value['quantity']) and $value['quantity'])? $value['quantity']:'' ?>"/>
+                </td>
+                <td class="span2">Note</td>
+                <td class="span4">
+                    <textarea name="note[]" disabled><?php echo (isset($value['note']) and $value['note'])? $value['note']:'' ?></textarea>
+                </td>
+            </tr>
+            <tr class="label label-info">
+                <td colspan="4">
+                </td>
+            </tr>
+        </table>
+    </div>
+<?php endforeach;?>

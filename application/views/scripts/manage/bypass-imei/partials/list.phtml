@@ -1,0 +1,71 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">IMEI</div></th>
+        <th><div align="center">Remark</div></th>
+        <th><div align="center">Created By</div></th>
+        <th><div align="center">Created Date</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+        
+            if ($this->bypass_imei_list) {
+                $data = $this->bypass_imei_list;
+                //print_r($data);
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td width='30px'><div align='center'>".$cnt."</div></td>";
+                    echo    "<td width='120px'><div align='center'>".$data[$i]['bi_imei']."</div></td>";
+                    echo    "<td>".$data[$i]['bi_remark']."</td>";
+                    echo    "<td width='250px'>".$data[$i]['created_by']."</td>";
+                    echo    "<td width='120px'><div align='center'>".$data[$i]['created_at']."</div></td>";
+                    echo    "<td width='50px'>
+                                <div align='center'>
+                                    <a title='Delete' class='confirmLink' href='/manage/bypass-imei-del?imei=".$data[$i]['bi_imei']."'> <i class='icon-trash'></i></a>
+                                </div>
+                            </td>";
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script>
+    /*
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>manage/store-control-short-report',
+                {
+                    store_control_id : _self.data('store-control-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    */
+</script>

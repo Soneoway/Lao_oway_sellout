@@ -1,0 +1,141 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/list-training-report">
+    <div class="span12">
+        <div class="span4">
+            <div class="control-group">
+                <label for="date" class="span1">Date</label>
+                <input id="date" name="date" type="text" class="input-medium search-query form-control span2 date" value="<?php isset($this->params['date']) and printf($this->params['date']);?>">
+            </div>
+        </div>
+        <div class="span6">
+            <div class="control-group">
+                <div><label for="date" class="span1">Dealer</label></div>
+                <div class="span3">
+                    <input type="text" value="" name="search_dealer" id="search_dealer" autocomplete="off" placeholder='Select a Dealer'/>
+                    <select id="dealer" name="dealer"  size="5" >
+                        <option value="">Select</option>
+                        <?php if(isset($this->name_dealer) and ($this->name_dealer)):?>
+                            <?php foreach($this->name_dealer as $key => $value):?>
+                                <option value="<?php echo $key?>" <?php if(isset($this->params['dealer']) and $this->params['dealer'] = $key): ?> selected <?php endif;?>><?php echo $value?></option>
+                            <?php endforeach;?>
+                        <?php endif;?>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label for="store" class="span1" >Store</label>
+                <select class="span3" id="store" name="store">
+                    <option value="">Select</option>
+                    <?php if(isset($this->list_store) and ($this->list_store)):?>
+                        <?php foreach($this->list_store as $key => $val):?>
+                            <option value="<?php echo $key?>" <?php if($this->params['store'] == $key):?> selected <?php endif;?>><?php echo $val?></option>
+                        <?php endforeach;?>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="span4">
+            <div class="control-group">
+                <label for="area" class="span1" >Area</label>
+                <select class="span3" id="area" name="area">
+                    <option value="">Select</option>
+                    <?php if(isset($this->areaTrainer) and ($this->areaTrainer)):?>
+                        <?php foreach($this->areaTrainer as $key => $val):?>
+                            <option value="<?php echo $key?>" <?php if($this->params['area'] == $key):?> selected <?php endif;?>><?php echo $val?></option>
+                        <?php endforeach;?>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label for="province" class="span1" >Province</label>
+                <select class="span3" id="province" name="province">
+                    <option value="">Select</option>
+                    <?php if(isset($this->provinceTrainer) and ($this->provinceTrainer)):?>
+                        <?php foreach($this->provinceTrainer as $key => $val):?>
+                            <option value="<?php echo $key?>" <?php if($this->params['province'] == $key):?> selected <?php endif;?>><?php echo $val?></option>
+                        <?php endforeach;?>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label for="type" class="span1" >Type</label>
+                <select name="type" id="type">
+                    <option value="">Select</option>
+                    <?php $type = unserialize(TYPE_TRAINING_REPORT);
+                    foreach($type as $key => $value):
+                        ?>
+                        <option value="<?php echo $key?>" <?php if(isset($this->params['type']) and $this->params['type'] == $key):?> selected <?php endif;?>><?php echo $value?></option>
+                    <?php endforeach;?>
+
+                </select>
+            </div>
+
+        </div>
+
+        <div class="span4">
+            <div class="control-group">
+                <label for="from_date" class="span1" >From Date</label>
+                <input type="text" class="date" name="from_date" value="<?php echo (isset($this->params['from_date']) and $this->params['from_date'])? $this->params['from_date']:''?>"/>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label for="to_date" class="span1" >To Date</label>
+                <input type="text" class="date" name="to_date" value="<?php echo (isset($this->params['to_date']) and $this->params['to_date'])? $this->params['to_date']:''?>"/>
+            </div>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="/trainer/list-daily-report" class="btn btn-warning">Reset</a>
+</form>
+<style>
+    .birth{width:12%}
+</style>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script src="../js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="../css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="../css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+
+<script>
+    $(document).ready(function(){
+        $('.date' ).datepicker({ dateFormat: "yy-mm-dd" });
+        getShop();
+        initSearchOption('dealer','search_dealer');
+    });
+    function getShop()
+    {
+        $('#dealer').change(function(){
+            var dealer_id =  $('#dealer').val();
+            $.ajax
+            ({
+                url : '/trainer/get-shop',
+                type : 'POST',
+                data : {'dealer_id':dealer_id},
+                dataType: 'json',
+                success : function(result)
+                {
+                    $('#store').find('option:not(:first)').remove();
+                    $.each(result, function (i, item) {
+                        $('#store').append('<option value="'+i+'">'+item+'</option>');
+                    });
+                },
+                error: function()
+                {
+                    alert("Not Found !!!");
+                }
+
+            });
+        });
+    }
+</script>

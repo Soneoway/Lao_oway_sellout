@@ -1,0 +1,76 @@
+<div class="page-header"><h2>News Information</h2></div>
+<?php
+function EnableDisplay($value){
+    if($value=='Y'){
+        return '<i class="icon-ok" style="color: #009a2a;"></i>';
+    }else if($value=='P') {
+        return '<i class="icon-play-sign" style="color: #e6a000;"></i>';
+    }else{
+        return '<i class="icon-remove" style="color: #e60400;"></i>';
+    }
+}
+
+echo $page.' '.$store_id;
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+if (isset($this->messages_error) and $this->messages_error)
+    foreach ($this->messages_error as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+<div class="accordion" id="accordion2">  <!--style="display:none;"-->
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('trainer/partials/search_news_info.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <a title="Create Basic Info" class="btn btn-success" href="/trainer/create-news-info"><i class="icon-plus"></i> Create News</a><br /><br />
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th style="text-align: center;" width="5%">No.</th>
+            <th style="text-align: center;" width="70%">Name</th>
+            <th style="text-align: center;" width="10%">Type</th>
+            <th style="text-align: center;" width="8%">Status</th>
+            <th style="text-align: center;" width="7%">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        $count =0;
+        if (isset($this->list) and $this->list)
+            foreach ($this->list as $k=>$item):
+                ?>
+                <tr>
+                    <td style="text-align: center;"><?php echo $k+1;?></td>
+                    <td><?php echo isset($item['id']) ? $item['name'] : '';?></td>
+                    <td style="text-align: center;"><?php echo isset($item['id']) ? strtoupper($item['type']) : '';?></td>
+                    <td style="text-align: center;"><?php echo isset($item['id']) ? EnableDisplay($item['enable']) : '';?></td>
+                    <td style="text-align: center;">
+                        <a title="Edit" href="/trainer/create-news-info?id=<?php echo $item['id']; ?>" style="padding-right: 0.5em;"><i class="icon-edit"></i></a>&nbsp;<a title="Edit" href="/trainer/remove-news-info?id=<?php echo $item['id']; ?>" onclick="return confirm('Are you sure to remove?');"><i class="icon-trash"></i></a>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+        </tbody>
+    </table>
+
+    <div class="paging">
+        <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+    </div>
+
+</div>

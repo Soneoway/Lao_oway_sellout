@@ -1,0 +1,178 @@
+<form class="form-search form-horizontal" method="get" action="/timing/preorder-list">
+    <div class="row">
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="store_id" class="span2">Store ID</label>
+                <input id="store_id" name="store_id" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['store_id']) and printf($this->params['store_id']);?>">
+            </div>
+            <div class="control-group">
+                <label for="store_name" class="span2">Store Name</label>
+                <input id="store_name" name="store_name" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['store_name']) and printf($this->params['store_name']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="good_id" class="span2">Model ລຸ້ນ</label>
+                <select id="good_id" name="good_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->goods;
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good_id']) and ( (is_array($this->params['good_id']) && in_array($good_list['id'], $this->params['good_id']) || $good_list['id']==$this->params['good_id'])) ):?>selected<?php endif;?>><?php echo $good_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="color_id" class="span2">Color ສີ</label>
+                <select id="color_id" name="color_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->colors;
+                    if ($this->colors) :
+                        foreach ($this->colors as $color_list):
+                            ?>
+                            <option value="<?php echo $color_list['id'];?>" <?php if (isset($this->params['color_id']) and ( (is_array($this->params['color_id']) && in_array($color_list['id'], $this->params['color_id']) || $color_list['id']==$this->params['color_id'])) ):?>selected<?php endif;?>><?php echo $color_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="area_id" class="span2">Area ເຂດ</label>
+                <select id="area_id" name="area_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    if ($this->areas) :
+                        foreach ($this->areas as $area):
+                            ?>
+                            <option value="<?php echo $area['id'];?>" <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>><?php echo $area['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" name="export" value="1" class="btn btn-success">Export</button>
+
+</form>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    // Multi-Select
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $('.date').datepicker({ dateFormat: "dd/mm/yy" });
+
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        multi();
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('#grand_area_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var grand_area_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/staff/load-area",
+                {grand_area_id: grand_area_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#area_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#area_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#area_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        $('#good_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var good_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/hr-report/load-good-color",
+                {good_id: good_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#color_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#color_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#color_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+    });
+
+</script>

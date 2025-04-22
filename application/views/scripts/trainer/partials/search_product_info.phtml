@@ -1,0 +1,32 @@
+<form class="form-search form-horizontal" method="get" action="/trainer/list-product-info">
+    <div class="row">
+        <div class="span4">
+            <div class="control-group">
+                <label for="Asset" class="span2">Name</label>
+                <input id="date" name="name" type="text" class="input-medium search-query form-control span2" value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <select name="type">
+                    <option value="">-- All Type --</option>
+                    <?php $type = array('file'=>'File PDF','vdo'=>'VDO','text'=>'Text','picture'=>'Picture'); foreach($type as $key => $value):?>
+                        <option value="<?php echo $key;?>" <?php if (isset($this->params['type']) and $this->params['type'] == $key):?> selected <?php endif;?> > <?php echo $value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <select name="enable">
+                    <option value="">-- All Display --</option>
+                    <?php $type = array('Y'=>'Open','N'=>'Close'); foreach($type as $key => $value):?>
+                        <option value="<?php echo $key;?>" <?php if (isset($this->params['enable']) and $this->params['enable'] == $key):?> selected <?php endif;?> > <?php echo $value;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="/trainer/list-product-info"><input type="button" class="btn btn-warning" value="Reset"/> </a>
+</form>

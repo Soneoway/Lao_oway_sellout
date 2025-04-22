@@ -1,0 +1,96 @@
+<form class="form-search form-horizontal" method="post" action="/manage/mkt-target-save">
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <!-- <th><div align="center">Area ID</div></th> -->
+            <th><div align="center">Area Name</div></th>
+            <th><div align="center">MKT Code</div></th>
+            <th><div align="center">MKT Name</div></th>
+            <th><div align="center">Target This Month</div></th>
+            <th><div align="center">Hero Target</div></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+                $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+                $save_flag = 0;
+                $sum_target = 0;
+                $sum_target_hero = 0;
+
+                if ($this->areas) {
+                    $data = $this->areas;
+                    $data2 = $this->mkt_target;
+                    $data3 = $this->mkt;
+
+                    $sellout_avg = 0;
+                    if ( $userStorage->group_id == ADMINISTRATOR_ID) { $disabled = ''; $save_flag = 1; } else { $disabled = 'disabled'; }
+
+                    for($i=0;$i<count($data);$i++) { 
+                        // $disabled='readonly';
+
+                        // Normal Target
+                        if ( isset($data2[ $data[$i]['id'] ]['target']) ) {
+                            $target = "value='".$data2[ $data[$i]['id'] ]['target']."' ".$disabled;
+                            $pmt_id = "value='".$data2[ $data[$i]['id'] ]['id']."|".$data2[ $data[$i]['id'] ]['target']."' ";
+
+                        } else {
+                            $target = "value=''";
+                            $pmt_id = "value=''";
+                            $save_flag = 1;
+                        }
+
+                        // Hero Target
+                        if ( isset($data2[ $data[$i]['id'] ]['target_hero']) ) {
+                            $target_hero = "value='".$data2[ $data[$i]['id'] ]['target_hero']."' ".$disabled;
+                            $hero_pmt_id = "value='".$data2[ $data[$i]['id'] ]['id']."|".$data2[ $data[$i]['id'] ]['target_hero']."' ";
+
+                        } else {
+                            $target_hero = "value=''";
+                            $hero_pmt_id = "value=''";
+                            $save_flag = 1;
+                        }
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        // echo    "<td><div align='center'>".$data[$i]['area_id']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['area_name']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['code']."</div></td>";
+                        echo    "<td><div align='left' style='padding-left:30px;'>".$data[$i]['name']."</div></td>";
+
+                        echo    "<td><div align='center'>
+                                    <input type='number' required='required' style='text-align:center;' class='target' id='target[".$data[$i]['id']."]' name='target[".$data[$i]['id']."]' $target /> 
+                                    <input type='hidden' required='required' style='text-align:right;' id='pmt_id[".$data[$i]['id']."]' name='pmt_id[".$data[$i]['id']."]' $pmt_id /> 
+                                </div></td>";
+
+                        echo    "<td><div align='center'>
+                                    <input type='number' required='required'  style='text-align:center;' class='target_hero' id='target_hero[".$data[$i]['id']."]' name='target_hero[".$data[$i]['id']."]' $target_hero /> 
+                                    <input type='hidden' required='required' style='text-align:right;' id='hero_pmt_id[".$data[$i]['id']."]' name='hero_pmt_id[".$data[$i]['id']."]' $hero_pmt_id /> 
+                                </div></td>";
+
+                    }
+
+                }
+            ?>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['date']; ?>">
+        <button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="1" style="font-size: 20px;">Save</button>
+ <!--    &nbsp;&nbsp;
+    <h3 style='display: inline-block;'><font color='red'>&nbsp;&nbsp;**WARNING!!! Target can not edit after save</font></h3> -->
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+            return false;
+        });
+    });
+</script>

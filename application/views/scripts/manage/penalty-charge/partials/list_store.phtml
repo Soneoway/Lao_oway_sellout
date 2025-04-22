@@ -1,0 +1,100 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th><div align="center">No.</div></th>
+        <th><div align="center">From</div></th>
+        <th><div align="center">To</div></th>
+        <th><div align="center">Role</div></th>
+        <th><div align="center">Store</div></th>
+        <th><div align="center">Remark</div></th>
+        <th><div align="center">Action</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $Store = new Application_Model_Store();
+
+            if ($this->penalty_list) {
+                $data = $this->penalty_list;
+
+                //print_r($data);
+
+                for($i=0;$i<count($data);$i++) { 
+
+                    $role_list = '';
+                    if ($data[$i]['flag_gfk'] == 1) { $role_list .= ' <span class="label label-success">GFK</span>'; }
+                    if ($data[$i]['flag_rd'] == 1) { $role_list .= ' <span class="label label-success">RD</span>'; }
+                    if ($data[$i]['flag_asm'] == 1) { $role_list .= ' <span class="label label-success">ASM</span> <span class="label label-success">ASM Stand By</span>'; }
+                    if ($data[$i]['flag_sale'] == 1) { $role_list .= ' <span class="label label-success">Sale</span>'; }
+                    if ($data[$i]['flag_pc'] == 1) { $role_list .= ' <span class="label label-success">PC</span>'; }
+
+                    $role_list = rtrim($role_list, ",");
+
+                    $store_id = explode(",", $data[$i]['store']);
+
+                    $where = $Store->getAdapter()->quoteInto('id IN (?)', $store_id);
+                    $result = $Store->fetchAll($where)->ToArray();
+
+                    $store_list = '';
+                    for ($j=0;$j<count($result);$j++) {
+                        $store_list .= "[ ".$result[$j]['id']." ] ".$result[$j]['name']."<br/>"; 
+                    }
+
+                    $cnt = $i + 1;
+                    echo "<tr>";
+                    echo    "<td><div align='center'>".$cnt."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['from_date']."</div></td>";
+                    echo    "<td><div align='center'>".$data[$i]['to_date']."</div></td>";
+                    echo    "<td><div align='center'>".$role_list."</div></td>";
+                    echo    "<td><div align='left'>".$store_list."</div></td>";
+                    echo    "<td><div align='left'>".$data[$i]['remark']."</div></td>";
+                    echo    "<td>
+                                <div align='center'>
+                                    <a title='Edit' href='/manage/penalty-charge-create-store?id=".$data[$i]['id']."'> <i class='icon-edit'></i></a>
+                                    <a title='Delete' class='confirmLink' href='/manage/penalty-charge-store-del?id=".$data[$i]['id']."'> <i class='icon-trash'></i></a>
+                                </div>
+                            </td>";
+                    
+                    echo "</tr>";
+                }
+
+            }
+        ?>
+    </tbody>
+</table>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    $(document).ready(function () {
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>manage/store-control-short-report',
+                {
+                    store_control_id : _self.data('store-control-id')
+                },
+                function(data){
+                    //alert(data);
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+    
+    });
+    
+</script>

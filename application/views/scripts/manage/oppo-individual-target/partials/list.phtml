@@ -1,0 +1,328 @@
+<style>
+    .target { width:38px; }
+    .target_hero { width:38px; }
+    .target { width:38px; }
+</style>
+
+<?php 
+
+    $save_flag = 0;
+    $now = date('Y-m-d');
+    $pcm_leader_date = date('Y-m-16', strtotime($this->params['from']));
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    if ( $userStorage->group_id == ADMINISTRATOR_ID) { $disabled = 'disabled'; $save_flag = 1; } else { $disabled = 'disabled'; }
+    if ( $userStorage->group_id == 36 ) { if ( $now == $pcm_leader_date) { $save_flag = 1; $disabled = ''; } }
+    if ( $userStorage->group_id == 9 )  { $save_flag = 1; $disabled = ''; } 
+
+    // print_r($this->lists); echo "<br/>";
+    // print_r($this->params); echo "<br/>";
+?>
+
+<form class="form-search form-horizontal" method="post" action="/manage/oppo-individual-target-save">
+
+    <div class="pull-left"><h2>PC List</h2></div>
+
+    <?php 
+
+        $QPTQ = new Application_Model_PcTargetQuota();
+        $QOIT = new Application_Model_OppoIndividualTarget();
+
+        // Get PCM Leader Quota 
+        $where = $QPTQ->getAdapter()->quoteInto('staff_id = ?', $userStorage->id);
+        $result_quota = $QPTQ->fetchRow($where);
+        // print_r($result);
+
+        // Get Used Quota 
+        $where = array();
+        $where[] = $QOIT->getAdapter()->quoteInto('updated_by = ?', $userStorage->id);
+        $where[] = $QOIT->getAdapter()->quoteInto('from_date >= ?', $this->params['from']);
+        $where[] = $QOIT->getAdapter()->quoteInto('to_date <= ?', $this->params['to']);
+        $result_used = $QOIT->fetchAll($where);
+
+        $quota_used = count($result_used);
+
+        $oit_list = array();
+        foreach ($result_used as $key => $value) { $oit_list[] = $value['id']; }
+
+        if ( $userStorage->group_id == 36 ) {
+            echo "<div class='pull-right'><h2>Quota : ".$quota_used." / ".$result_quota['quota']."</h2></div>";        
+        }
+
+    ?>
+
+    <br/> <br/>
+    <h2 align="right">Hero Product : <b style="color:orange;"><?php echo $this->getheroproduct['hero_product_name']; ?></b></h2><br>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <th><div align="center">Staff Code</div></th>
+            <th><div align="center">Staff Name</div></th>
+            <!-- <th><div align="center">PC Stand By</div></th> -->
+            <th>
+                <div align="left">
+                    <table>
+                        <tr>
+                            <td width='50'><div align="center">Store ID</div></td>
+                            <td width='140'>Store Namee</td>
+                            <td width='10'><div align="center">PC</div></td>
+                            <!-- <td width='50'><div align="center"><?php echo $this->params['last_03']; ?></div></td> -->
+                            <td width='50'><div align="center"><?php echo $this->params['last_02']; ?></div></td>
+                            <td width='50'><div align="center"><?php echo $this->params['last_01']; ?></div></td>
+                        </tr>
+                    </table>
+                </div>
+            </th>
+
+            <th><div align="center">PC Target</div></th>
+            <th><div align="center">Hero Product</div></th>
+            <th><div align="center">Target Sellout</div></th>
+            <th><div align="center">Activated Sellout</div></th>
+            <!-- <th><div align="center">Price Sellout</div></th> -->
+            <th><div align="center">Hero Sellout</div></th>
+            <th><div align="center">Hero Activated</div></th>
+            <th><div align="center">Hero Product Achieve</div></th>
+            <th><div align="center">Hero Activate Achieve</div></th>
+            <th><div align="center">Target Achieve</div></th>
+            <th><div align="center">Activated Acheive</div></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+                $QSPT = new Application_Model_StorePriceTarget();
+                $QOIT = new Application_Model_OppoIndividualTarget();
+                $QStoreStaff = new Application_Model_StoreStaff();
+
+                $sum_sellout = $sum_price = 0;
+
+                if ($this->lists) {
+                    $data = $this->lists;
+
+                    $sellout_avg = 0;
+                    $sum_target = 0;
+                    $sum_hero_target = 0;
+
+                    //if ( $now >= date('Y-m-15 12:00:00') && $now <= date('Y-m-15 14:59:59') ) { $disabled = ''; $save_flag = 1; }
+                    // print_r($oit_list);
+
+                    for($i=0;$i<count($data);$i++) {
+
+                        $pcm_text = ''; 
+
+                        // echo $data[$i]['oit_id']."<br/>";
+
+                        $params2['from'] = $this->params['from'];
+                        $params2['to'] = $this->params['to'];
+
+                        $store_list = $QOIT->getLast3MonthByStore($params2, $data[$i]['pc_id']);
+                        // echo "<pre>"; print_r($store_list);
+
+                        // Price Target 
+                        if ( isset($data[$i]['target']) && $data[$i]['target'] <> 0 ) {
+
+                            // Check Max Quota of PCM Leader 
+                            // if ( $quota_used >= $result_quota['quota'] ) {
+
+                            //     if ( !in_array($data[$i]['oit_id'], $oit_list ) ) {
+                            //         $disabled = '';
+                            //     } else {
+                            //         $disabled = '';
+                            //         $pcm_text = "<br/><div align='center'><font color='green'>Target Edited!</font></div>";
+                            //     }
+
+                            // } else {
+
+                            //     if ( !in_array($data[$i]['oit_id'], $oit_list ) ) { 
+                            //         $disabled = '';
+                            //     } else {
+                            //         $disabled = '';
+                            //         $pcm_text = "<br/><div align='center'><font color='green'>Target Edited!</font></div>";
+                            //     }
+
+                            // }
+
+                            $target = "value='".$data[$i]['target']."' ".$disabled;
+                            $price_oit_id = "value='".$data[$i]['oit_id']."|".$data[$i]['target']."' ";
+                            $sum_target = $sum_target + $data[$i]['target'];
+
+                            $disabled = 'disabled';
+
+                        } else {
+                            $target = "value=''";
+                            $price_oit_id = "value=''";
+
+                            if ($userStorage->group_id == 36) { 
+                                // if ( $now <= $pcm_leader_date ) { $save_flag = 1; }
+                                $save_flag = 1;
+                            }
+                        }
+
+                         // Target Hero 
+                        if ( isset($data[$i]['target_hero'])) {
+                            $disabled = 'disabled';
+
+                            $target_hero = "value='".$data[$i]['target_hero']."' ".$disabled;
+                            $opt_id = "value='".$data[$i]['oit_id']."|".$data[$i]['target_hero']."' ";
+                            $sum_target_hero = $sum_target_hero + $data[$i]['target_hero'];
+                            $sum_hero_target = $sumhero__target + $data[$i]['target_hero'];
+
+                        } else {
+                            $target_hero = "value=''";
+                            $opt_id = "value=''";
+
+                            if ($userStorage->group_id == 36) { 
+                                $save_flag = 1;
+                            }
+                        }
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i]['pc_code']."</div></td>";
+                        echo    "<td><div align='left'>".$data[$i]['pc_name']."</div></td>";
+                        // echo    "<td><div align='center'>".$data[$i]['pc_stand_by']."</div></td>";
+                        
+                        echo    "<td>";
+                        echo        "<table>";
+
+                        for ($j=0;$j<count($store_list);$j++) {
+
+                            $pc_list = $QStoreStaff->getPC($store_list[$j]['store_id'], 0);
+                            $cnt_pc = count($pc_list);
+
+                            $store_target = $QSPT->checkTargetByStore($params2, $store_list[$j]['store_id']);
+
+                            echo "<tr>
+                                    <td width='40'><div align='center'>".$store_list[$j]['store_id']."</div></td>   
+                                    <td width='250'>".$store_list[$j]['store_name']."</td>
+                                    <td width='10'>".$cnt_pc."</td>
+                                    <td width='40'>".number_format($store_list[$j]['last_02'],0)."</td>
+                                    <td width='40'>".number_format($store_list[$j]['last_01'],0)."</td>
+                                </tr>";
+
+                        }
+
+                        echo        "</table>";
+                        echo    "</td>";
+
+                        // Target
+                        echo "<td><div align='center'>
+                                <input type='number' required='required' style='text-align:center;' class='target' id='target[".$data[$i]['pc_id']."]' name='target[".$data[$i]['pc_id']."]' $target />
+                                <input type='hidden' required='required' style='text-align:center;' id='price_oit_id[".$data[$i]['pc_id']."]' name='price_oit_id[".$data[$i]['pc_id']."]' $price_oit_id /> 
+                                ".$pcm_text."
+                            </div></td>";
+
+                         // Target Hero
+                        echo "<td><div align='center'>
+                                <input type='number' required='required' style='text-align:right;' class='target_hero' id='target_hero[".$data[$i]['pc_id']."]' name='target_hero[".$data[$i]['pc_id']."]' $target_hero />
+                                <input type='hidden' required='required' style='text-align:right;' id='opt_id[".$data[$i]['pc_id']."]' name='opt_id[".$data[$i]['pc_id']."]' $opt_id /> 
+                                ".$pcm_text."
+                            </div></td>";
+
+                        echo    "<td><div align='center'>".number_format($data[$i]['sellout'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i]['Activate'])."</div></td>";
+                        // echo    "<td><div align='center'>".number_format($data[$i]['sellout_price'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i]['hero_product_sellout'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i]['hero_product_activate'])."</div></td>";
+
+                        $color = 'red';
+                        if ( $achieve >= 97 ) { $color = 'green'; }
+                        if ( $achieve >= 100 ) { $color = 'blue'; }
+
+                        $hero_product_achieve = ( $data[$i]['hero_product_sellout'] / $data[$i]['target_hero'] ) * 100;
+                        $hero_product_activate = ( $data[$i]['hero_product_activate'] / $data[$i]['target_hero'] ) * 100;
+
+                        echo    "<td><div align='center'><font color='".$color."'>".number_format($hero_product_achieve,2)." %</div></td>";
+                        echo    "<td><div align='center'><font color='".$color."'>".number_format($hero_product_activate,2)." %</div></td>";
+
+                        $achieve = ( $data[$i]['sellout'] / $data[$i]['target'] ) * 100;
+                        $achieve_activate = ( $data[$i]['Activate'] / $data[$i]['target'] ) * 100;
+
+                        $color = 'red';
+                        if ( $achieve >= 97 ) { $color = 'green'; }
+                        if ( $achieve >= 100 ) { $color = 'blue'; }
+                        
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($achieve, 2)." %</font></div></td>";
+
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($achieve_activate, 2)." %</font></div></td>";
+
+                        $sum_sellout = $sum_sellout + $data[$i]['sellout'];
+                        $sum_sellout_activate = $sum_sellout_activate + $data[$i]['Activate'];
+                        $sum_price = $sum_price + $data[$i]['sellout_price'];
+                        $sum_hero_product_sellout = $sum_hero_product_sellout + $data[$i]['hero_product_sellout'];
+                        $sum_hero_product_activate = $sum_hero_product_activate + $data[$i]['hero_product_activate'];
+                        $sum_target_hero = $sum_target_hero + $data[$i]['target_hero'];
+                    }
+
+
+                }
+            ?>
+        </tbody>
+        <tfoot>
+            <?php 
+                echo "<tr bgcolor='#BDBDBD'>";
+                echo    "<td colspan='4'><div align='center'>Total</div></td>";
+                echo    "<td><div align='center' id='sum_target'>".number_format($sum_target)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_target_hero)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_sellout)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_sellout_activate)."</div></td>";
+                // echo    "<td><div align='center'>".number_format($sum_price)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_hero_product_sellout)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_hero_product_activate)."</div></td>";
+
+                $sum_color = 'yellow';
+                if ( $sum_achieve >= 97 ) { $sum_color = 'green'; }
+                if ( $sum_achieve >= 100 ) { $sum_color = 'green'; }
+
+                $sum_achieve_hero_product_sellout = ( $sum_hero_product_sellout / $sum_target_hero ) * 100;
+                $sum_achieve_hero_product_activate = ( $sum_hero_product_activate / $sum_target_hero) * 100;
+                
+                echo    "<td id='td_achieve' bgcolor='".$sum_color."'>
+                            <div align='center' id='sum_achieve'><strong>".number_format($sum_achieve_hero_product_sellout,2)." %</strong></div></td>";
+                echo    "<td id='td_achieve' bgcolor='".$sum_color."'>
+                            <div align='center' id='sum_achieve'><strong>".number_format($sum_achieve_hero_product_activate,2)." %</strong></div></td>";
+
+                $sum_achieve = ( $sum_sellout / $sum_target ) * 100;
+                $sum_achieve_activate = ( $sum_sellout_activate / $sum_target ) * 100;
+
+
+                $sum_color = 'yellow';
+                if ( $sum_achieve >= 97 ) { $sum_color = 'green'; }
+                if ( $sum_achieve >= 100 ) { $sum_color = 'green'; }
+
+                echo    "<td id='td_achieve' bgcolor='".$sum_color."'>
+                            <div align='center' id='sum_achieve'><strong>".number_format($sum_achieve,2)." %</strong></div></td>";
+                echo    "<td id='td_achieve' bgcolor='".$sum_color."'>
+                            <div align='center' id='sum_achieve'><strong>".number_format($sum_achieve_activate,2)." %</strong></div></td>";
+                echo "</tr>";
+            ?>
+        </tfoot>
+    </table>
+
+    <input type="hidden" name="quota_used" id="quota_used" value='<?php echo $quota_used; ?>'>
+    <input type="hidden" name="quota_max" id="quota_max" value='<?php echo $result_quota['quota']; ?>'>
+
+    <input type="hidden" name="area_id" id="area_id" value='<?php echo json_encode($this->params['area_id']); ?>'>
+    <input type="hidden" name="sale_id" id="sale_id" value='<?php echo json_encode($this->params['sale_id']); ?>'>
+    <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['from']; ?>">
+
+    <?php 
+        if ($save_flag == 1) { 
+            echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+        }
+    ?>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <b style="color: red; font-size: 18px;">After Save Can Not Edit Files, Please Check Before First !</b><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <b style="color: red; font-size: 18px; font-family: phetsarath ot;">(ຫຼັງຈາກບັນທຶກຂໍ້ມູນແລ້ວ ຈະບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນໄດ້. ກະລຸນາກວດສອບໃຫ້ລະອຽດກ່ອນ !)</b>
+
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

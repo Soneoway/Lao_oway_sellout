@@ -1,0 +1,55 @@
+<div class="page-header">
+    <h1>Off Time List</h1>
+<?php
+if (isset($this->messages_success) and $this->messages_success)
+    foreach ($this->messages_success as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<div class="control clearfix">
+    <a href="/time/create-off-long-time" class="pull-right btn btn-success">+</a>
+</div>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                echo $this->render('time/partials/search-pre-time-off.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <?php
+        echo $this->render('time/partials/table-pre-time-off.phtml');
+    ?>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+        /*
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+        */
+       
+    });
+
+</script>

@@ -1,0 +1,73 @@
+<?php 
+    //print_r($this->params);
+    $current_month = date('F Y');
+    if ( date('Y-m-d') > date('Y-m-20') ) { $current_month = date('F Y', strtotime("+1 Month", strtotime(date('Y-m-d')))); }
+?>
+
+<form class="form-search form-horizontal" method="get" action="/time/staff-check-in-report-detail">
+    <div class="row">
+
+        <div class="span5">
+            <div class="control-group">
+                <label for="code" class="span2">Staff Code</label>
+                <input id="code" name="code" type="text" class="input-medium search-query form-control" value="<?php isset($this->params['staff_code']) and printf($this->params['staff_code']);?>">
+                <input id="group_id" name="group_id" type="hidden" class="input-medium search-query form-control" value="<?php isset($this->params['group_id']) and printf($this->params['group_id']);?>">
+            </div>
+        </div>
+
+        <div class="span5">
+            <div class="control-group">
+                <label class="span2" for="year_month">Month - Year: </label>
+                <input name="month_year" id="month_year" class="input-medium search-query date-picker ui-datepicker-calendar" value="<?php echo isset($_GET['month_year']) ? $_GET['month_year'] : $current_month ?>" required="required" />
+            </div>
+        </div>
+
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Search</button>
+
+    <?php 
+        echo "<a class='btn btn-success' target='_blank' href='".HOST."time/staff-check-in-report-print?code=".$this->params['staff_code']."&group_id=".$this->params['group_id']."&month_year=".date('Y-m', strtotime($this->params['period_to']))."'>Print</a>";
+    ?>
+
+    <!-- <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button> -->
+
+</form>
+
+<style> .ui-datepicker-calendar { display: none; } </style>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#search_bar').trigger('click');
+
+        // Calendar Year-Month
+        $('.date-picker').datepicker({
+
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+
+            onClose: function() {
+                var iMonth = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var iYear = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+
+                $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+            },
+
+            beforeShow: function() {
+                if ((selDate = $(this).val()).length > 0) {
+                    iYear = selDate.substring(selDate.length - 4, selDate.length);
+                    iMonth = jQuery.inArray(selDate.substring(0, selDate.length - 5),
+                    $(this).datepicker('option', 'monthNames'));
+                    $(this).datepicker('option', 'defaultDate', new Date(iYear, iMonth, 1));
+                    $(this).datepicker('setDate', new Date(iYear, iMonth, 1));
+                }
+            }
+        });
+
+    });
+</script>

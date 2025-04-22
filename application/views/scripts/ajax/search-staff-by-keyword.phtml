@@ -1,0 +1,6 @@
+<?php if (isset($this->staffs) && $this->staffs): ?>
+    <?php foreach ($this->staffs as $key => $value): ?>
+        <option value="<?php echo $value['id'] ?>"><?php echo $value['firstname'] . ' ' .$value['lastname'] 
+            . ' | ' .str_replace(EMAIL_SUFFIX, '@', $value['email']) ?></option>
+    <?php endforeach ?>
+<?php endif ?>

@@ -1,0 +1,162 @@
+<style type="text/css">
+
+    .alert-msg {
+        background: #F9EEB8;
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top: 2px solid #e55;
+        /*display: none;*/
+        margin: 0;
+        /*margin-left: -200px;*/
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .alert-msg.show {
+        display: inline-block;
+    }
+
+    .alert-msg p {
+        font-weight: bold;
+        font-size: 12px;
+        font-family: tahoma, arial;
+        margin: 0 10px;
+        line-height: 2em;
+        text-align: center;
+    }
+
+</style>
+<div class="page-header">
+    <h1>Competitor Product : Create</h1>
+</div>
+
+<?php
+
+// echo "<pre>"; print_r($this->product_info); echo "</pre>";
+
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php if (isset($this->WARNING_TIMING_MESSAGES) and $this->WARNING_TIMING_MESSAGES):?>
+<div class="alert-msg">
+    <p class="msg"><?php echo $this->WARNING_TIMING_MESSAGES;?></p>
+</div>
+<?php endif;?>
+
+<iframe name="ifrmSave" id="ifrmSave" height="500px" width="100%" style="display:none;"></iframe>
+<form role="form" id="form" action="<?php echo HOST ?>manage/competitor-product-create-save" method="post" target="ifrmSave">
+    <div class="row">
+        <div class="span6">
+            
+            <div class="control-group">
+                <label for="brand_id" class="span2">Competitor Brand</label>
+                <select id="brand_id" name="brand_id" class="span3" required>
+                    <option value="">----- Choose Brand -----</option>
+                    <?php
+
+                    if ($this->brand_list) :
+                        foreach ($this->brand_list as $brand_list):
+                            ?>
+                            <option value="<?php echo $brand_list['id'];?>" <?php if (isset($this->product_info['brand_id']) and ( (is_array($this->product_info['brand_id']) && in_array($brand_list['id'], $this->product_info['brand_id']) || $brand_list['id']==$this->product_info['brand_id'])) ):?>selected<?php endif;?>><?php echo $brand_list['name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="product_name" class="span2">Product Name</label>
+                <input id="product_name" name="product_name" type="text" class="input-medium form-control span3" value="<?php isset($this->product_info['name']) and printf($this->product_info['name']);?>" required >
+            </div>
+            <div class="control-group">
+                <label for="product_code" class="span2">Product Code</label>
+                <input id="product_code" name="product_code" type="text" class="input-medium form-control span3" value="<?php isset($this->product_info['code']) and printf($this->product_info['code']);?>">
+            </div>
+            <div class="control-group">
+                <label for="product_status" class="span2">Product Status</label>
+                <select id="product_status" name="product_status" class="span3" required>
+                    <option value="0" <?php if ( $this->product_info['status'] == 0 ) echo "selected"; ?> >Active</option>
+                    <option value="1" <?php if ( $this->product_info['status'] == 1 ) echo "selected"; ?> >Disabled</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="product_order" class="span2">Product Order</label>
+                <input id="product_order" name="product_order" type="number" class="input-medium form-control span3" min="0" value="<?php isset($this->product_info['position']) and printf($this->product_info['position']);?>" required>
+            </div>
+
+        </div>
+
+        <div class="span6">
+            
+        </div>
+
+    </div>
+
+    <br />
+    <input type="hidden" id="cp_id" name="cp_id" value="<?php echo $this->product_info['id']; ?>" />
+    <input type="hidden" name="back_url" id="back_url" value="<?php echo $this->back_url; ?>">
+
+    <button type="submit" class="btn btn-info" id="btn_save" name="btn_save" value="1">Save</button>
+    <button type="button" class="btn btn-inverse go-back">Go Back</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script type="text/javascript">
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 2,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+        multi();
+
+        $('#product_status').change(function(e){
+
+            if ($('#product_status').val() == 1) {
+
+                $('#product_order').val("");
+                $('#product_order').prop("disabled", true);
+
+            } else {
+
+                $('#product_order').prop("disabled", false);
+
+            }
+
+        });
+
+    });
+
+
+    function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#form button').prop('disabled', false);
+        return;
+    }
+    
+</script>

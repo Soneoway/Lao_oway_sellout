@@ -1,0 +1,243 @@
+<div class="page-header">
+    <!-- <h1>Daily Sellout and Score Report </h1> -->
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/report-timing/search.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-right"></div>
+<div class="clearfix"></div>
+
+<div class="header">
+    <h2>Daily Sellout Report</h2>
+</div>
+
+<!-- Start 111 -->
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+            <tr>
+                <th colspan="5" style="text-align: center; color: green; font-weight: bold; font-size: 20px;">All Product Sellout 所有手机产品销量</th>
+                <th colspan="4" style="text-align: center; color: #9c27b0;; font-weight: bold; font-size: 20px;">Hero Product Sellout 爆款销量</th>
+            </tr>
+            <tr>
+                <th style="text-align: center; color: #03a9f4; font-weight: bold;">Area Name</th>
+                <th style="text-align: center; color: green; font-weight: bold;">Today sellout <br>今日销量</th>
+                <th style="text-align: center; color: green; font-weight: bold;">This month sellout <br>本月销量</th>
+                <th style="text-align: center; color: green; font-weight: bold;">Target this month <br>本月目标</th>
+                <th style="text-align: center; color: #092ef0; font-size:13px; font-weight: bold;"><br> Percentage (%)</th>
+
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">Today sellout <br>今日销量</th>
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">This month sellout <br>本月销量</th>
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">Target this month <br>本月目标</th>
+                <th style="text-align: center; color: #092ef0; font-size:13px; font-weight: bold;"><br> Percentage (%)</th> 
+            </tr>
+        <tbody>
+            <?php
+
+            if (isset($this->area_report) and $this->area_report)
+                    foreach ($this->area_report as $data):  
+
+            $total_today_all_model_sellout = $total_today_all_model_sellout + $data['to_day_allmodel'];
+            $total_all_model_sellout = $total_all_model_sellout + $data['allmodel_sellout'];
+            $total_all_model_rarget = $total_all_model_rarget+ $data['target'];
+
+            $total_today_hero_model_sellout = $total_today_hero_model_sellout + $data['to_day_hero'];
+            $total_hero_model_sellout = $total_hero_model_sellout + $data['hero_sellout'];
+            $total_hero_model_rarget = $total_hero_model_rarget + $data['target_hero'];
+
+            $total_all_model_sellout_percent = ($total_all_model_sellout / $total_all_model_rarget) * 100;
+            $total_hero_model_sellout_percent = ($total_hero_model_sellout / $total_hero_model_rarget) * 100;
+
+            $allmodel_sellout_percent=$data['allmodel_sellout'] / $data['target'] * 100;
+            $hero_sellout_percent=$data['hero_sellout'] / $data['target_hero'] * 100;
+
+            ?>
+            <tr>
+                <td style="text-align: center; color: #03a9f4; font-weight: bold;"><?php echo $data['area_name'] ?></td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo $data['to_day_allmodel'];?></td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo $data['allmodel_sellout']; ?></td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo $data['target']; ?></td>
+                <td style="text-align: center; color: #092ef0; font-size:15px; font-weight: bold;"><?php echo number_format($allmodel_sellout_percent,2); ?>%</td>
+
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo $data['to_day_hero']; ?></td>
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo $data['hero_sellout']; ?></td>
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo $data['target_hero']; ?></td>
+                <td style="text-align: center; color: #092ef0; font-size:15px; font-weight: bold;"><?php echo number_format($hero_sellout_percent,2); ?>%</td>
+            </tr>
+            <?php endforeach; ?>
+
+        </tbody>
+    </table>
+</div>
+
+    <table class="table table-bordered">
+            <tr>
+                <th style="text-align: center; color: #03a9f4; font-weight: bold;">#</th>
+                <th style="text-align: center; color: green; font-weight: bold;">Today sellout </th>
+                <th style="text-align: center; color: green; font-weight: bold;">This month sellout</th>
+                <th style="text-align: center; color: green; font-weight: bold;">Target this month</th>
+                <th style="text-align: center; color: #092ef0; font-size:13px; font-weight: bold;">Percentage (%)</th>
+
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">Today sellout </th>
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">This month sellout</th>
+                <th style="text-align: center; color: #9c27b0; font-weight: bold;">Target this month</th>
+                <th style="text-align: center; color: #092ef0; font-size:13px; font-weight: bold;">Percentage (%)</th> 
+            </tr>
+        <tbody>
+            <tr style="font-size:20px;">
+                <td style="text-align: center; color: #03a9f4; font-size:25px; font-weight: bold;">Total</td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo number_format($total_today_all_model_sellout,0); ?></td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo number_format($total_all_model_sellout,0); ?></td>
+                <td style="text-align: center; color: green; font-weight: bold;"><?php echo number_format($total_all_model_rarget,0); ?></td>
+                <td style="text-align: center; color: #092ef0; font-size:22px; font-weight: bold;"><?php echo number_format($total_all_model_sellout_percent,2); ?>%</td>
+
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo number_format($total_today_hero_model_sellout,0); ?></td>
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo number_format($total_hero_model_sellout,0); ?></td>
+                <td style="text-align: center; color: #9c27b0; font-weight: bold;"><?php echo number_format($total_hero_model_rarget,0); ?></td>
+                <td style="text-align: center; color: #092ef0; font-size:22px; font-weight: bold;"><?php echo number_format($total_hero_model_sellout_percent,2); ?>%</td>
+            </tr>
+        </tbody>
+    </table>
+<!-- End 111 -->
+
+<br>
+
+<!-- Start 222 -->
+<div class="header">
+    <h2>Daily Score Report</h2>
+</div>
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+            <tr> 
+                <!-- <th colspan="6" style="text-align: center; color: green; font-weight: bold; font-size: 23px;">Daily Score Report</th> -->
+            </tr>
+            <tr>
+                <th style="text-align: center; color: #03a9f4; font-weight: bold;">Area Name<br>机构</th>
+                <th style="text-align: center; color: #0cb393; font-weight: bold;">Sales Amount of Today<br>日累计销售额</th>
+                <th style="text-align: center; color: #0cb393; font-weight: bold;">Sales Amount of This Month<br>月累计销售额</th>
+                <th style="text-align: center; color: #09715d; font-size:15px; font-weight: bold;">Point <br>点位</th>
+                <th style="text-align: center; color: #0d97b7; font-size:13px; font-weight: bold;">Average Score Today<br>当日打分</th>
+                <th style="text-align: center; color: #0d97b7; font-size:13px; font-weight: bold;">Average Monthly Score<br>月累计打分</th>
+            </tr>
+        <tbody>
+            <?php
+
+            if (isset($this->area_report) and $this->area_report)
+                    foreach ($this->area_report as $data):  
+
+            $total_point = $total_point + $data['score_point'];   // Total Score
+            $total_today_price = $total_today_price + $data['today_price'];   // Total Sales by Daily
+            $total_monthly_price = $total_monthly_price + $data['monthly_price'];   // Total Sales by Monthly
+            
+            $score_today=((($data['today_price'] / $data['total_today_price']) / $data['score_point']) * 60) * 100;   // Score of Daily
+            $score_monthly=((($data['monthly_price'] / $data['total_monthly_price']) / $data['score_point']) * 60) * 100;   // Score of Monthly
+
+            ?>
+            <tr>
+                <td style="text-align: center; color: #03a9f4; font-weight: bold;"><?php echo $data['area_name'] ?></td>
+                <td style="text-align: center; color: #0cb393; font-weight: bold;"><?php echo number_format($data['today_price'],0);?></td>
+                <td style="text-align: center; color: #0cb393; font-weight: bold;"><?php echo number_format($data['monthly_price'],0); ?></td>
+                <td style="text-align: center; color: #09715d; font-size:15px; font-weight: bold;"><?php echo number_format($data['score_point'],2); ?></td>
+                <td style="text-align: center; color: #0d97b7; font-size:15px; font-weight: bold;"><?php echo number_format($score_today,2); ?></td>
+                <td style="text-align: center; color: #0d97b7; font-size:15px; font-weight: bold;"><?php echo number_format($score_monthly,2); ?></td>
+            </tr>
+            <?php endforeach; ?>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+            <tr>
+                <th style="text-align: center; color: #03a9f4; font-weight: bold;">#</th>
+                <th style="text-align: center; color: #0cb393; font-weight: bold;">Sales Amount of Today</th>
+                <th style="text-align: center; color: #0cb393; font-weight: bold;">Sales Amount of This Month</th>
+                <th style="text-align: center; color: #09715d; font-size:15px; font-weight: bold;">Point</th>
+                <th style="text-align: center; color: #0d97b7; font-size:13px; font-weight: bold;">Average Score Today</th>
+                <th style="text-align: center; color: #0d97b7; font-size:13px; font-weight: bold;">Average Monthly Score</th>
+            </tr>
+        <tbody>
+
+            <tr style="font-size:25px;">
+                <td style="text-align: center; color: #03a9f4; font-weight: bold;">Total</td>
+                <td style="text-align: center; color: #0cb393; font-size:15px; font-weight: bold;"><?php echo number_format($total_today_price,0); ?></td>
+                <td style="text-align: center; color: #0cb393; font-size:15px; font-weight: bold;"><?php echo number_format($total_monthly_price,0); ?></td>
+                <td style="text-align: center; color: #09715d; font-size:15px; font-weight: bold;"><?php echo number_format($total_point,2); ?></td>
+                <td style="text-align: center; color: #0d97b7; font-size:15px; font-weight: bold;">-</td>
+                <td style="text-align: center; color: #0d97b7; font-size:15px; font-weight: bold;">-</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- End 222 -->
+<!-- End 222 -->
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $modal = $('#modal');
+        $('.badge.badge-default').click(function(){
+            _self = $(this);
+            $('body').modalmanager('loading');
+
+            $.post('<?php echo HOST ?>/timing/store-short-report',
+                {
+                    from            : $('#from').val(),
+                    to              : $('#to').val(),
+                    name            : $('#name').val(),
+                    area            : $('#area').val(),
+                    regional_market : $('#regional_market').val(),
+                    store_id        : _self.data('store-id')
+                },
+                function(data){
+                    $modal.html(data);
+                    $modal.modal();
+                    var name = _self.parents('tr').children('td:nth-child(2)').html();
+                    $modal.find('h3').append(' <small>&bull; '+name+'</small>');
+            });
+        });
+
+    });
+    
+</script>
+<?php echo $this->load('combobox');?>

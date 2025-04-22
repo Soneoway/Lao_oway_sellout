@@ -1,0 +1,419 @@
+<meta charset="UTF-8" />
+<link href="<?php echo HOST ?>css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .note {
+        width: 40%;
+    }
+
+    h1 {
+        padding-top: 50px;
+        margin-bottom: 40px;
+    }
+
+    @media print {
+        h1 {page-break-before: always;}
+        #page-break {page-break-before: always;}
+    }
+    
+    p {font-size: 10pt !important;
+    font-family: Times new roman !important;}
+    body{
+        font-family: Times news roman;
+    }
+    
+</style>
+<?php $tmp_sn = '' ?>        
+<body >
+<?php if (isset($this->staff) and $this->staff ): ?>
+<?php foreach($this->staff as $k=>$v) :  ?>
+
+<?php
+
+    //set title cho nhan vien
+    //
+    $title = "Nhân viên kinh doanh";
+    if(isset($v) and $v['title'] == PGPB_TITLE)
+    {
+        $title = "Nhân viên bán hàng";
+    }
+    
+    if(isset($v) and in_array($v['title'] , array(SALES_TITLE , SALES_LEADER_TITLE , SALES_ACCESSORIES_TITLE ,SALES_ACCESSORIES_LEADER_TITLE )))
+    {
+        $title = "Nhân viên kinh doanh";
+    }
+    
+    if(isset($v) and $v['contract_term'] == CONTRACT_TERM_SEASONAL)
+    {     
+        $title = "Nhân viên giới thiệu sản phẩm";
+    }
+    
+    if(isset($v) and $v['contract_term'] == CONTRACT_TERM_SEASONAL_CHALLENGE)
+    {
+        $this->contract_name[$v['contract_term']] = "Thời vụ";
+    }
+    
+    if(isset($v) and $v['contract_term'] == CONTRACT_TERM_SEASONAL_CHALLENGE and $v['title'] == PGPB_TITLE)
+    {
+        $title = "Nhân viên hỗ trợ bán hàng - sự kiện";
+        $title_nv   = "Nhân viên thời vụ";
+    }
+    
+    if(isset($v) and $v['contract_term'] == CONTRACT_TERM_SEASONAL_CHALLENGE and in_array($v['title'] , array(SALES_TITLE , SALES_LEADER_TITLE , SALES_ACCESSORIES_TITLE , SALES_ACCESSORIES_LEADER_TITLE )))
+    {
+
+        $title = "Nhân viên hỗ trợ Kinh Doanh";
+        $title_nv   = "Nhân viên thời vụ";
+    }
+    
+ ?>
+ <div style="width:660px;margin:auto;">
+<p  align="center" style="text-align:center" id="page-break"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT <st1:place w:st="on"><st1:country-region w:st="on">NAM</st1:country-region></st1:place><o:p></o:p></b></p>
+
+<p  align="center" style="text-align:center"><b><u>Độc lập – Tự do – Hạnh phúc<o:p></o:p></u></b></p>
+
+<?php if(isset($v['company_id']) and $v['company_id'] == 1) : ?>
+<p >Tên đơn vị: Cty TNHH MTV Kỹ Thuật Và Khoa Học Oppo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<o:p></o:p></p>
+
+<p >Số<i>:&nbsp; </i><i><span style="font-size:9pt;color:blue"><?php echo $v['code'] ?>/ <?php if(isset($v['contract_term']) and(isset($v['print_time'])) and $v['contract_term'] == 2) echo 'TV';
+else echo '0'.$v['print_time'];
+
+ ?></span></i><span style="font-size:10.0pt"><o:p></o:p></span></p>
+
+<p  align="center" style="text-align:center"><b><span style="font-size:16.0pt">
+<?php if(isset($v['contract_term']) and $v['title'] == PGPB_TITLE and $v['contract_term'] == CONTRACT_TERM_SEASONAL || $v['contract_term'] == CONTRACT_TERM_SEASONAL_CHALLENGE ) echo 'HỢP ĐỒNG LAO ĐỘNG THỜI VỤ';
+else if(isset($v['contract_term']) and $v['contract_term'] == CONTRACT_TERM_SEASONAL_CHALLENGE and in_array( $v['title'] , SALES_TITLE , SALES_ACCESSORIES_TITLE)) echo 'HỢP ĐỒNG LAO ĐỘNG THỜI VỤ';
+
+else if(isset($v['contract_term']) and $v['contract_term'] == 2 and  in_array( $v['title'] , array(SALES_TITLE , SALES_ACCESSORIES_TITLE))) echo 'HỢP ĐỒNG THỬ VIỆC';
+else
+echo 'HỢP ĐỒNG LAO ĐỘNG';
+
+  ?><o:p></o:p></span></b></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in"><br>
+Chúng tôi, một bên là Ông/Bà:&nbsp; <b>TÔ THỊ THU THỦY</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quốc tịch: Việt Nam <o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Chức vụ:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trưởng
+Phòng Nhân Sự<o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:13.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Đại diện cho (1): Công ty TNHH MTV Kỹ Thuật Và Khoa
+Học OPPO căn cứ theo giấy ủy quyền số 132/UQ-OPPO ngày&nbsp;&nbsp; 01/04/2013&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Điện
+thoại: <span lang="VI" style="font-size:11.0pt;mso-bidi-font-size:12.0pt;
+mso-ansi-language:VI">0</span><span style="font-size:11.0pt;mso-bidi-font-size:
+12.0pt">8</span><span lang="VI" style="font-size:11.0pt;mso-bidi-font-size:12.0pt;
+mso-ansi-language:VI">.</span><span style="font-size:11.0pt;mso-bidi-font-size:
+12.0pt">39202.555</span><o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Địa chỉ: <span style="color: rgb(51, 0, 0); background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;">Tòa
+nhà SCB, 242 Cống Quỳnh, P. Phạm Ngũ Lão, Quận 1, TPHCM.</span><o:p></o:p></p>
+
+<?php elseif(isset($v['company_id']) and $v['company_id'] == 2): ?>
+<p >Tên đơn vị: Cty TNHH DI ĐỘNG THÔNG MINH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<o:p></o:p></p>
+
+<p >Số<i>:&nbsp; </i><i><span style="font-size:9pt;color:blue"><?php echo $v['code'] ?>/ <?php if(isset($v['contract_term']) and(isset($v['print_time'])) and in_array($v['contract_term'], array('2','3','4')) ) echo 'TV';
+else echo '0'.$v['print_time'];
+
+ ?></span></i><span style="font-size:10.0pt"><o:p></o:p></span></p>
+
+<p  align="center" style="text-align:center"><b><span style="font-size:16.0pt">
+<?php if(isset($v['contract_term']) and $v['title'] == PGPB_TITLE and $v['contract_term'] == 3 || $v['contract_term'] == 4 ) echo 'HỢP ĐỒNG LAO ĐỘNG THỜI VỤ';
+else if(isset($v['contract_term']) and $v['contract_term'] == 4 and in_array($v['title'] , array(SALES_ACCESSORIES_TITLE, SALES_TITLE ))) echo 'HỢP ĐỒNG LAO ĐỘNG THỜI VỤ';
+
+else if(isset($v['contract_term']) and $v['contract_term'] == 2 and in_array($v['title'] , array(SALES_ACCESSORIES_TITLE, SALES_TITLE ))) echo 'HỢP ĐỒNG THỬ VIỆC';
+else
+echo 'HỢP ĐỒNG LAO ĐỘNG';
+
+  ?><o:p></o:p></span></b></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in"><br>
+Chúng tôi, một bên là Ông/Bà:&nbsp; <b>VŨ THỊ CẨM VÂN</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quốc tịch: Việt Nam <o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Chức vụ:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Giám đốc</strong><o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:13.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Công ty TNHH DI ĐỘNG THÔNG MINH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Điện
+thoại: <span lang="VI" style="font-size:11.0pt;mso-bidi-font-size:12.0pt;
+mso-ansi-language:VI">0</span><span style="font-size:11.0pt;mso-bidi-font-size:
+12.0pt">8</span><span lang="VI" style="font-size:11.0pt;mso-bidi-font-size:12.0pt;
+mso-ansi-language:VI">.</span><span style="font-size:11.0pt;mso-bidi-font-size:
+12.0pt">38216.320</span><o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:4.5in">Địa chỉ: <span style="color: rgb(51, 0, 0); background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;">56 Hồ Tùng Mậu, P. Bến Nghé, Quận 1, TPHCM.</span><o:p></o:p></p>
+
+<?php endif; ?>
+
+<p  style="margin-left:4.5in;text-align:justify;text-indent:
+-4.5in;line-height:8.0pt;mso-line-height-rule:exactly;tab-stops:4.5in">Và một
+bên là Ông/Bà:&nbsp;<b><span style="color:blue"><?php isset($v) and $v and printf($v['firstname']);?></span></b><b><span style="color:blue"> </span></b><b><span style="color:blue"><?php isset($v) and $v and printf($v['lastname']);?></span></b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>Quốc
+tịch: Việt Nam <o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in">Sinh ngày:&nbsp;&nbsp;
+<span style="color:blue"><?php isset($v) and $v->dob and printf($v->dob);?></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tại: <span style="color:blue;text-transform: uppercase;"><?php isset($v) and $v and printf($v->birth_place);?></span><o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly">Nghề nghiệp :&nbsp;&nbsp; <o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in">Địa chỉ thường trú:<span style="color:blue;text-transform: uppercase;"> <?php isset($v) and $v and printf($v->address);?></span><span style="color:
+blue">.</span><o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in"><span lang="VI">Số
+CMND</span><span lang="VI"> </span><span lang="VI">:</span><span lang="VI"> </span><span style="color:blue"><?php isset($v) and $v and printf($v->ID_number);?></span><span style="color:blue"> </span>Cấp ngày&nbsp; <span style="color:blue"><?php isset($v) and $v->ID_date and printf(date('d/m/Y',strtotime($v->ID_date)));?></span><span style="color:blue"> </span>&nbsp;&nbsp;Tại:&nbsp; <span style="color:blue"><?php isset($v) and $v and printf($v['ID_place']);?></span><span style="color:blue"><o:p></o:p></span></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in">Thỏa thuận ký kết hợp đồng lao động và cam kết
+làm đúng những điều khoản sau đây:<o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:.5in 207.0pt 4.5in"><b>Điều
+1: Thời hạn và công việc hợp đồng <o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Loại hợp đồng lao động: <?php if(isset($this->contract_name) and $this->contract_name) echo $this->contract_name[$v['contract_term']]; ?><o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+</span></span>Từ ngày <span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('d',strtotime($v->contract_signed_at)));?></span><span style="color:blue"> tháng <?php isset($v) and $v->contract_signed_at and printf(date('m',strtotime($v->contract_signed_at)));?></span>
+năm<span style="color:blue"> </span><span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('Y',strtotime($v->contract_signed_at)));?></span><span style="color:blue"> </span>
+
+<?php if(isset($v['contract_term']) and $v['contract_term'] != 7) : ?>
+
+đến ngày<span style="color:blue"> </span><span style="color:blue"><?php isset($v) and $v->contract_expired_at and printf(date('d',strtotime($v->contract_expired_at)));?></span><span style="color:blue"> </span>tháng<span style="color:blue"> </span><span style="color:blue"><?php isset($v) and $v->contract_expired_at and printf(date('m',strtotime($v->contract_expired_at)));?></span><span style="color:blue"> </span>năm<span style="color:blue"> </span><span style="color:blue"><?php isset($v) and $v->contract_expired_at and printf(date('Y',strtotime($v->contract_expired_at)));?></span>
+<o:p></o:p></p>
+
+<?php endif; ?>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Địa điểm làm việc: <b>các CH KV tỉnh/TP </b><b><?php echo $this->regional_markets[$v->regional_market]; ?></b><b> theo sự phân công của C.ty.</b><o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chức danh chuyên môn:&nbsp;<span style="color:blue"><?php isset($v) and $v and printf($title);?></span><o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chức vụ: <span style="color:blue"><?php if(isset($title_nv)) : echo $title_nv; else: ?>Nhân Viên<?php endif; ?></span><b><o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Công việc phải làm:<b> </b><span style="color:blue">Theo sự phân công của cấp quản lý</span><b><o:p></o:p></b></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in"><b>Điều 2:
+Chế độ làm việc: </b>&nbsp;&nbsp;<b><o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Thời gian làm việc: &nbsp;6 ngày/tuần (từ thứ hai đến Chủ nhật và được
+xắp xếp nghỉ 01 ngày/tuần)<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Được cấp phát những dụng cụ làm việc: Theo yêu
+cầu công việc <o:p></o:p></p>
+
+<p  style="text-align:justify;line-height:8.0pt;mso-line-height-rule:
+exactly;tab-stops:207.0pt 4.5in"><b>Điều 3:
+Nghĩa vụ và quyền lợi của người lao động <o:p></o:p></b></p>
+
+<p  style="margin-left:24.0pt;text-align:justify;text-indent:
+-.25in;line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l0 level1 lfo2;
+tab-stops:list 24.0pt left 207.0pt 4.5in"><b>1.<span style="font-weight: normal; font-stretch: normal; font-size: 7pt; line-height: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></b><b>Quyền lợi:<o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+line-height:8.0pt;mso-line-height-rule:exactly;mso-list:l1 level1 lfo1;
+tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="font-stretch: normal; font-size: 7pt; line-height: normal; font-family: 'Times New Roman';">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Phương tiện đi lại làm việc: &nbsp;Tự túc;<o:p></o:p></p>
+
+<!-- hop dong pg thời vụ -->
+<?php if(isset($v['contract_term']) and $v['contract_term'] == 3 and $v['title'] == PGPB_TITLE) : 
+          echo $this->partial('staff/partials/template/pg-thoivu.phtml',array('v'=>$v,'l'=>$this->luong));   ?>
+
+
+<!-- hop dong pg thử thách -->
+<?php elseif(isset($v['contract_term']) and $v['contract_term'] == 4 and $v['title'] == PGPB_TITLE) : 
+          echo $this->partial('staff/partials/template/pg-thuthach.phtml',array('v'=>$v,'l'=>$this->luong));   ?>
+
+<!-- hop dong pg 1 Năm và 3 Năm và không thời hạn -->
+<?php elseif(isset($v['contract_term']) and in_array($v['contract_term'], array('1','6','7'))  and $v['title'] == PGPB_TITLE) :          
+             echo $this->partial('staff/partials/template/pg-chinhthuc.phtml',array('v'=>$v,'l'=>$this->luong));
+            ?>
+            
+<!-- Hop dong sale thử việc  -->
+<?php elseif(isset($v['contract_term']) and($v['contract_term'] == 2)  and in_array($v['title'], array(SALES_TITLE , SALES_ACCESSORIES_TITLE ,SALES_ACCESSORIES_LEADER_TITLE, SALES_LEADER_TITLE))) :
+
+    echo $this->partial('staff/partials/template/sale-thuviec.phtml',array('v'=>$v,'l'=>$this->luong));   ?>
+<!-- /end -->
+
+<!-- Hop dong sale thời vụ thử thách  -->
+<?php elseif(isset($v['contract_term']) and($v['contract_term'] == 4) and in_array($v['title'], array(SALES_TITLE , SALES_ACCESSORIES_TITLE ,SALES_ACCESSORIES_LEADER_TITLE, SALES_LEADER_TITLE ))) :
+
+    echo $this->partial('staff/partials/template/sale-thuthach.phtml',array('v'=>$v,'l'=>$this->luong));   ?>
+<!-- /end -->
+
+<!-- Hop dong sale 1N, 3N , không thời hạn  -->
+<?php elseif(isset($v['contract_term']) and in_array($v['contract_term'], array('1','6','7'))  and in_array($v['title'], array(SALES_TITLE , SALES_ACCESSORIES_TITLE ,SALES_ACCESSORIES_LEADER_TITLE, SALES_LEADER_TITLE ))) :
+{  
+    
+    echo $this->partial('staff/partials/template/sale-chinhthuc.phtml',array('v'=>$v,'l'=>$this->luong)); }
+    ?>
+<!-- /end -->
+
+<?php endif; ?>
+
+
+<p  style="margin-left:24.0pt;text-align:justify;text-indent:
+-.25in;mso-list:l0 level1 lfo2;tab-stops:list 24.0pt left 207.0pt 4.5in"><b>2.<span style="font-weight: normal; font-stretch: normal; font-size: 7pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></b><b>Nghĩa vụ:<o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Hoàn thành những công việc đã cam kết trong hợp
+đồng lao động;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Chấp hành lệnh điều hành sản xuất – kinh doanh,
+nội quy kỷ luật lao động, an toàn lao động;<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Bồi thường vi phạm và vật chất: Theo luật
+lao động và nội quy Công ty.<o:p></o:p></p>
+
+<p  style="text-align:justify;tab-stops:207.0pt 4.5in"><b>Điều 4: Nghĩa vụ và quyền hạn của người sử
+dụng lao động <o:p></o:p></b></p>
+
+<p  style="margin-left:24.0pt;text-align:justify;text-indent:
+-.25in;mso-list:l2 level1 lfo3;tab-stops:list 24.0pt left 207.0pt 4.5in"><b>1.<span style="font-weight: normal; font-stretch: normal; font-size: 7pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></b><b>Nghĩa vụ:<o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Bảo đảm việc làm và thực hiện đầy đủ những điều
+đã cam kết trong hợp đồng lao động.<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Thanh toán đầy đủ, đúng thời hạn các chế độ và
+quyền lợi cho người lao động theo hợp đồng lao động, <br /> thoả ước lao động tập thể
+(nếu có).<o:p></o:p></p>
+
+<p  style="margin-left:24.0pt;text-align:justify;text-indent:
+-.25in;mso-list:l2 level1 lfo3;tab-stops:list 24.0pt left 207.0pt 4.5in"><b>2.<span style="font-weight: normal; font-stretch: normal; font-size: 7pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></b><b>Quyền hạn: <o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Điều hành người lao động hoàn thành công việc
+theo hợp đồng (bố trí, điều chuyển, tạm ngừng việc ...).<o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Tạm hoãn, chấm dứt hợp đồng lao động, kỷ luật
+người lao động theo theo quy định của pháp luật,<br /> thoả ước lao động tập thể  (nếu
+có) và nội quy lao động của doanh nghiệp .<o:p></o:p></p>
+
+<p  style="text-align:justify;tab-stops:207.0pt 4.5in"><b>Điều 5: Điều khoản thi hành<o:p></o:p></b></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Những vấn đề về lao động không ghi trong hợp
+đồng lao động này thì áp dụng quy định của thoả ước tập thể, <br /> trường hợp chưa có
+thoả ước của tập thể thì áp dụng quy định của pháp luật lao động. <o:p></o:p></p>
+
+<p  style="margin-left:.5in;text-align:justify;text-indent:-.25in;
+mso-list:l1 level1 lfo1;tab-stops:list .5in left 207.0pt 4.5in"><span style="font-family:VNI-Times;mso-fareast-font-family:VNI-Times;mso-bidi-font-family:
+VNI-Times">-<span style="">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Hợp đồng lao động được lập thành (02) bản&nbsp; có giá trị ngang nhau, mỗi bên giữ một bản và
+có hiệu lực từ ngày <span style="color:blue">&nbsp;</span><span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('d',strtotime($v->contract_signed_at)));?></span>
+tháng <span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('m',strtotime($v->contract_signed_at)));?></span>
+năm <span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('Y',strtotime($v->contract_signed_at)));?></span>
+Khi hai bên ký kết phụ lục hợp đồng lao động thì nội dung của phụ lục hợp đồng
+lao động cũng có giá trị như các nội dung của bản hợp đồng lao động này.<o:p></o:p></p>
+
+<p  style="margin-left:.25in;text-align:justify;tab-stops:207.0pt 4.5in">
+<?php if(isset($v['company_id']) and $v['company_id'] == 1) : ?>
+&nbsp; Hợp đồng này làm tại: Tòa nhà SCB, 242 Cống
+Quỳnh - Phường Phạm Ngũ Lão&nbsp; - Quận 1-
+TP.HCM, Ngày 
+
+<?php else:?>
+&nbsp; Hợp đồng này làm tại:&nbsp; 56 Hồ Tùng Mậu - Phường Bến Nghé - Quận 1- TP.HCM, Ngày 
+
+<?php endif; ?>
+
+
+
+
+<span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('d',strtotime($v->contract_signed_at)));?></span> tháng <span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('m',strtotime($v->contract_signed_at)));?></span> năm <span style="color:blue"><?php isset($v) and $v->contract_signed_at and printf(date('Y',strtotime($v->contract_signed_at)));?></span><o:p></o:p>./.</p>
+
+<p  style="margin-left:.25in;text-align:justify;tab-stops:207.0pt 4.5in"><o:p>&nbsp;</o:p></p>
+
+<p  style="margin-left:.25in;tab-stops:center 1.25in left 207.0pt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>NGƯỜI
+LAO ĐỘNG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; <?php if(isset($v['company_id']) and $v['company_id'] == 1) echo '<span style="margin-left:145px">TRƯỞNG PHÒNG NHÂN SỰ</span>'; else echo '<span style="margin-left:185px">GIÁM ĐỐC</span>'; ?><o:p></o:p></b></p>
+
+<p  style="margin-left:.25in;tab-stops:center 1.25in left 207.0pt center 5.0in"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><i>(Kí &amp; ghi rõ họ tên)</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i style="margin-left: 140px;">(Kí tên và đóng dấu)<o:p></o:p></i></p>
+
+<p  style="margin-left:.25in;tab-stops:center 1.25in left 207.0pt center 351.0pt"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <o:p></o:p></b></p>
+
+<p ><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <o:p></o:p></b></p>
+
+<p ><b>&nbsp;</b></p>
+
+<p style="margin-left:150px;" ><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<?php if(isset($v['company_id']) and $v['company_id'] == 1) echo 'TÔ THỊ THU THỦY'; else echo 'VŨ THỊ CẨM VÂN'; ?></b><b><span style="font-size:11.0pt"><o:p></o:p></span></b></p>
+<?php endforeach; ?>
+<?php endif; ?>
+
+</div>
+</body>
+<script src="<?php echo HOST ?>js/jquery-1.7.2.min.js"></script>
+<script>
+    try {
+        $(document).ready(function() {
+           parent.set_as_printed('<?php echo '1'; ?>');
+             parent.window.frames['picking_list'].focus();
+                   parent.window.frames['picking_list'].print();
+
+//window.print();
+        });
+    } catch (err) {
+
+    }
+</script>

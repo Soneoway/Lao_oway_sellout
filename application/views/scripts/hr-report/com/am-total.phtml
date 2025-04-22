@@ -1,0 +1,384 @@
+<?php 
+	$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+	$print_by = $userStorage->firstname." ".$userStorage->lastname;
+	$print_date = date('d F Y H:i:s');
+
+	// print_r($this->params);
+	// echo "<br/>";
+	// print_r($this->log);
+
+	$data = $this->log;
+
+	//print_r($data); die;
+
+	$com_month = date('F Y', strtotime($this->params['from']) );
+
+	$report_type = '';
+	if ($this->params['export_flag'] == 3) { $report_type = "Key Account"; }
+	if ($this->params['export_flag'] == 4) { $report_type = "Operator"; }
+?>
+
+<style type="text/css">
+
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 11px;
+	font-family: Arial;
+}
+
+.signature{
+    font-size:11px;
+    page-break-after:always;
+
+    text-align: right;
+    height: 20px;
+    width: 100%;
+    margin:0px auto;
+    position:fixed;
+    bottom:0px;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+	<tr>
+		<td style="padding-left:50px;">
+			<br/>
+			<div align="center"><strong>Commission for  <?php echo $report_type." ".$com_month; ?></strong></div><br/>
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-left:50px;">
+			<table cellspacing="0" border="1" style="width:700px;">
+				<tr align="center" class="header_color">
+					<td style="width:50px;">ID Staff</td>
+					<td style="width:200px;">Full Name</td>
+					<td style="width:100px;">Nick Name</td>
+					<td style="width:50px;">Position</td>
+					<td style="width:100px;">Channel</td>
+					<td style="width:100px;">Base Commission</td>
+					<td style="width:100px;">Commission</td>
+				</tr>
+
+				<?php 
+
+					$QGoodKpi = new Application_Model_GoodKpiLog();
+
+					// Create Data Set
+					$data2 = array();
+					foreach ($data as $key => $value) { 
+
+						$this->params['am_id'] = $key;
+						$com_temp = $QGoodKpi->com_am($this->params);
+						//echo "<pre>"; print_r($com_temp);
+
+						foreach ($com_temp as $key2 => $value2) {
+							$data2[ $value2['staff_id'] ][ $value2['base_kpi'] ][]	= $value2;
+						}
+
+					}
+					// echo "<pre>"; print_r($data2);
+					
+/*
+					// Data for Test //
+					$data2 = array(
+						'15556' => array(
+							'20000' => array(
+								'0' => array(
+									'staff_id' 	 => 15556,
+									'staff_code' => 6002814,
+									'staff_name' => 'Liu Yan',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 20000,
+									'target'	 => 0,
+									'channel' 	 => 'Dtac : Dealer',
+									'sellout'	 => 2632,
+								),
+								'1' => array(
+									'staff_id' 	 => 15556,
+									'staff_code' => 6002814,
+									'staff_name' => 'Liu Yan',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 20000,
+									'target'	 => 7000,
+									'channel' 	 => 'Dtac : ORG',
+									'sellout'	 => 4585,
+								)
+							)
+						),
+
+						'18934' => array(
+							'50000' => array(
+								'0' => array(
+									'staff_id' 	 => 18934,
+									'staff_code' => 6000747,
+									'staff_name' => 'SONG ZHAO',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 50000,
+									'target'	 => 0,
+									'channel' 	 => 'True : Dealer',
+									'sellout'	 => 1404,
+								),
+								'1' => array(
+									'staff_id' 	 => 18934,
+									'staff_code' => 6000747,
+									'staff_name' => 'SONG ZHAO',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 50000,
+									'target'	 => 36000,
+									'channel' 	 => 'True : ORG',
+									'sellout'	 => 16621,
+								)
+							)
+						),
+
+						'29256' => array(
+							'50000' => array(
+								'0' => array(
+									'staff_id' 	 => 29256,
+									'staff_code' => 6010497,
+									'staff_name' => 'Xin Liang',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 50000,
+									'target'	 => 0,
+									'channel' 	 => 'AWN : Dealer',
+									'sellout'	 => 42805,
+								),
+								'1' => array(
+									'staff_id' 	 => 29256,
+									'staff_code' => 6010497,
+									'staff_name' => 'Xin Liang',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 50000,
+									'target'	 => 40000,
+									'channel' 	 => 'AWN : ORG',
+									'sellout'	 => 12513,
+								),
+								'2' => array(
+									'staff_id' 	 => 29256,
+									'staff_code' => 6010497,
+									'staff_name' => 'Xin Liang',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 50000,
+									'target'	 => 0,
+									'channel' 	 => 'Lotus',
+									'sellout'	 => 940,
+								)
+							),
+							'10000' => array(
+								'0' => array(
+									'staff_id' 	 => 29256,
+									'staff_code' => 6010497,
+									'staff_name' => 'Xin Liang',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 10000,
+									'target'	 => 0,
+									'channel' 	 => 'Dtac : Dealer',
+									'sellout'	 => 2632,
+								),
+								'1' => array(
+									'staff_id' 	 => 29256,
+									'staff_code' => 6010497,
+									'staff_name' => 'Xin Liang',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 10000,
+									'target'	 => 7000,
+									'channel' 	 => 'Dtac : ORG',
+									'sellout'	 => 4585,
+								)
+							)
+						),
+
+						'5729' => array(
+							'20000' => array(
+								'0' => array(
+									'staff_id' 	 => 5729,
+									'staff_code' => 5901966,
+									'staff_name' => 'น.ส.สุธาทิพย์ พรหมตรัง',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 20000,
+									'target'	 => 0,
+									'channel' 	 => 'True : Dealer',
+									'sellout'	 => 1404,
+								),
+								'1' => array(
+									'staff_id' 	 => 5729,
+									'staff_code' => 5901966,
+									'staff_name' => 'น.ส.สุธาทิพย์ พรหมตรัง',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 20000,
+									'target'	 => 36000,
+									'channel' 	 => 'True : ORG',
+									'sellout'	 => 16621,
+								)
+							)
+						),
+
+						'35022' => array(
+							'10000' => array(
+								'0' => array(
+									'staff_id' 	 => 35022,
+									'staff_code' => 6102149,
+									'staff_name' => 'แก้วเก้า กิจไพบูลทวี',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 10000,
+									'target'	 => 0,
+									'channel' 	 => 'AWN : Dealer',
+									'sellout'	 => 42805,
+								),
+								'1' => array(
+									'staff_id' 	 => 35022,
+									'staff_code' => 6102149,
+									'staff_name' => 'แก้วเก้า กิจไพบูลทวี',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 10000,
+									'target'	 => 40000,
+									'channel' 	 => 'AWN : ORG',
+									'sellout'	 => 12513,
+								),
+								'2' => array(
+									'staff_id' 	 => 35022,
+									'staff_code' => 6102149,
+									'staff_name' => 'แก้วเก้า กิจไพบูลทวี',
+									'staff_group' => 'AM',
+									'base_kpi' 	 => 10000,
+									'target'	 => 0,
+									'channel' 	 => 'Lotus',
+									'sellout'	 => 940,
+								)
+							)
+						),
+
+					);
+
+					echo "<pre>";
+					print_r($data2);
+*/
+					$sum_kpi = $sum_com_rate = 0; 
+
+					foreach ($data2 as $key3 => $value3) {
+
+						$cnt_person = count($value3);
+						$cnt = 0;
+
+						foreach ($value3 as $key4 => $value4) {
+
+							$channel = '';
+							$achieve = $sum_target = $sum_sellout = $base_kpi = $com_rate = 0;
+
+							foreach ($value4 as $key5 => $value5) {
+								$channel = $channel.$value5['channel']."<br/>";
+								$sum_target = $sum_target + $value5['target'];
+								$sum_sellout = $sum_sellout + $value5['sellout'];
+								$base_kpi = $value5['base_kpi'];
+							}
+
+							$achieve = ( $sum_sellout / $sum_target ) * 100;
+
+							// KA or Operator
+							if (isset($this->params['export_flag']) && $this->params['export_flag'] == 4) {
+								$operator_rate = $QGoodKpi->am_operator_rate(number_format($achieve,2));
+								$com_rate = (( $base_kpi * number_format($achieve,2) ) / 100) * $operator_rate;
+
+								$deduction = 0;
+			                    if ($value4[0]['staff_code'] == '6102149' && $com_month == 'August 2018') { $deduction = 5000; } 
+
+			                    $com_rate = $com_rate - $deduction;
+                    
+							} else {
+								if ($achieve >= 120) { $achieve = 120; }
+								$com_rate = ( $base_kpi * number_format($achieve,2) ) / 100;
+							}
+						
+							// Set Rowspan
+							if ($cnt == 0) {
+								echo "<tr>";
+								echo 	"<td rowspan=".$cnt_person." align='center'>".$value4[0]['staff_code']."</td>";
+								echo 	"<td rowspan=".$cnt_person." align='left'>".$value4[0]['staff_name']."</td>";
+								echo 	"<td rowspan=".$cnt_person." align='center'></td>";
+								echo 	"<td rowspan=".$cnt_person." align='center'>".$value4[0]['staff_group']."</td>";
+							} else {
+								echo "<tr>";
+							}
+
+							echo 	"<td align='left'>".$channel."</td>";
+							echo 	"<td align='right'>".number_format($base_kpi)."</td>";
+							echo 	"<td align='right'>".number_format($com_rate,2)."</td>";
+							echo "</tr>";
+
+							$sum_kpi = $sum_kpi + $base_kpi;
+							$sum_com_rate = $sum_com_rate + $com_rate;
+
+							$cnt++;
+
+						}	
+
+					}
+
+					echo "<tr>";
+					echo 	"<td align='center' class='header_color' colspan='5'>Total</td>";
+					echo 	"<td align='right'>".number_format($sum_kpi)."</td>";
+					echo 	"<td align='right'>".number_format($sum_com_rate,2)."</td>";
+					echo "</tr>";
+
+				?>
+
+			</table>
+		</td>
+	</tr>
+
+</table>
+
+<!-- 
+<div style="height:50px;"></div>
+
+<table border="0" style="width:700px;">
+	<tr>
+		<td align="right" style="width:260px;">Checked By</td>
+		<td align="left">.................................................................</td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:84px">( HR )</td>
+		<td></td>
+		<td align="left" style="padding-left:66px">( Manipulator)</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Account Manager )</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right" style="width:260px;"></td>
+		<td align="left"></td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" style="padding-left:58px">( Vice President )</td>
+	</tr>
+</table>
+ -->
+
+<div class="signature">
+      Printed by <?php echo $print_by; ?> | <?php echo $print_date; ?>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>

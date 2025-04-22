@@ -1,0 +1,258 @@
+<?php 
+    
+    $d1 = explode('/', $this->params['from']);
+    $d2 = explode('/', $this->params['to']);
+
+    $from = $d1[2].'-'.$d1[1].'-'.$d1[0];
+    $to = $d2[2].'-'.$d2[1].'-'.$d2[0];
+
+    $period_loop = ( (strtotime($to) - strtotime($from)) / (24*60*60) ) + 1;
+
+    $y_max = $y_temp = 0;
+
+    $data = array();
+    if (isset($this->data_list) and $this->data_list) { 
+
+        $data = $this->data_list; 
+
+        for ($i=0;$i<count($data);$i++) {
+
+            // Data for Chart
+            $series[$i] = array(
+                'text'       => $data[$i]['channel'],
+                // 'line-color' => '#4dbac0',
+                'line-width' => '2px',
+                'shadow'     => 0,
+                'palette'    => $i,
+                'marker'     => array(
+                                    'background-color' => '#fff',
+                                    'size'             => 3,
+                                    'border-width'     => 1,
+                                    // 'border-color'     => '#36a2a8',
+                                    'shadow'           => 0,
+                                ),
+            );
+
+            for ($j=0;$j<$period_loop;$j++) {
+
+                $day_name = date('D', strtotime("+".$j." Day", strtotime($from)));
+                $day_text =  date('d-M', strtotime("+".$j." Day", strtotime($from)));
+
+                $series[$i]['values'][$j] = $data[$i][$day_text];
+                if ($data[$i][$day_text] >= $y_temp) { $y_temp = $data[$i][$day_text]; }
+
+            }
+
+        }
+
+        $y_max = ceil($y_temp/100) * 100;
+        $series = json_encode($series, JSON_NUMERIC_CHECK);
+
+    }
+?>
+
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th width="5%"><div align="center">No.</div></th>
+        <th width="30%"><div align="center">Channel</div></th>
+        <th width="25%"><div align="center">Sellin</div></th>
+        <th width="20%"><div align="center">Activated</div></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+
+    if ( !empty($data) ) {
+
+        foreach ($data as $key => $value) {
+
+            $inc = $this->offset + $key + 1;
+
+            echo "<tr>";
+            echo    "<td><div align='center'>".$inc."</td>";
+            echo    "<td><div align='center'>".$value['channel']."</td>";
+            echo    "<td><div align='center'>".$value['sellin']."</td>";
+            echo    "<td><div align='center'>".$value['activated']."</td>";
+            echo "</tr>";
+        }
+    }
+
+    ?>
+    </tbody>
+</table>
+
+<br/> 
+<div id="online_chart"></div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+
+<script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
+<script> 
+    zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9","ee6b7db5b51705a13dc2339db3edaf6d"];
+</script>
+
+<script type="text/javascript">
+
+    var period_loop = <?php echo $period_loop; ?>;
+    var from_date = '<?php echo $from; ?>';
+
+    // KA Sellout
+    var y_max = '<?php echo $y_max; ?>';
+    var series = '<?php echo $series; ?>';
+
+    var month_list = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    var x_list = [];
+    var i;
+
+    for (i = 0; i < period_loop; i++) { 
+        var date = new Date(from_date);
+        date.setDate(date.getDate() + i);
+
+        var date_text = (date.getUTCDate()) + " " + month_list[(date.getUTCMonth())];
+        var date_name = date.getDay();
+
+        var x_string = "";
+        if (date_name == 0 || date_name == 6) { x_string = "<span style='color:red;'>"+date_text+"</span>"; } 
+        else { x_string = date_text; }
+
+        x_list.push(x_string);
+    }
+
+    /*https://www.zingchart.com/gallery/chart/#!dashboard-custom-tokens*/
+    zingchart.THEME = "classic";
+
+    var online_chart_config = {
+        "background-color":"#ecf2f6",
+        "graphset":[
+            {
+                "type":"line",
+                "background-color":"#fff",
+                "border-color":"#dae5ec",
+                "border-width":"1px",
+                "width":"96%",
+                "height":"80%",
+                "x":"2%",
+                "y":"3%",
+                "title":{
+                    "margin-top":"7px",
+                    "margin-left":"12px",
+                    "text":"Online's Sellout",
+                    "background-color":"none",
+                    "shadow":0,
+                    "text-align":"center",
+                    "font-family":"Arial",
+                    "font-size":"11px",
+                    "font-color":"#707d94"
+                },
+                "plot":{
+                    "animation":{
+                        "delay":500,
+                        "effect":"ANIMATION_SLIDE_LEFT"
+                    },
+                },
+                "plotarea":{
+                    "margin":"50px 25px 70px 46px"
+                },
+                "scale-y":{
+                    // "values":"0:"+y_max+":100",
+                    "line-color":"none",
+                    "guide":{
+                        "line-style":"solid",
+                        "line-color":"#d2dae2",
+                        "line-width":"1px",
+                        "alpha":0.5
+                    },
+                    "tick":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-right":"5px"
+                    }
+                },
+                "scale-x":{
+                    "line-color":"#d2dae2",
+                    "line-width":"2px",
+                    "values":x_list,
+                    "tick":{
+                        "line-color":"#d2dae2",
+                        "line-width":"1px"
+                    },
+                    "guide":{
+                        "visible":false
+                    },
+                    "item":{
+                        "font-color":"#8391a5",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding-top":"5px"
+                    }
+                },
+                "legend":{
+                    "layout":"x6",
+                    "background-color":"none",
+                    "shadow":0,
+                    "margin":"425 auto 0 auto",
+                    "border-width":"0px",
+                    "item":{
+                        "font-color":"#707d94",
+                        "font-family":"Arial",
+                        "padding":"0px",
+                        "margin":"0px",
+                        "font-size":"9px"
+                    },
+                    "marker":{
+                        "show-line":"true",
+                        "type":"match",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "size":4,
+                        "line-width":2,
+                        "padding":"3px"
+                    }
+                },
+                "crosshair-x":{
+                    "lineWidth":1,
+                    "line-color":"#707d94",
+                    "plotLabel":{
+                        "shadow":false,
+                        "font-color":"#000",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px",
+                        "alpha":1
+                    },
+                    "scale-label":{
+                        "font-color":"#ffffff",
+                        "background-color":"#707d94",
+                        "font-family":"Arial",
+                        "font-size":"10px",
+                        "padding":"5px 10px",
+                        "border-radius":"5px"
+                    }
+                },
+                "tooltip":{
+                    "visible":false
+                },
+                "series":JSON.parse(series) 
+                
+            }
+        ]
+    };
+
+    zingchart.render({ 
+        id : 'online_chart', 
+        data : online_chart_config, 
+        height: 500, 
+        width: '100%' 
+    });
+
+</script>

@@ -1,0 +1,209 @@
+<div class="page-header">
+    <h3>MANAGEMENT POINT PG - SALE</h3>
+</div>
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+if (isset($this->message_success) and $this->message_success)
+    foreach ($this->message_success as $message):
+        echo '<div class="alert alert-success">'.$message.'</div>';
+    endforeach;
+?>
+
+<div class="row-fluid">
+    <div class="span4">
+        <div class="widget widget-nopad">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+                <h3>PG - SALE INFORMATION </h3>
+            </div>
+            <div class="widget-content">
+                <div class="widget big-stats-container">
+                    <div class="widget-content">
+                        <table class="table table-striped">
+                            <tr>
+                                <td>Name:</td>
+                                <td><?php echo (($this->staff['firstname']).' '.($this->staff['lastname']) ? ($this->staff['firstname']).' '.($this->staff['lastname']):'' )?></td>
+                            </tr>
+                            <tr>
+                                <td>Gender:</td>
+                                <td><?php if((isset($this->staff['gender']) and ($this->staff['gender']) == 1)){?> Male  <?php }elseif((isset($this->staff['gender']) and ($this->staff['gender']) == 0)){?> Female<?php }?></td>
+                            </tr>
+                            <tr>
+                                <td>Phone:</td>
+                                <td><?php echo ((isset($this->staff['phone_number']) and ($this->staff['phone_number'])) ? ($this->staff['phone_number']):'' )?></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="span4">
+        <form action="/trainer/point" method="post" class="form-group form-inline">
+            <div class="widget widget-nopad">
+                <div class="widget-header"> <i class="icon-list-alt"></i>
+                    <h3>POINT OF MONTH </h3>
+                </div>
+                <div class="widget-content">
+                    <div class="widget big-stats-container">
+                        <div class="widget-content">
+                            <table class="table table-striped ">
+                                <tr>
+                                    <td>
+                                        Month
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control monthPicker" id="month" name="month_year" required="required" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="span1">Point</td>
+                                    <td class="span2"><input type="text" id="point" class="form-control" max="100" required="required" maxlength="3" name="point"/></td>
+                                    <td>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                        <input type="hidden" name="edit" value="" id="edit_month" />
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-danger" href="<?php echo ((isset($this->back_url) and($this->back_url)) ? ($this->back_url):'/trainer')?>">Go Back</a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="hidden" name="staff_id" value="<?php echo ($this->staff['id']) ?>"/>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="span4">
+        <div class="widget widget-nopad">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+                <h3>HISTORY</h3>
+            </div>
+            <div class="widget-content">
+                <div class="widget big-stats-container">
+                    <div class="widget-content">
+                        <table class="table table-striped">
+                            <tr>
+                                <td>#</td>
+                                <td>Point</td>
+                                <td>Month</td>
+                                <td>Year</td>
+                                <td>Action</td>
+                            </tr>
+                            <?php $k=0;?>
+                            <?php if(isset($this->staffHistory) and ($this->staffHistory)):?>
+                                <?php foreach($this->staffHistory as $key=>$value):?>
+                                    <tr>
+                                        <td>
+                                            <?php echo $k = $k+1?>
+                                        </td>
+                                        <td>
+                                            <?php $point = ((isset($value['point']) and $value['point']) ? $value['point'] : ''); echo $point;?>
+                                            <input type="hidden" value="<?php echo $point;?>" id="point_<?php echo $key?>" />
+                                        </td>
+                                        <td>
+                                            <?php $month =  ((isset($value['month']) and $value['month']) ? $value['month'] : ''); echo $month;?>
+                                            <input type="hidden" value="<?php echo $month;?>" id="month_<?php echo $key?>" />
+                                        </td>
+                                        <td>
+                                            <?php $year =  ((isset($value['year']) and $value['year']) ? $value['year'] : ''); echo $year;?>
+                                            <input type="hidden" value="<?php echo $year;?>" id="year_<?php echo $key?>" />
+                                        </td>
+                                        <td>
+                                            <?php if($month == date('m') and $year == date('Y')):?>
+                                                <a href="javascript:void(0);"><i class="icon-edit" id="edit" rel="<?php echo $key ?>"></i></a>
+                                            <?php endif;?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach;?>
+                            <?php endif;?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="paging">
+            <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script>
+    $(document).ready(function()
+    {
+        edit();
+
+        $("#point").keydown(function(event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 ) {
+            }
+            else {
+                if (event.keyCode < 48 || event.keyCode > 57 ) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        $( "#point" ).keyup(function() {
+            if ($( "#point" ).val() > 100)
+            {
+                $( "#point" ).val(100);
+            }
+            else if ($( "#point" ).val() <0)
+            {
+                $( "#point" ).val(0);
+            }
+        });
+
+
+        $(".monthPicker").datepicker({
+            dateFormat: 'mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+
+            onClose: function(dateText, inst) {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).val($.datepicker.formatDate('mm-yy', new Date(year, month, 1)));
+            }
+        });
+
+        $(".monthPicker").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
+        });
+
+    });
+
+    function edit()
+    {
+        $('#edit').click(function(){
+            var rel   =  $(this).attr('rel');
+            var month =  $('#month_'+rel).val();
+            var year  =  $('#year_'+rel).val();
+            var point =  $('#point_'+rel).val();
+            $('#point').val(point);
+            $('#month').val(month+'-'+year);
+            $('#edit_month').val(1);
+        });
+    }
+
+</script>

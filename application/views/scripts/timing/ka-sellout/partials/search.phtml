@@ -1,0 +1,190 @@
+<form class="form-search form-horizontal" method="get" action="/timing/ka-sellout/ka-sellout" onsubmit="return validateSearch()">
+    <div class="row">
+        <div class="span5">
+	       <div class="control-group">
+                <label for="channel_id" class="span2">Channel</label>
+                <select id="channel_id" name="channel_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    if ($this->ka_list) :
+                        foreach ($this->ka_list as $ka_list):
+                            ?>
+                            <option value="<?php echo $ka_list['org_id'];?>" <?php if (isset($this->params['channel_id']) and ( (is_array($this->params['channel_id']) && in_array($ka_list['org_id'], $this->params['channel_id']) || $ka_list['org_id']==$this->params['channel_id'])) ):?>selected<?php endif;?>><?php echo $ka_list['org_name'];?></option>
+                        <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="good_id" class="span2">Model</label>
+                <select id="good_id" name="good_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+
+                    $data = $this->goods;
+                    $good_filter = '';
+
+                    foreach ($data as $key => $value) { $good_filter .= $value['id'].","; }
+                    $good_filter = substr($good_filter, 0, -3);
+                    
+                    if ($this->goods) :
+                        foreach ($this->goods as $good_list):
+                            ?>
+                            <option value="<?php echo $good_list['id'];?>" <?php if (isset($this->params['good_id']) and ( (is_array($this->params['good_id']) && in_array($good_list['id'], $this->params['good_id']) || $good_list['id']==$this->params['good_id'])) ):?>selected<?php endif;?>><?php echo $good_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+            <input type="hidden" id="good_filter" name="good_filter" value="<?php echo $good_filter; ?>" />
+
+            <div class="control-group">
+                <label for="color_id" class="span2">Color</label>
+                <select id="color_id" name="color_id[]" class="span3 multiselect" multiple="multiple">
+                    <?php
+                    $data = $this->colors;
+                    if ($this->colors) :
+                        foreach ($this->colors as $color_list):
+                            ?>
+                            <option value="<?php echo $color_list['id'];?>" <?php if (isset($this->params['color_id']) and ( (is_array($this->params['color_id']) && in_array($color_list['id'], $this->params['color_id']) || $color_list['id']==$this->params['color_id'])) ):?>selected<?php endif;?>><?php echo $color_list['name'];?></option>
+                        <?php
+                        endforeach;
+                        
+                    endif;
+                    ?>
+                </select>
+            </div>
+
+        </div>
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="date" class="span2">From</label>
+                <input type="text" class="form-control search-query date span2" id="from" name="from" value="<?php isset($this->params['from']) and printf($this->params['from']);?>">
+
+            </div>
+            <div class="control-group">
+                <label for="date" class="span2">To</label>
+                <input type="text" class="form-control search-query date span2" id="to" name="to" value="<?php isset($this->params['to']) and printf($this->params['to']);?>">
+            </div>
+
+            <div class="control-group">
+                <label for="date" class="span2">Compare Last Month</label>
+                <input id="chk_compare" name="chk_compare" type="checkbox" class="input-large search-query form-control" value="1" <?php if (isset($this->params['chk_compare']) and $this->params['chk_compare']):?>checked="checked" <?php endif;?>>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <button type="submit" name="export" value="1" class="btn btn-primary">Export Excel</button>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+
+    options = {
+        selectAllText: 'Select All',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        disableIfEmpty: true
+    };
+
+    function multi() {
+        $('.multiselect').multiselect(options);
+    }
+
+    function validateSearch() {
+
+        var start = $('#from').val();
+        var from = start.substring(6,10) + '-' + start.substring(3,5) + '-' + start.substring(0,2);
+
+        var end = $('#to').val();
+        var to = end.substring(6,10) + '-' + end.substring(3,5) + '-' + end.substring(0,2);
+
+        var date_01 = new Date(from);
+        var date_02 = new Date(to);
+
+        // end - start returns difference in milliseconds 
+        var diff = new Date(date_02 - date_01);
+
+        // get days
+        var days = (diff/1000/60/60/24) + 1;
+
+        if (days > 31) {
+            alert("Date Range Not Allow more than 31 Days [Selected Date Range is " + days + " Days!]");
+            return false;
+        }
+
+        // Check Number of Channel 
+        if ( $('#chk_compare').attr('checked') ) {
+
+            var channel_id = $('#channel_id').val();
+            var channel_temp = JSON.parse("[" + channel_id + "]");
+            var arr_channel = channel_temp.filter(Boolean);
+
+            if (arr_channel.length == 0) {
+                alert("Please Select Model at least 1 Channel!");
+                return false;
+            } else {
+                if (arr_channel.length > 999) {
+                    alert("Selected Channel Not Allow more than 2 Channel [Selected Channel is " + arr_channel.length + " Channels!]");
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        multi();
+        
+        $('#good_id').change(function(){
+            $('.loading').remove();
+            $(this).after('<span class="loading"></span>');
+            var _self = $(this);
+            var good_id = $(this).val();
+            
+            $('.btn, input').prop('readonly', true);
+            $('button').prop('disabled', true);
+            //$('button, .btn, input').prop('disabled', true);
+            $.get("/hr-report/load-good-color",
+                {good_id: good_id}
+                ,function(data,status){  
+                    var obj = $.parseJSON( data );
+                    $('#color_id').find('option').remove();
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#color_id').append('<option value="'+obj[i]['id']+'">'+obj[i]['name']+'</option>');
+                    }
+
+                    $('.btn, input').prop('readonly', false);
+                    $('button').prop('disabled', false);
+                    //$('button, .btn, input').prop('disabled', false);
+                    $('#color_id').multiselect("destroy").multiselect(options);
+                    $('.loading').remove();
+                });
+        });
+
+        
+    });
+</script>

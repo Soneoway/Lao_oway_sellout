@@ -1,0 +1,80 @@
+<div class="page-header">
+    <h1>Grand Area</h1>
+    <div style="clear: both;height: 20px"></div>
+    <div class="pull-right">
+    <a href="create-grand-area" class="btn btn-primary">Add Grand Area</a>
+</div>
+</div>
+
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-error">'.$message.'</div>';
+        endforeach;
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th width="4%"><center>#</center></th>
+            <th width="20%"><center>Grand Area Name</center></th>
+            <th width="50%"><center>RM Name</center></th>
+            <th width="26%"><center>Area</center></th> 
+            <th width="10%"><center>Action</center></th> 
+        </tr>
+        </thead>
+        <tbody>
+            <?php $i = 1;
+            if (isset($this->list) and $this->list)
+                foreach ($this->list as $key => $val): ?>
+            <tr>
+                <td><center><?=$i++;?></center>
+                </td>
+                <td><a title="Edit" href="<?php echo HOST ?>manage/create-grand-area?id=<?php echo $val['id'];?>"><?php echo $val['name'] ?></a></td>
+            <th>
+                
+                <p class="pull-right"><a href="add-rm?id=<?=$val['id']?>" class="btn btn-primary">Add RM</a></p>
+                <?php 
+                    if (isset($this->rm_list) && $this->rm_list[$val['id']])
+                        foreach ($this->rm_list[$val['id']] as $rm_id) {
+                            
+                                echo '<p>' . $this->staff[ $rm_id['rm_id'] ] . '</p>';
+                            
+                        }
+
+                 ?>
+            </th>
+                
+                <td><?php 
+                    if (isset($this->area_list) && $this->area_list[$val['id']])
+                        foreach ($this->area_list[$val['id']] as $area_id) {
+                            
+                                echo '<p>' . $this->areas[ $area_id['area'] ] . '</p>';
+                            
+                        }
+
+                 ?></td>
+                 <td><a  class="btn btn-danger" onclick="delete_('<?php echo $val['name'] ?>',<?php echo $val['id'] ?>)"><i class="icon-remove"></i></a></td>
+            </tr>
+
+            <?php endforeach;?>
+            
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function delete_(name,id){
+ 
+        if (confirm("Press Delete Grand Area : "+name) == true) {
+                window.location.assign("/manage/grand-delete?id="+id);
+            }
+    }
+</script>

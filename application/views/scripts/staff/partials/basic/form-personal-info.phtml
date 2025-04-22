@@ -1,0 +1,757 @@
+<div class="row-fluid">
+    <div class="span6">
+
+        <div class="control-group">
+            <label for="photo" class="control-label">ID Card Photo - Front</label>
+            <div class="controls">
+                <?php if(isset($this->staffTemp) and !empty($this->staffTemp['id_photo'])){?>
+                    <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/ID_Front/'.$this->staffTemp['id_photo']);  ?>"><img class="staff-photo" width="210" height="239" src="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/ID_Front/'.$this->staffTemp['id_photo']);  ?>" /></a>
+                <?php }?>
+                <div class="clear"></div>
+                <input type="file" id="id_photo" name="id_photo" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group">
+                    <label for="del_id_photo" class="pull-left">Delete Photo</label>
+                    <input type="checkbox" class="pull-left" name="del_id_photo" id="del_id_photo" />
+                </div>
+            </div>
+        </div>
+
+        <?php if (isset($this->currentStaff)) {?>
+            <div class="control-group">
+                <label for="photo" class="control-label">Current ID Card Photo - Front</label>
+                <div class="controls">
+                    <?php if(isset($this->currentStaff) and !empty($this->currentStaff['id_photo'])){?>
+                        <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/ID_Front/'.$this->currentStaff['id_photo']);  ?>"><img width="210" height="239" class="staff-photo" src="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/ID_Front/'.$this->currentStaff['id_photo']);  ?>" /></a>
+                    <?php }?>
+                </div>
+            </div>
+        <?php } ?>
+
+        <div class="control-group">
+            <label for="dob" class="control-label">Date of birth</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['dob'];?></span>
+                <?php } ?>
+                <span class="current-data">Format dd/mm/yyyy</span>
+
+                <?php if (
+                    isset($this->beforeData['dob']) and isset($this->afterData['dob'])
+                    and (
+                        $this->beforeData['dob'] != $this->afterData['dob']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['dob'];?>"></i>
+                <?php } ?>
+
+                <input type="text" class="date" id="dob" placeholder="24/12/2000" name="dob" value="<?php
+                echo (
+                isset($this->staffTemp['dob']) ? ($this->staffTemp['dob'] ? $this->staffTemp['dob'] : '') : (
+                        isset($this->currentStaff['dob']) ? ( $this->currentStaff['dob'] ? $this->currentStaff['dob'] : '' ) : ''
+                    )
+                );
+                ?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_number" class="control-label">ID Card number</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['ID_number'];?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['ID_number']) and isset($this->afterData['ID_number'])
+                    and (
+                        $this->beforeData['ID_number'] != $this->afterData['ID_number']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['ID_number'];?>"></i>
+                <?php } ?>
+
+                <input type="text" id="ID_number" data-id="<?php
+                echo (
+                isset($this->staffTemp['staff_id']) ? $this->staffTemp['staff_id'] : (
+                        isset($this->currentStaff['id']) ? $this->currentStaff['id'] : ''
+                    )
+                );
+                ?>" placeholder="Enter ID number" name="ID_number" value="<?php
+                echo (
+                    isset($this->staffTemp['ID_number']) ? $this->staffTemp['ID_number'] : (
+                        isset($this->currentStaff['ID_number']) ? $this->currentStaff['ID_number'] : ''
+                    )
+                );
+                ?>">
+                <p id="id_card_validate" class="text-warning"></p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_place" class="control-label">ID Card place</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo $this->currentStaff['ID_place'];?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['ID_place']) and isset($this->afterData['ID_place'])
+                    and (
+                        $this->beforeData['ID_place'] != $this->afterData['ID_place']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['ID_place'];?>"></i>
+                <?php } ?>
+
+                <input type="text" id="ID_place" placeholder="Enter ID place" name="ID_place" value="<?php
+                echo (
+                isset($this->staffTemp['ID_place']) ? $this->staffTemp['ID_place'] : (
+                        isset($this->currentStaff['ID_place']) ? $this->currentStaff['ID_place'] : ''
+                    )
+                );
+                ?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="ID_date" class="control-label">ID Card date</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php printf(date('d/m/Y',strtotime($this->currentStaff->ID_date)));?></span>
+                <?php } ?>
+                <span class="current-data">Format dd/mm/yyyy</span>
+
+                <?php if (
+                    isset($this->beforeData['ID_date']) and isset($this->afterData['ID_date'])
+                    and (
+                        $this->beforeData['ID_date'] != $this->afterData['ID_date']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['ID_date'] ? date('d/m/Y',strtotime($this->beforeData['ID_date'])) : '';?>"></i>
+                <?php } ?>
+
+                <input type="text" class="date" id="ID_date" placeholder="24/12/2000" name="ID_date" value="<?php
+                echo (
+                    isset($this->staffTemp['ID_date']) ? ( $this->staffTemp['ID_date'] ? date('d/m/Y',strtotime($this->staffTemp['ID_date'])) : '' ) : (
+                            isset($this->currentStaff['ID_date']) ? ( $this->currentStaff['ID_date'] ? date('d/m/Y',strtotime($this->currentStaff['ID_date'])) : '' ) : ''
+                        )
+                );
+                ?>">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="nationality" class="control-label">Nationality</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->nationalitiesCached[$this->currentStaff['nationality']]) ? $this->nationalitiesCached[$this->currentStaff['nationality']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['nationality']) and isset($this->afterData['nationality'])
+                    and (
+                        $this->beforeData['nationality'] != $this->afterData['nationality']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo isset($this->nationalitiesCached[$this->beforeData['nationality']]) ? $this->nationalitiesCached[$this->beforeData['nationality']] : '';?>"></i>
+                <?php } ?>
+
+                <select name="nationality" id="nationality">
+                    <option value>Choose</option>
+                    <?php foreach ($this->nationalities as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php
+                        if (isset($this->staffTemp['nationality'])){
+                            echo ($this->staffTemp['nationality'] == $item->id ? 'selected' : '');
+                        } elseif (isset($this->currentStaff['nationality'])) {
+                            echo ($this->currentStaff['nationality'] == $item->id ? 'selected' : '');
+                        }
+                        ?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="religion" class="control-label">Religion</label>
+            <div class="controls">
+                <?php if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php echo (isset($this->religionsCached[$this->currentStaff['religion']]) ? $this->religionsCached[$this->currentStaff['religion']] : '');?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['religion']) and isset($this->afterData['religion'])
+                    and (
+                        $this->beforeData['religion'] != $this->afterData['religion']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo isset($this->religionsCached[$this->beforeData['religion']]) ? $this->religionsCached[$this->beforeData['religion']] : '';?>"></i>
+                <?php } ?>
+
+                <select name="religion" id="religion">
+                    <option value>Choose</option>
+                    <?php foreach ($this->religions as $item):?>
+                        <option value="<?php echo $item->id;?>" <?php
+                        if (isset($this->staffTemp['religion'])){
+                            echo ($this->staffTemp['religion'] == $item->id ? 'selected' : '');
+                        } elseif (isset($this->currentStaff['religion'])) {
+                            echo ($this->currentStaff['religion'] == $item->id ? 'selected' : '');
+                        }
+                        ?>><?php echo $item->name;?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="marital_status" class="control-label">Marital Status</label>
+            <div class="controls">
+                <?php
+                $listMaritalStatus = array(
+                    My_Staff_MaritalStatus::Single => 'Single',
+                    My_Staff_MaritalStatus::Married => 'Married',
+                    My_Staff_MaritalStatus::Divorced => 'Divorced',
+                );
+
+                if (isset($this->currentStaff)) {?>
+                    <span class="current-data"><?php
+                            $marital_status = '';
+                            switch ($this->currentStaff['marital_status']){
+                                case My_Staff_MaritalStatus::Single:
+                                    $marital_status = 'Single';
+                                    break;
+                                case My_Staff_MaritalStatus::Married:
+                                    $marital_status = 'Married';
+                                    break;
+                                case My_Staff_MaritalStatus::Divorced:
+                                    $marital_status = 'Divorced';
+                                    break;
+                            }
+                            echo $listMaritalStatus[$this->currentStaff['marital_status']];
+                        ?></span>
+                <?php } ?>
+
+                <?php if (
+                    isset($this->beforeData['marital_status']) and isset($this->afterData['marital_status'])
+                    and (
+                        $this->beforeData['marital_status'] != $this->afterData['marital_status']
+                    )
+                ) {?>
+                    <i class="icon-edit-sign before-data" title="<?php echo isset($listMaritalStatus[$this->beforeData['marital_status']]) ? $listMaritalStatus[$this->beforeData['marital_status']] : '';?>"></i>
+                <?php } ?>
+
+                <select name="marital_status" id="marital_status">
+                    <option value>---</option>
+                    <?php foreach ($listMaritalStatus as $_key => $_val){?>
+                        <option value="<?php echo $_key ?>" <?php
+                        if (isset($this->staffTemp['marital_status'])){
+                            echo ($this->staffTemp['marital_status'] == $_key ? 'selected' : '');
+                        } elseif (isset($this->currentStaff['marital_status'])) {
+                            echo ($this->currentStaff['marital_status'] == $_key ? 'selected' : '');
+                        }
+                        ?>><?php echo $_val ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+
+        <?php
+        $addresses = null;
+        if (isset($this->tempAddresses)){
+            $addresses = $this->tempAddresses;
+        } elseif (isset($this->currentAddresses)){
+            $addresses = $this->currentAddresses;
+        }
+        ?>
+
+        <fieldset>
+            <legend>ID Card Address</legend>
+
+            <div class="control-group">
+                <label for="id_card_province" class="control-label">Province</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::ID_Card])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::ID_Card]['province_name']) ? $this->currentAddresses[My_Staff_Address::ID_Card]['province_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['parent']) and isset($this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['parent'])
+                        and (
+                            $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['parent'] != $this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['parent']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (
+                        isset($this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district'] ]['parent']]
+                        ) ?
+                            $this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district'] ]['parent']] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="id_card_province" name="id_card_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if ($this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>"
+                                <?php if ( isset($addresses[My_Staff_Address::ID_Card]['district']) and isset( $this->district_cache[ $addresses[My_Staff_Address::ID_Card]['district'] ]['parent'] )
+                                        && $this->district_cache[ $addresses[My_Staff_Address::ID_Card]['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="id_card_district" class="control-label">District</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::ID_Card])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::ID_Card]['district_name']) ? $this->currentAddresses[My_Staff_Address::ID_Card]['district_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district']) and isset($this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['district'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district'] != $this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['district']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['name']) ? $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['district']]['name'] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="id_card_district" name="id_card_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        $districtsList = ( isset($addresses[My_Staff_Address::ID_Card]['district']) and isset($this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::ID_Card]['district'] ]['parent']]) ) ? $this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::ID_Card]['district'] ]['parent']] : null;
+
+                        if ($districtsList) :
+                            foreach ($districtsList as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($addresses[My_Staff_Address::ID_Card]['district']) && $addresses[My_Staff_Address::ID_Card]['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="id_card_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::ID_Card])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::ID_Card]['ward']) ? $this->currentAddresses[My_Staff_Address::ID_Card]['ward'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['ward']) and isset($this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['ward'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['ward'] != $this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['ward']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['ward'];?>"></i>
+                    <?php } ?>
+
+                    <input type="text" id="id_card_ward" placeholder="Enter ward" name="id_card_ward" value="<?php echo (isset($addresses[My_Staff_Address::ID_Card]['ward']) ? $addresses[My_Staff_Address::ID_Card]['ward'] : '');?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="id_card_address" class="control-label">Address</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::ID_Card])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::ID_Card]['address']) ? $this->currentAddresses[My_Staff_Address::ID_Card]['address'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['address']) and isset($this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['address'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['address'] != $this->afterData['data']['address_data'][My_Staff_Address::ID_Card]['address']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::ID_Card]['address'];?>"></i>
+                    <?php } ?>
+
+                    <input type="text" id="id_card_address" placeholder="Enter address" name="id_card_address" value="<?php echo (isset($addresses[My_Staff_Address::ID_Card]['address']) ? $addresses[My_Staff_Address::ID_Card]['address'] : '');?>">
+                </div>
+            </div>
+        </fieldset>
+        <!--  -->
+        <fieldset>
+            <legend>Permanent Address</legend>
+
+            <div class="control-group">
+                <label for="perm_province" class="control-label">Province</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Permanent])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Permanent]['province_name']) ? $this->currentAddresses[My_Staff_Address::Permanent]['province_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district']]['parent']) and isset($this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Permanent]['district']]['parent'])
+                        and (
+                            $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district']]['parent'] != $this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Permanent]['district']]['parent']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (
+                        isset($this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district'] ]['parent']]
+                        ) ?
+                            $this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district'] ]['parent']] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="perm_province" name="perm_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if ($this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if ( isset($addresses[My_Staff_Address::Permanent]['district']) and isset( $this->district_cache[ $addresses[My_Staff_Address::Permanent]['district'] ]['parent'] )
+                                        && $this->district_cache[ $addresses[My_Staff_Address::Permanent]['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="perm_district" class="control-label">District</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Permanent])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Permanent]['district_name']) ? $this->currentAddresses[My_Staff_Address::Permanent]['district_name'] : '');?></span>
+                    <?php } ?>
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Permanent]['district'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district'] != $this->afterData['data']['address_data'][My_Staff_Address::Permanent]['district']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district']]['name']) ? $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['district']]['name'] : '');?>"></i>
+                    <?php } ?>
+                    <select id="perm_district" name="perm_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        $districtsList = ( isset($addresses[My_Staff_Address::Permanent]['district']) and isset($this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Permanent]['district'] ]['parent']]) ) ? $this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Permanent]['district'] ]['parent']] : null;
+
+                        if ($districtsList && $districtsList) :
+                            foreach ($districtsList as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($addresses[My_Staff_Address::Permanent]['district']) && $addresses[My_Staff_Address::Permanent]['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="perm_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Permanent])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Permanent]['ward']) ? $this->currentAddresses[My_Staff_Address::Permanent]['ward'] : '');?></span>
+                    <?php } ?>
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['ward']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Permanent]['ward'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['ward'] != $this->afterData['data']['address_data'][My_Staff_Address::Permanent]['ward']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['ward'];?>"></i>
+                    <?php } ?>
+                    <input type="text" id="perm_ward" placeholder="Enter ward" name="perm_ward" value="<?php echo (isset($addresses[My_Staff_Address::Permanent]['ward']) ? $addresses[My_Staff_Address::Permanent]['ward'] : '');?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="perm_address" class="control-label">Address</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Permanent])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Permanent]['address']) ? $this->currentAddresses[My_Staff_Address::Permanent]['address'] : '');?></span>
+                    <?php } ?>
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['address']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Permanent]['address'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['address'] != $this->afterData['data']['address_data'][My_Staff_Address::Permanent]['address']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::Permanent]['address'];?>"></i>
+                    <?php } ?>
+                    <input type="text" id="perm_address" placeholder="Enter address" name="perm_address" value="<?php echo (isset($addresses[My_Staff_Address::Permanent]['address']) ? $addresses[My_Staff_Address::Permanent]['address'] : '');?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="button" class="btn btn-success copy_to_birth_btn">Copy to Birth</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+    <!--  -->
+    <div class="span6">
+        <div class="control-group">
+            <label for="photo" class="control-label">ID Card Photo - Back</label>
+            <div class="controls">
+                <?php if(isset($this->staffTemp) and !empty($this->staffTemp['id_photo_back'])){?>
+                    <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/ID_Back/'.$this->staffTemp['id_photo_back']);  ?>"><img width="210" height="239" class="staff-photo" src="<?php printf(HOST.'photo/staff/temp/'.$this->staffTemp['id'].'/ID_Back/'.$this->staffTemp['id_photo_back']);  ?>" /></a>
+                <?php }?>
+                <div class="clear"></div>
+                <input type="file" id="id_photo_back" name="id_photo_back" class="has-preview" />
+                <div class="clear"></div>
+                <div class="control-group">
+                    <label for="del_id_photo_back" class="pull-left">Delete Photo</label>
+                    <input type="checkbox" class="pull-left" name="del_id_photo_back" id="del_id_photo_back" />
+                </div>
+            </div>
+        </div>
+
+        <?php if (isset($this->currentStaff)) {?>
+            <div class="control-group">
+                <label for="photo" class="control-label">Current ID Card Photo - Back</label>
+                <div class="controls">
+                    <?php if(isset($this->currentStaff) and !empty($this->currentStaff['id_photo_back'])){?>
+                        <a target="_blank" title="View" href="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/ID_Back/'.$this->currentStaff['id_photo_back']);  ?>"><img width="210" height="239" class="staff-photo" src="<?php printf(HOST.'photo/staff/'.$this->currentStaff['id'].'/ID_Back/'.$this->currentStaff['id_photo_back']);  ?>" /></a>
+                    <?php }?>
+                </div>
+            </div>
+        <?php } ?>
+
+        <fieldset>
+            <legend>Temporary Address</legend>
+            <div class="control-group">
+                <label for="temp_province" class="control-label">Province</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Temporary])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Temporary]['province_name']) ? $this->currentAddresses[My_Staff_Address::Temporary]['province_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district']]['parent']) and isset($this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Temporary]['district']]['parent'])
+                        and (
+                            $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district']]['parent'] != $this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Temporary]['district']]['parent']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (
+                        isset($this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district'] ]['parent']]
+                        ) ?
+                            $this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district'] ]['parent']] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="temp_province" name="temp_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->all_province_cache) && $this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if ( isset($addresses[My_Staff_Address::Temporary]['district']) and isset( $this->district_cache[ $addresses[My_Staff_Address::Temporary]['district'] ]['parent'] )
+                                        && $this->district_cache[ $addresses[My_Staff_Address::Temporary]['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_district" class="control-label">District</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Temporary])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Temporary]['district_name']) ? $this->currentAddresses[My_Staff_Address::Temporary]['district_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Temporary]['district'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district'] != $this->afterData['data']['address_data'][My_Staff_Address::Temporary]['district']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district']]['name']) ? $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['district']]['name'] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="temp_district" name="temp_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        $districtsList = (isset($addresses[My_Staff_Address::Temporary]['district']) and isset($this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Temporary]['district'] ]['parent']])) ? $this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Temporary]['district'] ]['parent']] : null;
+
+                        if (isset($districtsList) && $districtsList) :
+                            foreach ($districtsList as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($addresses[My_Staff_Address::Temporary]['district']) && $addresses[My_Staff_Address::Temporary]['district'] == $_key):?>
+                                selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Temporary])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Temporary]['ward']) ? $this->currentAddresses[My_Staff_Address::Temporary]['ward'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['ward']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Temporary]['ward'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['ward'] != $this->afterData['data']['address_data'][My_Staff_Address::Temporary]['ward']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['ward'];?>"></i>
+                    <?php } ?>
+
+                    <input type="text" id="temp_ward" placeholder="Enter ward" name="temp_ward" value="<?php echo (isset($addresses[My_Staff_Address::Temporary]['ward']) ? $addresses[My_Staff_Address::Temporary]['ward'] : '');?>">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temp_address" class="control-label">Address</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Temporary])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Temporary]['address']) ? $this->currentAddresses[My_Staff_Address::Temporary]['address'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['address']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Temporary]['address'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['address'] != $this->afterData['data']['address_data'][My_Staff_Address::Temporary]['address']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::Temporary]['address'];?>"></i>
+                    <?php } ?>
+
+                    <input type="text" id="temp_address" placeholder="Enter address" name="temp_address" value="<?php echo (isset($addresses[My_Staff_Address::Temporary]['address']) ? $addresses[My_Staff_Address::Temporary]['address'] : '');?>">
+                </div>
+            </div>
+
+        </fieldset>
+
+        <fieldset>
+            <legend>Birth Certificate Address</legend>
+            
+            <div class="control-group">
+                <label for="birth_province" class="control-label">Province</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate]['province_name']) ? $this->currentAddresses[My_Staff_Address::Birth_Certificate]['province_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['parent']) and isset($this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['parent'])
+                        and (
+                            $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['parent'] != $this->district_cache[$this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['parent']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (
+                        isset($this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district'] ]['parent']]
+                        ) ?
+                            $this->all_province_cache[$this->district_cache[ $this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district'] ]['parent']] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="birth_province" name="birth_province" class="province" >
+                        <option value>Choose</option>
+                        <?php
+                        if (isset($this->all_province_cache) && $this->all_province_cache) :
+                            foreach ($this->all_province_cache as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if ( isset($addresses[My_Staff_Address::Birth_Certificate]['district']) and isset( $this->district_cache[ $addresses[My_Staff_Address::Birth_Certificate]['district'] ]['parent'] )
+                                        && $this->district_cache[ $addresses[My_Staff_Address::Birth_Certificate]['district'] ]['parent'] == $_key):?>
+                                        selected<?php endif;?>
+                                ><?php echo $_value;?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="birth_district" class="control-label">District</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate]['district_name']) ? $this->currentAddresses[My_Staff_Address::Birth_Certificate]['district_name'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district'] != $this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo (isset($this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['name']) ? $this->district_cache[$this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['district']]['name'] : '');?>"></i>
+                    <?php } ?>
+
+                    <select id="birth_district" name="birth_district" class="district" >
+                        <option value>Choose</option>
+                        <?php
+                        $districtsList = ( isset($addresses[My_Staff_Address::Birth_Certificate]['district']) and isset($this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Birth_Certificate]['district'] ]['parent']])  ) ? $this->districtsByProvinceCached[$this->district_cache[ $addresses[My_Staff_Address::Birth_Certificate]['district'] ]['parent']] : null;
+
+                        if (isset($districtsList) && $districtsList) :
+                            foreach ($districtsList as $_key => $_value):?>
+                            <option value="<?php echo $_key;?>" 
+                                <?php if (isset($addresses[My_Staff_Address::Birth_Certificate]['district']) && $addresses[My_Staff_Address::Birth_Certificate]['district'] == $_key):?>
+                                    selected<?php endif;?>
+                                ><?php echo $_value['name'];?></option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="birth_ward" class="control-label">Ward</label>
+                <div class="controls">
+                    <?php if (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate])) {?>
+                        <span class="current-data"><?php echo (isset($this->currentAddresses[My_Staff_Address::Birth_Certificate]['ward']) ? $this->currentAddresses[My_Staff_Address::Birth_Certificate]['ward'] : '');?></span>
+                    <?php } ?>
+
+                    <?php
+                    if (
+                        isset($this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['ward']) and isset($this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['ward'])
+                        and (
+                            $this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['ward'] != $this->afterData['data']['address_data'][My_Staff_Address::Birth_Certificate]['ward']
+                        )
+                    ) {?>
+                        <i class="icon-edit-sign before-data" title="<?php echo $this->beforeData['data']['address_data'][My_Staff_Address::Birth_Certificate]['ward'];?>"></i>
+                    <?php } ?>
+
+                    <input type="text" id="birth_ward" placeholder="Enter ward" name="birth_ward" value="<?php echo (isset($addresses[My_Staff_Address::Birth_Certificate]['ward']) ? $addresses[My_Staff_Address::Birth_Certificate]['ward'] : '');?>">
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="text-align: center;" width="5%">No.</th>
+        <th style="text-align: center;" width="10%">Area</th>
+        <th style="text-align: center;" width="20%">PC</th>
+        <th style="text-align: center;" width="10%">Joined At</th>
+        <th style="text-align: center;" width="10%">Total work days</th>
+        <th style="text-align: center;" width="10%">Count Down</th>
+        <th style="text-align: center;" width="20%">Detail</th>
+        <th style="text-align: center;" width="10%">Status</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <?php
+    function getStatus($status)
+    {
+        if ($status == "Y") {
+            $result = '<storng style="color: #00aa00">PASS</storng>';
+        } else {
+            $result = '<storng style="color: #ea0100">NOT PASS</storng>';
+        }
+        return $result;
+    }
+
+    function checkCountDown($num, $expire_status)
+    {
+        if ($expire_status == 'Y') {
+            $result = "เกินมา " . ($num - 45) . " วัน";
+        } else {
+            $result = "เหลือเวลา " . (45 - $num) . " วัน";
+        }
+        return $result;
+    }
+
+    $count = 0;
+    if (isset($this->list) and $this->list)
+        foreach ($this->list as $k => $item):
+            $inc = $this->offset + $k + 1;
+//                $filepic = "http://api.oppo.in.th/images/check_list/".date('Y', strtotime($item['created_at']))."/".date('Y-m', strtotime($item['created_at']))."/".date('Y-m-d', strtotime($item['created_at']))."/".$item['filepic'];
+            ?>
+            <tr>
+                <td style="text-align: center;"><?php echo $inc; ?></td>
+                <td><?php echo isset($item['area']) ? $item['area'] : ''; ?></td>
+                <td><?php echo isset($item['staff_name']) ? $item['staff_name'] : ''; ?></td>
+                <td style="text-align: center;"><?php echo isset($item['joined_at']) ? date("d/m/Y", strtotime($item['joined_at'])) : ''; ?></td>
+                <td style="text-align: center;"><?php echo isset($item['date_diff']) ? $item['date_diff'] : ''; ?></td>
+                <td style="text-align: center;"><?php echo ($item['status'] == 'N') ? checkCountDown($item['date_diff'], $item['expire_status']) : 'Complete'; ?></td>
+                <td style="text-align: center;">
+                    <table>
+
+                        <?php
+                        $answer_result = $this->db->getAnswerResult($item['id']);
+                        foreach ($answer_result as $i => $val) {
+                            $file_pic = "http://api.oppo.in.th/images/check_list/" . date('Y', strtotime($val['created_at'])) . "/" . date('Y-m', strtotime($val['created_at'])) . "/" . date('Y-m-d', strtotime($val['created_at'])) . "/{$val['file_pic']}";
+                            ?>
+                            <tr>
+                                <td>
+                                    <a id="single_image" href="<?php echo $file_pic; ?>">
+                                        <img onerror="this.src='http://catty.oppo.in.th/public/img/ckeditor/4294e2de3.jpg'"
+                                             src="<?php echo $file_pic; ?>" width="60"/></a>
+                                </td>
+                                <td><a title='<?php echo 'ครั้งที่ ' . ($i + 1); ?>' class='view_details'
+                                       data-id='<?php echo $val['id']; ?>' data-round="<?php echo ($i + 1); ?>"><?php echo 'ครั้งที่ ' . ($i + 1); ?></a> <?php echo ') ' . date("d/m/Y H:i:s", strtotime($val['created_at'])) . ' ' . getStatus($val['status']) . '<br> ผู้สำรวจ ' . $val['pcm_name']; ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+
+                    </table>
+                </td>
+                <td style="text-align: center;"><?php echo getStatus($item['status']); ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url); ?>
+</div>
+
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+
+<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="/js/bootstrap-modalmanager.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-modal.css"/>
+<script>
+    $(document).ready(function () {
+        $modal = $('#modal');
+        $('.view_details').click(function () {
+
+            _self = $(this);
+            $('body').modalmanager('loading');
+            var mData = {
+                id: _self.data('id'),
+                round: _self.data('round')
+            };
+
+            $.post('<?php echo HOST ?>trainer/new-pc-follow-detail', mData, function (data) {
+                $modal.html(data);
+                $modal.modal();
+            });
+        });
+    });
+</script>

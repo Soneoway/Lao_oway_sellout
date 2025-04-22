@@ -1,0 +1,50 @@
+<table class="table table-bordered">
+<thead>
+    <tr>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Area</th>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Province</th>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Store Code</th>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Store Name</th>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Sales</th>
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Set Location</th>
+        <!-- <th style="text-align: center; color:#19bc9c; font-size:14px;">Total Visit</th> -->
+        <th style="text-align: center; color:#19bc9c; font-size:14px;">Action</th>
+    </tr>
+</thead>
+<tbody>
+
+    <?php if(isset($this->store) && $this->store) : ?>
+        <?php foreach ($this->store as $value) : ?>
+            <tr>
+                <td style="text-align: center;"><?php echo $this->area_cache[$value['area_id']] ?></td>
+                <td><?php echo $this->regional_cache[$value['province_id']] ?></td>
+                <td style="text-align: center;"><?php echo $value['store_code'] ?></td>
+                <td><?php echo $value['name'] ?></td>
+                <!-- <td><?php if ($value['sale_code']) { echo "<strong style='color: red'>[".$value['sale_code']."]. </strong>".$value['sale_fname']; } else { echo "-"; } ?></td>   -->
+                <td><?php if ($value['sale_code']) { echo "<strong>".$value['sale_code']." </strong>"; } else { echo "-"; } ?></td>  
+                <td style="text-align: center;"><?php if ($value['lat']):?><i style="color:green"  class="icon-ok"></i><?php else:?><i style="color:red" class="icon-remove"></i><?php endif;?></td>
+                <!-- <td style="text-align:center; color:blue;"><?php echo $value['total_visit'];?></td> -->
+
+                <td style="text-align:center">
+                    <?php if($value['lat'] ==! ''): ?>
+                    <a href="/report/location-view?store_id=<?php echo $value['id'] ?>" title="Details"><b style="font-size: 18px;"><i class="icon-eye-open"></i></b></a>&nbsp;
+                    <?php endif; ?>
+
+                    <?php if($value['lat'] !== ''): ?>
+                    <a href="/report/set-store-location?store_id=<?php echo $value['id'] ?>" title="Check Location" ><img width="25px" src="/img/location-pin.png"/></a>  
+                    <?php endif; ?>
+                    
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+    
+</tbody>
+</table>
+
+<div class="paging">
+    
+    <?php echo $this->paging($this->total, $this->limit, $this->value, $this->url);?>
+</div>
+
+    

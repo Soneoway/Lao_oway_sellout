@@ -1,0 +1,25 @@
+<div class="page-header">
+    <?php if (isset($this->exception_case) and $this->exception_case):?>
+        <h1>Edit Exception case</h1>
+    <?php else:?>
+        <h1>Create Exception case</h1>
+    <?php endif;?>
+</div>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">'.$message.'</div>';
+    endforeach;
+?>
+
+<?php
+    if (isset($this->exception_case) and $this->exception_case->name=='SALES_EXCEPTION')
+        echo $this->render('manage/exception-case/partials/sales.phtml');
+
+    elseif (isset($this->exception_case) and $this->exception_case->name=='ASM_EXCEPTION')
+        echo $this->render('manage/exception-case/partials/asm.phtml');
+
+    else
+        echo $this->render('manage/exception-case/partials/default.phtml');
+?>

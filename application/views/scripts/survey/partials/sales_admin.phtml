@@ -1,0 +1,48 @@
+<?php
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+
+$iv = substr( md5($this->token,true), 0, 8 );
+
+$enc = @mcrypt_encrypt( MCRYPT_BLOWFISH, FILENAME_SALT, $userStorage->email, MCRYPT_MODE_CBC, $iv);
+
+$p1 = base64_encode($enc);
+
+$query = urlencode("SELECT * WHERE B ='".$p1."' AND C='".$this->token."'");
+?>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    
+    var docskey = '1aP7T6AfbbDXwnfnfjsQSIgG44AEIm9lU3XrtAf6nF70';
+    var spreadsheet_url = "https://docs.google.com/spreadsheets/d/"+docskey+"/gviz/tq?tq=<?php echo $query;?>&pli=1";
+
+    var surveykey = '1qCiq4p272vNCTRQ9utbYNcel6Vu6Zz-1GIXfS7Um_AQ';
+    var entry_email = '1202536706';
+    var entry_token = '989519093';
+
+    var embedded_url = "https://docs.google.com/forms/d/"+surveykey+"/viewform?entry."+entry_email+"=<?php echo urlencode($p1);?>&entry."+entry_token+"=<?php echo $this->token;?>";
+
+
+    google.load('visualization', '1', {'packages': ['table']});
+    google.setOnLoadCallback(initialize);
+
+    function initialize() {
+        // The URL of the spreadsheet to source data from.
+        var query = new google.visualization.Query(
+            spreadsheet_url);
+        query.send(draw);
+    }
+
+    function draw(response) {
+        if (response.isError()) {
+            alert('Error in query');
+        }
+
+        var ticketsData = response.getDataTable();
+
+        if (ticketsData.getNumberOfRows() == 0){
+            $('.survey-iframe').html('<iframe src="'+embedded_url+'" width="100%" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>');
+        } else {
+            alert('You\'ve finished this survey!');
+        }
+    }
+</script>

@@ -1,0 +1,176 @@
+<style>
+    .numbering {
+    counter-reset: rowNumber;
+    }
+
+    .numbering tbody tr {
+        counter-increment: rowNumber;
+    }
+
+    .numbering tbody tr td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+</style>
+<div class="page-header">
+    <h1>Bind Stores to Dealer <small><?php if(isset($this->distributor['title']) && $this->distributor['title']) echo $this->distributor['title'] ?></small></h1>
+</div>
+<iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+<form action="<?php echo HOST ?>manage/dealer-save" method="post" id="form" class="form-inline" target="ifrmSave">
+    <input type="hidden" name="store_ids" id="store_ids">
+    <input type="hidden" name="id" id="id" value="<?php if(isset($this->distributor['id']) && $this->distributor['id']) echo $this->distributor['id'] ?>">
+    <button class="btn btn-primary" type="button" id="btn_save">Save</button>
+    <button class="btn btn-warning" type="button" onclick="window.location='<?php echo HOST ?>manage/dealer'">Go Back</button>
+</form>
+<ul class="nav nav-tabs" id="myTab">
+    <li class="active"><a href="#store">Stores</a></li>
+    <li><a href="#info">Dealer Info</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="store">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->render('manage/dealer/partials/store-list.phtml') ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="info">
+        <div class="row-fluid">
+            <div class="span12">
+                <?php echo $this->render('manage/dealer/partials/dealer-info.phtml') ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('button').prop('disabled', false);
+        return;
+    }
+
+	$(document).ready(function() {
+        search_filter();
+        remove_store();
+
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+		$( "#a_storename" ).keypress(function( event ) {
+            if ( event.which == 13 ) {
+                event.preventDefault();
+                $('button, input, select').prop('disabled', true);
+
+                $('.loading').remove();
+                var _self = $(this);
+                var targetUrl = '<?php echo HOST."ajax/store-search-new" ?>';
+
+                //get ajax content
+                var aj = $('.load-ajax');
+                if (aj.length){
+                    _self.after("<span class=\'loading\'></span>");
+                    $.post(targetUrl, {
+                        store_name : $('#a_storename').val()
+                    },
+                    function(data, status){
+                        	$('button, input, select').prop('disabled', false);
+                            aj.html(data);
+                            $('.loading').remove();
+                        });
+                }
+
+                return false;
+            }
+        });
+
+		$('#btn_bind').click(function(){
+            _self = $('#a_storeresult');
+            item = _self.children('option:selected');
+
+            for (var i = 0; i < item.length; i++) {
+                if ( ! is_exists( $(item[i]).data('id') ) ) {
+                    elm = '<tr class="store" data-id="'+$(item[i]).data('id')+'" data-name="'+$(item[i]).data('name')+'" data-area="'+$(item[i]).data('area')+'" data-region="'+$(item[i]).data('region')+'">'
+                            + '<td></td>'
+                            + '<td>'+$(item[i]).data('name')+'</td>'
+                            + '<td>'+$(item[i]).data('region-name')+'</td>'
+                            + '<td>'+$(item[i]).data('area-name')+'</td>'
+                            + '<td><button class="btn btn-warning btn-mini btn_remove">Remove</button></td>'
+                            + '</tr>';
+
+                    $('.store_list').append(elm);
+                }
+            }
+
+            remove_store();
+        });
+
+        $('#btn_save').click(function(){
+        	$('button').prop('disabled', true);
+
+            var store = $('.store');
+            id_str = '';
+            
+            for(var i = 0; i < store.length; i++) {
+                id_str += $(store[i]).data('id') + ',';
+            }
+            
+            id_str = id_str.replace(/\,$/, '');
+            $('#store_ids').val(id_str);
+
+            $('#form').submit();
+        });
+	});
+
+	function is_exists(id) {
+        _des = $('.store_list');
+        items = _des.children('.store');
+        for(var i = 0; i < items.length; i++) {
+            if ($(items[i]).data('id') == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function search_filter() {
+        $('#btn_f_search').click(function() {
+            area      = $('#f_area').val();
+            region    = $('#f_province').val();
+            storename = $('#f_storename').val();
+            $('.store').show();
+
+            $('.store').each(function() {
+                _self = $(this);
+                if (area && _self.data('area') != area) 
+                    _self.hide();
+
+                if (region && _self.data('region') != region) 
+                    _self.hide();
+
+                var reg = new RegExp(storename, 'gi');
+                if (storename && !_self.data('name').match(reg)) 
+                    _self.hide();
+            });
+        });
+
+        $('#btn_f_reset').click(function() {
+            $('#f_area').val('');
+            $('#f_province').val('');
+            $('#f_storename').val('');
+            $('.store').show();
+        });
+    }
+
+    function remove_store() {
+        $('.btn_remove').click(function(){
+            _self = $(this);
+            _self.parents('tr').remove();
+        });
+    }
+</script>

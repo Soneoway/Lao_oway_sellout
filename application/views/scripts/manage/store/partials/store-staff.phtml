@@ -1,0 +1,252 @@
+<style>
+    .btn-style1{
+        color: #fff;
+        background-color: #FA8072;
+    }
+    .btn-style2{
+        color: #fff;
+        background-color: #98cb00;
+    }
+    .btn-style3{
+        color: #fff;
+        background-color: #884EA0;
+    }
+    .btn-style4{
+        color: #fff;
+        background-color: #CA6F1E;
+    }
+    .btn-style5{
+        color: #fff;
+        background-color: #eedd00;
+    }
+    .btn-style1:hover{
+        color: #fff;
+        background-color: #CD5C5C;
+    }
+    .btn-style2:hover{
+        color: #fff;
+        background-color: #56aa00;
+    }
+    .btn-style3:hover{
+        color: #fff;
+        background-color: #633974;
+    }
+    .btn-style4:hover{
+        color: #fff;
+        background-color: #935116;
+    }
+    .btn-style5:hover{
+        color: #fff;
+        background-color: #eecc00;
+    }
+</style>
+<div class="row-fluid">
+    <div class="span5">
+        <div class="control-group">
+            <legend style="color: blue;">ຫົວໜ້າສາຍງານ | RGM</legend>
+            <select name="pic_name_rd" id="pic_name_rd" class="span5" multiple="multiple">
+                <?php if ($this->rd): ?>
+                    <?php foreach ($this->rd as $k=>$staff): ?>
+                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                        . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email'])
+                        . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                            ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                            :'' ) ?></option>
+
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </select>
+                <input id="pic6" name="pic6" type="hidden" value="" />
+                <button id="remove_btn_rd" class="btn btn-warning pull-right" type="button">Remove PC</button>
+            </div>
+        </div>
+
+
+        <div class="span5">
+            <div class="control-group">
+                <legend style="color: blue;">ຫົວໜ້າເຊວ | RM</legend>
+                <select name="pic_name_asm" id="pic_name_asm" class="span5" multiple="multiple">
+                    <?php if ($this->asm): ?>
+                        <?php foreach ($this->asm as $k=>$staff_bm): ?>
+                            <option value="<?php echo $staff_bm['id'] ?>"><?php echo $staff_bm['firstname'] . ' ' . $staff_bm['lastname'] 
+                            . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_bm['email']) 
+                            . (isset($this->regional_market_cache[$staff_bm['regional_market']]) 
+                                ? (' | ' .$this->regional_market_cache[$staff_bm['regional_market']] ) 
+                                :'' ) ?></option>
+
+                            <?php endforeach ?>
+                        <?php endif ?>
+                    </select>
+                    <input id="pic4" name="pic4" type="hidden" value="" />
+                    <button id="remove_btn_asm" class="btn btn-warning pull-right" type="button">Remove ASM</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span5">
+                <div class="control-group">
+                    <legend style="color: blue;">ສະຕ໋ອກ | Stock</legend>
+                    <select name="pic_name_bm" id="pic_name_bm" class="span5" multiple="multiple">
+                        <?php if ($this->bm): ?>
+                            <?php foreach ($this->bm as $k=>$staff_bm): ?>
+                                <option value="<?php echo $staff_bm['id'] ?>"><?php echo $staff_bm['firstname'] . ' ' . $staff_bm['lastname'] 
+                                . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_bm['email']) 
+                                . (isset($this->regional_market_cache[$staff_bm['regional_market']]) 
+                                    ? (' | ' .$this->regional_market_cache[$staff_bm['regional_market']] ) 
+                                    :'' ) ?></option>
+
+                                <?php endforeach ?>
+                            <?php endif ?>
+                        </select>
+                        <input id="pic3" name="pic3" type="hidden" value="" />
+                        <button id="remove_btn_bm" class="btn btn-warning pull-right" type="button">Remove Stock BrandShop</button>
+                    </div>
+                </div>
+
+                <div class="span5">
+                    <div class="control-group">
+                        <legend style="color: blue;">ເທນເນີ | PCM</legend>
+                        <select name="pic_name_pcm" id="pic_name_pcm" class="span5" multiple="multiple">
+                            <?php if ($this->pcm): ?>
+                                <?php foreach ($this->pcm as $k=>$staff_pcm): ?>
+                                    <option value="<?php echo $staff_pcm['id'] ?>"><?php echo $staff_pcm['firstname'] . ' ' . $staff_pcm['lastname'] 
+                                    . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_pcm['email']) 
+                                    . (isset($this->regional_market_cache[$staff_pcm['regional_market']]) 
+                                        ? (' | ' .$this->regional_market_cache[$staff_pcm['regional_market']] ) 
+                                        :'' ) ?></option>
+
+                                    <?php endforeach ?>
+                                <?php endif ?>
+                            </select>
+                            <input id="pic2" name="pic2" type="hidden" value="" />
+                            <button id="remove_btn_pcm" class="btn btn-warning pull-right" type="button">Remove PCM</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span5">
+                        <div class="control-group">
+                            <legend style="color: blue;">PCDB</legend>
+                            <select name="pic_name_pcdb" id="pic_name_pcdb" class="span5" multiple="multiple">
+                                <?php if ($this->pcdb): ?>
+                                    <?php foreach ($this->pcdb as $k=>$pc_db): ?>
+                                        <option value="<?php echo $pc_db['id'] ?>"><?php echo $pc_db['firstname'] . ' ' . $pc_db['lastname'] 
+                                        . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $pc_db['email'])
+                                        . (isset($this->regional_market_cache[$pc_db['regional_market']]) 
+                                            ? (' | ' .$this->regional_market_cache[$pc_db['regional_market']] ) 
+                                            :'' ) ?></option>
+
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic7" name="pic7" type="hidden" value="" />
+                                <button id="remove_btn_pcdb" class="btn btn-warning pull-right" type="button">Remove PC</button>
+                            </div>
+                        </div>
+
+                        <div class="span5">
+                           <div class="control-group">
+                               <legend style="color: blue;">Sales</legend>
+                               <select name="pic_name_sales" id="pic_name_sales" class="span5" multiple="multiple">
+                                <?php if ($this->leaders): ?>
+                                    <?php foreach ($this->leaders as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                        . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email']) 
+                                        . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                          ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                          :'' ) ?></option>
+
+                                      <?php endforeach ?>
+                                  <?php endif ?>
+                              </select>
+                              <input id="old_pic1" name="old_pic1" type="hidden" value="<?php echo $this->leaders[0]['id'] ?>" />
+                              <input id="pic1" name="pic1" type="hidden" value="" />
+                              <button id="remove_btn_sales" class="btn btn-warning pull-right" type="button">Remove Sales</button>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!---- Case Sales Marktting --->
+                  <div class="row-fluid">
+  <!--                   <div class="span5">
+                        <div class="control-group">
+                            <legend style="color: blue;">Sales Marketting</legend>
+                            <select name="pic_name_mkt" id="pic_name_mkt" class="span5" multiple="multiple">
+                                <?php if ($this->mkt): ?>
+                                    <?php foreach ($this->mkt as $k=>$staff_mkt): ?>
+                                        <option value="<?php echo $staff_mkt['id'] ?>"><?php echo $staff_mkt['firstname'] . ' ' . $staff_mkt['lastname'] 
+                                        . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff_mkt['email']) 
+                                        . (isset($this->regional_market_cache[$staff_mkt['regional_market']]) 
+                                            ? (' | ' .$this->regional_market_cache[$staff_mkt['regional_market']] ) 
+                                            :'' ) ?></option>
+
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </select>
+                                <input id="pic5" name="pic5" type="hidden" value="" />
+                                <button id="remove_btn_mkt" class="btn btn-warning pull-right" type="button">Remove Sale MKT</button>
+                            </div>
+                        </div> -->
+
+                        <div class="span5">
+                            <div class="control-group">
+                              <legend style="color: blue;">PC</legend>
+                              <select name="pic_name_pg" id="pic_name_pg" class="span5" multiple="multiple">
+                                <?php if ($this->staffs): ?>
+                                    <?php foreach ($this->staffs as $k=>$staff): ?>
+                                        <option value="<?php echo $staff['id'] ?>"><?php echo $staff['firstname'] . ' ' . $staff['lastname'] 
+                                        . ' | ' . preg_replace('/'.EMAIL_SUFFIX.'/', '', $staff['email'])
+                                        . (isset($this->regional_market_cache[$staff['regional_market']]) 
+                                          ? (' | ' .$this->regional_market_cache[$staff['regional_market']] ) 
+                                          :'' ) ?></option>
+
+                                      <?php endforeach ?>
+                                  <?php endif ?>
+                              </select>
+                              <input id="pic" name="pic" type="hidden" value="" />
+                              <button id="remove_btn_pg" class="btn btn-warning pull-right" type="button">Remove PC</button>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <hr />
+
+                  <div class="row-fluid">
+                    <div class="span5">
+                        <div class="control-group">
+                            <label for="s_name"><p><span><strong>- Search Staff -</strong></span></p></label>
+                            <input type="text" class="form-control span4" id="s_name" placeholder="Enter Staff name then press ENTER" name="s_name" />
+                        </div>
+                    </div>
+                    <div class="span5">                
+                        <div class="control-group">
+                            <label for=""><p><span><strong>- Result -</strong></span></p></label>
+                            <div class="load-ajax">
+                                <?php echo $this->partial('staff/partials/searchname.phtml',array()); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <button id="add_btn_rd" class="btn btn-outline-primary" style="color: #03a9f4; font-weight: bold;" type="button">Add RD</button>
+                    <button id="add_btn_bm" class="btn btn-style1" type="button">Add Stock</button>
+                    <button id="add_btn_asm" class="btn btn-style2" type="button">Add ASM</button>
+                    <button id="add_btn_pcm" class="btn btn-style3" type="button">Add PCM</button>
+                    <button id="add_btn_sales" class="btn btn-style4" type="button">Add Sales</button>
+                    <button id="add_btn_mkt" class="btn btn-style5" type="button">Add Sale MKT</button>
+                    <button id="add_btn_pg" class="btn btn-success" type="button">Add PC</button>
+                    <button id="add_btn_pcdb" class="btn btn-outline-primary" style="color: #03a9f4; font-weight: bold;" type="button">Add PCDB</button>
+                </div>
+                <div class="row-fluid">
+                    <span class="help-block">Search, then choose 01 PC, then click Add...</span>
+                </div>
+
+<!-- <div class="row-fluid">
+    <input type="hidden" name="id" id="id" value="<?php if(isset($this->store) and $this->store) echo $this->store->id;?>">
+    <button type="button" id="submit_btn" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+    <button type="button" class="btn btn-danger go-back">Go back</button>
+</div> -->

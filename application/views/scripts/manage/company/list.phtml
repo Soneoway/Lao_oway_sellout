@@ -1,0 +1,59 @@
+<div class="page-header">
+    <h1>List Company</h1>
+</div>
+<div class="row">
+    <div class="span12">
+        <a class="btn btn-success pull-right" href="<?php echo HOST ?>manage/company-create"><i class="icon-plus"></i></a>
+    </div>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-danger">'.$message.'</div>';
+        endforeach;
+?>
+
+<?php
+    if (isset($this->messages_success) and $this->messages_success)
+        foreach ($this->messages_success as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (isset($this->companies) and $this->companies)
+                foreach ($this->companies as $k=>$company): ?>
+            <tr>
+                <td>
+                    <?php
+                    $inc = $this->offset + $k + 1;
+                    echo $inc;
+                    ?>
+                </td>
+                <td><?php echo $company['name'];?></td>
+                <td class="">
+                    <a title="Edit" href="/manage/company-edit?id=<?php echo $company['id'];?>"> <i class="icon-edit"></i></a>
+                    <a title="Delete" class="confirmLink" href="/manage/company-delete?id=<?php echo $company['id'];?>"> <i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+
+        </tbody>
+    </table>
+</div>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<?php echo $this->confirm();?>

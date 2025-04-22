@@ -1,0 +1,157 @@
+<div class="page-header">
+    <h1>Special Date in <?php  
+    if($this->month and $this->month)
+    {
+        $dt = DateTime::createFromFormat('!m', $this->month);
+        echo $dt->format('F');
+    }
+     ?></h1>
+</div>
+
+<style>
+    .editable .target {
+        width: 45px;
+    }
+
+    .status {
+        margin-left: 10px;
+    }
+</style>
+
+<?php
+if (isset($this->messages) and $this->messages)
+    foreach ($this->messages as $message):
+        echo '<div class="alert alert-error">' . $message . '</div>';
+    endforeach;
+?>
+<div class="row-fluid">
+  <iframe name="ifrmSave" id="ifrmSave" width="100%" style="display:none;"></iframe>
+    <form role="form" id="time_form" target="ifrmSave" action="<?php echo HOST . 'time/date-special'; ?>" method="post"  class="row-fluid">
+      
+       <div class="control-group">
+                <label for="date">Date</label>
+                <input placeholder="dd/mm/YYYY" type="text" class="form-control date span3 cursorok" id="date" name="date" required="required" value="<?php if (isset($this->date)): echo $this->date; endif;?>">
+       </div>
+       
+       <div class="control-group">
+                <label for="team">Team</label>
+                <select name="team" id="team">
+                        <option value>---</option>                        
+                          <?php if (isset($this->team) && $this->team):  ?>
+                            <?php foreach ($this->team as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        <?php endif ?>
+                </select>    
+       </div>
+       
+       <div class="control-group">
+                <label for="type">Type Salalry</label>
+                <select class="type form-control span3" required="required" name="type">
+                                    <option value>Choose Type</option>
+                                    <option value="1">Normal</option>
+                                    <option value="2">Salary x2</option>
+                                    <option value="3">Salary x3</option>
+                </select>
+       </div>
+       
+       <div class="control-group">
+                <label for="note">Noted</label>
+                <input type="text" class="form-control span3" id="note" name="note" />
+       
+       </div>
+       
+         <div class="clearfix"></div>
+                    <input type="hidden" name="month" id="month" value="<?php if ( isset($this->month) and $this->month) echo $this->month;?>">
+                    <input type="hidden" name="back_url" id="back_url" value="<?php if ( isset($this->back_url) and $this->back_url ) echo $this->back_url;?>">
+                    <button id="btn_submit" type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-danger go-back">Go back</button>              
+            </div>  
+       
+    </form>
+    
+     <div class="row-fluid">
+        <div class="widget widget-nopad span12">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+                <h3>Date Special</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+                <div id="calendar">
+                </div>
+            </div>
+            <!-- /widget-content -->
+        </div>
+    </div>
+    
+</div>
+
+
+
+<script language="javascript" type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/full-calendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/css/jquery.ui.timepicker.css"/>
+<script>
+function palert(msg){
+        $('.alert-error').remove();
+        $('.page-header').after('<div class="alert alert-error">'+msg+'</div>');
+        $('form#timing_form button[type=submit]').prop('disabled', false);
+        return;
+    }
+     $(document).ready(function () {
+
+        $('.go-back').click(function(e){
+
+            window.location.href = $('#back_url').val();
+
+            return false;
+        });
+
+
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                $modal = $('#modal');
+                var obj = calEvent.infos;
+                if (obj.length>0) {
+                    var html = '';
+                    for (var i = 0; i < obj.length; i++) {
+                        html += '<li><strong class="product-name">'+obj[i]['product_name']+'</strong><ul>';
+                        html += '<li class="imei">'+obj[i]['imei']+'</li>';
+                        html += '<li class="customer_name">'+obj[i]['customer_name']+'</li>';
+                        html += '<li class="customer_phone">'+obj[i]['customer_phone']+'</li>';
+                        html += '<li class="customer_address">'+obj[i]['customer_address']+'</li></ul></li>';
+                    }
+                    $modal.find('.infos-body').html(html);
+                    $modal.modal();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            events: "/time/event-special?id=<?php
+                    if (isset($this->timing) and $this->timing->staff_id!=$this->user_id)
+                        echo $this->timing->staff_id;
+                    else
+                        echo $this->user_id;
+                ?>"
+        });
+
+		$('form#timing_form').bind('submit',function(e){
+        	$('form#timing_form button[type=submit]').prop('disabled', true);
+        });
+
+		<?php if ( ! ( isset($this->timing) and $this->timing ) ): ?>
+        get_report_stock();
+        <?php endif; ?>
+    });
+</script>

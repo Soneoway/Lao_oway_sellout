@@ -1,0 +1,68 @@
+<div class="page-header">
+    <h1>Report Sell Out By Dealer <small><?php if (Zend_Controller_Front::getInstance()->getRequest()->getActionName() == 'analytics-dealer'): ?>
+        group by main dealers
+    <?php else: ?>
+        all dealers
+    <?php endif ?></small></h1>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Search
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/report_search_dealer.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-right">
+    <strong>Total Sales: <?php echo $this->total_sales;?></strong>
+</div>
+<div class="clearfix"></div>
+
+<?php echo $this->render('timing/partials/report_list_dealer.phtml'); ?>
+
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css"/>
+<script>
+    $(document).ready(function () {
+        $( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+
+        $('.view_dealer_imei').click(function() {
+            $self = $(this);
+            id = $self.data('id');
+            from = $self.data('from');
+            to = $self.data('to');
+
+            loc = '<?php echo HOST ?>timing/analytics-dealer-details?from='+from+'&to='+to+'&dealer_id='+id;
+            window.open(loc, '_blank');
+        });
+    });
+</script>
+<?php echo $this->load('combobox');?>

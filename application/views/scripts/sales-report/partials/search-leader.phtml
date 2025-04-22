@@ -1,0 +1,39 @@
+<form class="form-search form-horizontal" method="get" action="<?php echo HOST ?>sales-report/leader">
+    <div class="row">
+        <div class="span12">
+            <div class="control-group">
+                <label for="from_date" class="span2">From Date</label>
+                <input type="text" class="form-control search-query date span2" required="required" id="from_date" name="from_date" value="<?php isset($this->params['from_date']) and printf($this->params['from_date']);?>">
+            </div>
+            <div class="control-group">
+                <label for="to_date" class="span2">To Date</label>
+                <input type="text" class="form-control search-query date span2" required="required" id="to_date" name="to_date" value="<?php isset($this->params['to_date']) and printf($this->params['to_date']);?>">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    	<div class="span12">
+    		<div class="form-actions">
+			    <button type="submit" class="btn btn-primary"
+			    	title="Xuất báo cáo" data-content="Số store trực tiếp, gián tiếp, sell out của các store trực tiếp và gián tiếp"
+			    	name="export_leader_general" value="1">General Report</button>
+    			
+    		</div>
+    	</div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+    	$( '.date' ).datepicker({ dateFormat: "dd/mm/yy" });
+    	$('button.btn').popover({
+    		placement: 'bottom'
+    	});
+
+        $('.form-search button:reset').click(function (e){
+            $('.form-search input, .form-search select').val('');
+            $('.form-search').submit();
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,343 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th style="vertical-align: middle;"><div align="center">No.</div></th>
+        <th style="vertical-align: middle;"><div align="center">Area</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale Name</div></th>
+        <th style="vertical-align: middle;"><div align="center">Group</div></th>
+        <th style="vertical-align: middle;"><div align="center">Store</div></th>
+        <th style="vertical-align: middle;"><div align="center">PC</div></th>
+        <th style="vertical-align: middle;"><div align="center">PC<br>Stand By</div></th>
+        <th style="vertical-align: middle;"><div align="center"><?php echo $this->params['last_03']; ?></div></th>
+        <th style="vertical-align: middle;"><div align="center"><?php echo $this->params['last_02']; ?></div></th>
+        <th style="vertical-align: middle;"><div align="center"><?php echo $this->params['last_01']; ?></div></th>
+        <th style="vertical-align: middle;"><div align="center">Avg 3 M.</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale Target</div></th>
+        <th style="vertical-align: middle;"><div align="center">Total Sellout</div></th>
+        <th style="vertical-align: middle;"><div align="center">Achieve</div></th>
+        <th style="vertical-align: middle;"><div align="center">Hero Target</div></th>
+        <th style="vertical-align: middle;"><div align="center">Hero Sellout</div></th>
+        <th style="vertical-align: middle;"><div align="center">Hero Achieve</div></th>
+        <th style="vertical-align: middle;"><div align="center">Hero Internal Share</div></th>
+        <th style="vertical-align: middle;"><div align="center">Sale Price Target</div></th>
+        <th style="vertical-align: middle;"><div align="center">Store Price Target</div></th>
+        <th style="vertical-align: middle;"><div align="center">Price Sellout</div></th>
+        <th style="vertical-align: middle;"><div align="center">Price Achieve</div></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php 
+            $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+            $QStoreStaff = new Application_Model_StoreStaff();
+            
+            if ($this->lists) {
+                $data = $this->lists;
+
+                $grand_sum_store = $grand_sum_pc = $grand_sum_pc_stand_by = 0;
+                $grand_sum_last_03 = $grand_sum_last_02 = $grand_sum_last_01 = 0;
+                $grand_sum_avg = 0; 
+
+                $grand_sum_target = $grand_sum_sellout = 0;
+                $grand_sum_target_hero = $grand_sum_sellout_hero = 0;
+                $grand_sum_target_price = $grand_sum_sellout_price = 0;
+
+                $grand_sum_store_price = 0;
+
+                for ($i=0;$i<count($data);$i++) {
+
+                    $sum_last_03 = $sum_last_02 = $sum_last_01 = 0;
+                    $sum_pc = $sum_pc_stand_by = $sum_store = 0;
+                    $sum_avg = 0;
+
+                    $sellout_avg = 0;
+
+                    $sum_target = $sum_sellout = 0;
+                    $sum_target_hero = $sum_sellout_hero = 0;
+                    $sum_target_price = $sum_sellout_price = 0;
+
+                    $sum_store_price = 0;
+
+                    for($j=0;$j<count($data[$i]);$j++) { 
+
+                        $result_pc_01 = $QStoreStaff->getPCBySale($data[$i][$j]['staff_id'], 0);
+                        $result_pc_02 = $QStoreStaff->getPCBySale($data[$i][$j]['staff_id'], 1);
+
+                        $cnt_pc_01 = count($result_pc_01);
+                        $cnt_pc_02 = count($result_pc_02);
+
+                        //$data[$j]['sellout'] = 100;
+                        $sellout_avg = ($data[$i][$j]['last_03'] + $data[$i][$j]['last_02'] + $data[$i][$j]['last_01'] ) / 3;
+
+                        // Check Store Target 
+                        $store_target_flag = "class='icon-remove' style='color: red;'";
+                        if ($data[$i][$j]['store_target_flag'] >= 1 ) { $store_target_flag = "class='icon-ok' style='color: green;'"; }
+
+                        // Check Store Hero Target 
+                        $store_target_hero_flag = "class='icon-remove' style='color: red;'";
+                        if ($data[$i][$j]['store_target_hero_flag'] >= 1 ) { $store_target_hero_flag = "class='icon-ok' style='color: green;'"; }
+                        // Check Store Price Target 
+                        $store_target_price_flag = "class='icon-remove' style='color: red;'";
+                        if ($data[$i][$j]['store_target_price_flag'] >= 1 ) { 
+                            // $store_target_price_flag = "class='icon-ok".$data[$i][$j]['store_target_flag']."|".$data[$i][$j]['store_target_hero_flag']."|".$data[$i][$j]['store_target_price_flag']."' style='color: green;'"; 
+                            $store_target_price_flag = "class='icon-ok' style='color: green;'"; 
+                        }
+
+                        if ( $data[$i][$j]['staff_group'] <> "SALES" ) { $store_target_flag = ''; $store_target_hero_flag = ''; }
+
+                        $cnt = $j + 1;
+                        echo "<tr>";
+                        echo    "<td><div align='center'>".$cnt."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i][$j]['area_name']."</div></td>";
+                        echo    "<td><div align='left'>[".$data[$i][$j]['staff_code']."]
+                                    <a title='View' href='".HOST."manage/oppo-pc-target?month_year=".$this->params['date']."&sale_code=".$data[$i][$j]['staff_code']."'>".$data[$i][$j]['staff_name']."</a>
+                                </div></td>";
+                        echo    "<td><div align='center'>".$data[$i][$j]['staff_group']."</div></td>";
+                        echo    "<td><div align='center'>".$data[$i][$j]['cnt_store']."</div></td>";
+                        echo    "<td><div align='center'>".$cnt_pc_01."</div></td>";
+                        echo    "<td><div align='center'>".$cnt_pc_02."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['last_03'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['last_02'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['last_01'])."</div></td>";
+                        echo    "<td><div align='center'>".number_format($sellout_avg)."</div></td>";
+
+                        // Sale Target
+                        echo    "<td style='background-color:#E6E6E6;'>
+                                    <div align='center'>
+                                        ".number_format($data[$i][$j]['sale_target'])."
+                                        <i ".$store_target_flag."></i>
+                                    </div>
+                                </td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['sellout'])."</div></td>";
+
+                        $achieve = $data[$i][$j]['achieve'];
+
+                        $color = 'red';
+                        if ( $achieve >= 75 ) { $color = 'orange'; }
+                        if ( $achieve >= 90 ) { $color = 'green'; }
+                        if ( is_infinite($achieve) ) { $color = 'black'; $achieve = 0; }
+                        
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($achieve, 2)." %</font></div></td>";
+
+                        // Sale Hero Target
+                        echo    "<td style='background-color:#E6E6E6;'>
+                                    <div align='center'>
+                                        ".number_format($data[$i][$j]['sale_target_hero'])."
+                                        <i ".$store_target_hero_flag."></i>
+                                    </div>
+                                </td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['sellout_hero'])."</div></td>";
+
+                        $achieve_hero = $data[$i][$j]['achieve_hero'];
+
+                        $color = 'red';
+                        if ( $achieve_hero >= 75 ) { $color = 'orange'; }
+                        if ( $achieve_hero >= 90 ) { $color = 'green'; }
+                        if ( is_infinite($achieve_hero) ) { $color = 'black'; $achieve_hero = 0; }
+                        
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($achieve_hero, 2)." %</font></div></td>";
+
+                        $internal_share = ($data[$i][$j]['sellout_hero'] / $data[$i][$j]['sellout']) * 100;
+
+                        $color = 'red';
+                        if ( $internal_share >= 75 ) { $color = 'orange'; }
+                        if ( $internal_share >= 90 ) { $color = 'green'; }
+                        if ( is_infinite($internal_share) ) { $color = 'black'; $internal_share = 0; }
+                        
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($internal_share, 2)." %</font></div></td>";
+
+                        // Sale Price Target
+                        echo    "<td style='background-color:#E6E6E6;'>
+                                    <div align='center'>
+                                        ".number_format($data[$i][$j]['sale_target_price'])."
+                                        <i ".$store_target_price_flag."></i>
+                                    </div>
+                                </td>";
+                        echo    "<td style='background-color:#E6E6E6;'>
+                                    <div align='center'>".number_format($data[$i][$j]['store_target_price_flag'])."</div>
+                                </td>";
+                        echo    "<td><div align='center'>".number_format($data[$i][$j]['sellout_price'])."</div></td>";
+
+                        // $achieve_price = $data[$i][$j]['achieve_price'];
+                        $achieve_price = ($data[$i][$j]['sellout_price'] / $data[$i][$j]['store_target_price_flag']) * 100;
+
+                        $color = 'red';
+                        if ( $achieve_price >= 75 ) { $color = 'orange'; }
+                        if ( $achieve_price >= 90 ) { $color = 'green'; }
+                        if ( is_infinite($achieve_price) ) { $color = 'black'; $achieve_price = 0; }
+                        
+                        echo "<td><div align='center'><font color='".$color."'>".number_format($achieve_price, 2)." %</font></div></td>";
+
+                        $sum_store = $sum_store + $data[$i][$j]['cnt_store'];
+                        $sum_pc = $sum_pc + $cnt_pc_01;
+                        $sum_pc_stand_by = $sum_pc_stand_by + $cnt_pc_02;
+
+                        $sum_last_03 = $sum_last_03 + $data[$i][$j]['last_03'];
+                        $sum_last_02 = $sum_last_02 + $data[$i][$j]['last_02'];
+                        $sum_last_01 = $sum_last_01 + $data[$i][$j]['last_01'];
+                        $sum_avg = $sum_avg + $sellout_avg;
+                        
+                        $sum_target = $sum_target + $data[$i][$j]['sale_target'];
+                        $sum_sellout = $sum_sellout + $data[$i][$j]['sellout'];
+
+                        $sum_target_hero = $sum_target_hero + $data[$i][$j]['sale_target_hero'];
+                        $sum_sellout_hero = $sum_sellout_hero + $data[$i][$j]['sellout_hero'];
+
+                        $sum_target_price = $sum_target_price + $data[$i][$j]['sale_target_price'];
+                        $sum_sellout_price = $sum_sellout_price + $data[$i][$j]['sellout_price'];
+
+                        $sum_store_price = $sum_store_price + $data[$i][$j]['store_target_price_flag'];
+
+                    }
+
+                    echo "<tr>";
+                    echo    "<td style='background-color:#BDBDBD;' colspan='4'><div align='center'>Total</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_store)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pc)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pc_stand_by)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_last_03)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_last_02)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_last_01)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_avg)."</div></td>";
+
+                    // Sale Target
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_target)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_sellout)."</div></td>";
+
+                    $sum_achieve = ( $sum_sellout / $sum_target ) * 100;
+
+                    $sum_color = 'red';
+                    if ( $sum_achieve >= 75 ) { $sum_color = '#DF7401'; }
+                    if ( $sum_achieve >= 90 ) { $sum_color = '#00CC99'; }
+
+                    echo    "<td id='td_achieve'  style='background-color:".$sum_color.";'>
+                                <div align='center'><strong>".number_format($sum_achieve,2)." %</strong></div></td>";
+
+                    // Sale Hero Target
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_target_hero)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_sellout_hero)."</div></td>";
+
+                    $sum_achieve_hero = ( $sum_sellout_hero / $sum_target_hero ) * 100;
+
+                    $sum_hero_color = 'red';
+                    if ( $sum_achieve_hero >= 75 ) { $sum_hero_color = '#DF7401'; }
+                    if ( $sum_achieve_hero >= 90 ) { $sum_hero_color = '#00CC99'; }
+
+                    echo    "<td id='td_achieve'  style='background-color:".$sum_hero_color.";'>
+                                <div align='center'><strong>".number_format($sum_achieve_hero,2)." %</strong></div></td>";
+
+                    // Hero Product Internal Share
+                    $sum_internal_share = ( $sum_sellout_hero / $sum_sellout ) * 100;
+
+                    $sum_internal_color = 'red';
+                    if ( $sum_internal_share >= 75 ) { $sum_internal_color = '#DF7401'; }
+                    if ( $sum_internal_share >= 90 ) { $sum_internal_color = '#00CC99'; }
+
+                    echo    "<td id='td_achieve'  style='background-color:".$sum_internal_color.";'>
+                                <div align='center'><strong>".number_format($sum_internal_share,2)." %</strong></div></td>";
+
+                    // Sale Price Target 
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_target_price)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_store_price)."</div></td>";
+                    echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_sellout_price)."</div></td>";
+                
+                    $sum_achieve_price = ( $sum_sellout_price / $sum_store_price ) * 100;
+
+                    $sum_price_color = 'red';
+                    if ( $sum_achieve_price >= 75 ) { $sum_price_color = '#DF7401'; }
+                    if ( $sum_achieve_price >= 90 ) { $sum_price_color = '#00CC99'; }
+
+                    echo    "<td id='td_achieve'  style='background-color:".$sum_price_color.";'>
+                                <div align='center'><strong>".number_format($sum_achieve_price,2)." %</strong></div></td>";
+
+                    echo "</tr>";
+
+                    $grand_sum_store = $grand_sum_store + $sum_store;
+                    $grand_sum_pc = $grand_sum_pc + $sum_pc;
+                    $grand_sum_pc_stand_by = $grand_sum_pc_stand_by + $sum_pc_stand_by;
+
+                    $grand_sum_last_03 = $grand_sum_last_03 + $sum_last_03;
+                    $grand_sum_last_02 = $grand_sum_last_02 + $sum_last_02;
+                    $grand_sum_last_01 = $grand_sum_last_01 + $sum_last_01;
+
+                    $grand_sum_avg = $grand_sum_avg + $sum_avg;
+
+                    $grand_sum_target = $grand_sum_target + $sum_target;
+                    $grand_sum_sellout = $grand_sum_sellout + $sum_sellout;
+
+                    $grand_sum_target_hero = $grand_sum_target_hero + $sum_target_hero;
+                    $grand_sum_sellout_hero = $grand_sum_sellout_hero + $sum_sellout_hero;
+
+                    $grand_sum_target_price = $grand_sum_target_price + $sum_target_price;
+                    $grand_sum_sellout_price = $grand_sum_sellout_price + $sum_sellout_price;
+
+                    $grand_sum_store_price = $grand_sum_store_price + $sum_store_price;
+
+                }
+
+                echo "<tr>";
+                echo    "<td style='background-color:#BDBDBD;' colspan='4'><div align='center'>Grand Total</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_store)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_pc)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_pc_stand_by)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_last_03)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_last_02)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_last_01)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_avg)."</div></td>";
+
+                // Sale Target
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_target)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_sellout)."</div></td>";
+
+                $grand_sum_achieve = ( $grand_sum_sellout / $grand_sum_target ) * 100;
+
+                $grand_sum_color = 'red';
+                if ( $grand_sum_achieve >= 75 ) { $grand_sum_color = '#DF7401'; }
+                if ( $grand_sum_achieve >= 90 ) { $grand_sum_color = '#00CC99'; }
+
+                echo    "<td id='td_achieve'  style='background-color:".$grand_sum_color.";'>
+                            <div align='center'><strong>".number_format($grand_sum_achieve,2)." %</strong></div></td>";
+
+                // Sale Hero Target
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_target_hero)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_sellout_hero)."</div></td>";
+
+                $grand_sum_achieve_hero = ( $grand_sum_sellout_hero / $grand_sum_target_hero ) * 100;
+
+                $grand_sum_hero_color = 'red';
+                if ( $grand_sum_achieve_hero >= 75 ) { $grand_sum_hero_color = '#DF7401'; }
+                if ( $grand_sum_achieve_hero >= 90 ) { $grand_sum_hero_color = '#00CC99'; }
+
+                echo    "<td id='td_achieve'  style='background-color:".$grand_sum_hero_color.";'>
+                            <div align='center'><strong>".number_format($grand_sum_achieve_hero,2)." %</strong></div></td>";
+
+                // Hero Product Internal Share
+                $garnd_sum_internal_share = ( $grand_sum_sellout_hero / $grand_sum_sellout ) * 100;
+
+                $grand_sum_internal_color = 'red';
+                if ( $garnd_sum_internal_share >= 75 ) { $grand_sum_internal_color = '#DF7401'; }
+                if ( $garnd_sum_internal_share >= 90 ) { $grand_sum_internal_color = '#00CC99'; }
+
+                echo    "<td id='td_achieve'  style='background-color:".$grand_sum_internal_color.";'>
+                            <div align='center'><strong>".number_format($garnd_sum_internal_share,2)." %</strong></div></td>";
+
+                // Sale Price Target 
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_target_price)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_store_price)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($grand_sum_sellout_price)."</div></td>";
+                
+                $grand_sum_achieve_price = ( $grand_sum_sellout_price / $grand_sum_store_price ) * 100;
+
+                $grand_sum_price_color = 'red';
+                if ( $grand_sum_achieve_price >= 75 ) { $grand_sum_price_color = '#DF7401'; }
+                if ( $grand_sum_achieve_price >= 90 ) { $grand_sum_price_color = '#00CC99'; }
+
+                echo    "<td id='td_achieve'  style='background-color:".$grand_sum_price_color.";'>
+                            <div align='center'><strong>".number_format($grand_sum_achieve_price,2)." %</strong></div></td>";
+
+                echo "</tr>";
+
+            }
+        ?>
+    </tbody>
+</table>
+

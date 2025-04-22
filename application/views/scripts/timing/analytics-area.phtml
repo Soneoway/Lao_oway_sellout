@@ -1,0 +1,234 @@
+<div class="page-header">
+    <h1>Report SellOut By Area</h1>
+    <small> ລາຍງານຍອດຂາຍຕາມເຂດ </small>
+</div>
+<?php
+    if (isset($this->messages) and $this->messages)
+        foreach ($this->messages as $message):
+            echo '<div class="alert alert-success">'.$message.'</div>';
+        endforeach;
+?>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                <!-- Search --> <b style="color: #916b68; font-weight: bold; font-size:15px;" >Filter <b style="font-size:18px;"><span class="icon-filter"></span></b></b>
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body collapse" style="height: 0px;">
+            <div class="accordion-inner">
+                <?php
+                    echo $this->render('timing/partials/report_search_area.phtml');
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-right">
+    <!--
+        <?php 
+            $user_id = $this->userStorage->id;
+            if ($user_id == 21 || $user_id == 57) { 
+        ?>
+        <a title="update database" href="/timing/analytics-area?update=1"><i class="icon-download-alt"></i></a>
+        <?php } ?>
+        <strong>
+            Last Updated: <font color="green"><?php echo $this->lastupdate['created_log']; ?> </font>
+            By <font color="green"><?php if ($this->lastupdate['staff_id'] == 18) { echo "SYSTEM"; } else { echo $this->lastupdate['staff_name']; } ?> </font>
+        </strong>  
+        |
+-->
+    <strong>Total Sellout: <?php echo $this->total_sales[0]['total_sellout'];?></strong> |
+    <strong>Total Activated: <?php echo $this->total_sales[0]['total_activated'];?></strong>
+    <!--   <strong>Activated Sale: <?php echo $this->total_sales[0]['activated_sale'];?></strong> |
+        <strong>Activated PC: <?php echo $this->total_sales[0]['activated_pc'];?></strong> -->
+
+</div>
+<div class="clearfix"></div>
+
+<div class="table-responsive load-ajax">
+    <table class="table table-bordered">
+        <thead>
+            <tr align='center'>
+                <?php echo $this->sorting(array(
+                    '#',
+                        'Area',
+                        'Sellout',
+                        'Activated',
+                        // 'Activated [ 3, 7 ] - Sale',
+                        // 'Activated [ 0, 7 ] - PC',
+                        'Current Sale',
+                        'Current PC',
+                        // 'New PC',
+                        // 'Quit PC',
+                ),
+            $this->url, $this->current_col, $this->desc); ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+
+            $sum_current_sale = 0;
+            $sum_current_pc = 0;
+
+            $sum_pc_new = 0;
+            $sum_pc_quit = 0;
+
+            $QStoreStaff = new Application_Model_StoreStaff();
+
+            if (isset($this->sales) and $this->sales)
+                $inc = $this->offset + 1;
+                foreach ($this->sales as $sale):
+
+                    $result_pc = array();
+                    $result_sale = array();
+
+                    $result_pc = $QStoreStaff->getPCByArea($sale['area_id']);
+                    $result_sale = $QStoreStaff->getSaleByArea($sale['area_id']);
+
+                    $result_new_pc = $QStoreStaff->getPCByArea($sale['area_id'], $this->params, 0);
+                    $result_quit_pc = $QStoreStaff->getPCByArea($sale['area_id'], $this->params, 1);
+
+                    if ( in_array($this->userStorage->group_id, My_Staff_Group::$allow_in_area_view) 
+                        && !My_Staff_Permission_Area::view_all($this->userStorage->id)
+                        && !in_array($sale['area_id'], $this->viewed_area_id)
+                    ) :
+            ?>
+            <tr>
+                <td align='center'><?php echo $inc++; ?></td>
+                <td align='center'><?php echo $sale['area_name'];?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php else: ?>
+            <tr>
+                <td align='center'><?php echo $inc++; ?></td>
+                <td align='center'><?php echo $sale['area_name'];?></td>
+                <!-- <td><?php echo !empty($sale['sellout']) ? $sale['sellout'] : '0'; ?></td> -->
+                <td align='center'>
+                    <?php 
+                                $sellout = $sale['oppo_sellout'] + $sale['sellout'];
+                                echo $sellout;
+
+                            // echo $sale['oppo_sellout']."<br />";
+                            // echo $sale['sellout']."<br />";
+                            ?>
+                </td>
+
+                <td align='center'>
+                    <!--  <?php echo !empty($sale['activated']) ? $sale['activated'] : '0'; ?> -->
+                    <?php
+                                $activate = $sale['oppo_activated'] + $sale['realme_activated'];
+                                echo $activate;
+                            ?>
+                </td>
+
+                <!--    <td><?php echo !empty($sale['activated_sale']) ? $sale['activated_sale'] : '0'; ?></td>
+                        <td><?php echo !empty($sale['activated_pc']) ? $sale['activated_pc'] : '0'; ?></td> -->
+                <td>
+                    <div align='center'><span class="badge badge-success view_staff"
+                            data-id="<?php echo $sale['area_id']; ?>" data-export="2">
+                            <?php echo count($result_sale); ?>
+                        </span></div>
+                </td>
+
+                <td>
+                    <div align='center'><span class="badge badge-success view_staff"
+                            data-id="<?php echo $sale['area_id']; ?>" data-export="3">
+                            <?php echo count($result_pc); ?>
+                        </span></div>
+                </td>
+
+                <!-- <td>
+                    <div align='center'><span class="badge badge-default view_staff"
+                            data-id="<?php echo $sale['area_id']; ?>" data-export="4">
+                            <?php echo count($result_new_pc); ?>
+                        </span></div>
+                </td>
+
+                <td>
+                    <div align='center'><span class="badge badge-default view_staff"
+                            data-id="<?php echo $sale['area_id']; ?>" data-export="5">
+                            <?php echo count($result_quit_pc); ?>
+                        </span></div>
+                </td> -->
+
+            </tr>
+
+            <?php 
+
+                        $sum_current_sale = $sum_current_sale + count($result_sale);
+                        $sum_current_pc = $sum_current_pc + count($result_pc);
+                        $sum_pc_new = $sum_pc_new + count($result_new_pc);
+                        $sum_pc_quit = $sum_pc_quit + count($result_quit_pc);
+
+                    ?>
+
+            <?php endif; ?>
+            <?php endforeach;?>
+
+            <?php 
+                echo "<tr>";
+                echo    "<td style='background-color:#BDBDBD;' colspan='4'><div align='center'>Total</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_current_sale)."</div></td>";
+                echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_current_pc)."</div></td>";
+                // echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pc_new)."</div></td>";
+                // echo    "<td style='background-color:#BDBDBD;'><div align='center'>".number_format($sum_pc_quit)."</div></td>";
+                echo "</tr>";
+            ?>
+
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript" src="/js/jquery-ui-1.8.12.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.8.12.custom.css" />
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css" />
+<script>
+options = {
+    selectAllText: 'Select All',
+    includeSelectAllOption: true,
+    includeSelectAllIfMoreThan: 3,
+    disableIfEmpty: true
+};
+
+function multi() {
+    $('.multiselect').multiselect(options);
+}
+
+$(document).ready(function() {
+    multi();
+
+    $('.date').datepicker({
+        dateFormat: "dd/mm/yy"
+    });
+
+    $('.form-search button:reset').click(function(e) {
+        $('.form-search input, .form-search select').val('');
+        $('.form-search').submit();
+        return false;
+    });
+
+    $('.view_staff').click(function() {
+        $self = $(this);
+        area_id = $self.data('id');
+        temp = $self.data('export');
+        from = $('#from').val();
+        to = $('#to').val();
+
+        loc = '<?php echo HOST ?>timing/analytics-area?tmp_area_id=' + area_id + '&export=' + temp +
+            '&from=' + from + '&to=' + to;
+        window.open(loc, '_self');
+    });
+
+
+});
+</script>

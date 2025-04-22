@@ -1,0 +1,251 @@
+<?php 
+	$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+	$print_by = $userStorage->firstname." ".$userStorage->lastname;
+	$print_date = date('d F Y H:i:s');
+
+	// print_r($this->params);
+	// echo "<br/>";
+	// echo "<pre>";
+	// print_r($this->log);
+
+	$data_tmp = $this->log;
+	$data = array();
+
+	foreach ($data_tmp as $key => $value) { $data[ $value['base_kpi'] ][] = $value; }
+	$data = array_values($data);
+
+	// echo "<pre>";
+	// print_r($data);
+
+	$com_month = date('F Y', strtotime($this->params['from']) );
+?>
+
+<style type="text/css">
+
+body{ -webkit-print-color-adjust:exact; }
+
+.header_color{ background-color:#D8D8D8; }
+
+* {
+	font-size: 11px;
+	font-family: Arial;
+}
+
+.signature{
+    font-size:11px;
+    page-break-after:always;
+
+    text-align: right;
+    height: 20px;
+    width: 100%;
+    margin:0px auto;
+    position:fixed;
+    bottom:0px;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+	<tr>
+		<!-- <td><img src="../img/oppo_header.jpg" style="height:150px; width:794px;" /></td> -->
+		<td><img src="../img/possefy_header.png" style="height:100px; width:694px; padding-top: 50px; padding-left: 50px;" /></td>
+	</tr>
+	<tr style="height:30px;" align="right">
+		<th style="padding-right:50px;"><?php echo $com_month; ?></th>
+	</tr>
+	<tr>
+		<td style="padding-left:50px;">
+			<br/>
+			<div align="center"><strong>รายงานสรุปค่าคอมมิชชั่นประจำเดือน <?php echo $com_month; ?></strong></div>
+		</td>
+	</tr>
+
+	<?php 
+		$total_com_rate = 0;
+		$grand_com_rate = $sum_com_rate = $bonus = $sum_bonus = 0;
+		$com_rate_txt = "";
+
+		for ($i=0;$i<count($data);$i++) { 
+	?>
+		<tr>
+			<td style="padding-left:50px;">
+				<br/>
+				Commission of <?php echo $com_month; ?>
+				<div align="right" style="padding-right:50px; float:right;"><?php echo number_format($data[$i][0]['base_kpi']); ?></div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding-left:50px;">
+				<table cellspacing="0" border="1" style="width:700px;">
+					<tr align="left" class="header_color">
+						<td colspan="4">Name : <?php echo $data[$i][0]['staff_name']." ( ".$data[$i][0]['staff_code']." )"; ?></td>
+					</tr>
+					<tr align="center" class="header_color">
+						<td style="width:20px;">Channel</td>
+						<td style="width:110px;">Target (Unit)</td>
+						<td style="width:70px;">Actual Sellout (Unit)</td>
+						<td style="width:140px;">Achieve Rate</td>
+					</tr>
+
+					<?php 
+
+						$QGoodKpi = new Application_Model_GoodKpiLog();
+
+						$sum_target = $sum_sellout = $achieve = $sum_achieve = 0;
+						
+
+						foreach ($data[$i] as $key => $value) {
+
+							$achieve = ( $value['sellout'] / $value['target'] ) * 100;
+
+							echo "<tr>";
+							echo 	"<td align='center'>".$value['channel']."</td>";
+							echo 	"<td align='center'>".number_format($value['target'])."</td>";
+							echo 	"<td align='center'>".number_format($value['sellout'])."</td>";
+							echo 	"<td align='center'>".number_format($achieve,2)."%</td>";
+							echo "</tr>";
+
+							$sum_target = $sum_target + $value['target'];
+							$sum_sellout = $sum_sellout + $value['sellout'];
+						}
+
+						$sum_achieve = ( $sum_sellout / $sum_target ) * 100;
+
+						if (isset($this->params['export_flag']) && $this->params['export_flag'] == 1 && $sum_achieve >= 120) { $sum_achieve = 120; }
+
+						echo "<tr>";
+						echo 	"<td align='center' class='header_color'>Total</td>";
+						echo 	"<td align='center'>".number_format($sum_target)."</td>";
+						echo 	"<td align='center'>".number_format($sum_sellout)."</td>";
+						echo 	"<td align='center'>".number_format($sum_achieve,2)."%</td>";
+						echo "</tr>";
+
+						$com_rate = ( $value['base_kpi'] * number_format($sum_achieve,2) ) / 100;
+
+						if (isset($this->params['export_flag']) && $this->params['export_flag'] == 2) {
+							$operator_rate = $QGoodKpi->am_operator_rate(number_format($sum_achieve,2));
+							$total_com_rate = $com_rate * $operator_rate;
+						} else {
+							$total_com_rate = $com_rate;
+						}
+
+						if ( $total_com_rate == 0 ) { $com_rate = 0; }
+
+						$grand_com_rate = $grand_com_rate + $total_com_rate;
+						$bonus = $total_com_rate - $com_rate;
+
+						echo "<tr>";
+						echo 	"<td align='center' class='header_color'>Commission</td>";
+						echo 	"<td align='center' colspan='3'>".number_format($com_rate,2)." บาท</td>";
+						echo "</tr>";
+						
+						$sum_com_rate = $sum_com_rate + $com_rate;
+						$sum_bonus = $sum_bonus + $bonus;
+					?>
+
+				</table>
+			</td>
+		</tr>
+
+	<?php } 
+
+		$deduction = $final_com_rate = 0;
+		if ($this->params['am_id'] == 35022 && $com_month == 'August 2018') { $deduction = 5000; } 
+
+		$final_com_rate = $grand_com_rate - $deduction;
+
+		if ( $final_com_rate == "0.00" ) { $com_rate_txt = "ศูนย์บาท"; } 
+		else { $com_rate_txt = My_Number::PriceToThai(number_format($final_com_rate,2)); }
+	?>
+
+	<tr>
+		<td style="padding-left:50px; height:10px;">
+			<!-- <br/>สรุปค่า Commission<br/><br/> -->
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding-left:50px;">
+			<table cellspacing="0" border="1" style="width:700px;">
+				<tr>
+					<td style="width:350px;" align="center"><strong>Commission</strong></td>
+					<td style="width:350px;" align="right"><?php echo number_format($sum_com_rate,2); ?></td>
+				</tr>
+				<tr>
+					<td style="width:350px;" align="center"><strong>Bonus (Over 100%)</strong></td>
+					<td style="width:350px;" align="right"><?php echo number_format($sum_bonus,2); ?></td>
+				</tr>
+				<tr>
+					<td style="width:350px;" align="center"><strong>Total</strong></td>
+					<td style="width:350px;" align="right"><?php echo number_format($grand_com_rate,2); ?></td>
+				</tr>
+				<tr>
+					<td style="width:350px;" align="center"><strong>Deduction</strong></td>
+					<td style="width:350px;" align="right"><?php echo number_format($deduction,2); ?></td>
+				</tr>
+				<tr>
+					<td style="width:350px;" align="center"><strong>Total Commission</strong></td>
+					<td style="width:350px;" align="right"><?php echo number_format($final_com_rate,2); ?></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding-left:50px;" align="center">
+			<br/>
+			Summary <?php echo $com_month; ?> Commission <u><?php echo number_format($final_com_rate,2); ?></u>
+			<br/><br/>
+			<?php echo "( ".$com_rate_txt." )"; ?>
+		</td>
+	</tr>
+</table>
+
+<div style="height:50px;"></div>
+
+<table border="0" style="width:700px;">
+	<tr>
+		<td align="right" style="width:260px;">Checked By</td>
+		<td align="left">.................................................................</td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:84px">( HR )</td>
+		<td></td>
+		<td align="left" style="padding-left:66px">( Manipulator)</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" style="padding-left:50px">( Account Manager )</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right" style="width:260px;"></td>
+		<td align="left"></td>
+		<td align="right" style="width:260px;">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" style="padding-left:58px">( Vice President )</td>
+	</tr>
+</table>
+
+<div class="signature">
+      Printed by <?php echo $print_by; ?> | <?php echo $print_date; ?>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>

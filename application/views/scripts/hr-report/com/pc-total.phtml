@@ -1,0 +1,145 @@
+<?php 
+	//print_r($this->params);
+
+	if ($this->params['report_type'] == 'BKK') { 
+
+		$sd_padding = "style='padding-left:18px'";
+		$sale_director = 'Mr.Dharankorn Tangphisitphaibun';
+		$report_type = 'PC BKK'; 
+
+	} else { 
+
+		$sd_padding = "style='padding-left:38px'";
+		$sale_director = 'MR.LIU YONGSHAN';
+		$report_type = 'PC Up Country'; 
+
+	}
+
+	$month = date('F', strtotime($this->params['from']));
+	$month_year = date('F Y', strtotime($this->params['from']));
+
+	if ($month == 'February') { $pay_date = date('t', strtotime("+1 Month", strtotime($this->params['from']))); } 
+	else { $pay_date = 30; }
+
+	$pay_month = date('F Y', strtotime("+1 Month", strtotime($this->params['from'])));
+
+?>
+
+<style type="text/css">
+* {
+	font-size: 10px;
+	font-family: Arial;
+}
+
+</style>
+
+<!-- A4 Size [794 × 1122] -->
+<table border="0" style="width:794px;">
+	<tr style="height:15px;"><th>Possefy Group CO.,LTD.</th></tr>
+	<tr style="height:15px;"><th>รายงานสรุปจ่ายค่าคอมฯ พนักงานขาย <?php echo $report_type; ?></th></tr>
+	<tr style="height:15px;"><th>ประจำเดือน <?php echo $month_year; ?> (รอบวันที่ <?php echo $this->params['from_date']." - ".$this->params['to_date'];  ?>)</th></tr>
+	<tr style="height:15px;"><th>จ่ายวันที่ <?php echo $pay_date." ".$pay_month; ?></th></tr>
+	<tr>
+		<td>
+			<table cellspacing="0" border="1" style="width:794px;">
+				<tr align="center">
+					<td rowspan="2">Item.</td>
+					<td rowspan="2">Name RD.</td>
+					<td rowspan="2">Area</td>
+					<td colspan="4"><?php echo $report_type; ?></td>
+					<td rowspan="2">Remark</td>
+				</tr>
+				<tr align="center">
+					<td>Person</td>
+					<td>Unit</td>
+					<td>Commission</td>
+					<td>Total Price</td>
+				</tr>
+
+				<?php 
+					$data 	 = $this->log;
+					$rd_result = $this->rd_result;
+
+					$sum_staff = $sum_sellout = $sum_com_real = $sum_price = 0;
+
+					$cnt = 1;
+					foreach ($rd_result as $key => $value) {
+
+						echo "<tr>";
+						echo 	"<td align='center'>".$cnt."</td>";
+						echo 	"<td>".$value['staff_name']."</td>";
+						echo 	"<td align='center'>".$value['area_name']."</td>";
+						echo 	"<td align='center'>".number_format($data[ $value['area_id'] ]['cnt_staff'])."</td>";
+						echo 	"<td align='center'>".number_format($data[ $value['area_id'] ]['total_sellout'])."</td>";
+						echo 	"<td align='center'>".number_format($data[ $value['area_id'] ]['com_real'])."</td>";
+						echo 	"<td align='center'>".number_format($data[ $value['area_id'] ]['total_price'])."</td>";
+						echo 	"<td align='center'></td>";
+						echo "</tr>";
+
+						$cnt++;
+
+						$sum_staff 	  = $sum_staff + $data[ $value['area_id'] ]['cnt_staff'];
+						$sum_sellout  = $sum_sellout + $data[ $value['area_id'] ]['total_sellout'];
+						$sum_com_real = $sum_com_real + $data[ $value['area_id'] ]['com_real'];
+						$sum_price    = $sum_price + $data[ $value['area_id'] ]['total_price'];
+					}
+
+					echo "<tr>";
+					echo 	"<td align='center' colspan='3'>Grand Total</td>";
+					echo 	"<td align='center'>".number_format($sum_staff)."</td>";
+					echo 	"<td align='center'>".number_format($sum_sellout)."</td>";
+					echo 	"<td align='center'>".number_format($sum_com_real)."</td>";
+					echo 	"<td align='center'>".number_format($sum_price)."</td>";
+					echo 	"<td align='center'></td>";
+					echo "</tr>";
+
+				?>
+
+			</table>
+		</td>
+	</tr>
+
+</table>
+<div style="height:50px;"></div>
+
+<table border="0" style="width:794px;">
+	<tr>
+		<td align="right">Prepared By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" style="padding-left:50px"> MR.YU ZHANG </td>
+	</tr>
+	<tr style="height:10px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr style="height:30px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Checked By</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Approve By</td>
+		<td align="left">.................................................................</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="left" style="padding-left:50px"></td>
+		<td></td>
+		<td align="left" <?php echo $sd_padding; ?> > <?php echo $sale_director; ?> </td>
+	</tr>
+	<tr style="height:20px;"><td colspan="4"></td></tr>
+	<tr>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+		<td align="right">Date</td>
+		<td align="left">.................................................................</td>
+	</tr>
+</table>

@@ -1,0 +1,264 @@
+<style>
+    .target { width:100px; }
+    .target_hero { width:100px; }
+    .target_price { width:100px; }
+
+/**
+ * Tabs
+ */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; // make sure it wraps
+}
+.tabs label {
+  order: 1; // Put the labels first
+  display: block;
+  padding: 1rem 2rem;
+  margin-right: 0.2rem;
+  cursor: pointer;
+  background: #4655;
+  font-weight: bold;
+  transition: background ease 0.2s;
+}
+.tabs .tab {
+  order: 99; // Put the tabs last
+  flex-grow: 1;
+  width: 100%;
+  display: none;
+  padding: 1rem;
+}
+.tabs input[type="radio"] {
+  display: none;
+}
+.tabs input[type="radio"]:checked + label {
+  background: #e8cd45d6;
+}
+.tabs input[type="radio"]:checked + label + .tab {
+  display: block;
+}
+
+@media (max-width: 45em) {
+  .tabs .tab,
+  .tabs label {
+    order: initial;
+  }
+  .tabs label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+}
+</style>
+
+<?php 
+
+    $save_flag = 0;
+    $now = date('Y-m-d');
+    $rd_date = date('Y-m-02', strtotime($this->params['from']));
+
+    $userStorage = Zend_Auth::getInstance()->getStorage()->read();
+    if ( $userStorage->group_id == ADMINISTRATOR_ID ) { $save_flag = 1; }
+    if ( in_array($userStorage->group_id, array(RM_ID,RMSTANDBY_ID)) ) { if ( $now >= $rd_date) { $save_flag = 1; } }
+
+    // print_r($this->params);
+    // if ( $now <= $rd_date) { echo "<br/>RD OK"; } else { echo "<br/>RD NO"; }
+?>
+
+<form class="form-search form-horizontal" method="post" action="/manage/store-price-target-save">
+    <div class="tabs">
+    <?php 
+
+        if ( isset($this->data_list) && $this->data_list ) {
+            
+            $data_list = $this->data_list;
+            // echo "<pre>"; print_r($data_list);
+
+            for ($h=0;$h<count($data_list);$h++) {
+                echo '<input type="radio" name="tabs" id="'.$data_list[$h]["name"].'">';
+                echo '<label class="span3" for="'.$data_list[$h]["name"].'">'.$data_list[$h]["name"].'</label>';
+                echo '<div class="tab">';
+                echo '<div class="clearfix"></div>';
+               // echo "<h3>".$data_list[$h]['name']."</h3>";
+
+                if ( strpos($data_list[$h]['name'], "No Sale") != false ) {
+                    $area_id = $data_list[$h]['area_id'];
+                    $sale_id = 0;
+                } else {
+                    $area_id = $data_list[$h]['area_id'];
+                    $sale_id = $data_list[$h]['id'];
+                }
+
+    ?>
+    <div class="row-fluid">
+        <div class="span12">
+        <h2 style="padding-left: 10px;"><?php echo $data_list[$h]["name"] ?></h2>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><div align="center">No.</div></th>
+            <th><div align="center">[Store ID] Store Name</div></th>
+            <th><div align="center"><?php echo $this->params['last_03']; ?></div></th>
+            <th><div align="center"><?php echo $this->params['last_02']; ?></div></th>
+            <th><div align="center"><?php echo $this->params['last_01']; ?></div></th>
+            <th><div align="center">Avg.</div></th>
+            <th><div align="center">PC</div></th>
+            <th><div align="center">PC Stand By</div></th>
+            <th><div align="center">Price Target</div></th>
+            <th><div align="center">Unit Sellout</div></th>
+            <th><div align="center">Price Sellout</div></th>
+            <th><div align="center">Price Achieve</div></th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php 
+
+                $QStoreStaff = new Application_Model_StoreStaff();
+                $QSPT = new Application_Model_StorePriceTarget();
+
+                $data = $QSPT->getLast3MonthBySaleStore($this->params, $sale_id, $area_id);
+
+                // echo "<pre>"; print_r($data);
+                
+                $sum_last_03 = $sum_last_02 = $sum_last_01 = $sum_avg = 0;
+                $sum_pc = $sum_pc_stand_by = 0;
+                $sum_sellout = $sum_price = 0;
+
+                if ( !empty($data) ) {
+
+                    $sellout_avg = 0;
+                    $sum_target_price = 0;
+
+                    //if ( $now >= date('Y-m-15 12:00:00') && $now <= date('Y-m-15 14:59:59') ) { $disabled = ''; $save_flag = 1; }
+
+                    for($i=0;$i<count($data);$i++) { 
+
+                        $pc_01 = $QStoreStaff->getPC($data[$i]['store_id'], 0);
+                        $pc_02 = $QStoreStaff->getPC($data[$i]['store_id'], 1);
+
+                        $cnt_pc_01 = count($pc_01);
+                        $cnt_pc_02 = count($pc_02);
+
+                        // Check Price Target of each Store 
+                        $target_details = $QSPT->checkTargetByStore($this->params,$data[$i]['store_id']);
+
+                        // Price Target 
+                        if ( !empty($target_details) ) {
+
+                            $target_price = "value='".$target_details['target_price']."' min='".$target_details['target_price']."' ".$disabled;
+                            $price_spt_id = "value='".$target_details['spt_id']."|".$target_details['target_price']."' ";
+                            $sum_target_price = $sum_target_price + $target_details['target_price'];
+
+                        } else {
+
+                            $target_price = "value='".$target_details['target_price']."' min='".$target_details['target_price']."' ";
+                            $price_spt_id = "value=''";
+                            // $save_flag = 1;
+
+                        }
+
+                        $sellout_avg = round(($data[$i]['last_03'] + $data[$i]['last_02'] + $data[$i]['last_01'] ) / 3, 0);
+
+                        $cnt = $i + 1;
+                        echo "<tr>";
+                        echo    "<td width='3%'><div align='center'>".$cnt."</div></td>";
+                        echo    "<td width='34%'><div align='left'>[".$data[$i]['store_id']."] ".$data[$i]['store_name']."</div></td>";
+                      
+                        echo    "<td width='6%'><div align='right'>".number_format($data[$i]['last_03'])."</div></td>";
+                        echo    "<td width='6%'><div align='right'>".number_format($data[$i]['last_02'])."</div></td>";
+                        echo    "<td width='6%'><div align='right'>".number_format($data[$i]['last_01'])."</div></td>";
+                        echo    "<td width='6%'><div align='right'>".number_format($sellout_avg)."</div></td>";
+
+                        echo "<td width='6%'><div align='center'>".$cnt_pc_01."</div></td>";
+                        echo "<td width='6%'><div align='center'>".$cnt_pc_02."</div></td>";
+
+                        // Price Target
+                        echo "<td width='10%'><div align='center'>
+                                <input type='number' style='text-align:right;' class='target_price span1' id='target_price[".$data[$i]['store_id']."]' name='target_price[".$data[$i]['store_id']."]' $target_price  />
+                                <input type='hidden' style='text-align:right;' id='price_spt_id[".$data[$i]['store_id']."]' name='price_spt_id[".$data[$i]['store_id']."]' $price_spt_id /> 
+                            </div></td>";
+
+                        // Unit Sellout 
+                        echo    "<td width='5%'><div align='center'>".number_format($data[$i]['sellout'])."</div></td>";
+
+                        // Price Sellout
+                        echo    "<td width='5%'><div align='right'>".number_format($data[$i]['total_price'])."</div></td>";
+
+                        $achieve_price = ( $data[$i]['total_price'] / $target_details['target_price'] ) * 100;
+
+                        $color_price = 'red';
+                        if ( $achieve_price >= 75 ) { $color_price = 'orange'; }
+                        if ( $achieve_price >= 90 ) { $color_price = 'green'; }
+
+                        echo "<td width='17%'><div align='right'><font color='".$color_price."'>".number_format($achieve_price, 2)." %</font></div></td>";
+
+                        $sum_last_03 = $sum_last_03 + $data[$i]['last_03'];
+                        $sum_last_02 = $sum_last_02 + $data[$i]['last_02'];
+                        $sum_last_01 = $sum_last_01 + $data[$i]['last_01'];
+                        $sum_avg = $sum_avg + $sellout_avg;
+                        $sum_pc = $sum_pc + $cnt_pc_01;
+                        $sum_pc_stand_by = $sum_pc_stand_by + $cnt_pc_02;
+                        $sum_sellout = $sum_sellout + $data[$i]['sellout'];
+                        $sum_price = $sum_price + $data[$i]['total_price'];
+                    }
+
+
+                }
+            ?>
+        </tbody>
+        <tfoot>
+            <?php 
+                echo "<tr bgcolor='#BDBDBD'>";
+                echo    "<td colspan='2'><div align='center'>Total</div></td>";
+                echo    "<td><div align='right'>".number_format($sum_last_03)."</div></td>";
+                echo    "<td><div align='right'>".number_format($sum_last_02)."</div></td>";
+                echo    "<td><div align='right'>".number_format($sum_last_01)."</div></td>";
+                echo    "<td><div align='right'>".number_format($sum_avg)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_pc)."</div></td>";
+                echo    "<td><div align='center'>".number_format($sum_pc_stand_by)."</div></td>";
+                echo    "<td><div align='right' id='sum_target_price'>".number_format($sum_target_price)."</div></td>";
+                echo    "<td><div align='right'>".number_format($sum_sellout)."</div></td>";
+                
+                // Price Sellout 
+                echo    "<td><div align='center'>".number_format($sum_price)."</div></td>";
+
+                $sum_achieve_price = ( $sum_price / $sum_target_price ) * 100;
+
+                $sum_color_price = 'red';
+                if ( $sum_achieve_price >= 75 ) { $sum_color_price = '#DF7401'; }
+                if ( $sum_achieve_price >= 90 ) { $sum_color_price = '#04B431'; }
+
+                echo    "<td id='td_achieve' bgcolor='".$sum_color_price."'>
+                            <div align='right' id='sum_achieve'><strong>".number_format($sum_achieve_price,2)." %</strong></div></td>";
+
+                echo "</tr>";
+
+            ?>
+        </tfoot>
+    </table>
+    
+            </div>
+          </div>
+      </div>
+
+    <?php   } ?>
+
+        <input type="hidden" name="area_id" id="area_id" value='<?php echo json_encode($this->params['area_id']); ?>'>
+        <input type="hidden" name="sale_id" id="sale_id" value='<?php echo json_encode($this->params['sale_id']); ?>'>
+        <input type="hidden" name="month_year" id="month_year" value="<?php echo $this->params['from']; ?>">
+ </div>
+        <?php 
+            if ($save_flag == 1) { 
+                echo "<button type='submit' class='btn btn-info' id='btn_save' name='btn_save' value='1'>Save</button>";
+            }
+        ?>
+
+    <?php } ?>
+   
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

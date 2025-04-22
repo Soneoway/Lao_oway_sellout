@@ -1,0 +1,55 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <?php echo $this->sorting(array(
+                    '<input type="checkbox" id="check_all" />',
+                    'Company',
+                    'code'         =>'Code',
+                    'lastname'     =>'Name',
+                    'email'        =>'Email',
+                    'department'   =>'Department',
+                    'team'         =>'Team',
+                    'title'        =>'Title',
+                    'Area',
+                    'Province',
+                ),
+                $this->url, $this->sort, $this->desc); ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (isset($this->staffs) and $this->staffs)
+            foreach ($this->staffs as $k=>$staff): ?>
+        <tr>
+            <td><input type="checkbox" name="staff[]" value="<?php echo $staff['id'] ?>" /></td>
+            <td><?php if ( isset( $this->companies[$staff['company_id']] ) && $this->companies[$staff['company_id']] ) echo $this->companies[$staff['company_id']] ?></td>
+            <td><?php echo $staff['code'];?></td>
+            <td><?php echo $staff['firstname'].' '.$staff['lastname'];?></td>
+            <td><?php echo $staff['email'];?></td>
+            <td><?php echo (isset($this->departments[$staff['department']]) ? $this->departments[$staff['department']] : '');?></td>
+            <td><?php echo (isset($this->teams[$staff['team']]) ? $this->teams[$staff['team']] : '');?></td>
+            <td><?php echo $staff['title'];?></td>
+            
+            <td><?php if(isset($this->areas[ $this->regions[ $staff['regional_market'] ]['area_id'] ]))
+                echo $this->areas[ $this->regions[ $staff['regional_market'] ]['area_id'] ] ?></td>
+
+            <td><?php if(isset($this->regions[ $staff['regional_market'] ]['name'])) 
+                echo $this->regions[ $staff['regional_market'] ]['name'] ?></td>
+        </tr>
+        <?php endforeach;?>
+
+    </tbody>
+</table>
+<div class="paging">
+    <?php echo $this->paging($this->total, $this->limit, $this->offset, $this->url);?>
+</div>
+<?php echo $this->load();?>
+<script>
+    jQuery(function(){
+        $('#check_all').click(check_all);
+    });
+
+    function check_all() {
+        $('.table tbody input').prop('checked', $('#check_all').prop('checked'));
+    }
+</script>
