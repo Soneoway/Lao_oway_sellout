@@ -2345,4 +2345,256 @@ public static function storeVisit($stores)
     exit;
 }
 
+
+// Export Market Research
+public static function marketResearch($stores)
+{
+    set_time_limit(0);
+    error_reporting(0);
+    ini_set('display_error', 0);
+    ini_set('memory_limit', -1);
+    $filename = 'Export Market Research - '.date('d-m-Y H-i-s');
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename='.$filename.'.csv');
+    echo chr(239) . chr(187) . chr(191); // UTF-8 BOM
+    $output = fopen('php://output', 'w');
+
+    $head = array(
+        'No.',
+        'RGM',
+        'RM',
+        'store Code',
+        'Store Name',
+        'Status',
+        'Created By',
+
+        'Status',
+        'Store Type',
+        'Brand_OPPO',
+        'Brand_Vivo',
+        'Brand_Samsung',
+        // 'Brand_Huawei',
+        'Brand_Realme',
+        'Brand_Infinix',
+        'Brand_Honor',
+        'Brand_Tecno',
+
+        'PC_OPPO',
+        'PC_VIVO',
+        'PC_Samsung',
+        'PC_Huawei',
+        'PC_Realme',
+        'PC_Xiaomi',
+        'PC_Honor',
+        'PC_TECNO',
+
+        'Sales OPPO ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales OPPO 2-3 ລ້ານ',
+        'Sales OPPO 3-4 ລ້ານ',
+        'Sales OPPO 4-5 ລ້ານ',
+        'Sales OPPO 5 ລ້ານຂື້ນໄປ',
+        'Sales VIVO ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales VIVO 2-3 ລ້ານ',
+        'Sales VIVO 3-4 ລ້ານ',
+        'Sales VIVO 4-5 ລ້ານ',
+        'Sales VIVO 5 ລ້ານຂື້ນໄປ',
+        'Sales Samsung ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales Samsung 2-3 ລ້ານ',
+        'Sales Samsung 3-4 ລ້ານ',
+        'Sales Samsung 4-5 ລ້ານ',
+        'Sales Samsung 5 ລ້ານຂື້ນໄປ',
+        'Sales Realme ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales Realme 2-3 ລ້ານ',
+        'Sales Realme 3-4 ລ້ານ',
+        'Sales Realme 4-5 ລ້ານ',
+        'Sales Realme 5 ລ້ານຂື້ນໄປ',
+        'Sales iNfinix ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales iNfinix 2-3 ລ້ານ',
+        'Sales iNfinix 3-4 ລ້ານ',
+        'Sales iNfinix 4-5 ລ້ານ',
+        'Sales iNfinix 5 ລ້ານຂື້ນໄປ',
+        'Sales Honor ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales Honor 2-3 ລ້ານ',
+        'Sales Honor 3-4 ລ້ານ',
+        'Sales Honor 4-5 ລ້ານ',
+        'Sales Honor 5 ລ້ານຂື້ນໄປ',
+        'Sales Tecno ຕ່ຳກ່ວາ 2 ລ້ານ',
+        'Sales Tecno 2-3 ລ້ານ',
+        'Sales Tecno 3-4 ລ້ານ',
+        'Sales Tecno 4-5 ລ້ານ',
+        'Sales Tecno 5 ລ້ານຂື້ນໄປ',
+        'Sales Huawei',
+        'Sales Xiaomi',
+        'Sales iPhone',
+        'Sales Other ອື່ນໆ',
+
+        'OPPO Table ໂຕະໂຊ',
+        'OPPO Counters ຕູ້ແກ້ວ',
+        'OPPO Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Vivo Table ໂຕະໂຊ',
+        'Vivo Counters ຕູ້ແກ້ວ',
+        'Vivo Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Samsung Table ໂຕະໂຊ',
+        'Samsung Counters ຕູ້ແກ້ວ',
+        'Samsung Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Huawei Table ໂຕະໂຊ',
+        'Huawei Counters ຕູ້ແກ້ວ',
+        'Huawei Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Realme Table ໂຕະໂຊ',
+        'Realme Counters ຕູ້ແກ້ວ',
+        'Realme Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Xiaomi Table ໂຕະໂຊ',
+        'Xiaomi Counters ຕູ້ແກ້ວ',
+        'Xiaomi Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Honor Table ໂຕະໂຊ',
+        'Honor Counters ຕູ້ແກ້ວ',
+        'Honor Shop sign ປ້າຍໜ້າຮ້ານ',
+        'Tecno Table ໂຕະໂຊ',
+        'Tecno Counters ຕູ້ແກ້ວ',
+        'Tecno Shop sign ປ້າຍໜ້າຮ້ານ',
+        
+        'Checked',
+        'Total Visit',
+    );
+
+    fputcsv($output, $head);
+
+    $QDealer = new Application_Model_Distributor();
+    $all_dealer = $QDealer->get_cache();
+
+    $QStoreMarket = new Application_Model_StoreMarket();
+    $StoreMarket = $QStoreMarket->get_cache();
+
+    $QStaff = new Application_Model_Staff();
+    $staff = $QStaff->get_cache();
+
+    $QStoreStaff = new Application_Model_StoreStaff();
+    $Qscm = new Application_Model_StoreControlMap();
+
+    $no = 1;
+
+    foreach ($stores as $store) {
+
+        if ($store['mkr_check'] == '') { $checked= "No"; } else { $checked = "Yes"; }
+        if ($store['store_status'] == 1) { $store_status = "In Cooperation"; } elseif ($stores['store_status'] == 2) { $store_status = "Suspend Cooperation"; } elseif ($stores['store_status'] == 3) { $store_status = "Close"; } else { $store_status = ""; }
+
+        $QDistributor = new Application_Model_Distributor();
+        $superi = $QDistributor->getSuperiorDistributor($store['w_id']);
+
+        $row = array();
+        $row[] = $no++;
+        $row[] = $store['area_name'];
+        $row[] = $store['regional_market_name'];
+        $row[] = $store['store_code'];
+        $row[] = $store['name'];
+        $row[] = $store_status;
+        $row[] = $store['created_by_name'];
+        $row[] = $store['st_status']; 
+        $row[] = $store['st_type']; 
+
+        $row[] = $store['b_oppo']; 
+        $row[] = $store['b_vivo']; 
+        $row[] = $store['b_samsung']; 
+        // $row[] = $store['b_huawei']; 
+        $row[] = $store['b_realme']; 
+        $row[] = $store['b_infinix']; 
+        $row[] = $store['b_honor']; 
+        $row[] = $store['b_tecno'];
+
+        $row[] = $store['pc_oppo']; 
+        $row[] = $store['pc_vivo']; 
+        $row[] = $store['pc_samsung']; 
+        $row[] = $store['pc_huawei']; 
+        $row[] = $store['pc_realme']; 
+        $row[] = $store['pc_xiaomi']; 
+        $row[] = $store['pc_honor']; 
+
+        $row[] = $store['pc_tecno']; 
+        $row[] = $store['sp1_oppo']; 
+        $row[] = $store['sp2_oppo']; 
+        $row[] = $store['sp3_oppo']; 
+        $row[] = $store['sp4_oppo']; 
+        $row[] = $store['sp5_oppo'];
+        
+        $row[] = $store['sp1_vivo']; 
+        $row[] = $store['sp2_vivo']; 
+        $row[] = $store['sp3_vivo']; 
+        $row[] = $store['sp4_vivo']; 
+        $row[] = $store['sp5_vivo']; 
+
+        $row[] = $store['sp1_samsung']; 
+        $row[] = $store['sp2_samsung']; 
+        $row[] = $store['sp3_samsung']; 
+        $row[] = $store['sp4_samsung']; 
+        $row[] = $store['sp5_samsung']; 
+
+        $row[] = $store['sp1_realme']; 
+        $row[] = $store['sp2_realme']; 
+        $row[] = $store['sp3_realme']; 
+        $row[] = $store['sp4_realme']; 
+        $row[] = $store['sp5_realme']; 
+
+        $row[] = $store['sp1_infinix']; 
+        $row[] = $store['sp2_infinix']; 
+        $row[] = $store['sp3_infinix']; 
+        $row[] = $store['sp4_infinix']; 
+        $row[] = $store['sp5_infinix']; 
+
+        $row[] = $store['sp1_honor']; 
+        $row[] = $store['sp2_honor']; 
+        $row[] = $store['sp3_honor']; 
+        $row[] = $store['sp4_honor']; 
+        $row[] = $store['sp5_honor'];
+
+        $row[] = $store['sp1_tecno']; 
+        $row[] = $store['sp2_tecno']; 
+        $row[] = $store['sp3_tecno']; 
+        $row[] = $store['sp4_tecno']; 
+        $row[] = $store['sp5_tecno'];
+
+        $row[] = $store['sp_huawei']; 
+        $row[] = $store['sp_xiaomi']; 
+        $row[] = $store['sp_iphone']; 
+        $row[] = $store['sp_others']; 
+
+        $row[] = $store['ss_oppo']; 
+        $row[] = $store['ct_oppo']; 
+        $row[] = $store['tb_oppo'];
+
+        $row[] = $store['ct_vivo']; 
+        $row[] = $store['ss_vivo']; 
+        $row[] = $store['tb_vivo']; 
+
+        $row[] = $store['ct_samsung']; 
+        $row[] = $store['ss_samsung']; 
+        $row[] = $store['tb_samsung'];
+
+        $row[] = $store['ct_huawei']; 
+        $row[] = $store['ss_huawei']; 
+        $row[] = $store['tb_huawei']; 
+
+        $row[] = $store['ct_realme']; 
+        $row[] = $store['ss_realme']; 
+        $row[] = $store['tb_realme']; 
+
+        $row[] = $store['ct_xiaomi']; 
+        $row[] = $store['ss_xiaomi']; 
+        $row[] = $store['tb_xiaomi']; 
+
+        $row[] = $store['ct_honor']; 
+        $row[] = $store['ss_honor']; 
+        $row[] = $store['tb_honor']; 
+
+        $row[] = $store['tb_tecno']; 
+        $row[] = $store['ct_tecno']; 
+        $row[] = $store['ss_tecno']; 
+
+        $row[] = $checked;
+        $row[] = $store['total_research'];
+        fputcsv($output, $row);
+    }
+    exit;
+}
+
+
 }

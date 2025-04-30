@@ -2,6 +2,44 @@
 
 class ReportController extends My_Controller_Action
 {
+    //  Market Research
+    public function marketResearchAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research.php';
+    }
+
+    public function marketResearchSaveAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research-save.php';
+    }
+
+    public function setMarketResearchAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'set-market-research.php';
+    }
+
+    public function maketResearchAddAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research-add.php';
+    }
+
+    public function marketResearchViewAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research-view.php';
+    }
+    
+    public function marketResearchEditAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research-edit.php';
+    }
+    
+    public function marketResearchEditSaveAction()
+    {
+        require_once 'report' . DIRECTORY_SEPARATOR . 'market-research' . DIRECTORY_SEPARATOR . 'market-research-edit-save.php';
+    }
+
+    
+    // Store Visit
     public function storeVisitAction()
     {
         require_once 'report' . DIRECTORY_SEPARATOR . 'store-visit' . DIRECTORY_SEPARATOR . 'store-visit.php';

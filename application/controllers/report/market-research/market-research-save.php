@@ -1,0 +1,193 @@
+<?php
+$this->_helper->layout->disableLayout();
+$this->_helper->viewRenderer->setNoRender(true);
+$userStorage = Zend_Auth::getInstance()->getStorage()->read();
+$QMarketResearch = new Application_Model_MarketResearch();
+
+if ($this->getRequest()->getMethod() == 'POST'){
+	$date      = $this->getRequest()->getParam('date');
+	$store_code    = $this->getRequest()->getParam('store_code');
+	$store_name    = $this->getRequest()->getParam('store_name');
+
+	$st_status     = $this->getRequest()->getParam('st_status'); 
+	$st_type       = $this->getRequest()->getParam('st_type');
+
+	$b_oppo       = $this->getRequest()->getParam('b_oppo'); 
+	$b_vivo       = $this->getRequest()->getParam('b_vivo'); 
+	$b_samsung    = $this->getRequest()->getParam('b_samsung'); 
+	$b_huawei     = $this->getRequest()->getParam('b_huawei'); 
+	$b_realme     = $this->getRequest()->getParam('b_realme'); 
+	$b_infinix    = $this->getRequest()->getParam('b_infinix'); 
+	$b_honor      = $this->getRequest()->getParam('b_honor'); 
+	$b_tecno      = $this->getRequest()->getParam('b_tecno');
+	$pc_oppo      = $this->getRequest()->getParam('pc_oppo'); 
+	$pc_vivo      = $this->getRequest()->getParam('pc_vivo'); 
+	$pc_samsung   = $this->getRequest()->getParam('pc_samsung'); 
+	$pc_huawei    = $this->getRequest()->getParam('pc_huawei'); 
+	$pc_realme    = $this->getRequest()->getParam('pc_realme'); 
+	$pc_xiaomi    = $this->getRequest()->getParam('pc_xiaomi'); 
+	$pc_honor     = $this->getRequest()->getParam('pc_honor'); 
+	$pc_tecno     = $this->getRequest()->getParam('pc_tecno');
+	$sp1_oppo     = $this->getRequest()->getParam('sp1_oppo'); 
+	$sp2_oppo     = $this->getRequest()->getParam('sp2_oppo'); 
+	$sp3_oppo     = $this->getRequest()->getParam('sp3_oppo'); 
+	$sp4_oppo     = $this->getRequest()->getParam('sp4_oppo'); 
+	$sp5_oppo     = $this->getRequest()->getParam('sp5_oppo');
+	$sp1_vivo     = $this->getRequest()->getParam('sp1_vivo'); 
+	$sp2_vivo     = $this->getRequest()->getParam('sp2_vivo'); 
+	$sp3_vivo     = $this->getRequest()->getParam('sp3_vivo'); 
+	$sp4_vivo     = $this->getRequest()->getParam('sp4_vivo'); 
+	$sp5_vivo     = $this->getRequest()->getParam('sp5_vivo');
+	$sp1_samsung    = $this->getRequest()->getParam('sp1_samsung'); 
+	$sp2_samsung    = $this->getRequest()->getParam('sp2_samsung'); 
+	$sp3_samsung    = $this->getRequest()->getParam('sp3_samsung'); 
+	$sp4_samsung    = $this->getRequest()->getParam('sp4_samsung'); 
+	$sp5_samsung    = $this->getRequest()->getParam('sp5_samsung');
+	$sp1_realme     = $this->getRequest()->getParam('sp1_realme'); 
+	$sp2_realme     = $this->getRequest()->getParam('sp2_realme'); 
+	$sp3_realme     = $this->getRequest()->getParam('sp3_realme'); 
+	$sp4_realme     = $this->getRequest()->getParam('sp4_realme'); 
+	$sp5_realme     = $this->getRequest()->getParam('sp5_realme');
+	$sp1_infinix    = $this->getRequest()->getParam('sp1_infinix'); 
+	$sp2_infinix    = $this->getRequest()->getParam('sp2_infinix'); 
+	$sp3_infinix    = $this->getRequest()->getParam('sp3_infinix'); 
+	$sp4_infinix    = $this->getRequest()->getParam('sp4_infinix'); 
+	$sp5_infinix    = $this->getRequest()->getParam('sp5_infinix');
+	$sp1_honor     = $this->getRequest()->getParam('sp1_honor'); 
+	$sp2_honor     = $this->getRequest()->getParam('sp2_honor'); 
+	$sp3_honor     = $this->getRequest()->getParam('sp3_honor'); 
+	$sp4_honor     = $this->getRequest()->getParam('sp4_honor'); 
+	$sp5_honor     = $this->getRequest()->getParam('sp5_honor');
+	$sp1_tecno     = $this->getRequest()->getParam('sp1_tecno'); 
+	$sp2_tecno     = $this->getRequest()->getParam('sp2_tecno'); 
+	$sp3_tecno     = $this->getRequest()->getParam('sp3_tecno'); 
+	$sp4_tecno     = $this->getRequest()->getParam('sp4_tecno'); 
+	$sp5_tecno     = $this->getRequest()->getParam('sp5_tecno');
+	$sp_huawei     = $this->getRequest()->getParam('sp_huawei'); 
+	$sp_xiaomi     = $this->getRequest()->getParam('sp_xiaomi'); 
+	$sp_iphone     = $this->getRequest()->getParam('sp_iphone'); 
+	$sp_others     = $this->getRequest()->getParam('sp_others');
+	$tb_oppo      = $this->getRequest()->getParam('tb_oppo'); 
+	$tb_vivo      = $this->getRequest()->getParam('tb_vivo'); 
+	$tb_samsung   = $this->getRequest()->getParam('tb_samsung'); 
+	$tb_huawei    = $this->getRequest()->getParam('tb_huawei'); 
+	$tb_realme    = $this->getRequest()->getParam('tb_realme'); 
+	$tb_xiaomi    = $this->getRequest()->getParam('tb_xiaomi'); 
+	$tb_honor     = $this->getRequest()->getParam('tb_honor'); 
+	$tb_tecno     = $this->getRequest()->getParam('tb_tecno');
+	$ct_oppo      = $this->getRequest()->getParam('ct_oppo'); 
+	$ct_vivo      = $this->getRequest()->getParam('ct_vivo'); 
+	$ct_samsung   = $this->getRequest()->getParam('ct_samsung'); 
+	$ct_huawei    = $this->getRequest()->getParam('ct_huawei'); 
+	$ct_realme    = $this->getRequest()->getParam('ct_realme'); 
+	$ct_xiaomi    = $this->getRequest()->getParam('ct_xiaomi'); 
+	$ct_honor     = $this->getRequest()->getParam('ct_honor'); 
+	$ct_tecno     = $this->getRequest()->getParam('ct_tecno');
+	$ss_oppo      = $this->getRequest()->getParam('ss_oppo'); 
+	$ss_vivo      = $this->getRequest()->getParam('ss_vivo'); 
+	$ss_samsung    = $this->getRequest()->getParam('ss_samsung'); 
+	$ss_huawei     = $this->getRequest()->getParam('ss_huawei'); 
+	$ss_realme     = $this->getRequest()->getParam('ss_realme'); 
+	$ss_xiaomi     = $this->getRequest()->getParam('ss_xiaomi'); 
+	$ss_honor      = $this->getRequest()->getParam('ss_honor'); 
+	$ss_tecno      = $this->getRequest()->getParam('ss_tecno'); 
+   
+
+	$data = array(
+		'store_code'         	=> $store_code,
+		'store_name'         	=> $store_name,
+
+		'st_status'     => $st_status, 
+		'st_type'     => $st_type, 
+
+		'b_oppo'     => $b_oppo, 
+		'b_vivo'     => $b_vivo, 
+		'b_samsung'     => $b_samsung, 
+		'b_huawei'     => $b_huawei, 
+		'b_realme'     => $b_realme, 
+		'b_infinix'     => $b_infinix, 
+		'b_honor'     => $b_honor, 
+		'b_tecno'     => $b_tecno, 
+		'pc_oppo'     => $pc_oppo, 
+		'pc_vivo'     => $pc_vivo, 
+		'pc_samsung'     => $pc_samsung, 
+		'pc_huawei'     => $pc_huawei, 
+		'pc_realme'     => $pc_realme, 
+		'pc_xiaomi'     => $pc_xiaomi, 
+		'pc_honor'     => $pc_honor, 
+		'pc_tecno'     => $pc_tecno, 
+		'sp1_oppo'     => $sp1_oppo, 
+		'sp2_oppo'     => $sp2_oppo, 
+		'sp3_oppo'     => $sp3_oppo, 
+		'sp4_oppo'     => $sp4_oppo, 
+		'sp5_oppo'     => $sp5_oppo, 
+		'sp1_vivo'     => $sp1_vivo, 
+		'sp2_vivo'     => $sp2_vivo, 
+		'sp3_vivo'     => $sp3_vivo, 
+		'sp4_vivo'     => $sp4_vivo, 
+		'sp5_vivo'     => $sp5_vivo, 
+		'sp1_samsung'     => $sp1_samsung, 
+		'sp2_samsung'     => $sp2_samsung, 
+		'sp3_samsung'     => $sp3_samsung, 
+		'sp4_samsung'     => $sp4_samsung, 
+		'sp5_samsung'     => $sp5_samsung, 
+		'sp1_realme'     => $sp1_realme, 
+		'sp2_realme'     => $sp2_realme, 
+		'sp3_realme'     => $sp3_realme, 
+		'sp4_realme'     => $sp4_realme, 
+		'sp5_realme'     => $sp5_realme, 
+		'sp1_infinix'     => $sp1_infinix, 
+		'sp2_infinix'     => $sp2_infinix, 
+		'sp3_infinix'     => $sp3_infinix, 
+		'sp4_infinix'     => $sp4_infinix, 
+		'sp5_infinix'     => $sp5_infinix, 
+		'sp1_honor'     => $sp1_honor, 
+		'sp2_honor'     => $sp2_honor, 
+		'sp3_honor'     => $sp3_honor, 
+		'sp4_honor'     => $sp4_honor, 
+		'sp5_honor'     => $sp5_honor, 
+		'sp1_tecno'     => $sp1_tecno, 
+		'sp2_tecno'     => $sp2_tecno, 
+		'sp3_tecno'     => $sp3_tecno, 
+		'sp4_tecno'     => $sp4_tecno, 
+		'sp5_tecno'     => $sp5_tecno, 
+		'sp_huawei'     => $sp_huawei, 
+		'sp_xiaomi'     => $sp_xiaomi, 
+		'sp_iphone'     => $sp_iphone, 
+		'sp_others'     => $sp_others, 
+		'tb_oppo'     => $tb_oppo, 
+		'tb_vivo'     => $tb_vivo, 
+		'tb_samsung'     => $tb_samsung, 
+		'tb_huawei'     => $tb_huawei, 
+		'tb_realme'     => $tb_realme, 
+		'tb_xiaomi'     => $tb_xiaomi, 
+		'tb_honor'     => $tb_honor, 
+		'tb_tecno'     => $tb_tecno, 
+		'ct_oppo'     => $ct_oppo, 
+		'ct_vivo'     => $ct_vivo, 
+		'ct_samsung'     => $ct_samsung, 
+		'ct_huawei'     => $ct_huawei, 
+		'ct_realme'     => $ct_realme, 
+		'ct_xiaomi'     => $ct_xiaomi, 
+		'ct_honor'     => $ct_honor, 
+		'ct_tecno'     => $ct_tecno, 
+		'ss_oppo'     => $ss_oppo, 
+		'ss_vivo'     => $ss_vivo, 
+		'ss_samsung'     => $ss_samsung, 
+		'ss_huawei'     => $ss_huawei, 
+		'ss_realme'     => $ss_realme, 
+		'ss_xiaomi'     => $ss_xiaomi, 
+		'ss_honor'     => $ss_honor, 
+		'ss_tecno'     => $ss_tecno, 
+	   
+
+		'num'      				=> 1,
+		'created_by'       		=> $userStorage->id,
+		'created_at'      		=> date('Y-m-d H-i-s'),
+	);
+	$resualt = $QMarketResearch->insert($data);
+	
+$flashMessenger = $this->_helper->flashMessenger;
+$flashMessenger->setNamespace('success')->addMessage('ສຳເລັດ');
+}
+$this->_redirect(HOST.'report/market-research');

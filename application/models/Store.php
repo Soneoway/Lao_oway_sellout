@@ -27,7 +27,98 @@ class Application_Model_Store extends Zend_Db_Table_Abstract
         $end_day_month = date('Y-m-t');
         
 
-        // Store Visit
+        // Market_Research
+	    $select->joinLeft(array('mkr' => 'market_research'), 'p.store_code = mkr.store_code', array(
+            'mkr_check' => 'mkr.store_code',
+
+            'st_status'  =>  'mkr.st_status',
+            'st_type'  =>  'mkr.st_type',
+            'b_oppo'  =>  'mkr.b_oppo',
+            'b_vivo'  =>  'mkr.b_vivo',
+            'b_samsung'  =>  'mkr.b_samsung',
+            'b_huawei'  =>  'mkr.b_huawei',
+            'b_realme'  =>  'mkr.b_realme',
+            'b_infinix'  =>  'mkr.b_infinix',
+            'b_honor'  =>  'mkr.b_honor',
+            'b_tecno'  =>  'mkr.b_tecno',
+            'pc_oppo'  =>  'mkr.pc_oppo',
+            'pc_vivo'  =>  'mkr.pc_vivo',
+            'pc_samsung'  =>  'mkr.pc_samsung',
+            'pc_huawei'  =>  'mkr.pc_huawei',
+            'pc_realme'  =>  'mkr.pc_realme',
+            'pc_xiaomi'  =>  'mkr.pc_xiaomi',
+            'pc_honor'  =>  'mkr.pc_honor',
+            'pc_tecno'  =>  'mkr.pc_tecno',
+            'sp1_oppo'  =>  'mkr.sp1_oppo',
+            'sp2_oppo'  =>  'mkr.sp2_oppo',
+            'sp3_oppo'  =>  'mkr.sp3_oppo',
+            'sp4_oppo'  =>  'mkr.sp4_oppo',
+            'sp5_oppo'  =>  'mkr.sp5_oppo',
+            'sp1_vivo'  =>  'mkr.sp1_vivo',
+            'sp2_vivo'  =>  'mkr.sp2_vivo',
+            'sp3_vivo'  =>  'mkr.sp3_vivo',
+            'sp4_vivo'  =>  'mkr.sp4_vivo',
+            'sp5_vivo'  =>  'mkr.sp5_vivo',
+            'sp1_samsung'  =>  'mkr.sp1_samsung',
+            'sp2_samsung'  =>  'mkr.sp2_samsung',
+            'sp3_samsung'  =>  'mkr.sp3_samsung',
+            'sp4_samsung'  =>  'mkr.sp4_samsung',
+            'sp5_samsung'  =>  'mkr.sp5_samsung',
+            'sp1_realme'  =>  'mkr.sp1_realme',
+            'sp2_realme'  =>  'mkr.sp2_realme',
+            'sp3_realme'  =>  'mkr.sp3_realme',
+            'sp4_realme'  =>  'mkr.sp4_realme',
+            'sp5_realme'  =>  'mkr.sp5_realme',
+            'sp1_infinix'  =>  'mkr.sp1_infinix',
+            'sp2_infinix'  =>  'mkr.sp2_infinix',
+            'sp3_infinix'  =>  'mkr.sp3_infinix',
+            'sp4_infinix'  =>  'mkr.sp4_infinix',
+            'sp5_infinix'  =>  'mkr.sp5_infinix',
+            'sp1_honor'  =>  'mkr.sp1_honor',
+            'sp2_honor'  =>  'mkr.sp2_honor',
+            'sp3_honor'  =>  'mkr.sp3_honor',
+            'sp4_honor'  =>  'mkr.sp4_honor',
+            'sp5_honor'  =>  'mkr.sp5_honor',
+            'sp1_tecno'  =>  'mkr.sp1_tecno',
+            'sp2_tecno'  =>  'mkr.sp2_tecno',
+            'sp3_tecno'  =>  'mkr.sp3_tecno',
+            'sp4_tecno'  =>  'mkr.sp4_tecno',
+            'sp5_tecno'  =>  'mkr.sp5_tecno',
+            'sp_huawei'  =>  'mkr.sp_huawei',
+            'sp_xiaomi'  =>  'mkr.sp_xiaomi',
+            'sp_iphone'  =>  'mkr.sp_iphone',
+            'sp_others'  =>  'mkr.sp_others',
+            'tb_oppo'  =>  'mkr.tb_oppo',
+            'tb_vivo'  =>  'mkr.tb_vivo',
+            'tb_samsung'  =>  'mkr.tb_samsung',
+            'tb_huawei'  =>  'mkr.tb_huawei',
+            'tb_realme'  =>  'mkr.tb_realme',
+            'tb_xiaomi'  =>  'mkr.tb_xiaomi',
+            'tb_honor'  =>  'mkr.tb_honor',
+            'tb_tecno'  =>  'mkr.tb_tecno',
+            'ct_oppo'  =>  'mkr.ct_oppo',
+            'ct_vivo'  =>  'mkr.ct_vivo',
+            'ct_samsung'  =>  'mkr.ct_samsung',
+            'ct_huawei'  =>  'mkr.ct_huawei',
+            'ct_realme'  =>  'mkr.ct_realme',
+            'ct_xiaomi'  =>  'mkr.ct_xiaomi',
+            'ct_honor'  =>  'mkr.ct_honor',
+            'ct_tecno'  =>  'mkr.ct_tecno',
+            'ss_oppo'  =>  'mkr.ss_oppo',
+            'ss_vivo'  =>  'mkr.ss_vivo',
+            'ss_samsung'  =>  'mkr.ss_samsung',
+            'ss_huawei'  =>  'mkr.ss_huawei',
+            'ss_realme'  =>  'mkr.ss_realme',
+            'ss_xiaomi'  =>  'mkr.ss_xiaomi',
+            'ss_honor'  =>  'mkr.ss_honor',
+            'ss_tecno'  =>  'mkr.ss_tecno',
+            
+            'last_total_research'   => new Zend_Db_Expr("COUNT( CASE WHEN mkr.created_at >= '".$last_start_01." 00:00:00' AND mkr.created_at <= '".$last_end_01." 23:59:59' THEN mkr.num END )"),
+            'this_total_research'   => new Zend_Db_Expr("COUNT( CASE WHEN mkr.created_at >= '".$start_day_month." 00:00:00' AND mkr.created_at <= '".$end_day_month." 23:59:59' THEN mkr.num END )"),
+            'total_research'      => new Zend_Db_Expr("COUNT( CASE WHEN mkr.created_at THEN mkr.num END  )")));
+        $select->joinLeft(array('sm' => 'staff'), 'sm.id = mkr.created_by', array('created_code' => 'sm.code','created_fname' => 'sm.firstname', 'created_by_name' => new Zend_Db_Expr("CONCAT(sm.firstname, ' ', sm.lastname)") ));
+ 
+        // Store_Visit
 	    $select->joinLeft(array('sv' => 'store_visit'), 'p.store_code = sv.store_code', array(
             'last_total_visit'   => new Zend_Db_Expr("COUNT( CASE WHEN sv.created_at >= '".$last_start_01." 00:00:00' AND sv.created_at <= '".$last_end_01." 23:59:59' THEN sv.num END )"),
             'this_total_visit'   => new Zend_Db_Expr("COUNT( CASE WHEN sv.created_at >= '".$start_day_month." 00:00:00' AND sv.created_at <= '".$end_day_month." 23:59:59' THEN sv.num END )"),
@@ -225,17 +316,29 @@ class Application_Model_Store extends Zend_Db_Table_Abstract
         }
 
         
+        // Check Market Research
+        if ( isset( $params['mkr_checked'] ) and $params['mkr_checked'] == 1 ) {
+            $select->where('mkr.store_code IS NOT NULL');
+        }
+
+        if ( isset( $params['mkr_not_check'] ) and $params['mkr_not_check'] == 1 ) {
+            $select->where('mkr.store_code IS NULL');
+        }
+
         // Check Location
         if ( isset( $params['location_checked'] ) and $params['location_checked'] == 1 ) {
-
             $select->where('p.lng IS NOT NULL');
         }
 
         if ( isset( $params['location_not_check'] ) and $params['location_not_check'] == 1 ) {
-
             $select->where('p.lng IS NULL');
         }
 
+
+        if ( isset( $params['have_pg'] ) and $params['have_pg'] == 1 ) {
+
+            $select->where('g3.staff_id IS NOT NULL');
+        }
 
         if ( isset( $params['have_pg'] ) and $params['have_pg'] == 1 ) {
 
@@ -281,7 +384,6 @@ class Application_Model_Store extends Zend_Db_Table_Abstract
             $select->where('f4.staff_id IS NULL');
             $select->where('g2.staff_id IS NULL');
         }
-
 
         if(isset($params['store_status']) and $params['store_status']) {
             $select->where('p.status =?',$params['store_status']);

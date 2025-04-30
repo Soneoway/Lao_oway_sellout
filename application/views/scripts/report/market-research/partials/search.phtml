@@ -1,0 +1,192 @@
+<?php
+if ( isset($this->params['area_permission']) && !empty($this->params['area_permission']) ) {
+    $area_permission = json_encode($this->params['area_permission']); 
+} else {
+    $area_permission = '';
+}
+
+?>
+<style>
+#laocolor {
+    color: blue;
+    font-style: bold;
+    font-size: 16PX;
+}
+</style>
+
+<form class="form-search form-horizontal" method="get" action="/report/market-research">
+    <div class="row" style="padding-bottom : 30px">
+        <div class="span5">
+            <div class="control-group">
+                <label for="id" class="span2" id="laocolor">Store Code : </label>
+                <input id="id" placeholder="" name="id" type="text" class="input-medium search-query form-control"
+                    value="<?php isset($this->params['id']) and printf($this->params['id']);?>">
+            </div>
+            <div class="control-group">
+                <label for="name" class="span2" id="laocolor">Store Name : </label>
+                <input id="name" placeholder="" name="name" type="text" class="input-medium search-query form-control"
+                    value="<?php isset($this->params['name']) and printf($this->params['name']);?>">
+            </div>
+            <div class="control-group">
+                <label for="store_status" id="laocolor" class="span2"> Store Status : </label>
+                <select name="store_status" class="span2" id="store_status">
+                    <option value="1" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 1): ?> selected <?php endif; ?>> Enable </option>
+                    <option value="2" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 2): ?> selected <?php endif; ?>> Suspend </option>
+                    <option value="3" <?php if(isset($this->params['store_status']) and  $this->params['store_status'] == 3): ?> selected <?php endif; ?>> Closed </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="span5">
+
+            <div class="control-group">
+                <label for="area_id" class="span2" id="laocolor">Area : </label>
+                <select id="area_id" name="area_id[]" class=" multiselect" multiple="multiple">
+                    <?php
+                if ($this->areas) :
+                    foreach ($this->areas as $area):
+                        ?>
+                    <option value="<?php echo $area->id;?>"
+                        <?php if (isset($this->params['area_id']) and ( (is_array($this->params['area_id']) && in_array($area['id'], $this->params['area_id']) || $area['id']==$this->params['area_id'])) ):?>selected<?php endif;?>>
+                        <?php echo $area->name;?></option>
+                    <?php
+                    endforeach;
+                endif;
+                ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="regional_market" class="span2" id="laocolor">Province :</label>
+                <select id="regional_market" name="regional_market[]" class=" multiselect" multiple="multiple">
+                    <?php
+                if ($this->regional_markets) :
+                    foreach ($this->regional_markets as $regional_market):?>
+                    <option value="<?php echo $regional_market->id;?>"
+                        <?php if (isset($this->params['regional_market']) and ( (is_array($this->params['regional_market']) && in_array($regional_market['id'], $this->params['regional_market']) || $regional_market['id']==$this->params['regional_market'])) ):?>selected<?php endif;?>>
+                        <?php echo $regional_market->name;?></option>
+                    <?php
+                    endforeach;
+                endif;
+                ?>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label id="laocolor" class="span2">Checked or Not</label> &nbsp;
+                <label style="font-size: 18px; font-family:Noto sans lao; color:green;" for="mkr_checked"><input
+                        type="checkbox" id="mkr_checked" name="mkr_checked" value="1"
+                        <?php if(isset($this->params['mkr_checked']) && $this->params['mkr_checked'] == 1) echo 'checked' ?> />
+                    Yes</label> &nbsp;&nbsp;&nbsp;&nbsp;
+
+                <label style="font-size: 18px; font-family:Noto sans lao; color: red;" for="mkr_not_check"><input
+                        type="checkbox" id="mkr_not_check" name="mkr_not_check" value="1"
+                        <?php if(isset($this->params['mkr_not_check']) && $this->params['mkr_not_check'] == 1) echo 'checked' ?> />
+                    No</label>
+
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary"><span
+            style="font-size: 18px; font-family:'Noto sans lao'">Search</span></button>
+
+    <?php if ($this->access('sales-report', 'store-list')): ?>
+    <button type="submit" name="export" value="1" formaction="<?php echo HOST ?>sales-report/market-research"
+        class="btn btn-success">Export</button>
+    <?php endif ?>
+
+</form>
+
+<script type="text/javascript" src="<?php echo HOST ?>js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="<?php echo HOST ?>css/bootstrap-multiselect.css" type="text/css" />
+
+<script type="text/javascript" src="/js/select2.full.js"></script>
+<link href="/css/select2.min.css" type="text/css" rel="stylesheet" />
+
+<script>
+$(".js-example-basic-multiple").select2();
+
+options = {
+    selectAllText: 'Select All',
+    includeSelectAllOption: true,
+    includeSelectAllIfMoreThan: 3,
+    disableIfEmpty: true
+};
+
+function multi() {
+    $('.multiselect').multiselect(options);
+}
+
+$(document).ready(function() {
+    multi();
+
+    $('#area_id').change(function() {
+        $('.loading').remove();
+        $(this).after('<span class="loading"></span>');
+        var _self = $(this);
+        var area_id = $(this).val();
+        $('button, .btn, input').prop('disabled', true);
+        $.get("/staff/load-province", {
+            area_id: area_id
+        }, function(data, status) {
+            var obj = $.parseJSON(data);
+            $('#regional_market').find('option').remove();
+            $('#district').find('option').remove();
+            $('#store').find('option').remove();
+
+            for (var i = 0; i < obj.length; i++) {
+                $('#regional_market').append('<option value="' + obj[i]['id'] + '">' + obj[i][
+                    'name'
+                ] + '</option>');
+            }
+
+            $('button, .btn, input').prop('disabled', false);
+            $('#regional_market, #district, #store').multiselect("destroy").multiselect(
+                options);
+            $('.loading').remove();
+        });
+    });
+
+    $('#regional_market').change(function() {
+        $('form').bind('submit', function(e) {
+            e.preventDefault();
+        });
+        $('form button, form input, form select').prop('disabled', true);
+        $('.loading').remove();
+
+        $(this).after('<span class="loading"></span>');
+        var _self = $(this);
+        var region = $(this).val();
+        $.post("<?php echo HOST ?>ajax/get-district-cbb", {
+            region: region
+        }, function(data, status) {
+            $('#district').find('option').remove();
+            $('#store').find('option').remove();
+
+            try {
+                if (data) {
+                    var obj = $.parseJSON(data);
+
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#district').append('<option value="' + obj[i]['id'] + '">' + obj[i][
+                            'name'
+                        ] + '</option>');
+                    }
+
+                    $('#district,#store').multiselect("destroy").multiselect(options);
+                }
+
+            } catch (err) {
+
+            } finally {
+                $('.loading').remove();
+                $('form').unbind('submit');
+                $('form button, form input, form select').prop('disabled', false);
+            }
+        });
+    });
+
+});
+</script>

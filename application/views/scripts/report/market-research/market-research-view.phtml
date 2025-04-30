@@ -1,0 +1,729 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+#map {
+    height: 300px;
+    width: 95%;
+    border-width: medium;
+    border-style: groove;
+    border-color: bisque;
+}
+
+button {
+    font-size: 20px;
+    font-family: Noto sans lao;
+    text-align: center;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+b{
+    color:rgb(11, 167, 32);
+    font-family: Noto sans lao;
+    font-size: 1rem;
+}
+
+span{
+    padding-bottom: 12px; 
+    color:midnightblue; 
+    font-weight: bold;
+}
+
+.optionstyle{
+    font-family: Noto sans lao;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+    font-family: Noto sans lao;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  font-family: Noto sans lao;
+}
+</style>
+
+<?php
+
+$store_detail  = $this->store;
+
+?>
+
+<div class="form-horizontal">
+<br>
+<h1>ລາຍລະອຽດ Market Research Details</h1><br>
+    <!-- Start -->
+    <div class="row-fluid">
+        <div class="span12">
+            <form role="form" id="timing_form" action="" method="post" target="ifrmSave" class="row-fluid">
+                <div class="row-fluid">
+                    <div class="span12">
+
+                        <!-- Part 1 -->
+                        <div class="row-fluid">
+                        <hr style="border-style: double; border-color: navy;">
+                            <b>Part 1: Store info ຂໍ້ມູນຮ້ານຄ້າ</b>
+                            <div class="row" style="margin-top : 10px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label> Store Code : </label>
+                                        <input type="text" class="form-control span3" name="store_code" value="<?php echo $this->store->store_code ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label> Store Name : </label>
+                                        <input type="text" class="form-control span3" name="store_name" value="<?php echo $this->store->store_name ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ສະຖານະຮ້ານ : </label>
+                                        <select name="st_status" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກສະຖານະຮ້ານ</option>
+                                            <option value="Coparative" <?php  if($store_detail['st_status'] == 'Coparative') : ?> selected <?php endif ?> >ຍັງຮ່ວມມື</option>
+                                            <option value="No Coparate" <?php  if($store_detail['st_status'] == 'No Coparate') : ?> selected <?php endif ?> >ບໍ່ໄດ້ຮ່ວມມືແລ້ວ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປະເພດຮ້ານ : </label>
+                                        <select name="st_type" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກປະເພດຮ້ານ</option>
+                                            <option value="Independent Store" <?php  if($store_detail['st_type'] == 'Independent Store') : ?> selected <?php endif ?>>ຮ້ານຄ້າຫຼັກ</option>
+                                            <option value="Chain Store" <?php  if($store_detail['st_type'] == 'Chain Store') : ?> selected <?php endif ?>>ຮ້ານສາຂາ</option>
+                                                <option value="Brandshop" <?php  if($store_detail['st_type'] == 'Brandshop') : ?> selected <?php endif ?>>ຮ້ານແບຣນຊ໋ອບ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Part 2 -->
+                        <div class="row-fluid">
+                            <hr style="border-style: double; border-color: navy;">
+                            <b>Part 2: <spann>Brands in Store ແບຣນທີ່ວາງຂາຍໃນຮ້ານ</spann></b>
+                            <div class="row" style="margin-top : 1px"><br>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ OPPO : </label>
+                                        <select name="b_oppo" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_oppo'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_oppo'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Vivo : </label>
+                                        <select name="b_vivo" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_vivo'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_vivo'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Samsung : </label>
+                                        <select name="b_samsung" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_samsung'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_samsung'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Realme : </label>
+                                        <select name="b_realme" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_realme'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_realme'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Infinix : </label>
+                                        <select name="b_infinix" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_infinix'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_infinix'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Honor : </label>
+                                        <select name="b_honor" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_honor'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_honor'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Tecno : </label>
+                                        <select name="b_tecno" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_tecno'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_tecno'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ແບຣນ Huawei : </label>
+                                        <select name="b_huawei" class="span3 optionstyle" required="required" readonly>
+                                            <option value="">ເລືອກ...</option>
+                                            <option value="Yes" <?php  if($store_detail['b_huawei'] == 'Yes') : ?> selected <?php endif ?>>ມີ</option>
+                                            <option value="No" <?php  if($store_detail['b_huawei'] == 'No') : ?> selected <?php endif ?>>ບໍ່ມີ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 3 -->
+                        <div class="row-fluid">
+                        <hr style="border-style: double; border-color: navy;">
+                            <b>Part 3: Store Staff ພະນັກງານ PC ຂອງຮ້ານ</b><br>
+                            <div class="row" style="margin-top : 10px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC OPPO: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_oppo ?>" name="pc_oppo" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC VIVO: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_vivo ?>" name="pc_vivo" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Samsung: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_samsung ?>" name="pc_samsung" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Huawei: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_huawei ?>" name="pc_huawei" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Realme: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_realme ?>" name="pc_realme" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Xiaomi: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_xiaomi ?>" name="pc_xiaomi" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Honor: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_honor ?>" name="pc_honor" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຈຳນວນ PC Tecno: </label>
+                                        <input type="number" min="0" max="5" class="span3" value="<?php echo $this->store->pc_tecno ?>" name="pc_tecno" placeholder="ໃສ່ຈຳນວນ PC" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 4 -->
+                        <div class="row-fluid">
+                        <hr style="border-style: double; border-color: navy;">
+                            <b>Part 4: Store Sales ຍອດຂາຍຂອງຮ້ານ</b><br><br>
+                            <span> ຍອດຂາຍແບຣນ OPPO </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_oppo ?>" name="sp1_oppo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_oppo ?>" name="sp2_oppo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_oppo ?>" name="sp3_oppo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_oppo ?>" name="sp4_oppo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_oppo ?>" name="sp5_oppo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ VIVO </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_vivo ?>" name="sp1_vivo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_vivo ?>" name="sp2_vivo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_vivo ?>" name="sp3_vivo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_vivo ?>" name="sp4_vivo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_vivo ?>" name="sp5_vivo" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ Samsung </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_samsung ?>" name="sp1_samsung" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_samsung ?>" name="sp2_samsung" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_samsung ?>" name="sp3_samsung" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_samsung ?>" name="sp4_samsung" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_samsung ?>" name="sp5_samsung" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ Realme </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_realme ?>" name="sp1_realme" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_realme ?>" name="sp2_realme" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_realme ?>" name="sp3_realme" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_realme ?>" name="sp4_realme" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_realme ?>" name="sp5_realme" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ iNfinix </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_infinix ?>" name="sp1_infinix" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_infinix ?>" name="sp2_infinix" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_infinix ?>" name="sp3_infinix" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_infinix ?>" name="sp4_infinix" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_infinix ?>" name="sp5_infinix" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ Honor </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_honor ?>" name="sp1_honor" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_honor ?>" name="sp2_honor" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_honor ?>" name="sp3_honor" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_honor ?>" name="sp4_honor" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_honor ?>" name="sp5_honor" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <span> ຍອດຂາຍແບຣນ Tecno </span>
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ ຕ່ຳກ່ວາ 2 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp1_tecno ?>" name="sp1_tecno" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 2-3 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp2_tecno ?>" name="sp2_tecno" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 3-4 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp3_tecno ?>" name="sp3_tecno" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ລາຄາ 4-5 ລ້ານ </label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp4_tecno ?>" name="sp4_tecno" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label>ຫຼາຍກ່ວາ 5 ລ້ານຂື້ນໄປ</label>
+                                        <input type="number" min="0" max="3000" class="span2" value="<?php echo $this->store->sp5_tecno ?>" name="sp5_tecno" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <div class="row" style="margin-top : 2px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                    <label><span> ຍອດຂາຍແບຣນ Huawei </span></label>
+                                        <input type="number" min="0" max="3000" class="span3" value="<?php echo $this->store->sp_huawei ?>" name="sp_huawei" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                    <label><span> ຍອດຂາຍແບຣນ Xiaomi </span></label>
+                                        <input type="number" min="0" max="3000" class="span3" value="<?php echo $this->store->sp_xiaomi ?>" name="sp_xiaomi" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                    <label><span> ຍອດຂາຍແບຣນ iPhone </span></label>
+                                        <input type="number" min="0" max="3000" class="span3" value="<?php echo $this->store->sp_iphone ?>" name="sp_iphone" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                    <label><span> ຍອດຂາຍແບຣນອື່ນໆ </span></label>
+                                        <input type="number" min="0" max="3000" class="span3" value="<?php echo $this->store->sp_others ?>" name="sp_others" placeholder="ໃສ່ຈຳນວນຍອດຂາຍ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 5 -->
+                        <div class="row-fluid">
+                        <hr style="border-style: double; border-color: navy;">
+                        <b>Part 5: Store Image ອຸປະກອນຮ້ານຄ້າ</b><br><br>
+                        <label><span>ໂຕະໂຊຂອງແບຣນ Table</span></label>      
+                            <div class="row" style="padding-top : 5px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ OPPO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_oppo ?>" name="tb_oppo" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ VIVO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_vivo ?>" name="tb_vivo" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Samsung</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_samsung ?>" name="tb_samsung" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Huawei</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_huawei ?>" name="tb_huawei" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Realme</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_realme ?>" name="tb_realme" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Xiaomi</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_xiaomi ?>" name="tb_xiaomi" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Honor</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_honor ?>" name="tb_honor" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ໂຕະໂຊ Tecno</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->tb_tecno ?>" name="tb_tecno" placeholder="ໃສ່ຈຳນວນໂຕະໂຊ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <label><span>ຕູ້ແກ້ວຂອງແບຣນ Counter</span></label>      
+                            <div class="row" style="padding-top : 5px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ OPPO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_oppo ?>" name="ct_oppo" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ VIVO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_vivo ?>" name="ct_vivo" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Samsung</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_samsung ?>" name="ct_samsung" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Huawei</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_huawei ?>" name="ct_huawei" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Realme</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_realme ?>" name="ct_realme" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Xiaomi</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_xiaomi ?>" name="ct_xiaomi" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Honor</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_honor ?>" name="ct_honor" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ຕູ້ແກ້ວ Tecno</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ct_tecno ?>" name="ct_tecno" placeholder="ໃສ່ຈຳນວນຕູ້ແກ້ວ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="padding: 1px 1px 1px 1px;">
+                            <label><span>ປ້າຍໜ້າຮ້ານ Shop Sign</span></label>      
+                            <div class="row" style="padding-top : 5px">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ OPPO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_oppo ?>" name="ss_oppo" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ VIVO</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_vivo ?>" name="ss_vivo" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Samsung</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_samsung ?>" name="ss_samsung" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Huawei</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_huawei ?>" name="ss_huawei" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Realme</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_realme ?>" name="ss_realme" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Xiaomi</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_xiaomi ?>" name="ss_xiaomi" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Honor</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_honor ?>" name="ss_honor" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label>ປ້າຍໜ້າຮ້ານ Tecno</label>
+                                        <input type="number" min="0" max="10" class="span3" value="<?php echo $this->store->ss_tecno ?>" name="ss_tecno" placeholder="ໃສ່ຈຳນວນປ້າຍໜ້າຮ້ານ" required="required" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-style: double; border-color: navy;">
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+<div class="row" style="padding-top: 5px; text-align:center;">
+    <div class="span12">
+        <input type="hidden" name="back_url" id="back_url" value="<?php if (isset($this->back_url) and $this->back_url) echo $this->back_url;?>">
+        <button style="text-align: center; font-family:Noto sans lao; font-size:20px;" type="button" class="btn btn-danger go-back">ກັບຄືນ</button>
+    </div>
+</div>
+</form>
+
+
+
+</div>
+
+<script>
+
+$('.go-back').click(function(e) {
+
+    window.location.href = $('#back_url').val();
+
+    return false;
+});
+
+</script>
